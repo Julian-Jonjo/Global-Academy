@@ -1,4 +1,15 @@
 {
+  "name": "school-management-system",
+  "version": "1.0.0",
+  "description": "School Management System Backend",
+  "main": "Backend/server.js",
+  "scripts": {
+    "start": "node Backend/server.js",
+    "dev": "nodemon Backend/server.js",
+    "migrate": "node Backend/migrations/run-migrations.js"
+  },
+}
+{
   "name": "global_academy",
   "version": "1.0.0",
   "description": "",
