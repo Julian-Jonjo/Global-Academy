@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Global Academy | Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+        }
+
+        .school-name {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .school-location {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #1f2937;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #message {
+            margin-top: 18px;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="login-card">
+
+        <div class="school-name">
+            GLOBAL ACADEMY
+        </div>
+
+        <div class="school-location">
+            Kono, Sierra Leone
+        </div>
+
+        <h3 class="login-title">
+            Sign in to your account
+        </h3>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+        <div id="message"></div>
+
+        <div class="footer">
+            Global Academy Management System
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const loginForm =
+        document.getElementById('loginForm');
+
+    const message =
+        document.getElementById('message');
+
+
+    loginForm.addEventListener('submit', async (event) => {
+
+        event.preventDefault();
+
+        const username =
+            document.getElementById('username').value.trim();
+
+        const password =
+            document.getElementById('password').value;
+
+        message.textContent = 'Signing in...';
+
+
+        try {
+
+            const response = await fetch(
+                '/api/auth/login',
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                }
+            );
+
+
+            const data = await response.json();
+
+
+            if (!response.ok) {
+
+                message.textContent =
+                    data.message || 'Login failed.';
+
+                return;
+            }
+
+
+            // Store authentication information temporarily.
+            sessionStorage.setItem(
+                'authToken',
+                data.token
+            );
+
+            sessionStorage.setItem(
+                'user',
+                JSON.stringify(data.user)
+            );
+
+
+            message.textContent =
+                'Login successful.';
+
+
+            // Temporary destination.
+            // We will replace this with the
+            // actual role-based dashboard.
+            setTimeout(() => {
+
+                window.location.href =
+                    '/dashboard.html';
+
+            }, 500);
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.textContent =
+                'Unable to connect to the server.';
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

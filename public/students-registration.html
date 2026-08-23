@@ -1,0 +1,462 @@
+<style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 18px 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            background: #1f2937;
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background: #111827;
+        }
+
+        .back-btn {
+            background: #ddd;
+        }
+
+        .back-btn:hover {
+            background: #ccc;
+        }
+
+        #message {
+            margin-top: 20px;
+            padding: 12px;
+            display: none;
+            border-radius: 6px;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        @media (max-width: 700px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>GLOBAL ACADEMY — Student Registration</h1>
+</header>
+
+
+<main class="container">
+
+    <div class="card">
+
+        <h2>Register New Student</h2>
+
+        <p>
+            Complete the student's information below.
+            The registration will be submitted for approval.
+        </p>
+
+
+        <form id="studentForm">
+
+            <!-- PERSONAL INFORMATION -->
+
+            <h3 class="section-title">
+                Personal Information
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="admission_number">
+                        Admission Number *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="admission_number"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="first_name">
+                        First Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="first_name"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="middle_name">
+                        Middle Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="middle_name"
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="last_name">
+                        Last Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="last_name"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="gender">
+                        Gender
+                    </label>
+
+                    <select id="gender">
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="date_of_birth">
+                        Date of Birth
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date_of_birth"
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="nationality">
+                        Nationality
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nationality"
+                        value="Sierra Leonean"
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="phone">
+                        Phone
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                    >
+                </div>
+
+
+                <div class="form-group full-width">
+                    <label for="address">
+                        Address
+                    </label>
+
+                    <textarea id="address"></textarea>
+                </div>
+
+            </div>
+
+
+            <!-- SCHOOL INFORMATION -->
+
+            <h3 class="section-title">
+                School Information
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="class_id">
+                        Class *
+                    </label>
+
+                    <select id="class_id" required>
+
+                        <option value="">
+                            Loading classes...
+                        </option>
+
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="admission_date">
+                        Admission Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="admission_date"
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="previous_school">
+                        Previous School
+                    </label>
+
+                    <input
+                        type="text"
+                        id="previous_school"
+                    >
+                </div>
+
+            </div>
+
+
+            <!-- GUARDIAN INFORMATION -->
+
+            <h3 class="section-title">
+                Guardian Information
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-group full-width">
+
+                    <label for="guardian_id">
+                        Guardian
+                    </label>
+
+                    <select id="guardian_id">
+
+                        <option value="">
+                            Loading guardians...
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- EMERGENCY CONTACT -->
+
+            <h3 class="section-title">
+                Emergency Contact
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="emergency_contact_name">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="emergency_contact_name"
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="emergency_contact_phone">
+                        Phone
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="emergency_contact_phone"
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="emergency_contact_relationship">
+                        Relationship
+                    </label>
+
+                    <input
+                        type="text"
+                        id="emergency_contact_relationship"
+                    >
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div id="message"></div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="actions">
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+                    Submit Registration
+                </button>
+
+
+                <button
+                    type="button"
+                    class="back-btn"
+                    onclick="history.back()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+

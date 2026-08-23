@@ -1,0 +1,205 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Academy | Finance</title>
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#222}
+        .header{background:#1f2937;color:white;padding:18px 30px;display:flex;justify-content:space-between;align-items:center}
+        .header h1{margin:0;font-size:22px}
+        .user-info{font-size:14px;text-align:right}
+        .container{max-width:1450px;margin:25px auto;padding:0 20px}
+        .page-title{margin-bottom:20px}
+        .page-title h2{margin:0 0 6px}
+        .page-title p{margin:0;color:#6b7280}
+
+        .finance-nav{display:flex;flex-wrap:wrap;gap:5px;background:white;padding:8px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.06);margin-bottom:20px}
+        .finance-nav a{text-decoration:none;color:#4b5563;padding:12px 16px;border-radius:6px;font-size:14px;font-weight:bold}
+        .finance-nav a:hover{background:#f3f4f6}
+        .finance-nav a.active{background:#1f2937;color:white}
+
+        .dashboard-card{background:white;padding:25px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,.08)}
+        .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:15px}
+        .section-header h3{margin:0}
+
+        .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:10px}
+        .summary-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:20px}
+        .summary-card h4{margin:0 0 10px;color:#6b7280;font-size:12px;text-transform:uppercase}
+        .summary-number{font-size:25px;font-weight:bold}
+        .summary-card p{margin:8px 0 0;color:#6b7280;font-size:13px}
+
+        .refresh-btn{background:#374151;color:white;border:none;border-radius:6px;padding:11px 18px;cursor:pointer;font-weight:bold}
+        .refresh-btn:hover{background:#1f2937}
+
+        .error-message{color:#991b1b;background:#fee2e2;border:1px solid #fca5a5;padding:15px;border-radius:6px;margin-bottom:15px}
+
+        @media(max-width:700px){
+            .finance-nav{flex-direction:column}
+            .finance-nav a{width:100%;text-align:left}
+        }
+
+        @media(max-width:600px){
+            .header{flex-direction:column;align-items:flex-start;gap:8px}
+            .container{padding:0 12px}
+            .dashboard-card{padding:20px}
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>GLOBAL ACADEMY — Finance</h1>
+    <div id="userInfo" class="user-info"></div>
+</header>
+
+<main class="container">
+
+    <div class="page-title">
+        <h2>Finance Dashboard</h2>
+        <p>Manage fees, student balances, payments and financial records.</p>
+    </div>
+
+    <nav class="finance-nav">
+        <a href="/finance.html" class="active">Overview</a>
+        <a href="/finance-students.html">Students</a>
+        <a href="/finance-balances.html">Fee Balances</a>
+        <a href="/finance-payments.html">Payments</a>
+        <a href="/finance-categories.html">Fee Categories</a>
+    </nav>
+
+    <section class="dashboard-card">
+        <div class="section-header">
+            <h3>Overall Finance Summary</h3>
+            <button class="refresh-btn" onclick="loadFinanceData()">Refresh</button>
+        </div>
+
+        <div id="overviewMessage"></div>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h4>Total Expected</h4>
+                <div id="totalExpected" class="summary-number">Le0.00</div>
+                <p>Total fees assigned</p>
+            </div>
+
+            <div class="summary-card">
+                <h4>Total Collected</h4>
+                <div id="totalCollected" class="summary-number">Le0.00</div>
+                <p>Total payments received</p>
+            </div>
+
+            <div class="summary-card">
+                <h4>Outstanding</h4>
+                <div id="totalOutstanding" class="summary-number">Le0.00</div>
+                <p>Money still owed</p>
+            </div>
+
+            <div class="summary-card">
+                <h4>Active Students</h4>
+                <div id="totalStudents" class="summary-number">0</div>
+                <p>Currently active students</p>
+            </div>
+
+            <div class="summary-card">
+                <h4>Paid Records</h4>
+                <div id="paidRecords" class="summary-number">0</div>
+                <p>Fully paid fee records</p>
+            </div>
+
+            <div class="summary-card">
+                <h4>Partially Paid</h4>
+                <div id="partiallyPaidRecords" class="summary-number">0</div>
+                <p>Fee records with balances</p>
+            </div>
+
+            <div class="summary-card">
+                <h4>Unpaid</h4>
+                <div id="unpaidRecords" class="summary-number">0</div>
+                <p>No payment received</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const token=sessionStorage.getItem('authToken');
+    const userData=sessionStorage.getItem('user');
+
+    if(!token||!userData)window.location.href='/';
+
+    let user;
+    try{
+        user=JSON.parse(userData);
+    }catch(error){
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        window.location.href='/';
+    }
+
+    const role=user.role_name;
+    document.getElementById('userInfo').textContent=`${user.full_name||'User'} (${role})`;
+
+    async function loadSummary(){
+        try{
+            const response=await fetch('/api/payments/summary',{
+                headers:{
+                    Authorization:`Bearer ${token}`,
+                    Accept:'application/json'
+                }
+            });
+
+            const data=await response.json();
+
+            if(!response.ok){
+                throw new Error(data.message||'Failed to load finance summary.');
+            }
+
+            const summary=data.summary||{};
+
+            document.getElementById('totalExpected').textContent=formatCurrency(summary.total_expected);
+            document.getElementById('totalCollected').textContent=formatCurrency(summary.total_collected);
+            document.getElementById('totalOutstanding').textContent=formatCurrency(summary.total_outstanding);
+            document.getElementById('totalStudents').textContent=summary.total_students||0;
+            document.getElementById('paidRecords').textContent=summary.paid_records||0;
+            document.getElementById('partiallyPaidRecords').textContent=summary.partially_paid_records||0;
+            document.getElementById('unpaidRecords').textContent=summary.unpaid_records||0;
+
+        }catch(error){
+            console.error('SUMMARY ERROR:',error);
+            document.getElementById('overviewMessage').innerHTML=
+                `<div class="error-message">${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    async function loadFinanceData(){
+        await loadSummary();
+    }
+
+    function formatCurrency(value){
+        const number=Number(value||0);
+        return 'Le'+number.toLocaleString('en-US',{
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+        });
+    }
+
+    function escapeHtml(value){
+        return String(value)
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;')
+            .replace(/'/g,'&#039;');
+    }
+
+    loadFinanceData();
+</script>
+
+</body>
+</html>
+```

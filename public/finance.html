@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Academy | Finance</title>
+    <style>
+        *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#222}.header{background:#1f2937;color:#fff;padding:18px 30px;display:flex;justify-content:space-between;align-items:center}.header h1{margin:0;font-size:22px}.user-info{font-size:14px;text-align:right}.container{max-width:1450px;margin:25px auto;padding:0 20px}.page-title{margin-bottom:20px}.page-title h2{margin:0 0 6px}.page-title p{margin:0;color:#6b7280}.tabs{display:flex;flex-wrap:wrap;gap:5px;background:#fff;padding:8px;border-radius:10px 10px 0 0;box-shadow:0 3px 10px rgba(0,0,0,.06)}.tab-button{border:none;background:transparent;padding:12px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700;color:#4b5563}.tab-button:hover{background:#f3f4f6}.tab-button.active{background:#1f2937;color:#fff}.tab-content{display:none;background:#fff;padding:25px;border-radius:0 0 10px 10px;box-shadow:0 3px 15px rgba(0,0,0,.08)}.tab-content.active{display:block}.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:15px}.section-header h3{margin:0}.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:30px}.summary-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:20px}.summary-card h4{margin:0 0 10px;color:#6b7280;font-size:12px;text-transform:uppercase}.summary-number{font-size:25px;font-weight:700}.summary-card p{margin:8px 0 0;color:#6b7280;font-size:13px}.filters{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;margin-bottom:20px}.filters input,.filters select{width:100%;padding:11px;border:1px solid #ccc;border-radius:6px;font-size:14px}.refresh-btn{background:#374151;color:#fff;border:none;border-radius:6px;padding:11px 18px;cursor:pointer;font-weight:700}.refresh-btn:hover{background:#1f2937}.table-container{overflow-x:auto}table{width:100%;border-collapse:collapse}th{background:#f3f4f6;text-align:left;padding:13px;font-size:13px;border-bottom:2px solid #ddd;white-space:nowrap}td{padding:13px;border-bottom:1px solid #eee;font-size:14px}tr:hover{background:#f9fafb}.status{display:inline-block;padding:5px 10px;border-radius:15px;font-size:12px;font-weight:700}.paid{background:#dcfce7;color:#166534}.partially-paid{background:#fef3c7;color:#92400e}.unpaid{background:#fee2e2;color:#991b1b}.btn{border:none;padding:9px 14px;border-radius:6px;cursor:pointer;font-weight:700}.view-btn{background:#1f2937;color:#fff}.view-btn:hover{background:#111827}.category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-bottom:30px}.category-card{border:1px solid #e5e7eb;border-radius:10px;padding:18px;background:#fff}.category-card h4{margin:0 0 15px;font-size:16px}.category-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f1f1f1;font-size:13px}.category-row:last-child{border-bottom:none}.category-label{color:#6b7280}.category-value{font-weight:700}.student-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px}.student-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:18px}.student-card h4{margin:0 0 8px;color:#6b7280;font-size:12px;text-transform:uppercase}.student-card strong{font-size:20px}.error-message{color:#991b1b;background:#fee2e2;border:1px solid #fca5a5;padding:15px;border-radius:6px;margin-bottom:15px}.empty{text-align:center;padding:50px;color:#6b7280}.student-info{margin-bottom:25px}.student-info h3{margin:0 0 5px}.student-info p{margin:3px 0;color:#6b7280}.modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.55);overflow-y:auto}.modal-content{background:#fff;max-width:1000px;margin:40px auto;padding:30px;border-radius:10px}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.modal-header h2{margin:0}.close{font-size:30px;cursor:pointer;color:#666}.close:hover{color:#111}.student-details-modal{display:none;position:fixed;z-index:1100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6);overflow-y:auto}.student-details-content{background:#fff;width:min(1200px,94%);margin:30px auto;padding:30px;border-radius:12px;box-shadow:0 10px 35px rgba(0,0,0,.2)}.student-details-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:25px}.student-details-header h2{margin:0 0 6px}.student-details-header p{margin:0;color:#6b7280}.student-details-close{font-size:30px;cursor:pointer;color:#666;line-height:1}.student-details-close:hover{color:#111}.student-info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px}.student-info-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:15px}.student-info-label{display:block;color:#6b7280;font-size:11px;text-transform:uppercase;font-weight:700;margin-bottom:6px}.student-info-value{display:block;font-size:15px;font-weight:700}.finance-detail-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px}.finance-detail-card{border:1px solid #e5e7eb;border-radius:10px;padding:20px;background:#f9fafb}.finance-detail-card h4{margin:0 0 10px;color:#6b7280;font-size:12px;text-transform:uppercase}.finance-detail-card .amount{font-size:25px;font-weight:700}.finance-detail-section{margin-top:30px}.finance-detail-section h3{margin:0 0 15px}.finance-detail-table{overflow-x:auto}.finance-detail-table table{min-width:850px}.finance-detail-table th{background:#f3f4f6}.finance-detail-footer{display:flex;justify-content:flex-end;margin-top:25px}.student-details-loading{text-align:center;padding:50px;color:#6b7280}.student-details-error{color:#991b1b;background:#fee2e2;border:1px solid #fca5a5;padding:15px;border-radius:6px}@media(max-width:900px){.filters{grid-template-columns:1fr 1fr}.student-summary{grid-template-columns:1fr 1fr}.student-info-grid{grid-template-columns:repeat(2,1fr)}.finance-detail-summary{grid-template-columns:1fr}}@media(max-width:700px){.tabs{flex-direction:column}.tab-button{width:100%;text-align:left}.student-summary{grid-template-columns:1fr}}@media(max-width:600px){.header{flex-direction:column;align-items:flex-start;gap:8px}.filters{grid-template-columns:1fr}.modal-content{margin:20px;padding:20px}.student-details-content{width:96%;margin:15px auto;padding:20px}.student-info-grid{grid-template-columns:1fr}.student-details-header{align-items:center}}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>GLOBAL ACADEMY — Finance</h1>
+        <div id="userInfo" class="user-info"></div>
+    </header>
+    <main class="container">
+        <div class="page-title">
+            <h2>Finance Dashboard</h2>
+            <p>Manage fees, student balances, payments and financial records.</p>
+        </div>
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('overview',this)">Overview</button>
+            <button class="tab-button" onclick="openTab('categories',this)">Fee Categories</button>
+            <button class="tab-button" onclick="openTab('students',this)">All Students</button>
+            <button class="tab-button" onclick="openTab('balances',this)">Fee Balances</button>
+            <button class="tab-button" onclick="openTab('payments',this)">Payment History</button>
+        </div>
+        <section id="overview" class="tab-content active">
+            <div class="section-header">
+                <h3>Overall Finance Summary</h3>
+                <button class="refresh-btn" onclick="loadFinanceData()">Refresh</button>
+            </div>
+            <div id="overviewMessage"></div>
+            <div class="summary-grid">
+                <div class="summary-card"><h4>Total Expected</h4><div id="totalExpected" class="summary-number">Le0.00</div><p>Total fees assigned</p></div>
+                <div class="summary-card"><h4>Total Collected</h4><div id="totalCollected" class="summary-number">Le0.00</div><p>Total payments received</p></div>
+                <div class="summary-card"><h4>Outstanding</h4><div id="totalOutstanding" class="summary-number">Le0.00</div><p>Money still owed</p></div>
+                <div class="summary-card"><h4>Active Students</h4><div id="totalStudents" class="summary-number">0</div><p>Currently active students</p></div>
+                <div class="summary-card"><h4>Paid Records</h4><div id="paidRecords" class="summary-number">0</div><p>Fully paid fee records</p></div>
+                <div class="summary-card"><h4>Partially Paid</h4><div id="partiallyPaidRecords" class="summary-number">0</div><p>Fee records with balances</p></div>
+                <div class="summary-card"><h4>Unpaid</h4><div id="unpaidRecords" class="summary-number">0</div><p>No payment received</p></div>
+            </div>
+        </section>
+        <section id="categories" class="tab-content">
+            <div class="section-header">
+                <h3>Fee Category Summary</h3>
+                <button class="refresh-btn" onclick="loadFeeCategories()">Refresh</button>
+            </div>
+            <div id="categoryMessage"></div>
+            <div id="categoryGrid" class="category-grid"><div class="empty">Loading fee categories...</div></div>
+        </section>
+        <section id="students" class="tab-content">
+            <div class="section-header">
+                <h3>All Active Students</h3>
+                <span id="studentCount">0 Students</span>
+            </div>
+            <div class="filters">
+                <input type="text" id="studentSearch" placeholder="Search student or admission number..." oninput="applyStudentFilters()">
+                <select id="studentClass" onchange="applyStudentFilters()"><option value="">All Classes</option></select>
+                <select id="studentFinanceStatus" onchange="applyStudentFilters()"><option value="">All Finance Status</option><option value="Paid">Fully Paid</option><option value="Partially Paid">Partially Paid</option><option value="Unpaid">Unpaid</option></select>
+                <button class="refresh-btn" onclick="loadStudents()">Refresh</button>
+            </div>
+            <div id="studentMessage"></div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Admission No.</th><th>Student</th><th>Class</th><th>Expected</th><th>Paid</th><th>Balance</th><th>Paid Fees</th><th>Partial</th><th>Unpaid</th><th>Action</th></tr></thead>
+                    <tbody id="studentTable"><tr><td colspan="10" class="empty">Loading students...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+        <section id="balances" class="tab-content">
+            <div class="section-header">
+                <h3>Student Fee Balances</h3>
+                <span id="balanceCount">0 Records</span>
+            </div>
+            <div class="filters">
+                <input type="text" id="balanceSearch" placeholder="Search student or admission number..." oninput="applyBalanceFilters()">
+                <select id="balanceStatus" onchange="applyBalanceFilters()"><option value="">All Statuses</option><option value="Paid">Paid</option><option value="Partially Paid">Partially Paid</option><option value="Unpaid">Unpaid</option></select>
+                <select id="balanceFee" onchange="applyBalanceFilters()"><option value="">All Fees</option></select>
+                <button class="refresh-btn" onclick="loadBalances()">Refresh</button>
+            </div>
+            <div id="balanceMessage"></div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Admission No.</th><th>Student</th><th>Class</th><th>Fee</th><th>Academic Year</th><th>Term</th><th>Amount Due</th><th>Paid</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="balanceTable"><tr><td colspan="11" class="empty">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+        <section id="payments" class="tab-content">
+            <div class="section-header">
+                <h3>Payment History</h3>
+                <span id="paymentCount">0 Payments</span>
+            </div>
+            <div class="filters">
+                <input type="text" id="paymentSearch" placeholder="Search student, admission or slip number..." oninput="applyPaymentFilters()">
+                <select id="paymentMethodFilter" onchange="applyPaymentFilters()"><option value="">All Methods</option><option value="Bank">Bank</option><option value="Cash">Cash</option><option value="Mobile Money">Mobile Money</option><option value="Cheque">Cheque</option><option value="Other">Other</option></select>
+                <input type="date" id="paymentDateFilter" onchange="applyPaymentFilters()">
+                <button class="refresh-btn" onclick="loadPaymentHistory()">Refresh</button>
+            </div>
+            <div id="paymentMessage"></div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Date</th><th>Admission No.</th><th>Student</th><th>Class</th><th>Fee</th><th>Amount Paid</th><th>Method</th><th>Slip No.</th><th>Bank Reference</th><th>Purpose</th></tr></thead>
+                    <tbody id="paymentTable"><tr><td colspan="10" class="empty">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <div id="studentFinanceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Student Finance Details</h2>
+                <span class="close" onclick="closeStudentFinanceModal()">&times;</span>
+            </div>
+            <div id="studentFinanceContent">Loading...</div>
+        </div>
+    </div>
+    <div id="studentDetailsModal" class="student-details-modal">
+        <div class="student-details-content">
+            <div class="student-details-header">
+                <div>
+                    <h2 id="detailsStudentName">Student Finance Details</h2>
+                    <p id="detailsStudentSubtitle">Loading student information...</p>
+                </div>
+                <span class="student-details-close" onclick="closeStudentDetails()">&times;</span>
+            </div>
+            <div id="studentDetailsBody"><div class="student-details-loading">Loading finance records...</div></div>
+            <div class="finance-detail-footer">
+                <button type="button" class="btn view-btn" onclick="closeStudentDetails()">Close</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const token=sessionStorage.getItem('authToken'),userData=sessionStorage.getItem('user');if(!token||!userData)window.location.href='/';let user;try{user=JSON.parse(userData)}catch(e){sessionStorage.removeItem('authToken');sessionStorage.removeItem('user');window.location.href='/'}const role=user.role_name;document.getElementById('userInfo').textContent=`${user.full_name||'User'} (${role})`;const canRecordPayment=role==='Manager'||role==='Administrator';let balances=[],filteredBalances=[],payments=[],filteredPayments=[],students=[],filteredStudents=[],categories=[];
+        function openTab(tabId,btn){document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));document.getElementById(tabId).classList.add('active');if(btn)btn.classList.add('active')}
+        async function loadSummary(){try{const r=await fetch('/api/payments/summary',{headers:{Authorization:`Bearer ${token}`,Accept:'application/json'}}),d=await r.json();if(!r.ok)throw new Error(d.message||'Failed to load finance summary.');const s=d.summary||{};document.getElementById('totalExpected').textContent=formatCurrency(s.total_expected);document.getElementById('totalCollected').textContent=formatCurrency(s.total_collected);document.getElementById('totalOutstanding').textContent=formatCurrency(s.total_outstanding);document.getElementById('totalStudents').textContent=s.total_students||0;document.getElementById('paidRecords').textContent=s.paid_records||0;document.getElementById('partiallyPaidRecords').textContent=s.partially_paid_records||0;document.getElementById('unpaidRecords').textContent=s.unpaid_records||0}catch(e){console.error('SUMMARY ERROR:',e);document.getElementById('overviewMessage').innerHTML=`<div class="error-message">${escapeHtml(e.message)}</div>`}}
+        async function loadFeeCategories(){const c=document.getElementById('categoryGrid');c.innerHTML='<div class="empty">Loading fee categories...</div>';try{const r=await fetch('/api/payments/summary-by-fee',{headers:{Authorization:`Bearer ${token}`,Accept:'application/json'}}),d=await r.json();if(!r.ok)throw new Error(d.message||'Failed to load fee categories.');categories=d.categories||[];if(!categories.length){c.innerHTML='<div class="empty">No fee categories found.</div>';return}c.innerHTML=categories.map(i=>`<div class="category-card"><h4>${display(i.fee_name)}</h4><div class="category-row"><span class="category-label">Expected</span><span class="category-value">${formatCurrency(i.total_expected)}</span></div><div class="category-row"><span class="category-label">Collected</span><span class="category-value">${formatCurrency(i.total_collected)}</span></div><div class="category-row"><span class="category-label">Outstanding</span><span class="category-value">${formatCurrency(i.total_outstanding)}</span></div><div class="category-row"><span class="category-label">Paid</span><span class="category-value">${i.paid_records||0}</span></div><div class="category-row"><span class="category-label">Partially Paid</span><span class="category-value">${i.partially_paid_records||0}</span></div><div class="category-row"><span class="category-label">Unpaid</span><span class="category-value">${i.unpaid_records||0}</span></div></div>`).join('')}catch(e){console.error('CATEGORY ERROR:',e);c.innerHTML=`<div class="error-message">${escapeHtml(e.message)}</div>`}}
+        async function loadStudents(){const t=document.getElementById('studentTable');t.innerHTML='<tr><td colspan="10" class="empty">Loading students...</td></tr>';try{const r=await fetch('/api/payments/students',{headers:{Authorization:`Bearer ${token}`,Accept:'application/json'}}),d=await r.json();if(!r.ok)throw new Error(d.message||'Failed to load students.');students=d.students||[];filteredStudents=[...students];populateClassFilter();renderStudents()}catch(e){console.error('STUDENT ERROR:',e);t.innerHTML=`<tr><td colspan="10" class="empty">${escapeHtml(e.message)}</td></tr>`}}
+        function populateClassFilter(){const s=document.getElementById('studentClass'),c=new Set();students.forEach(st=>{if(st.class_name)c.add(st.class_name)});s.innerHTML='<option value="">All Classes</option>';[...c].sort().forEach(cls=>{const o=document.createElement('option');o.value=cls;o.textContent=cls;s.appendChild(o)})}
+        function applyStudentFilters(){const s=document.getElementById('studentSearch').value.trim().toLowerCase(),c=document.getElementById('studentClass').value,st=document.getElementById('studentFinanceStatus').value;filteredStudents=students.filter(stu=>{const n=String(stu.student_name||'').toLowerCase(),a=String(stu.admission_number||'').toLowerCase(),ms=!s||n.includes(s)||a.includes(s),mc=!c||stu.class_name===c;let fs='Unpaid';if(Number(stu.total_balance)<=0&&Number(stu.total_expected)>0)fs='Paid';else if(Number(stu.total_paid)>0)fs='Partially Paid';const mst=!st||fs===st;return ms&&mc&&mst});renderStudents()}
+        function renderStudents(){const t=document.getElementById('studentTable');document.getElementById('studentCount').textContent=`${filteredStudents.length} Student${filteredStudents.length===1?'':'s'}`;if(!filteredStudents.length){t.innerHTML='<tr><td colspan="10" class="empty">No students found.</td></tr>';return}t.innerHTML=filteredStudents.map(s=>`<tr><td>${display(s.admission_number)}</td><td><strong>${display(s.student_name)}</strong></td><td>${display(s.class_name)}${s.arm?` — ${display(s.arm)}`:''}</td><td>${formatCurrency(s.total_expected)}</td><td>${formatCurrency(s.total_paid)}</td><td><strong>${formatCurrency(s.total_balance)}</strong></td><td>${s.paid_fees||0}</td><td>${s.partially_paid_fees||0}</td><td>${s.unpaid_fees||0}</td><td><button class="btn view-btn" onclick="openStudentDetails(${Number(s.student_id)})">View Finance</button></td></tr>`).join('')}
+        async function viewStudentFinance(id){const m=document.getElementById('studentFinanceModal'),c=document.getElementById('studentFinanceContent');m.style.display='block';c.innerHTML='<div class="empty">Loading student finance...</div>';try{const r=await fetch(`/api/payments/student/${id}`,{headers:{Authorization:`Bearer ${token}`,Accept:'application/json'}}),d=await r.json();if(!r.ok)throw new Error(d.message||'Failed to load student finance.');const st=d.student||{},f=d.fees||[],p=d.payments||[],t=d.totals||{};c.innerHTML=`<div class="student-info"><h3>${display(st.student_name)}</h3><p>Admission No: <strong>${display(st.admission_number)}</strong></p><p>Class: <strong>${display(st.class_name)}${st.arm?` — ${display(st.arm)}`:''}</strong></p></div><div class="student-summary"><div class="student-card"><h4>Total Expected</h4><strong>${formatCurrency(t.total_expected)}</strong></div><div class="student-card"><h4>Total Paid</h4><strong>${formatCurrency(t.total_paid)}</strong></div><div class="student-card"><h4>Outstanding</h4><strong>${formatCurrency(t.total_balance)}</strong></div><div class="student-card"><h4>Fee Records</h4><strong>${f.length}</strong></div></div><h3>Fee Records</h3><div class="table-container"><table><thead><tr><th>Fee</th><th>Academic Year</th><th>Term</th><th>Due</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead><tbody>${f.length?f.map(fee=>{const sts=fee.payment_status||'Unpaid',sc=sts.toLowerCase().replace(' ','-');return`<tr><td>${display(fee.fee_name)}</td><td>${display(fee.academic_year)}</td><td>${display(fee.term_name)}</td><td>${formatCurrency(fee.amount_due)}</td><td>${formatCurrency(fee.total_paid)}</td><td><strong>${formatCurrency(fee.balance)}</strong></td><td><span class="status ${escapeHtml(sc)}">${escapeHtml(sts)}</span></td></tr>`}).join(''):'<tr><td colspan="7" class="empty">No fee records found.</td></tr>'}</tbody></table></div><br><h3>Payment History</h3><div class="table-container"><table><thead><tr><th>Date</th><th>Fee</th><th>Amount</th><th>Method</th><th>Slip Number</th><th>Bank Reference</th><th>Purpose</th></tr></thead><tbody>${p.length?p.map(pm=>`<tr><td>${formatDateTime(pm.payment_date)}</td><td>${display(pm.fee_name)}</td><td><strong>${formatCurrency(pm.amount_paid)}</strong></td><td>${display(pm.payment_method)}</td><td>${display(pm.payment_slip_number)}</td><td>${display(pm.bank_reference)}</td><td>${display(pm.purpose)}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">No payments recorded.</td></tr>'}</tbody></table></div>`}catch(e){console.error('STUDENT FINANCE ERROR:',e);c.innerHTML=`<div class="error-message">${escapeHtml(e.message)}</div>`}}
+        function closeStudentFinanceModal(){document.getElementById('studentFinanceModal').style.display='none'}
+        function openStudentDetails(studentId){window.location.href=`finance-student.html?studentId=${Number(studentId)}`}
+        function closeStudentDetails(){document.getElementById('studentDetailsModal').style.display='none'}
+        async function loadBalances(){const t=document.getElementById('balanceTable');t.innerHTML='<tr><td colspan="11" class="empty">Loading balances...</td></tr>';try{const r=await fetch('/api/payments/balances',{headers:{Authorization:`Bearer ${token}`,Accept:'application/json'}}),d=await r.json();if(!r.ok)throw new Error(d.message||'Failed to load balances.');balances=d.balances||[];filteredBalances=[...balances];populateBalanceFeeFilter();renderBalances()}catch(e){t.innerHTML=`<tr><td colspan="11" class="empty">${escapeHtml(e.message)}</td></tr>`}}
+        function populateBalanceFeeFilter(){const s=document.getElementById('balanceFee'),f=new Set();balances.forEach(i=>{if(i.fee_name)f.add(i.fee_name)});s.innerHTML='<option value="">All Fees</option>';[...f].sort().forEach(fee=>{const o=document.createElement('option');o.value=fee;o.textContent=fee;s.appendChild(o)})}
+        function applyBalanceFilters(){const s=document.getElementById('balanceSearch').value.trim().toLowerCase(),st=document.getElementById('balanceStatus').value,f=document.getElementById('balanceFee').value;filteredBalances=balances.filter(i=>{const n=String(i.student_name||'').toLowerCase(),a=String(i.admission_number||'').toLowerCase();return(!s||n.includes(s)||a.includes(s))&&(!st||i.payment_status===st)&&(!f||i.fee_name===f)});renderBalances()}
+        function renderBalances(){const t=document.getElementById('balanceTable');document.getElementById('balanceCount').textContent=`${filteredBalances.length} Record${filteredBalances.length===1?'':'s'}`;if(!filteredBalances.length){t.innerHTML='<tr><td colspan="11" class="empty">No fee records found.</td></tr>';return}t.innerHTML=filteredBalances.map(i=>{const st=i.payment_status||'Unpaid',sc=st.toLowerCase().replace(/\s+/g,'-');return`<tr><td>${display(i.admission_number)}</td><td><strong>${display(i.student_name)}</strong></td><td>${display(i.class_name)}${i.arm?` — ${display(i.arm)}`:''}</td><td>${display(i.fee_name)}</td><td>${display(i.academic_year)}</td><td>${display(i.term_name)}</td><td>${formatCurrency(i.amount_due)}</td><td>${formatCurrency(i.total_paid)}</td><td><strong>${formatCurrency(i.balance)}</strong></td><td><span class="status ${escapeHtml(sc)}">${escapeHtml(st)}</span></td><td><button class="btn view-btn" onclick="openStudentDetails(${Number(i.student_id)})">View Finance</button></td></tr>`}).join('')}
+        async function loadPaymentHistory(){const t=document.getElementById('paymentTable');t.innerHTML='<tr><td colspan="10" class="empty">Loading payment history...</td></tr>';try{const r=await fetch('/api/payments/history',{headers:{Authorization:`Bearer ${token}`,Accept:'application/json'}}),d=await r.json();if(!r.ok)throw new Error(d.message||'Failed to load payment history.');payments=d.payments||[];filteredPayments=[...payments];renderPayments()}catch(e){t.innerHTML=`<tr><td colspan="10" class="empty">${escapeHtml(e.message)}</td></tr>`}}
+        function applyPaymentFilters(){const s=document.getElementById('paymentSearch').value.trim().toLowerCase(),m=document.getElementById('paymentMethodFilter').value,d=document.getElementById('paymentDateFilter').value;filteredPayments=payments.filter(i=>{const st=String(i.student_name||'').toLowerCase(),a=String(i.admission_number||'').toLowerCase(),sl=String(i.payment_slip_number||'').toLowerCase(),pd=i.payment_date?String(i.payment_date).substring(0,10):'';return(!s||st.includes(s)||a.includes(s)||sl.includes(s))&&(!m||i.payment_method===m)&&(!d||pd===d)});renderPayments()}
+        function renderPayments(){const t=document.getElementById('paymentTable');document.getElementById('paymentCount').textContent=`${filteredPayments.length} Payment${filteredPayments.length===1?'':'s'}`;if(!filteredPayments.length){t.innerHTML='<tr><td colspan="10" class="empty">No payments found.</td></tr>';return}t.innerHTML=filteredPayments.map(i=>`<tr><td>${formatDateTime(i.payment_date)}</td><td>${display(i.admission_number)}</td><td><strong>${display(i.student_name)}</strong></td><td>${display(i.class_name)}${i.arm?` — ${display(i.arm)}`:''}</td><td>${display(i.fee_name)}</td><td><strong>${formatCurrency(i.amount_paid)}</strong></td><td>${display(i.payment_method)}</td><td>${display(i.payment_slip_number)}</td><td>${display(i.bank_reference)}</td><td>${display(i.purpose)}</td></tr>`).join('')}
+        async function loadFinanceData(){await Promise.all([loadSummary(),loadFeeCategories(),loadStudents(),loadBalances(),loadPaymentHistory()])}
+        function formatCurrency(v){const n=Number(v||0);return'Le'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+        function display(v){if(v===null||v===undefined||v==='')return'Not provided';return escapeHtml(String(v))}
+        function escapeHtml(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+        function formatDateTime(v){if(!v)return'Not provided';const d=new Date(v);if(Number.isNaN(d.getTime()))return'Not provided';return d.toLocaleString()}
+        window.addEventListener('click',function(e){const sm=document.getElementById('studentFinanceModal');if(e.target===sm)closeStudentFinanceModal()});
+        loadFinanceData();
+    </script>
+</body>
+</html>

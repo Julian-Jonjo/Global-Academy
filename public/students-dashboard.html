@@ -1,0 +1,3047 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Global Academy | Student Management</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .user-info {
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+        }
+
+        .page-title h2 {
+            margin: 0 0 6px 0;
+        }
+
+        .page-title p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            background: white;
+            padding: 8px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+        }
+
+        .tab-button {
+            border: none;
+            background: transparent;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        .tab-button:hover {
+            background: #f3f4f6;
+        }
+
+        .tab-button.active {
+            background: #1f2937;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            margin: 0;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+        }
+
+        .overview-card {
+            padding: 22px;
+            border-radius: 10px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+
+        .overview-card h4 {
+            margin: 0 0 10px 0;
+            color: #6b7280;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .overview-card .number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .refresh-btn {
+            background: #374151;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .refresh-btn:hover {
+            background: #1f2937;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f3f4f6;
+            text-align: left;
+            padding: 13px;
+            font-size: 13px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .inactive {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .view-btn {
+            background: #1f2937;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #111827;
+        }
+
+        .edit-btn {
+            background: #2563eb;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .edit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .save-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #15803d;
+        }
+
+        .cancel-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #4b5563;
+        }
+
+        .edit-action {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 50px;
+            color: #6b7280;
+        }
+
+        .error-message {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .module-placeholder {
+            text-align: center;
+            padding: 70px 20px;
+            color: #6b7280;
+        }
+
+        .module-placeholder h3 {
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.55);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close {
+            font-size: 30px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #111;
+        }
+
+        .section-title {
+            grid-column: 1 / -1;
+            margin-top: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .field-label {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .field-value {
+            font-size: 15px;
+        }
+
+        .edit-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-field label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-field textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .edit-form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .filters {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                width: 100%;
+                text-align: left;
+            }
+
+            .profile-grid,
+            .edit-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <h1>
+        GLOBAL ACADEMY — Student Management
+    </h1>
+
+    <div
+        id="userInfo"
+        class="user-info"
+    ></div>
+
+</header>
+
+
+<main class="container">
+
+    <div class="page-title">
+
+        <h2>
+            Student Management
+        </h2>
+
+        <p>
+            Manage student records, academic information,
+            attendance, finance and related records.
+        </p>
+
+    </div>
+
+
+    <div class="tabs">
+
+        <button
+            class="tab-button active"
+            onclick="openTab('overview', this)"
+        >
+            Overview
+        </button>
+
+        <button
+            class="tab-button"
+            onclick="openTab('students', this)"
+        >
+            Student List
+        </button>
+
+         <button
+    id="registerTab"
+    class="tab-button"
+    onclick="openRegistrationTab(this)"
+>
+     Register Student
+     </button>
+
+        <button
+            class="tab-button"
+            onclick="openTab('academic', this)"
+        >
+            Academic Records
+        </button>
+
+        <button
+            class="tab-button"
+            onclick="openTab('attendance', this)"
+        >
+            Attendance
+        </button>
+
+        <button
+            class="tab-button"
+            onclick="openTab('finance', this)"
+        >
+            Finance
+        </button>
+
+        <button
+            class="tab-button"
+            onclick="openTab('documents', this)"
+        >
+            Documents
+        </button>
+
+        <button
+            class="tab-button"
+            onclick="openTab('discipline', this)"
+        >
+            Discipline
+        </button>
+
+        <button
+            class="tab-button"
+            onclick="openTab('transfer', this)"
+        >
+            Transfer / Withdrawal
+        </button>
+
+        <button
+            class="tab-button"
+            onclick="openTab('audit', this)"
+        >
+            Activity / Audit
+        </button>
+
+    </div>
+
+
+    <section
+        id="overview"
+        class="tab-content active"
+    >
+
+        <div class="section-header">
+
+            <h3>
+                Student Overview
+            </h3>
+
+        </div>
+
+        <div class="overview-grid">
+
+            <div class="overview-card">
+
+                <h4>
+                    Total Students
+                </h4>
+
+                <div
+                    id="totalStudents"
+                    class="number"
+                >
+                    0
+                </div>
+
+            </div>
+
+            <div class="overview-card">
+
+                <h4>
+                    Active Students
+                </h4>
+
+                <div
+                    id="activeStudents"
+                    class="number"
+                >
+                    0
+                </div>
+
+            </div>
+
+            <div class="overview-card">
+
+                <h4>
+                    Pending Registrations
+                </h4>
+
+                <div
+                    id="pendingStudents"
+                    class="number"
+                >
+                    0
+                </div>
+
+            </div>
+
+            <div class="overview-card">
+
+                <h4>
+                    Inactive Students
+                </h4>
+
+                <div
+                    id="inactiveStudents"
+                    class="number"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+    <section
+    id="registration"
+    class="tab-content"
+>
+    <div id="registrationContainer">
+        <div class="module-placeholder">
+            <h3>Student Registration</h3>
+            <p>
+                Loading student registration form...
+            </p>
+        </div>
+    </div>
+</section>
+
+
+    <section
+        id="students"
+        class="tab-content"
+    >
+
+        <div class="section-header">
+
+            <h3>
+                Student List
+            </h3>
+
+            <span id="studentCount">
+                0 Students
+            </span>
+
+        </div>
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="search"
+                placeholder="Search name or admission number..."
+                oninput="applyFilters()"
+            >
+
+            <select
+                id="classFilter"
+                onchange="applyFilters()"
+            >
+
+                <option value="">
+                    All Classes
+                </option>
+
+            </select>
+
+            <select
+                id="statusFilter"
+                onchange="applyFilters()"
+            >
+
+                <option value="">
+                    All Statuses
+                </option>
+
+                <option value="Active">
+                    Active
+                </option>
+
+                <option value="Pending">
+                    Pending
+                </option>
+
+                <option value="Inactive">
+                    Inactive
+                </option>
+
+            </select>
+
+            <button
+                class="refresh-btn"
+                onclick="loadStudents()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="loadError"></div>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Admission No.
+                        </th>
+
+                        <th>
+                            Student Name
+                        </th>
+
+                        <th>
+                            Gender
+                        </th>
+
+                        <th>
+                            Class
+                        </th>
+
+                        <th>
+                            Guardian
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="studentTable">
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty"
+                        >
+                            Loading students...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="academic"
+        class="tab-content"
+    >
+
+        <div class="module-placeholder">
+
+            <h3>
+                Academic Records
+            </h3>
+
+            <p>
+                Student subjects, results, grades,
+                promotion history and academic performance
+                will be managed here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="attendance"
+        class="tab-content"
+    >
+
+        <div class="module-placeholder">
+
+            <h3>
+                Attendance
+            </h3>
+
+            <p>
+                Student attendance records will be managed here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="finance"
+        class="tab-content"
+    >
+
+        <div class="module-placeholder">
+
+            <h3>
+                Student Finance
+            </h3>
+
+            <p>
+                Fees, payments, balances, payment slips
+                and payment history will be managed here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="documents"
+        class="tab-content"
+    >
+
+        <div class="module-placeholder">
+
+            <h3>
+                Student Documents
+            </h3>
+
+            <p>
+                Student documents and uploaded records
+                will be managed here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="discipline"
+        class="tab-content"
+    >
+
+        <div class="module-placeholder">
+
+            <h3>
+                Discipline
+            </h3>
+
+            <p>
+                Disciplinary incidents, warnings,
+                actions and history will be managed here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="transfer"
+        class="tab-content"
+    >
+
+        <div class="module-placeholder">
+
+            <h3>
+                Transfer / Withdrawal
+            </h3>
+
+            <p>
+                Student transfers, withdrawals and
+                related records will be managed here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="audit"
+        class="tab-content"
+    >
+
+        <div class="module-placeholder">
+
+            <h3>
+                Activity / Audit
+            </h3>
+
+            <p>
+                Registration, approval, editing and
+                other student record activities will
+                be recorded here.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<div
+    id="studentModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                Student Profile
+            </h2>
+
+            <span
+                class="close"
+                onclick="closeModal()"
+            >
+                &times;
+            </span>
+
+        </div>
+
+        <div
+            id="profile"
+            class="profile-grid"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="editModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                Edit Student
+            </h2>
+
+            <span
+                class="close"
+                onclick="closeEditModal()"
+            >
+                &times;
+            </span>
+
+        </div>
+
+        <form
+            id="editStudentForm"
+            class="edit-form"
+        >
+
+            <input
+                type="hidden"
+                id="editStudentId"
+            >
+
+            <div class="section-title">
+                Personal Information
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Admission Number
+                </label>
+
+                <input
+                    type="text"
+                    id="editAdmissionNumber"
+                    required
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Gender
+                </label>
+
+                <select id="editGender">
+
+                    <option value="">
+                        Select Gender
+                    </option>
+
+                    <option value="Male">
+                        Male
+                    </option>
+
+                    <option value="Female">
+                        Female
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    First Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editFirstName"
+                    required
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Middle Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editMiddleName"
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Last Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editLastName"
+                    required
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Date of Birth
+                </label>
+
+                <input
+                    type="date"
+                    id="editDateOfBirth"
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Nationality
+                </label>
+
+                <input
+                    type="text"
+                    id="editNationality"
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Phone
+                </label>
+
+                <input
+                    type="text"
+                    id="editPhone"
+                >
+
+            </div>
+
+            <div class="form-field full">
+
+                <label>
+                    Address
+                </label>
+
+                <textarea
+                    id="editAddress"
+                ></textarea>
+
+            </div>
+
+            <div class="section-title">
+                School Information
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Class
+                </label>
+
+                <select
+                    id="editClassId"
+                    required
+                >
+
+                    <option value="">
+                        Loading classes...
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Admission Date
+                </label>
+
+                <input
+                    type="date"
+                    id="editAdmissionDate"
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Previous School
+                </label>
+
+                <input
+                    type="text"
+                    id="editPreviousSchool"
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Student Status
+                </label>
+
+                <select id="editStudentStatus">
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="section-title">
+                Emergency Contact
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Contact Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editEmergencyName"
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Contact Phone
+                </label>
+
+                <input
+                    type="text"
+                    id="editEmergencyPhone"
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label>
+                    Relationship
+                </label>
+
+                <input
+                    type="text"
+                    id="editEmergencyRelationship"
+                >
+
+            </div>
+
+            <div class="edit-form-actions">
+
+                <button
+                    type="button"
+                    class="btn cancel-btn"
+                    onclick="closeEditModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn save-btn"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================================
+   AUTHENTICATION
+========================================================== */
+
+const token =
+    sessionStorage.getItem('authToken');
+
+const userData =
+    sessionStorage.getItem('user');
+
+
+if (!token || !userData) {
+
+    window.location.href = '/';
+
+}
+
+
+/* ==========================================================
+   USER DATA
+========================================================== */
+
+let user;
+
+try {
+
+    user = JSON.parse(userData);
+
+} catch (error) {
+
+    console.error(
+        'Invalid user data:',
+        error
+    );
+
+    sessionStorage.removeItem('authToken');
+
+    sessionStorage.removeItem('user');
+
+    window.location.href = '/';
+
+}
+
+
+const role =
+    user.role_name;
+
+
+/* ==========================================================
+   USER INFORMATION
+========================================================== */
+
+document.getElementById(
+    'userInfo'
+).textContent =
+    `${user.full_name || 'User'} (${role})`;
+
+
+/* ==========================================================
+   ROLE PERMISSIONS
+========================================================== */
+
+if (role === 'Proprietor') {
+
+    const registerTab =
+        document.getElementById(
+            'registerTab'
+        );
+
+    if (registerTab) {
+
+        registerTab.style.display =
+            'none';
+
+    }
+
+}
+
+
+/* ==========================================================
+   REGISTER STUDENT
+========================================================== */
+
+async function openRegistrationTab(button) {
+
+    if (
+        role !== 'Manager' &&
+        role !== 'Administrator'
+    ) {
+
+        alert(
+            'You do not have permission to register students.'
+        );
+
+        return;
+
+    }
+
+    openTab(
+        'registration',
+        button
+    );
+
+    const container =
+        document.getElementById(
+            'registrationContainer'
+        );
+
+    if (
+        container.dataset.loaded === 'true'
+    ) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="module-placeholder">
+            <h3>Loading Student Registration</h3>
+            <p>Please wait...</p>
+        </div>
+    `;
+
+    try {
+
+        const response =
+            await fetch(
+                './students-registration.html'
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Unable to load registration form. HTTP ${response.status}`
+            );
+
+        }
+
+        const html =
+            await response.text();
+
+        container.innerHTML = html;
+
+        container.dataset.loaded =
+            'true';
+
+    } catch (error) {
+
+        console.error(
+            'REGISTRATION LOAD ERROR:',
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error-message">
+                <strong>
+                    Unable to load registration form
+                </strong>
+
+                <br><br>
+
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* ==========================================================
+   TAB SYSTEM
+========================================================== */
+
+function openTab(
+    tabId,
+    button
+) {
+
+    document
+        .querySelectorAll('.tab-content')
+        .forEach(
+            content =>
+                content.classList.remove('active')
+        );
+
+
+    document
+        .querySelectorAll('.tab-button')
+        .forEach(
+            btn =>
+                btn.classList.remove('active')
+        );
+
+
+    const selected =
+        document.getElementById(tabId);
+
+
+    if (selected) {
+
+        selected.classList.add('active');
+
+    }
+
+
+    if (button) {
+
+        button.classList.add('active');
+
+    }
+
+}
+
+
+/* ==========================================================
+   GLOBAL STUDENT ARRAYS
+========================================================== */
+
+let students = [];
+
+let filteredStudents = [];
+
+
+/* ==========================================================
+   LOAD STUDENTS
+========================================================== */
+
+async function loadStudents() {
+
+    const table =
+        document.getElementById(
+            'studentTable'
+        );
+
+    const errorBox =
+        document.getElementById(
+            'loadError'
+        );
+
+
+    table.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="7"
+                class="empty"
+            >
+                Loading students...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    errorBox.innerHTML = '';
+
+
+    try {
+
+        const controller =
+            new AbortController();
+
+
+        const timeout =
+            setTimeout(
+                () => controller.abort(),
+                15000
+            );
+
+
+        const response =
+            await fetch(
+                '/api/students',
+                {
+                    method: 'GET',
+
+                    headers: {
+                        'Authorization':
+                            `Bearer ${token}`,
+
+                        'Accept':
+                            'application/json'
+                    },
+
+                    signal:
+                        controller.signal
+                }
+            );
+
+
+        clearTimeout(timeout);
+
+
+        const raw =
+            await response.text();
+
+
+        let data;
+
+
+        try {
+
+            data =
+                raw
+                    ? JSON.parse(raw)
+                    : null;
+
+        } catch (jsonError) {
+
+            console.error(
+                'Server returned non-JSON response:',
+                raw
+            );
+
+            throw new Error(
+                `Server returned an invalid response. HTTP ${response.status}.`
+            );
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data?.message ||
+                data?.error ||
+                `Failed to load students. HTTP ${response.status}.`
+            );
+
+        }
+
+
+        if (Array.isArray(data)) {
+
+            students = data;
+
+        } else if (
+            data &&
+            Array.isArray(data.students)
+        ) {
+
+            students =
+                data.students;
+
+        } else if (
+            data &&
+            Array.isArray(data.data)
+        ) {
+
+            students =
+                data.data;
+
+        } else {
+
+            throw new Error(
+                'The server response does not contain a student list.'
+            );
+
+        }
+
+
+        filteredStudents =
+            [...students];
+
+
+        populateClassFilter();
+
+        renderStudents();
+
+        updateOverview();
+
+
+    } catch (error) {
+
+        console.error(
+            'LOAD STUDENTS ERROR:',
+            error
+        );
+
+
+        students = [];
+
+        filteredStudents = [];
+
+
+        document.getElementById(
+            'totalStudents'
+        ).textContent = '0';
+
+
+        document.getElementById(
+            'activeStudents'
+        ).textContent = '0';
+
+
+        document.getElementById(
+            'pendingStudents'
+        ).textContent = '0';
+
+
+        document.getElementById(
+            'inactiveStudents'
+        ).textContent = '0';
+
+
+        let message =
+            error.message ||
+            'Unable to load students.';
+
+
+        if (
+            error.name === 'AbortError'
+        ) {
+
+            message =
+                'The server took too long to respond.';
+
+        }
+
+
+        errorBox.innerHTML = `
+
+            <div class="error-message">
+
+                <strong>
+                    Unable to load students
+                </strong>
+
+                <br><br>
+
+                ${escapeHtml(message)}
+
+            </div>
+
+        `;
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+                    Student records could not be loaded.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* ==========================================================
+   UPDATE OVERVIEW
+========================================================== */
+
+function updateOverview() {
+
+    const total =
+        students.length;
+
+
+    const active =
+        students.filter(
+            student =>
+                String(
+                    student.student_status || ''
+                ).toLowerCase() === 'active'
+        ).length;
+
+
+    const pending =
+        students.filter(
+            student =>
+                String(
+                    student.student_status || ''
+                ).toLowerCase() === 'pending'
+        ).length;
+
+
+    const inactive =
+        students.filter(
+            student =>
+                String(
+                    student.student_status || ''
+                ).toLowerCase() === 'inactive'
+        ).length;
+
+
+    document.getElementById(
+        'totalStudents'
+    ).textContent = total;
+
+
+    document.getElementById(
+        'activeStudents'
+    ).textContent = active;
+
+
+    document.getElementById(
+        'pendingStudents'
+    ).textContent = pending;
+
+
+    document.getElementById(
+        'inactiveStudents'
+    ).textContent = inactive;
+
+}
+
+
+/* ==========================================================
+   POPULATE CLASS FILTER
+========================================================== */
+
+function populateClassFilter() {
+
+    const select =
+        document.getElementById(
+            'classFilter'
+        );
+
+
+    const classes =
+        new Set();
+
+
+    students.forEach(
+        student => {
+
+            if (student.class_name) {
+
+                classes.add(
+                    `${student.class_name}|${student.arm || ''}`
+                );
+
+            }
+
+        }
+    );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            All Classes
+        </option>
+
+    `;
+
+
+    [...classes]
+        .sort()
+        .forEach(
+            value => {
+
+                const parts =
+                    value.split('|');
+
+                const className =
+                    parts[0];
+
+                const arm =
+                    parts[1];
+
+
+                const option =
+                    document.createElement(
+                        'option'
+                    );
+
+
+                option.value =
+                    value;
+
+
+                option.textContent =
+                    arm
+                        ? `${className} — ${arm}`
+                        : className;
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+}
+
+
+/* ==========================================================
+   APPLY FILTERS
+========================================================== */
+
+function applyFilters() {
+
+    const search =
+        document.getElementById(
+            'search'
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const classFilter =
+        document.getElementById(
+            'classFilter'
+        ).value;
+
+
+    const statusFilter =
+        document.getElementById(
+            'statusFilter'
+        ).value;
+
+
+    filteredStudents =
+        students.filter(
+            student => {
+
+                const fullName =
+                    [
+                        student.first_name,
+                        student.middle_name,
+                        student.last_name
+                    ]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase();
+
+
+                const admissionNumber =
+                    String(
+                        student.admission_number || ''
+                    )
+                    .toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    fullName.includes(search) ||
+                    admissionNumber.includes(search);
+
+
+                const studentClass =
+                    `${student.class_name || ''}|${student.arm || ''}`;
+
+
+                const matchesClass =
+                    !classFilter ||
+                    studentClass === classFilter;
+
+
+                const matchesStatus =
+                    !statusFilter ||
+                    student.student_status === statusFilter;
+
+
+                return (
+                    matchesSearch &&
+                    matchesClass &&
+                    matchesStatus
+                );
+
+            }
+        );
+
+
+    renderStudents();
+
+}
+
+
+/* ==========================================================
+   RENDER STUDENTS
+========================================================== */
+
+function renderStudents() {
+
+    const table =
+        document.getElementById(
+            'studentTable'
+        );
+
+
+    document.getElementById(
+        'studentCount'
+    ).textContent =
+        `${filteredStudents.length} Student${
+            filteredStudents.length === 1 ? '' : 's'
+        }`;
+
+
+    if (!filteredStudents.length) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+                    No students found.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    table.innerHTML =
+        filteredStudents
+            .map(
+                student => {
+
+                    const fullName =
+                        [
+                            student.first_name,
+                            student.middle_name,
+                            student.last_name
+                        ]
+                        .filter(Boolean)
+                        .map(escapeHtml)
+                        .join(' ');
+
+
+                    const className =
+                        student.class_name
+                            ? escapeHtml(student.class_name) +
+                              (
+                                  student.arm
+                                      ? ` — ${escapeHtml(student.arm)}`
+                                      : ''
+                              )
+                            : 'Not assigned';
+
+
+                    const status =
+                        student.student_status ||
+                        'Not provided';
+
+
+                    const statusClass =
+                        String(status)
+                            .toLowerCase();
+
+
+                    return `
+
+                        <tr>
+
+                            <td>
+                                ${display(
+                                    student.admission_number
+                                )}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${fullName}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${display(
+                                    student.gender
+                                )}
+                            </td>
+
+                            <td>
+                                ${className}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    student.guardian_name
+                                )}
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="status ${escapeHtml(
+                                        statusClass
+                                    )}"
+                                >
+                                    ${escapeHtml(status)}
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn view-btn"
+                                    onclick="viewStudent(${Number(
+                                        student.student_id
+                                    )})"
+                                >
+                                    View
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            )
+            .join('');
+
+}
+
+
+/* ==========================================================
+   VIEW STUDENT
+========================================================== */
+
+function viewStudent(studentId) {
+
+    const student =
+        students.find(
+            item =>
+                Number(item.student_id) ===
+                Number(studentId)
+        );
+
+
+    if (!student) {
+
+        alert(
+            'Student record not found.'
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        'profile'
+    ).innerHTML = `
+
+        ${
+            role === 'Administrator'
+                ? `
+                    <div class="edit-action">
+
+                        <button
+                            class="edit-btn"
+                            onclick="editStudent(${Number(
+                                student.student_id
+                            )})"
+                        >
+                            Edit Student
+                        </button>
+
+                    </div>
+                `
+                : ''
+        }
+
+        <div class="section-title">
+            Personal Information
+        </div>
+
+        ${field(
+            'Admission Number',
+            student.admission_number
+        )}
+
+        ${field(
+            'First Name',
+            student.first_name
+        )}
+
+        ${field(
+            'Middle Name',
+            student.middle_name
+        )}
+
+        ${field(
+            'Last Name',
+            student.last_name
+        )}
+
+        ${field(
+            'Gender',
+            student.gender
+        )}
+
+        ${field(
+            'Date of Birth',
+            formatDateOnly(student.date_of_birth)
+        )}
+
+        ${field(
+            'Nationality',
+            student.nationality
+        )}
+
+        ${field(
+            'Phone',
+            student.phone
+        )}
+
+        ${field(
+            'Address',
+            student.address
+        )}
+
+        <div class="section-title">
+            School Information
+        </div>
+
+        ${field(
+            'Class',
+            student.class_name
+                ? `${student.class_name}${
+                    student.arm
+                        ? ' — ' + student.arm
+                        : ''
+                }`
+                : 'Not assigned'
+        )}
+
+        ${field(
+            'Admission Date',
+            formatDateOnly(student.admission_date)
+        )}
+
+        ${field(
+            'Registration Date',
+            formatDateOnly(student.registration_date)
+        )}
+
+        ${field(
+            'Previous School',
+            student.previous_school
+        )}
+
+        ${field(
+            'Student Status',
+            student.student_status
+        )}
+
+        <div class="section-title">
+            Guardian Information
+        </div>
+
+        ${field(
+            'Guardian Name',
+            student.guardian_name
+        )}
+
+        ${field(
+            'Relationship',
+            student.guardian_relationship
+        )}
+
+        ${field(
+            'Guardian Phone',
+            student.guardian_phone
+        )}
+
+        ${field(
+            'Guardian Email',
+            student.guardian_email
+        )}
+
+        ${field(
+            'Guardian Address',
+            student.guardian_address
+        )}
+
+        <div class="section-title">
+            Emergency Contact
+        </div>
+
+        ${field(
+            'Name',
+            student.emergency_contact_name
+        )}
+
+        ${field(
+            'Phone',
+            student.emergency_contact_phone
+        )}
+
+        ${field(
+            'Relationship',
+            student.emergency_contact_relationship
+        )}
+
+    `;
+
+
+    document.getElementById(
+        'studentModal'
+    ).style.display =
+        'block';
+
+}
+
+
+/* ==========================================================
+   EDIT STUDENT
+========================================================== */
+
+async function editStudent(studentId) {
+
+    if (role !== 'Administrator') {
+
+        alert(
+            'Only an Administrator can edit student records.'
+        );
+
+        return;
+
+    }
+
+
+    const student =
+        students.find(
+            item =>
+                Number(item.student_id) ===
+                Number(studentId)
+        );
+
+
+    if (!student) {
+
+        alert(
+            'Student record not found.'
+        );
+
+        return;
+
+    }
+
+
+    await loadEditClasses();
+
+
+    document.getElementById(
+        'editStudentId'
+    ).value =
+        student.student_id;
+
+
+    document.getElementById(
+        'editAdmissionNumber'
+    ).value =
+        student.admission_number || '';
+
+
+    document.getElementById(
+        'editFirstName'
+    ).value =
+        student.first_name || '';
+
+
+    document.getElementById(
+        'editMiddleName'
+    ).value =
+        student.middle_name || '';
+
+
+    document.getElementById(
+        'editLastName'
+    ).value =
+        student.last_name || '';
+
+
+    document.getElementById(
+        'editGender'
+    ).value =
+        student.gender || '';
+
+
+    document.getElementById(
+        'editDateOfBirth'
+    ).value =
+        formatDateForInput(
+            student.date_of_birth
+        );
+
+
+    document.getElementById(
+        'editNationality'
+    ).value =
+        student.nationality || '';
+
+
+    document.getElementById(
+        'editPhone'
+    ).value =
+        student.phone || '';
+
+
+    document.getElementById(
+        'editAddress'
+    ).value =
+        student.address || '';
+
+
+    document.getElementById(
+        'editClassId'
+    ).value =
+        student.class_id || '';
+
+
+    document.getElementById(
+        'editAdmissionDate'
+    ).value =
+        formatDateForInput(
+            student.admission_date
+        );
+
+
+    document.getElementById(
+        'editPreviousSchool'
+    ).value =
+        student.previous_school || '';
+
+
+    document.getElementById(
+        'editStudentStatus'
+    ).value =
+        student.student_status || 'Active';
+
+
+    document.getElementById(
+        'editEmergencyName'
+    ).value =
+        student.emergency_contact_name || '';
+
+
+    document.getElementById(
+        'editEmergencyPhone'
+    ).value =
+        student.emergency_contact_phone || '';
+
+
+    document.getElementById(
+        'editEmergencyRelationship'
+    ).value =
+        student.emergency_contact_relationship || '';
+
+
+    closeModal();
+
+
+    document.getElementById(
+        'editModal'
+    ).style.display =
+        'block';
+
+}
+
+
+/* ==========================================================
+   LOAD CLASSES
+========================================================== */
+
+async function loadEditClasses() {
+
+    const classSelect =
+        document.getElementById(
+            'editClassId'
+        );
+
+
+    classSelect.innerHTML = `
+
+        <option value="">
+            Loading classes...
+        </option>
+
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                '/api/classes',
+                {
+                    method: 'GET',
+
+                    headers: {
+                        'Authorization':
+                            `Bearer ${token}`,
+
+                        'Accept':
+                            'application/json'
+                    }
+                }
+            );
+
+
+        const raw =
+            await response.text();
+
+
+        let data;
+
+
+        try {
+
+            data =
+                raw
+                    ? JSON.parse(raw)
+                    : null;
+
+        } catch (error) {
+
+            throw new Error(
+                'Classes API returned an invalid response.'
+            );
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data?.message ||
+                data?.error ||
+                'Failed to load classes.'
+            );
+
+        }
+
+
+        const classes =
+            Array.isArray(data)
+                ? data
+                : Array.isArray(data?.classes)
+                    ? data.classes
+                    : Array.isArray(data?.data)
+                        ? data.data
+                        : [];
+
+
+        classSelect.innerHTML = `
+
+            <option value="">
+                Select class
+            </option>
+
+        `;
+
+
+        classes.forEach(
+            item => {
+
+                const option =
+                    document.createElement(
+                        'option'
+                    );
+
+
+                option.value =
+                    item.class_id;
+
+
+                option.textContent =
+                    `${item.class_name}${
+                        item.arm
+                            ? ' — ' + item.arm
+                            : ''
+                    }`;
+
+
+                classSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        if (!classes.length) {
+
+            classSelect.innerHTML = `
+
+                <option value="">
+                    No classes found
+                </option>
+
+            `;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            'LOAD EDIT CLASSES ERROR:',
+            error
+        );
+
+
+        classSelect.innerHTML = `
+
+            <option value="">
+                Unable to load classes
+            </option>
+
+        `;
+
+    }
+
+}
+
+
+/* ==========================================================
+   SAVE EDITED STUDENT
+========================================================== */
+
+document.getElementById(
+    'editStudentForm'
+).addEventListener(
+    'submit',
+    async function(event) {
+
+        event.preventDefault();
+
+
+        if (role !== 'Administrator') {
+
+            alert(
+                'Only an Administrator can edit student records.'
+            );
+
+            return;
+
+        }
+
+
+        const studentId =
+            document.getElementById(
+                'editStudentId'
+            ).value;
+
+
+        const payload = {
+
+            admission_number:
+                document.getElementById(
+                    'editAdmissionNumber'
+                ).value.trim(),
+
+            first_name:
+                document.getElementById(
+                    'editFirstName'
+                ).value.trim(),
+
+            middle_name:
+                document.getElementById(
+                    'editMiddleName'
+                ).value.trim() || null,
+
+            last_name:
+                document.getElementById(
+                    'editLastName'
+                ).value.trim(),
+
+            gender:
+                document.getElementById(
+                    'editGender'
+                ).value || null,
+
+            date_of_birth:
+                document.getElementById(
+                    'editDateOfBirth'
+                ).value || null,
+
+            nationality:
+                document.getElementById(
+                    'editNationality'
+                ).value.trim() || null,
+
+            phone:
+                document.getElementById(
+                    'editPhone'
+                ).value.trim() || null,
+
+            address:
+                document.getElementById(
+                    'editAddress'
+                ).value.trim() || null,
+
+            class_id:
+                document.getElementById(
+                    'editClassId'
+                ).value || null,
+
+            admission_date:
+                document.getElementById(
+                    'editAdmissionDate'
+                ).value || null,
+
+            previous_school:
+                document.getElementById(
+                    'editPreviousSchool'
+                ).value.trim() || null,
+
+            student_status:
+                document.getElementById(
+                    'editStudentStatus'
+                ).value,
+
+            emergency_contact_name:
+                document.getElementById(
+                    'editEmergencyName'
+                ).value.trim() || null,
+
+            emergency_contact_phone:
+                document.getElementById(
+                    'editEmergencyPhone'
+                ).value.trim() || null,
+
+            emergency_contact_relationship:
+                document.getElementById(
+                    'editEmergencyRelationship'
+                ).value.trim() || null
+
+        };
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/students/${studentId}`,
+                    {
+                        method: 'PUT',
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json',
+
+                            'Authorization':
+                                `Bearer ${token}`,
+
+                            'Accept':
+                                'application/json'
+                        },
+
+                        body:
+                            JSON.stringify(payload)
+                    }
+                );
+
+
+            const raw =
+                await response.text();
+
+
+            let data;
+
+
+            try {
+
+                data =
+                    raw
+                        ? JSON.parse(raw)
+                        : {};
+
+            } catch (error) {
+
+                throw new Error(
+                    'Server returned an invalid response.'
+                );
+
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data?.message ||
+                    data?.error ||
+                    `Failed to update student. HTTP ${response.status}.`
+                );
+
+            }
+
+
+            alert(
+                'Student record updated successfully.'
+            );
+
+
+            closeEditModal();
+
+            await loadStudents();
+
+
+        } catch (error) {
+
+            console.error(
+                'UPDATE STUDENT ERROR:',
+                error
+            );
+
+
+            alert(
+                error.message ||
+                'Failed to update student.'
+            );
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   FIELD HELPER
+========================================================== */
+
+function field(
+    label,
+    value
+) {
+
+    return `
+
+        <div class="field">
+
+            <span class="field-label">
+                ${escapeHtml(label)}
+            </span>
+
+            <span class="field-value">
+                ${display(value)}
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ==========================================================
+   CLOSE MODALS
+========================================================== */
+
+function closeModal() {
+
+    document.getElementById(
+        'studentModal'
+    ).style.display =
+        'none';
+
+}
+
+
+function closeEditModal() {
+
+    document.getElementById(
+        'editModal'
+    ).style.display =
+        'none';
+
+}
+
+
+window.addEventListener(
+    'click',
+    function(event) {
+
+        const studentModal =
+            document.getElementById(
+                'studentModal'
+            );
+
+
+        const editModal =
+            document.getElementById(
+                'editModal'
+            );
+
+
+        if (
+            event.target ===
+            studentModal
+        ) {
+
+            closeModal();
+
+        }
+
+
+        if (
+            event.target ===
+            editModal
+        ) {
+
+            closeEditModal();
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   UTILITIES
+========================================================== */
+
+function display(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ''
+    ) {
+
+        return 'Not provided';
+
+    }
+
+
+    return escapeHtml(
+        String(value)
+    );
+
+}
+
+
+function escapeHtml(value) {
+
+    return String(value)
+
+        .replace(/&/g, '&amp;')
+
+        .replace(/</g, '&lt;')
+
+        .replace(/>/g, '&gt;')
+
+        .replace(/"/g, '&quot;')
+
+        .replace(/'/g, '&#039;');
+
+}
+
+
+function formatDateOnly(value) {
+
+    if (!value) {
+
+        return 'Not provided';
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return 'Not provided';
+
+    }
+
+
+    return date.toLocaleDateString();
+
+}
+
+
+function formatDateForInput(value) {
+
+    if (!value) {
+
+        return '';
+
+    }
+
+
+    if (
+        typeof value === 'string' &&
+        /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ) {
+
+        return value;
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return '';
+
+    }
+
+
+    const year =
+        date.getFullYear();
+
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, '0');
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, '0');
+
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+/* ==========================================================
+   INITIAL LOAD
+========================================================== */
+
+loadStudents();
+
+</script>
+
+</body>
+
+</html>

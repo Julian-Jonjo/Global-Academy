@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Global Academy Login Test</title>
+</head>
+
+<body>
+
+    <h2>Global Academy Login Test</h2>
+
+    <input
+        id="username"
+        placeholder="Username"
+    >
+
+    <input
+        id="password"
+        type="password"
+        placeholder="Password"
+    >
+
+    <button onclick="login()">Login</button>
+
+    <button onclick="testProtectedRoute()">
+        Test Protected API
+    </button>
+    
+    <button onclick="testStudentRegistration()">
+    Test Student Registration
+    </button>
+
+    <pre id="result"></pre>
+
+    <script>
+     let authToken = null;
+
+
+async function login() {
+
+    const username =
+        document.getElementById('username').value;
+
+    const password =
+        document.getElementById('password').value;
+
+    const response = await fetch(
+        '/api/auth/login',
+        {
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                username,
+                password
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+        authToken = data.token;
+    }
+
+    document.getElementById('result').textContent =
+        JSON.stringify(data, null, 2);
+}
+
+
+async function testProtectedRoute() {
+
+    if (!authToken) {
+        document.getElementById('result').textContent =
+            'Please login first.';
+        return;
+    }
+
+    const response = await fetch(
+        '/api/protected-test',
+        {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById('result').textContent =
+        JSON.stringify(data, null, 2);
+}
+
+
+async function testStudentRegistration() {
+
+    document.getElementById('result').textContent =
+        'Student registration test started...';
+
+    if (!authToken) {
+        document.getElementById('result').textContent =
+            'Please login first.';
+        return;
+    }
+
+    const response = await fetch(
+        '/api/students',
+        {
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+
+            body: JSON.stringify({
+                admission_number: 'GA-2026-0002',
+                first_name: 'Mary',
+                middle_name: 'Kadiatu',
+                last_name: 'Koroma',
+                gender: 'Female',
+                nationality: 'Sierra Leonean',
+                previous_school: 'Kono Secondary School',
+                student_status: 'Pending'
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById('result').textContent =
+        JSON.stringify(data, null, 2);
+}
+    </script>
+
+</body>
+</html>
