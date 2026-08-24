@@ -9,36 +9,34 @@ router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        console.log('🔍 Login attempt:', username);
-
         if (!username || !password) {
             return res.status(400).json({
                 message: 'Username and password are required'
             });
         }
 
-        // Get user from Supabase (without relation)
+        // Get user with role name
         const { data: user, error } = await supabase
             .from('users')
-            .select('*')
+            .select(`
+                user_id,
+                username,
+                password_hash,
+                full_name,
+                is_active,
+                role_id,
+                user_roles!inner (
+                    role_name
+                )
+            `)
             .eq('username', username)
-            .maybeSingle();
+            .single();
 
-        if (error) {
-            console.error('❌ Database error:', error);
-            return res.status(500).json({
-                message: 'Database error: ' + error.message
-            });
-        }
-
-        if (!user) {
-            console.log('❌ User not found:', username);
+        if (error || !user) {
             return res.status(401).json({
                 message: 'Invalid username or password'
             });
         }
-
-        console.log('✅ User found:', user.username);
 
         if (!user.is_active) {
             return res.status(403).json({
@@ -46,10 +44,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Compare password
-        console.log('🔑 Comparing password...');
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
-        console.log('✅ Password match:', passwordMatch);
 
         if (!passwordMatch) {
             return res.status(401).json({
@@ -63,14 +58,17 @@ router.post('/login', async (req, res) => {
             .update({ last_login: new Date().toISOString() })
             .eq('user_id', user.user_id);
 
-        // Create token
+        // Get role_name from the nested object
+        const roleName = user.user_roles?.role_name || null;
+
         const token = jwt.sign(
             {
                 user_id: user.user_id,
                 username: user.username,
-                role_id: user.role_id
+                role_id: user.role_id,
+                role_name: roleName
             },
-            process.env.JWT_SECRET || 'default_secret_key',
+            process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
 
@@ -81,13 +79,13 @@ router.post('/login', async (req, res) => {
                 user_id: user.user_id,
                 username: user.username,
                 full_name: user.full_name,
-                role_id: user.role_id
+                role_id: user.role_id,
+                role_name: roleName
             }
         });
 
     } catch (error) {
-        console.error('❌ Login error:', error);
-        console.error('❌ Stack:', error.stack);
+        console.error('Login error:', error);
         res.status(500).json({
             message: 'Server error during login: ' + error.message
         });
