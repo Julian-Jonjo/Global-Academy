@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('../config/db');
+const supabase = require('../config/db');
 
 const {
     authenticateToken,
@@ -9,34 +9,27 @@ const {
 const router = express.Router();
 
 
-// Get active classes
+// ============================================================
+// GET ACTIVE CLASSES
+// ============================================================
 router.get(
     '/',
     authenticateToken,
     async (req, res) => {
-
         try {
+            const { data, error } = await supabase
+                .from('classes')
+                .select('class_id, class_name, arm, academic_year_id')
+                .eq('is_active', true)
+                .order('class_name')
+                .order('arm');
 
-            const result = await pool.query(`
-                SELECT
-                    class_id,
-                    class_name,
-                    arm,
-                    academic_year_id
-                FROM classes
-                WHERE is_active = true
-                ORDER BY class_name, arm
-            `);
+            if (error) throw error;
 
-            res.json(result.rows);
+            res.json(data);
 
         } catch (error) {
-
-            console.error(
-                'Error loading classes:',
-                error
-            );
-
+            console.error('Error loading classes:', error);
             res.status(500).json({
                 message: 'Failed to load classes'
             });

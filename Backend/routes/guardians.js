@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('../config/db');
+const supabase = require('../config/db');
 
 const {
     authenticateToken,
@@ -9,40 +9,26 @@ const {
 const router = express.Router();
 
 
-// Get guardians
+// ============================================================
+// GET GUARDIANS
+// ============================================================
 router.get(
     '/',
     authenticateToken,
-    requireRoles(
-        'Manager',
-        'Administrator',
-        'Proprietor'
-    ),
+    requireRoles('Manager', 'Administrator', 'Proprietor'),
     async (req, res) => {
-
         try {
+            const { data, error } = await supabase
+                .from('guardians')
+                .select('guardian_id, full_name, relationship, phone, email, address')
+                .order('full_name', { ascending: true });
 
-            const result = await pool.query(`
-                SELECT
-                    guardian_id,
-                    full_name,
-                    relationship,
-                    phone,
-                    email,
-                    address
-                FROM guardians
-                ORDER BY full_name
-            `);
+            if (error) throw error;
 
-            res.json(result.rows);
+            res.json(data);
 
         } catch (error) {
-
-            console.error(
-                'Error loading guardians:',
-                error
-            );
-
+            console.error('Error loading guardians:', error);
             res.status(500).json({
                 message: 'Failed to load guardians'
             });

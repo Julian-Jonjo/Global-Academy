@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('../config/db');
+const supabase = require('../config/db');
 
 const {
     authenticateToken,
@@ -12,168 +12,112 @@ const router = express.Router();
 // ============================================================
 // GET ALL STUDENTS
 // ============================================================
-
 router.get(
     '/',
     authenticateToken,
-    requireRoles(
-        'Manager',
-        'Administrator',
-        'Proprietor'
-    ),
+    requireRoles('Manager', 'Administrator', 'Proprietor'),
     async (req, res) => {
-
         try {
+            const { search, class_id, status } = req.query;
 
-            const {
-                search,
-                class_id,
-                status
-            } = req.query;
-
-            let query = `
-                SELECT
-
-                    s.student_id,
-                    s.admission_number,
-                    s.first_name,
-                    s.middle_name,
-                    s.last_name,
-                    s.gender,
-                    s.date_of_birth,
-                    s.phone,
-                    s.address,
-                    s.class_id,
-                    s.guardian_id,
-                    s.admission_date,
-                    s.student_status,
-                    s.photo_url,
-                    s.created_at,
-                    s.nationality,
-                    s.previous_school,
-                    s.emergency_contact_name,
-                    s.emergency_contact_phone,
-                    s.emergency_contact_relationship,
-                    s.registration_date,
-
-                    c.class_name,
-                    c.arm,
-
-                    g.full_name AS guardian_name,
-                    g.relationship AS guardian_relationship,
-                    g.phone AS guardian_phone,
-                    g.email AS guardian_email,
-                    g.address AS guardian_address
-
-                FROM students s
-
-                LEFT JOIN classes c
-                    ON s.class_id = c.class_id
-
-                LEFT JOIN guardians g
-                    ON s.guardian_id = g.guardian_id
-
-                WHERE 1 = 1
-            `;
-
-            const values = [];
-
-            let parameterIndex = 1;
-
-
-            // Search by admission number
-            // or student name
-
-            if (search) {
-
-                query += `
-                    AND (
-                        LOWER(s.admission_number)
-                            LIKE LOWER($${parameterIndex})
-
-                        OR LOWER(s.first_name)
-                            LIKE LOWER($${parameterIndex})
-
-                        OR LOWER(s.middle_name)
-                            LIKE LOWER($${parameterIndex})
-
-                        OR LOWER(s.last_name)
-                            LIKE LOWER($${parameterIndex})
+            // Start building the query
+            let query = supabase
+                .from('students')
+                .select(`
+                    student_id,
+                    admission_number,
+                    first_name,
+                    middle_name,
+                    last_name,
+                    gender,
+                    date_of_birth,
+                    phone,
+                    address,
+                    class_id,
+                    guardian_id,
+                    admission_date,
+                    student_status,
+                    photo_url,
+                    created_at,
+                    nationality,
+                    previous_school,
+                    emergency_contact_name,
+                    emergency_contact_phone,
+                    emergency_contact_relationship,
+                    registration_date,
+                    classes:class_id (
+                        class_name,
+                        arm
+                    ),
+                    guardians:guardian_id (
+                        full_name,
+                        relationship,
+                        phone,
+                        email,
+                        address
                     )
-                `;
+                `);
 
-                values.push(`%${search}%`);
-
-                parameterIndex++;
-
+            // Apply filters
+            if (search) {
+                query = query.or(`admission_number.ilike.%${search}%,first_name.ilike.%${search}%,middle_name.ilike.%${search}%,last_name.ilike.%${search}%`);
             }
-
-
-            // Filter by class
 
             if (class_id) {
-
-                query += `
-                    AND s.class_id =
-                        $${parameterIndex}
-                `;
-
-                values.push(class_id);
-
-                parameterIndex++;
-
+                query = query.eq('class_id', class_id);
             }
-
-
-            // Filter by student status
 
             if (status) {
-
-                query += `
-                    AND s.student_status =
-                        $${parameterIndex}
-                `;
-
-                values.push(status);
-
-                parameterIndex++;
-
+                query = query.eq('student_status', status);
             }
 
+            // Order by admission_number
+            query = query.order('admission_number', { ascending: true });
 
-            query += `
-                ORDER BY
-                s.admission_number ASC
-            `;
+            const { data, error } = await query;
 
+            if (error) throw error;
 
-            const result =
-                await pool.query(
-                    query,
-                    values
-                );
+            // Format the response
+            const students = data.map(student => ({
+                student_id: student.student_id,
+                admission_number: student.admission_number,
+                first_name: student.first_name,
+                middle_name: student.middle_name,
+                last_name: student.last_name,
+                gender: student.gender,
+                date_of_birth: student.date_of_birth,
+                phone: student.phone,
+                address: student.address,
+                class_id: student.class_id,
+                guardian_id: student.guardian_id,
+                admission_date: student.admission_date,
+                student_status: student.student_status,
+                photo_url: student.photo_url,
+                created_at: student.created_at,
+                nationality: student.nationality,
+                previous_school: student.previous_school,
+                emergency_contact_name: student.emergency_contact_name,
+                emergency_contact_phone: student.emergency_contact_phone,
+                emergency_contact_relationship: student.emergency_contact_relationship,
+                registration_date: student.registration_date,
+                class_name: student.classes?.class_name || null,
+                arm: student.classes?.arm || null,
+                guardian_name: student.guardians?.full_name || null,
+                guardian_relationship: student.guardians?.relationship || null,
+                guardian_phone: student.guardians?.phone || null,
+                guardian_email: student.guardians?.email || null,
+                guardian_address: student.guardians?.address || null
+            }));
 
-
-            res.json(result.rows);
-
+            res.json(students);
 
         } catch (error) {
-
-            console.error(
-                'Error loading students:',
-                error
-            );
-
-
+            console.error('Error loading students:', error);
             res.status(500).json({
-
-                message:
-                    'Failed to load students'
-
+                message: 'Failed to load students'
             });
-
         }
-
     }
 );
 
@@ -181,24 +125,13 @@ router.get(
 // ============================================================
 // CREATE NEW STUDENT REGISTRATION
 // ============================================================
-
 router.post(
     '/',
     authenticateToken,
-    requireRoles(
-        'Manager',
-        'Administrator'
-    ),
+    requireRoles('Manager', 'Administrator'),
     async (req, res) => {
-
-        const client =
-            await pool.connect();
-
-
         try {
-
             const {
-
                 admission_number,
                 first_name,
                 middle_name,
@@ -217,212 +150,81 @@ router.post(
                 emergency_contact_phone,
                 emergency_contact_relationship,
                 registration_date
-
             } = req.body;
 
-
             // Required fields
-
-            if (
-                !admission_number ||
-                !first_name ||
-                !last_name
-            ) {
-
+            if (!admission_number || !first_name || !last_name) {
                 return res.status(400).json({
-
-                    message:
-                        'Admission number, first name and last name are required'
-
+                    message: 'Admission number, first name and last name are required'
                 });
-
             }
-
-
-            await client.query(
-                'BEGIN'
-            );
-
 
             // Check duplicate admission number
+            const { data: existing, error: checkError } = await supabase
+                .from('students')
+                .select('student_id')
+                .eq('admission_number', admission_number)
+                .single();
 
-            const existingStudent =
-                await client.query(
-                    `
-                    SELECT student_id
-                    FROM students
-                    WHERE admission_number = $1
-                    `,
-                    [
-                        admission_number
-                    ]
-                );
-
-
-            if (
-                existingStudent.rows.length > 0
-            ) {
-
-                await client.query(
-                    'ROLLBACK'
-                );
-
-
+            if (existing) {
                 return res.status(409).json({
-
-                    message:
-                        'A student with this admission number already exists'
-
+                    message: 'A student with this admission number already exists'
                 });
-
             }
 
-
             // Create student
+            const { data: student, error: insertError } = await supabase
+                .from('students')
+                .insert({
+                    admission_number,
+                    first_name,
+                    middle_name: middle_name || null,
+                    last_name,
+                    gender: gender || null,
+                    date_of_birth: date_of_birth || null,
+                    phone: phone || null,
+                    address: address || null,
+                    class_id: class_id || null,
+                    guardian_id: guardian_id || null,
+                    admission_date: admission_date || null,
+                    student_status: student_status || 'Pending',
+                    nationality: nationality || null,
+                    previous_school: previous_school || null,
+                    emergency_contact_name: emergency_contact_name || null,
+                    emergency_contact_phone: emergency_contact_phone || null,
+                    emergency_contact_relationship: emergency_contact_relationship || null,
+                    registration_date: registration_date || new Date().toISOString()
+                })
+                .select()
+                .single();
 
-            const studentResult =
-                await client.query(
-                    `
-                    INSERT INTO students (
-
-                        admission_number,
-                        first_name,
-                        middle_name,
-                        last_name,
-                        gender,
-                        date_of_birth,
-                        phone,
-                        address,
-                        class_id,
-                        guardian_id,
-                        admission_date,
-                        student_status,
-                        nationality,
-                        previous_school,
-                        emergency_contact_name,
-                        emergency_contact_phone,
-                        emergency_contact_relationship,
-                        registration_date
-
-                    )
-
-                    VALUES (
-
-                        $1, $2, $3, $4, $5, $6,
-                        $7, $8, $9, $10, $11, $12,
-                        $13, $14, $15, $16, $17, $18
-
-                    )
-
-                    RETURNING student_id
-                    `,
-                    [
-
-                        admission_number,
-                        first_name,
-                        middle_name || null,
-                        last_name,
-                        gender || null,
-                        date_of_birth || null,
-                        phone || null,
-                        address || null,
-                        class_id || null,
-                        guardian_id || null,
-                        admission_date || null,
-                        student_status || 'Pending',
-                        nationality || null,
-                        previous_school || null,
-                        emergency_contact_name || null,
-                        emergency_contact_phone || null,
-                        emergency_contact_relationship || null,
-                        registration_date || new Date()
-
-                    ]
-                );
-
-
-            const studentId =
-                studentResult.rows[0]
-                    .student_id;
-
+            if (insertError) throw insertError;
 
             // Create approval record
+            const { error: approvalError } = await supabase
+                .from('record_approvals')
+                .insert({
+                    record_type: 'Student',
+                    record_id: student.student_id,
+                    approval_status: 'Pending',
+                    created_by: req.user.user_id,
+                    created_at: new Date().toISOString()
+                });
 
-            await client.query(
-                `
-                INSERT INTO record_approvals (
-
-                    record_type,
-                    record_id,
-                    approval_status,
-                    created_by,
-                    created_at
-
-                )
-
-                VALUES (
-
-                    'Student',
-                    $1,
-                    'Pending',
-                    $2,
-                    CURRENT_TIMESTAMP
-
-                )
-                `,
-                [
-                    studentId,
-                    req.user.user_id
-                ]
-            );
-
-
-            await client.query(
-                'COMMIT'
-            );
-
+            if (approvalError) throw approvalError;
 
             res.status(201).json({
-
-                message:
-                    'Student registration submitted for approval',
-
-                student_id:
-                    studentId,
-
-                status:
-                    'Pending'
-
+                message: 'Student registration submitted for approval',
+                student_id: student.student_id,
+                status: 'Pending'
             });
-
 
         } catch (error) {
-
-            await client.query(
-                'ROLLBACK'
-            );
-
-
-            console.error(
-                'Student registration error:',
-                error
-            );
-
-
+            console.error('Student registration error:', error);
             res.status(500).json({
-
-                message:
-                    'Failed to register student'
-
+                message: 'Failed to register student'
             });
-
-
-        } finally {
-
-            client.release();
-
         }
-
     }
 );
 
@@ -430,35 +232,20 @@ router.post(
 // ============================================================
 // UPDATE STUDENT — ADMINISTRATOR ONLY
 // ============================================================
-
 router.put(
     '/:student_id',
     authenticateToken,
-    requireRoles(
-        'Administrator'
-    ),
+    requireRoles('Administrator'),
     async (req, res) => {
-
-        const studentId =
-            parseInt(
-                req.params.student_id
-            );
-
+        const studentId = parseInt(req.params.student_id);
 
         if (Number.isNaN(studentId)) {
-
             return res.status(400).json({
-
-                message:
-                    'Invalid student ID'
-
+                message: 'Invalid student ID'
             });
-
         }
 
-
         const {
-
             admission_number,
             first_name,
             middle_name,
@@ -476,403 +263,163 @@ router.put(
             emergency_contact_name,
             emergency_contact_phone,
             emergency_contact_relationship
-
         } = req.body;
 
-
         // Required fields
-
-        if (
-            !admission_number ||
-            !first_name ||
-            !last_name
-        ) {
-
+        if (!admission_number || !first_name || !last_name) {
             return res.status(400).json({
-
-                message:
-                    'Admission number, first name and last name are required'
-
+                message: 'Admission number, first name and last name are required'
             });
-
         }
-
-
-        const client =
-            await pool.connect();
-
 
         try {
-
-            await client.query(
-                'BEGIN'
-            );
-
-
             // Check student exists
+            const { data: existing, error: checkError } = await supabase
+                .from('students')
+                .select('student_id')
+                .eq('student_id', studentId)
+                .single();
 
-            const existing =
-                await client.query(
-                    `
-                    SELECT student_id
-                    FROM students
-                    WHERE student_id = $1
-                    `,
-                    [
-                        studentId
-                    ]
-                );
-
-
-            if (
-                existing.rows.length === 0
-            ) {
-
-                await client.query(
-                    'ROLLBACK'
-                );
-
-
+            if (!existing) {
                 return res.status(404).json({
-
-                    message:
-                        'Student not found'
-
+                    message: 'Student not found'
                 });
-
             }
-
 
             // Check duplicate admission number
+            const { data: duplicate, error: dupError } = await supabase
+                .from('students')
+                .select('student_id')
+                .eq('admission_number', admission_number)
+                .neq('student_id', studentId)
+                .single();
 
-            const duplicate =
-                await client.query(
-                    `
-                    SELECT student_id
-                    FROM students
-                    WHERE admission_number = $1
-                    AND student_id <> $2
-                    `,
-                    [
-                        admission_number,
-                        studentId
-                    ]
-                );
-
-
-            if (
-                duplicate.rows.length > 0
-            ) {
-
-                await client.query(
-                    'ROLLBACK'
-                );
-
-
+            if (duplicate) {
                 return res.status(409).json({
-
-                    message:
-                        'Another student already uses this admission number'
-
+                    message: 'Another student already uses this admission number'
                 });
-
             }
 
-
             // Update student
+            const { data: student, error: updateError } = await supabase
+                .from('students')
+                .update({
+                    admission_number,
+                    first_name,
+                    middle_name: middle_name || null,
+                    last_name,
+                    gender: gender || null,
+                    date_of_birth: date_of_birth || null,
+                    phone: phone || null,
+                    address: address || null,
+                    class_id: class_id || null,
+                    guardian_id: guardian_id || null,
+                    admission_date: admission_date || null,
+                    student_status: student_status || 'Active',
+                    nationality: nationality || null,
+                    previous_school: previous_school || null,
+                    emergency_contact_name: emergency_contact_name || null,
+                    emergency_contact_phone: emergency_contact_phone || null,
+                    emergency_contact_relationship: emergency_contact_relationship || null
+                })
+                .eq('student_id', studentId)
+                .select()
+                .single();
 
-            const result =
-                await client.query(
-                    `
-                    UPDATE students
-
-                    SET
-
-                        admission_number = $1,
-                        first_name = $2,
-                        middle_name = $3,
-                        last_name = $4,
-                        gender = $5,
-                        date_of_birth = $6,
-                        phone = $7,
-                        address = $8,
-                        class_id = $9,
-                        guardian_id = $10,
-                        admission_date = $11,
-                        student_status = $12,
-                        nationality = $13,
-                        previous_school = $14,
-                        emergency_contact_name = $15,
-                        emergency_contact_phone = $16,
-                        emergency_contact_relationship = $17
-
-                    WHERE student_id = $18
-
-                    RETURNING *
-                    `,
-                    [
-
-                        admission_number,
-                        first_name,
-                        middle_name || null,
-                        last_name,
-                        gender || null,
-                        date_of_birth || null,
-                        phone || null,
-                        address || null,
-                        class_id || null,
-                        guardian_id || null,
-                        admission_date || null,
-                        student_status || 'Active',
-                        nationality || null,
-                        previous_school || null,
-                        emergency_contact_name || null,
-                        emergency_contact_phone || null,
-                        emergency_contact_relationship || null,
-                        studentId
-
-                    ]
-                );
-
-
-            await client.query(
-                'COMMIT'
-            );
-
+            if (updateError) throw updateError;
 
             res.json({
-
-                message:
-                    'Student updated successfully',
-
-                student:
-                    result.rows[0]
-
+                message: 'Student updated successfully',
+                student: student
             });
-
 
         } catch (error) {
-
-            await client.query(
-                'ROLLBACK'
-            );
-
-
-            console.error(
-                'Student update error:',
-                error
-            );
-
-
+            console.error('Student update error:', error);
             res.status(500).json({
-
-                message:
-                    'Failed to update student'
-
+                message: 'Failed to update student'
             });
-
-
-        } finally {
-
-            client.release();
-
         }
-
     }
 );
+
 
 // ============================================================
 // GET STUDENT FINANCE SUMMARY
 // ============================================================
-
 router.get(
     '/students',
     authenticateToken,
-    requireRoles(
-        'Manager',
-        'Administrator',
-        'Proprietor'
-    ),
+    requireRoles('Manager', 'Administrator', 'Proprietor'),
     async (req, res) => {
-
         try {
-
-            const result = await pool.query(`
-
-                SELECT
-
-                    s.student_id,
-
-                    s.admission_number,
-
-                    CONCAT_WS(
-                        ' ',
-                        s.first_name,
-                        s.middle_name,
-                        s.last_name
-                    ) AS student_name,
-
-                    c.class_name,
-
-                    s.arm,
-
-                    COALESCE(
-                        SUM(sf.amount_due),
-                        0
-                    ) AS total_expected,
-
-                    COALESCE(
-                        SUM(
-                            COALESCE(p.total_paid, 0)
-                        ),
-                        0
-                    ) AS total_paid,
-
-                    COALESCE(
-                        SUM(sf.amount_due),
-                        0
+            // Get all students with their classes
+            const { data: students, error: studentsError } = await supabase
+                .from('students')
+                .select(`
+                    student_id,
+                    admission_number,
+                    first_name,
+                    middle_name,
+                    last_name,
+                    classes:class_id (
+                        class_name,
+                        arm
                     )
-                    -
-                    COALESCE(
-                        SUM(
-                            COALESCE(p.total_paid, 0)
-                        ),
-                        0
-                    ) AS total_balance
+                `)
+                .not('student_status', 'in', '("Withdrawn","Deleted")')
+                .order('first_name');
 
-                FROM students s
+            if (studentsError) throw studentsError;
 
-                LEFT JOIN classes c
-                    ON s.class_id = c.class_id
+            // Get all fee balances
+            const { data: balances, error: balancesError } = await supabase
+                .from('student_fee_balances')
+                .select('*');
 
-                LEFT JOIN student_fees sf
-                    ON s.student_id = sf.student_id
+            if (balancesError) throw balancesError;
 
-                LEFT JOIN (
-                    SELECT
-                        student_fee_id,
-                        SUM(amount_paid) AS total_paid
-                    FROM payments
-                    GROUP BY student_fee_id
-                ) p
-                    ON sf.student_fee_id =
-                       p.student_fee_id
+            // Combine data
+            const result = students.map(student => {
+                const studentBalances = balances.filter(b => b.student_id === student.student_id);
+                
+                const total_expected = studentBalances.reduce((sum, b) => sum + (b.amount_due || 0), 0);
+                const total_paid = studentBalances.reduce((sum, b) => sum + (b.total_paid || 0), 0);
+                const total_balance = studentBalances.reduce((sum, b) => sum + (b.balance || 0), 0);
 
-                WHERE
-                    COALESCE(s.status, 'Active')
-                    NOT IN (
-                        'Withdrawn',
-                        'Deleted'
-                    )
+                let payment_status = 'Unpaid';
+                if (total_expected > 0 && total_balance <= 0) {
+                    payment_status = 'Paid';
+                } else if (total_paid > 0) {
+                    payment_status = 'Partially Paid';
+                }
 
-                GROUP BY
-                    s.student_id,
-                    s.admission_number,
-                    s.first_name,
-                    s.middle_name,
-                    s.last_name,
-                    c.class_name,
-                    s.arm
-
-                ORDER BY
-                    student_name
-
-            `);
-
-
-            const students =
-                result.rows.map(student => {
-
-                    const expected =
-                        Number(
-                            student.total_expected
-                        );
-
-                    const paid =
-                        Number(
-                            student.total_paid
-                        );
-
-                    const balance =
-                        Number(
-                            student.total_balance
-                        );
-
-
-                    let status =
-                        'Unpaid';
-
-
-                    if (
-                        expected > 0 &&
-                        balance <= 0
-                    ) {
-
-                        status =
-                            'Paid';
-
-                    } else if (
-                        paid > 0
-                    ) {
-
-                        status =
-                            'Partially Paid';
-
-                    }
-
-
-                    return {
-
-                        ...student,
-
-                        total_expected:
-                            expected,
-
-                        total_paid:
-                            paid,
-
-                        total_balance:
-                            balance,
-
-                        payment_status:
-                            status
-
-                    };
-
-                });
-
+                return {
+                    student_id: student.student_id,
+                    admission_number: student.admission_number,
+                    student_name: [student.first_name, student.middle_name, student.last_name]
+                        .filter(Boolean).join(' ').trim(),
+                    class_name: student.classes?.class_name || null,
+                    arm: student.classes?.arm || null,
+                    total_expected,
+                    total_paid,
+                    total_balance,
+                    payment_status
+                };
+            });
 
             res.json({
-
                 success: true,
-
-                students
-
+                students: result
             });
-
 
         } catch (error) {
-
-            console.error(
-                'GET STUDENT FINANCE SUMMARY ERROR:',
-                error
-            );
-
-
+            console.error('GET STUDENT FINANCE SUMMARY ERROR:', error);
             res.status(500).json({
-
                 success: false,
-
-                message:
-                    'Failed to load student finance summary.',
-
-                error:
-                    error.message
-
+                message: 'Failed to load student finance summary.',
+                error: error.message
             });
-
         }
-
     }
 );
 
@@ -880,136 +427,60 @@ router.get(
 // ============================================================
 // GET FEE CATEGORY SUMMARY
 // ============================================================
-
 router.get(
     '/fee-summary',
     authenticateToken,
-    requireRoles(
-        'Manager',
-        'Administrator',
-        'Proprietor'
-    ),
+    requireRoles('Manager', 'Administrator', 'Proprietor'),
     async (req, res) => {
-
         try {
+            // Get all fee types
+            const { data: feeTypes, error: feeError } = await supabase
+                .from('fee_types')
+                .select('fee_type_id, fee_name')
+                .eq('is_active', true)
+                .order('fee_name');
 
-            const result = await pool.query(`
+            if (feeError) throw feeError;
 
-                SELECT
+            // Get all fee balances
+            const { data: balances, error: balanceError } = await supabase
+                .from('student_fee_balances')
+                .select('fee_name, amount_due, total_paid, balance');
 
-                    ft.fee_type_id,
+            if (balanceError) throw balanceError;
 
-                    ft.fee_name,
+            // Group by fee_name
+            const groupedData = feeTypes.map(ft => {
+                const feeBalances = balances.filter(b => b.fee_name === ft.fee_name);
+                
+                const total_expected = feeBalances.reduce((sum, b) => sum + (b.amount_due || 0), 0);
+                const total_collected = feeBalances.reduce((sum, b) => sum + (b.total_paid || 0), 0);
+                const total_outstanding = feeBalances.reduce((sum, b) => sum + (b.balance || 0), 0);
 
-                    COALESCE(
-                        SUM(sf.amount_due),
-                        0
-                    ) AS total_expected,
-
-                    COALESCE(
-                        SUM(
-                            COALESCE(p.total_paid, 0)
-                        ),
-                        0
-                    ) AS total_collected,
-
-                    COALESCE(
-                        SUM(sf.amount_due),
-                        0
-                    )
-                    -
-                    COALESCE(
-                        SUM(
-                            COALESCE(p.total_paid, 0)
-                        ),
-                        0
-                    ) AS total_outstanding
-
-                FROM fee_types ft
-
-                LEFT JOIN student_fees sf
-                    ON ft.fee_type_id =
-                       sf.fee_type_id
-
-                LEFT JOIN (
-                    SELECT
-                        student_fee_id,
-                        SUM(amount_paid) AS total_paid
-                    FROM payments
-                    GROUP BY student_fee_id
-                ) p
-                    ON sf.student_fee_id =
-                       p.student_fee_id
-
-                WHERE
-                    ft.is_active = TRUE
-
-                GROUP BY
-                    ft.fee_type_id,
-                    ft.fee_name
-
-                ORDER BY
-                    ft.fee_name
-
-            `);
-
+                return {
+                    fee_type_id: ft.fee_type_id,
+                    fee_name: ft.fee_name,
+                    total_expected: Number(total_expected),
+                    total_collected: Number(total_collected),
+                    total_outstanding: Number(total_outstanding)
+                };
+            });
 
             res.json({
-
                 success: true,
-
-                feeSummary:
-                    result.rows.map(item => ({
-
-                        ...item,
-
-                        total_expected:
-                            Number(
-                                item.total_expected
-                            ),
-
-                        total_collected:
-                            Number(
-                                item.total_collected
-                            ),
-
-                        total_outstanding:
-                            Number(
-                                item.total_outstanding
-                            )
-
-                    }))
-
+                feeSummary: groupedData
             });
-
 
         } catch (error) {
-
-            console.error(
-                'FEE CATEGORY SUMMARY ERROR:',
-                error
-            );
-
-
+            console.error('FEE CATEGORY SUMMARY ERROR:', error);
             res.status(500).json({
-
                 success: false,
-
-                message:
-                    'Failed to load fee category summary.',
-
-                error:
-                    error.message
-
+                message: 'Failed to load fee category summary.',
+                error: error.message
             });
-
         }
-
     }
 );
 
-// ============================================================
-// EXPORT ROUTER
-// ============================================================
 
 module.exports = router;

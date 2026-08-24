@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-const pool = require('./config/db');
+// Import Supabase instead of pool
+const supabase = require('./config/db');
 
 const authRoutes = require('./routes/auth');
 
@@ -25,7 +26,6 @@ const app = express();
 // ============================================================
 
 app.use(cors());
-
 app.use(express.json());
 
 
@@ -44,104 +44,60 @@ app.use(
 // API ROUTES
 // ============================================================
 
-app.use(
-    '/api/auth',
-    authRoutes
-);
+app.use('/api/auth', authRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/classes', classRoutes);
+app.use('/api/guardians', guardianRoutes);
+app.use('/api/approvals', approvalRoutes);
+app.use('/api/payments', paymentRoutes);
 
-
-app.use(
-    '/api/students',
-    studentRoutes
-);
-
-
-app.use(
-    '/api/classes',
-    classRoutes
-);
-
-
-app.use(
-    '/api/guardians',
-    guardianRoutes
-);
-
-
-app.use(
-    '/api/approvals',
-    approvalRoutes
-);
-
-app.use(
-    '/api/payments',
-    paymentRoutes
-);
 
 // ============================================================
 // ROOT API
 // ============================================================
 
 app.get('/', (req, res) => {
-
     res.json({
-
-        message:
-            'Global Academy, Kono API is running'
-
+        message: 'Global Academy, Kono API is running'
     });
-
 });
 
 
 // ============================================================
-// DATABASE TEST
+// DATABASE TEST (Updated for Supabase)
 // ============================================================
 
-app.get(
-    '/api/test-db',
-    async (req, res) => {
+app.get('/api/test-db', async (req, res) => {
+    try {
+        // Test Supabase connection by counting students
+        const { data, error, count } = await supabase
+            .from('students')
+            .select('*', { count: 'exact', head: true });
 
-        try {
-
-            const result =
-                await pool.query(
-                    'SELECT current_database(), current_user'
-                );
-
-
-            res.json({
-
-                message:
-                    'Database connection successful',
-
-                database:
-                    result.rows[0].current_database,
-
-                user:
-                    result.rows[0].current_user
-
-            });
-
-        } catch (error) {
-
-            console.error(error);
-
-
-            res.status(500).json({
-
-                message:
-                    'Database connection failed',
-
-                error:
-                    error.message
-
-            });
-
+        if (error) {
+            throw new Error(error.message);
         }
 
+        // Get database info from Supabase
+        const { data: dbInfo, error: dbError } = await supabase
+            .from('students')
+            .select('*', { count: 'exact', head: true });
+
+        res.json({
+            message: 'Database connection successful',
+            platform: 'Supabase',
+            student_count: count || 0,
+            status: 'connected'
+        });
+
+    } catch (error) {
+        console.error('DATABASE TEST ERROR:', error);
+        res.status(500).json({
+            message: 'Database connection failed',
+            error: error.message
+        });
     }
-);
+});
 
 
 // ============================================================
@@ -150,21 +106,12 @@ app.get(
 
 app.get(
     '/api/protected-test',
-
     authenticateToken,
-
     (req, res) => {
-
         res.json({
-
-            message:
-                'You are authenticated',
-
-            user:
-                req.user
-
+            message: 'You are authenticated',
+            user: req.user
         });
-
     }
 );
 
@@ -173,24 +120,10 @@ app.get(
 // SERVER
 // ============================================================
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-
-app.listen(
-    PORT,
-    () => {
-
-        console.log(
-            `Global Academy server running on port ${PORT}`
-        );
-
-        console.log(
-            `Frontend available at: http://localhost:${PORT}`
-        );
-
-        console.log(
-            `Student registration: http://localhost:${PORT}/students-registration.html`
-        );
-
-    }
-);
+app.listen(PORT, () => {
+    console.log(`Global Academy server running on port ${PORT}`);
+    console.log(`Frontend available at: http://localhost:${PORT}`);
+    console.log(`Student registration: http://localhost:${PORT}/students-registration.html`);
+});

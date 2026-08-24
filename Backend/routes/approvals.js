@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('../config/db');
+const supabase = require('../config/db');
 
 const {
     authenticateToken,
@@ -9,345 +9,255 @@ const {
 const router = express.Router();
 
 
-/*
- * ==========================================
- * GET PENDING APPROVALS
- * ==========================================
- */
-
+// ============================================================
+// GET PENDING APPROVALS
+// ============================================================
 router.get(
     '/pending',
     authenticateToken,
-    requireRoles(
-        'Proprietor',
-        'Administrator'
-    ),
+    requireRoles('Proprietor', 'Administrator'),
     async (req, res) => {
-
         try {
+            // Get pending approvals with related data
+            const { data: approvals, error } = await supabase
+                .from('record_approvals')
+                .select(`
+                    approval_id,
+                    record_type,
+                    record_id,
+                    approval_status,
+                    created_by,
+                    created_at,
+                    users:created_by (
+                        username,
+                        full_name
+                    ),
+                    students!record_type_student (
+                        admission_number,
+                        first_name,
+                        middle_name,
+                        last_name,
+                        gender,
+                        date_of_birth,
+                        phone,
+                        address,
+                        nationality,
+                        previous_school,
+                        admission_date,
+                        emergency_contact_name,
+                        emergency_contact_phone,
+                        emergency_contact_relationship,
+                        classes:class_id (
+                            class_name,
+                            arm
+                        ),
+                        guardians:guardian_id (
+                            full_name,
+                            relationship,
+                            phone,
+                            email,
+                            address
+                        )
+                    )
+                `)
+                .eq('approval_status', 'Pending')
+                .order('created_at', { ascending: true });
 
-            const result = await pool.query(`
-                SELECT
-                    ra.approval_id,
-                    ra.record_type,
-                    ra.record_id,
-                    ra.approval_status,
-                    ra.created_by,
-                    ra.created_at,
+            if (error) throw error;
 
-                    u.username AS created_by_username,
-                    u.full_name AS created_by_name,
+            // Format the response
+            const formattedApprovals = approvals.map(approval => {
+                const student = approval.students || {};
+                const classes = student.classes || {};
+                const guardian = student.guardians || {};
 
-                    s.admission_number,
-                    s.first_name,
-                    s.middle_name,
-                    s.last_name,
-                    s.gender,
-                    s.date_of_birth,
-                    s.phone,
-                    s.address,
-                    s.nationality,
-                    s.previous_school,
-                    s.admission_date,
-                    s.emergency_contact_name,
-                    s.emergency_contact_phone,
-                    s.emergency_contact_relationship,
-
-                    c.class_name,
-                    c.arm,
-
-                    g.full_name AS guardian_name,
-                    g.relationship AS guardian_relationship,
-                    g.phone AS guardian_phone,
-                    g.email AS guardian_email,
-                    g.address AS guardian_address
-
-                FROM record_approvals ra
-
-                LEFT JOIN users u
-                    ON ra.created_by = u.user_id
-
-                LEFT JOIN students s
-                    ON ra.record_type = 'Student'
-                    AND ra.record_id = s.student_id
-
-                LEFT JOIN classes c
-                    ON s.class_id = c.class_id
-
-                LEFT JOIN guardians g
-                    ON s.guardian_id = g.guardian_id
-
-                WHERE ra.approval_status = 'Pending'
-
-                ORDER BY ra.created_at ASC
-            `);
-
-
-            res.json(result.rows);
-
-
-        } catch (error) {
-
-            console.error(
-                'Error loading pending approvals:',
-                error
-            );
-
-
-            res.status(500).json({
-                message:
-                    'Failed to load pending approvals'
+                return {
+                    approval_id: approval.approval_id,
+                    record_type: approval.record_type,
+                    record_id: approval.record_id,
+                    approval_status: approval.approval_status,
+                    created_by: approval.created_by,
+                    created_at: approval.created_at,
+                    created_by_username: approval.users?.username,
+                    created_by_name: approval.users?.full_name,
+                    admission_number: student.admission_number,
+                    first_name: student.first_name,
+                    middle_name: student.middle_name,
+                    last_name: student.last_name,
+                    gender: student.gender,
+                    date_of_birth: student.date_of_birth,
+                    phone: student.phone,
+                    address: student.address,
+                    nationality: student.nationality,
+                    previous_school: student.previous_school,
+                    admission_date: student.admission_date,
+                    emergency_contact_name: student.emergency_contact_name,
+                    emergency_contact_phone: student.emergency_contact_phone,
+                    emergency_contact_relationship: student.emergency_contact_relationship,
+                    class_name: classes.class_name,
+                    arm: classes.arm,
+                    guardian_name: guardian.full_name,
+                    guardian_relationship: guardian.relationship,
+                    guardian_phone: guardian.phone,
+                    guardian_email: guardian.email,
+                    guardian_address: guardian.address
+                };
             });
 
-        }
+            res.json(formattedApprovals);
 
+        } catch (error) {
+            console.error('Error loading pending approvals:', error);
+            res.status(500).json({
+                message: 'Failed to load pending approvals'
+            });
+        }
     }
 );
 
 
-/*
- * ==========================================
- * APPROVE RECORD
- * ==========================================
- */
-
+// ============================================================
+// APPROVE RECORD
+// ============================================================
 router.post(
     '/:approvalId/approve',
     authenticateToken,
-    requireRoles(
-        'Proprietor',
-        'Administrator'
-    ),
+    requireRoles('Proprietor', 'Administrator'),
     async (req, res) => {
-
-        const approvalId =
-            parseInt(req.params.approvalId);
-
-
-        const approverId =
-            req.user.user_id;
-
-
-        const notes =
-            req.body.notes || null;
-
+        const approvalId = parseInt(req.params.approvalId);
+        const approverId = req.user.user_id;
+        const notes = req.body.notes || null;
 
         if (Number.isNaN(approvalId)) {
-
             return res.status(400).json({
-                message:
-                    'Invalid approval ID'
+                message: 'Invalid approval ID'
             });
-
         }
-
 
         try {
+            // Get the approval record
+            const { data: approval, error: fetchError } = await supabase
+                .from('record_approvals')
+                .select('*')
+                .eq('approval_id', approvalId)
+                .single();
 
-            await pool.query(
-                `
-                SELECT approve_record(
-                    $1,
-                    $2,
-                    $3
-                )
-                `,
-                [
-                    approvalId,
-                    approverId,
-                    notes
-                ]
-            );
+            if (fetchError || !approval) {
+                return res.status(404).json({
+                    message: 'Approval record not found'
+                });
+            }
 
+            if (approval.approval_status !== 'Pending') {
+                return res.status(400).json({
+                    message: `This record is already ${approval.approval_status}`
+                });
+            }
+
+            // Update approval status
+            const { error: updateError } = await supabase
+                .from('record_approvals')
+                .update({
+                    approval_status: 'Approved',
+                    approved_by: approverId,
+                    approved_at: new Date().toISOString(),
+                    notes: notes
+                })
+                .eq('approval_id', approvalId);
+
+            if (updateError) throw updateError;
 
             res.json({
-                message:
-                    'Record approved successfully',
-                approval_id:
-                    approvalId
+                message: 'Record approved successfully',
+                approval_id: approvalId
             });
-
 
         } catch (error) {
-
-            console.error(
-                'Approval error:',
-                error
-            );
-
-
+            console.error('Approval error:', error);
             res.status(400).json({
-                message:
-                    error.message
+                message: error.message
             });
-
         }
-
     }
 );
 
 
-/*
- * ==========================================
- * REJECT RECORD
- * ==========================================
- */
-
+// ============================================================
+// REJECT RECORD
+// ============================================================
 router.post(
     '/:approvalId/reject',
     authenticateToken,
-    requireRoles(
-        'Proprietor',
-        'Administrator'
-    ),
+    requireRoles('Proprietor', 'Administrator'),
     async (req, res) => {
-
-        const approvalId =
-            parseInt(req.params.approvalId);
-
-
-        const approverId =
-            req.user.user_id;
-
-
-        const reason =
-            req.body.reason;
-
+        const approvalId = parseInt(req.params.approvalId);
+        const approverId = req.user.user_id;
+        const reason = req.body.reason;
 
         if (Number.isNaN(approvalId)) {
-
             return res.status(400).json({
-                message:
-                    'Invalid approval ID'
+                message: 'Invalid approval ID'
             });
-
         }
-
 
         if (!reason || !reason.trim()) {
-
             return res.status(400).json({
-                message:
-                    'Rejection reason is required'
+                message: 'Rejection reason is required'
             });
-
         }
-
 
         try {
+            // Get the approval record
+            const { data: approval, error: fetchError } = await supabase
+                .from('record_approvals')
+                .select('created_by, approval_status')
+                .eq('approval_id', approvalId)
+                .single();
 
-            /*
-             * First verify that the approval
-             * exists and is still pending.
-             */
-
-            const check =
-                await pool.query(
-                    `
-                    SELECT
-                        created_by,
-                        approval_status
-                    FROM record_approvals
-                    WHERE approval_id = $1
-                    `,
-                    [approvalId]
-                );
-
-
-            if (check.rows.length === 0) {
-
+            if (fetchError || !approval) {
                 return res.status(404).json({
-                    message:
-                        'Approval record not found'
+                    message: 'Approval record not found'
                 });
-
             }
 
-
-            const record =
-                check.rows[0];
-
-
-            if (
-                record.approval_status !==
-                'Pending'
-            ) {
-
+            if (approval.approval_status !== 'Pending') {
                 return res.status(400).json({
-                    message:
-                        `This record is already ${record.approval_status}`
+                    message: `This record is already ${approval.approval_status}`
                 });
-
             }
 
-
-            /*
-             * Prevent a user from rejecting
-             * their own submission.
-             */
-
-            if (
-                record.created_by ===
-                approverId
-            ) {
-
+            // Prevent self-rejection
+            if (approval.created_by === approverId) {
                 return res.status(403).json({
-                    message:
-                        'A user cannot reject their own record'
+                    message: 'A user cannot reject their own record'
                 });
-
             }
 
+            // Update approval status
+            const { error: updateError } = await supabase
+                .from('record_approvals')
+                .update({
+                    approval_status: 'Rejected',
+                    approved_by: approverId,
+                    approved_at: new Date().toISOString(),
+                    rejection_reason: reason.trim()
+                })
+                .eq('approval_id', approvalId);
 
-            /*
-             * Update approval record.
-             */
-
-            await pool.query(
-                `
-                UPDATE record_approvals
-
-                SET
-                    approval_status = 'Rejected',
-                    approved_by = $1,
-                    approved_at = CURRENT_TIMESTAMP,
-                    rejection_reason = $2
-
-                WHERE approval_id = $3
-                `,
-                [
-                    approverId,
-                    reason.trim(),
-                    approvalId
-                ]
-            );
-
+            if (updateError) throw updateError;
 
             res.json({
-                message:
-                    'Record rejected successfully',
-                approval_id:
-                    approvalId
+                message: 'Record rejected successfully',
+                approval_id: approvalId
             });
-
 
         } catch (error) {
-
-            console.error(
-                'Rejection error:',
-                error
-            );
-
-
+            console.error('Rejection error:', error);
             res.status(500).json({
-                message:
-                    'Failed to reject record'
+                message: 'Failed to reject record'
             });
-
         }
-
     }
 );
-
 
 module.exports = router;

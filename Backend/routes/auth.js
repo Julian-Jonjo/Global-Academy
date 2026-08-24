@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
+const supabase = require('../config/db');
 
 const router = express.Router();
 
@@ -15,31 +15,29 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const result = await pool.query(
-            `
-            SELECT
-                u.user_id,
-                u.username,
-                u.password_hash,
-                u.full_name,
-                u.is_active,
-                r.role_id,
-                r.role_name
-            FROM users u
-            JOIN user_roles r
-                ON u.role_id = r.role_id
-            WHERE u.username = $1
-            `,
-            [username]
-        );
+        // Query Supabase for user with role
+        const { data: user, error } = await supabase
+            .from('users')
+            .select(`
+                user_id,
+                username,
+                password_hash,
+                full_name,
+                is_active,
+                role_id,
+                user_roles:role_id (
+                    role_id,
+                    role_name
+                )
+            `)
+            .eq('username', username)
+            .single();
 
-        if (result.rows.length === 0) {
+        if (error || !user) {
             return res.status(401).json({
                 message: 'Invalid username or password'
             });
         }
-
-        const user = result.rows[0];
 
         if (!user.is_active) {
             return res.status(403).json({
@@ -58,43 +56,39 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        await pool.query(
-            `
-            UPDATE users
-            SET last_login = CURRENT_TIMESTAMP
-            WHERE user_id = $1
-            `,
-            [user.user_id]
-        );
+        // Update last_login
+        await supabase
+            .from('users')
+            .update({ last_login: new Date().toISOString() })
+            .eq('user_id', user.user_id);
 
         const token = jwt.sign(
-    {
-        user_id: user.user_id,
-        username: user.username,
-        role_id: user.role_id,
-        role_name: user.role_name
-    },
-    process.env.JWT_SECRET,
-    {
-        expiresIn: '8h'
-    }
-    );
+            {
+                user_id: user.user_id,
+                username: user.username,
+                role_id: user.role_id,
+                role_name: user.user_roles?.role_name
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: '8h'
+            }
+        );
 
-    res.json({
-    message: 'Login successful',
-    token,
-    user: {
-        user_id: user.user_id,
-        username: user.username,
-        full_name: user.full_name,
-        role_id: user.role_id,
-        role_name: user.role_name
-    }
-});
+        res.json({
+            message: 'Login successful',
+            token,
+            user: {
+                user_id: user.user_id,
+                username: user.username,
+                full_name: user.full_name,
+                role_id: user.role_id,
+                role_name: user.user_roles?.role_name
+            }
+        });
 
     } catch (error) {
         console.error('Login error:', error);
-
         res.status(500).json({
             message: 'Server error during login'
         });
