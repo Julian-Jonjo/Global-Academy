@@ -2,10 +2,10 @@
   "name": "global_academy",
   "version": "1.0.0",
   "description": "Global Academy School Management System",
-  "main": "backend/server.js",
+  "main": "Backend/server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js"
+    "start": "node Backend/server.js",
+    "dev": "nodemon Backend/server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
