@@ -1,5 +1,5 @@
 const express = require('express');
-const supabase = require('../config/db');
+const supabase = require('../Config/db');
 
 const {
     authenticateToken,
