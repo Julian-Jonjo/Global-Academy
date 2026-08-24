@@ -1,16 +1,16 @@
 const bcrypt = require('bcrypt');
 
-const password = process.argv[2];
-
-if (!password) {
-    console.log('Usage: node hash-password.js YOUR_PASSWORD');
-    process.exit(1);
+async function generateHash() {
+    const password = 'password123';
+    const saltRounds = 10;
+    
+    const hash = await bcrypt.hash(password, saltRounds);
+    console.log('Password:', password);
+    console.log('Hash:', hash);
+    
+    // Verify it works
+    const match = await bcrypt.compare(password, hash);
+    console.log('Verification:', match ? '✅ Works!' : '❌ Failed');
 }
 
-bcrypt.hash(password, 12)
-    .then(hash => {
-        console.log(hash);
-    })
-    .catch(error => {
-        console.error(error);
-    });
+generateHash();
