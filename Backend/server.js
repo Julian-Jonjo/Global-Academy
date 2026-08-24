@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 
 // Import Supabase instead of pool
-const supabase = require('./config/db');
+const supabase = require('./Config/db');
 
 const authRoutes = require('./routes/auth');
 
