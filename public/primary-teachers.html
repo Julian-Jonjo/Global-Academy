@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1.0"
+>
 
 <title>Global Education Academy | Primary Teachers</title>
 
 <style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
 
 *{
     box-sizing:border-box;
@@ -14,43 +24,88 @@
 
 body{
     margin:0;
-    font-family:Arial,sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
     background:#f4f6f8;
     color:#1f2937;
 }
+
+button,
+input,
+select,
+textarea{
+    font-family:inherit;
+}
+
 
 /* =========================================================
    HEADER
 ========================================================= */
 
 .header{
-    background:#1f2937;
+    background:#166534;
     color:#fff;
-    padding:18px 30px;
+
+    padding:17px 30px;
+
     display:flex;
     justify-content:space-between;
     align-items:center;
 }
 
-.header h1{
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.header-logo{
+    width:42px;
+    height:42px;
+
+    border-radius:8px;
+
+    background:#14532d;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:21px;
+}
+
+.header-title h1{
     margin:0;
-    font-size:22px;
+
+    font-size:20px;
+    font-weight:700;
+}
+
+.header-title p{
+    margin:3px 0 0;
+
+    font-size:12px;
+
+    color:#dcfce7;
 }
 
 .user-info{
-    font-size:14px;
+    font-size:13px;
     text-align:right;
 }
+
 
 /* =========================================================
    CONTAINER
 ========================================================= */
 
 .container{
-    max-width:1500px;
-    margin:25px auto;
-    padding:0 20px;
+    max-width:1450px;
+
+    margin:auto;
+
+    padding:28px 24px 40px;
 }
+
 
 /* =========================================================
    PAGE HEADER
@@ -58,125 +113,198 @@ body{
 
 .page-header{
     display:flex;
+
     justify-content:space-between;
-    align-items:center;
+    align-items:flex-end;
+
     gap:20px;
-    margin-bottom:20px;
+
+    margin-bottom:25px;
 }
 
-.page-title h2{
-    margin:0 0 6px;
-    font-size:26px;
+.page-header-left h2{
+    margin:0 0 7px;
+
+    font-size:25px;
+
+    color:#111827;
 }
 
-.page-title p{
+.page-header-left p{
     margin:0;
+
     color:#6b7280;
+
+    font-size:14px;
 }
+
 
 /* =========================================================
-   BUTTONS
+   PAGE HEADER ACTIONS
 ========================================================= */
 
-.button-group{
+.page-header-actions{
     display:flex;
+    align-items:center;
     gap:10px;
     flex-wrap:wrap;
 }
 
-.btn{
-    border:none;
-    border-radius:7px;
-    padding:11px 17px;
-    cursor:pointer;
-    font-weight:bold;
-    font-size:14px;
+.back-link{
+    text-decoration:none;
+    color:#166534;
+    font-size:13px;
+    font-weight:700;
+    padding:10px 13px;
+    border:1px solid #d1d5db;
+    border-radius:6px;
+    background:#fff;
 }
 
-.back-btn{
-    background:#e5e7eb;
-    color:#374151;
+.back-link:hover{
+    background:#f3f4f6;
 }
 
-.register-btn{
+.register-top-btn{
+    border:0;
+    border-radius:6px;
+    padding:10px 15px;
     background:#166534;
     color:#fff;
+    font-size:12px;
+
+    font-weight:700;
+
+    cursor:pointer;
 }
 
-.refresh-btn{
-    background:#374151;
-    color:#fff;
+.register-top-btn:hover{
+    background:#14532d;
 }
 
-.btn:hover{
-    opacity:.9;
-}
 
 /* =========================================================
    NAVIGATION
 ========================================================= */
 
-.teacher-nav{
+.nav{
     display:flex;
-    flex-wrap:wrap;
+
     gap:5px;
+
+    flex-wrap:wrap;
+
     background:#fff;
-    padding:8px;
-    border-radius:10px;
-    box-shadow:0 3px 10px rgba(0,0,0,.06);
-    margin-bottom:20px;
+
+    padding:7px;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:9px;
+
+    margin-bottom:25px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.035);
 }
 
-.teacher-nav a{
+.nav a{
     text-decoration:none;
+
     color:#4b5563;
-    padding:12px 16px;
+
+    padding:10px 15px;
+
     border-radius:6px;
-    font-size:14px;
-    font-weight:bold;
+
+    font-size:13px;
+
+    font-weight:600;
 }
 
-.teacher-nav a:hover{
+.nav a:hover{
     background:#f3f4f6;
 }
 
-.teacher-nav a.active{
-    background:#1f2937;
+.nav a.active{
+    background:#166534;
+
     color:#fff;
 }
 
+
 /* =========================================================
-   SUMMARY CARDS
+   KPI GRID
 ========================================================= */
 
-.summary-grid{
+.kpi-grid{
     display:grid;
+
     grid-template-columns:
-        repeat(auto-fit,minmax(210px,1fr));
-    gap:18px;
-    margin-bottom:20px;
+        repeat(4,minmax(0,1fr));
+
+    gap:15px;
+
+    margin-bottom:25px;
 }
 
-.summary-card{
+.kpi-card{
     background:#fff;
+
+    border:1px solid #e5e7eb;
+
     border-radius:10px;
-    padding:20px;
-    box-shadow:0 3px 15px rgba(0,0,0,.08);
-    border-left:5px solid #374151;
+
+    padding:19px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.035);
+
+    position:relative;
+
+    overflow:hidden;
 }
 
-.summary-card h4{
-    margin:0 0 10px;
+.kpi-card::before{
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:0;
+    bottom:0;
+
+    width:4px;
+
+    background:#166534;
+}
+
+.kpi-label{
+    font-size:11px;
+
     color:#6b7280;
-    font-size:12px;
+
     text-transform:uppercase;
+
+    letter-spacing:.4px;
+
+    margin-bottom:9px;
 }
 
-.summary-number{
+.kpi-number{
     font-size:28px;
-    font-weight:bold;
-    color:#1f2937;
+
+    font-weight:700;
+
+    color:#111827;
 }
+
+.kpi-note{
+    margin-top:6px;
+
+    font-size:11px;
+
+    color:#9ca3af;
+}
+
 
 /* =========================================================
    CARD
@@ -184,24 +312,38 @@ body{
 
 .card{
     background:#fff;
-    padding:25px;
+
+    border:1px solid #e5e7eb;
+
     border-radius:10px;
-    box-shadow:0 3px 15px rgba(0,0,0,.08);
-    margin-bottom:20px;
+
+    padding:20px;
+
+    margin-bottom:25px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.035);
 }
 
 .section-header{
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
+
     gap:15px;
-    margin-bottom:18px;
+
+    margin-bottom:17px;
 }
 
 .section-header h3{
     margin:0;
-    font-size:18px;
+
+    font-size:17px;
+
+    color:#111827;
 }
+
 
 /* =========================================================
    HEAD OF PRIMARY
@@ -209,228 +351,498 @@ body{
 
 .head-card{
     display:grid;
-    grid-template-columns:100px 1fr auto;
+
+    grid-template-columns:
+        90px 1fr auto;
+
     align-items:center;
+
     gap:20px;
+
+    padding:5px 0;
 }
 
 .head-photo{
-    width:90px;
-    height:90px;
+    width:80px;
+    height:80px;
+
     border-radius:50%;
-    background:#e5e7eb;
+
+    background:#f3f4f6;
+
+    border:1px solid #e5e7eb;
+
     display:flex;
+
     align-items:center;
     justify-content:center;
-    font-size:35px;
+
+    font-size:32px;
+
     color:#6b7280;
 }
 
 .head-info h3{
-    margin:0 0 6px;
+    margin:0 0 7px;
+
+    font-size:17px;
+
+    color:#111827;
 }
 
 .head-info p{
     margin:4px 0;
+
     color:#6b7280;
-    font-size:14px;
+
+    font-size:13px;
+}
+
+.head-info strong{
+    color:#374151;
 }
 
 .head-status{
     background:#dcfce7;
+
     color:#166534;
-    padding:6px 10px;
+
+    padding:6px 11px;
+
     border-radius:20px;
-    font-size:12px;
-    font-weight:bold;
+
+    font-size:11px;
+
+    font-weight:700;
 }
+
 
 /* =========================================================
-   SEARCH / FILTER
+   TOOLBAR
 ========================================================= */
 
-.filters{
-    display:grid;
-    grid-template-columns:
-        minmax(220px,2fr)
-        minmax(160px,1fr)
-        minmax(160px,1fr)
-        auto;
+.toolbar{
+    background:#fff;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:10px;
+
+    padding:15px;
+
+    display:flex;
+
     gap:10px;
-    margin-bottom:20px;
+
+    flex-wrap:wrap;
+
+    margin-bottom:15px;
 }
 
-.filters input,
-.filters select{
-    width:100%;
-    padding:11px;
+.toolbar input,
+.toolbar select{
+    padding:10px 12px;
+
     border:1px solid #d1d5db;
-    border-radius:7px;
-    font:inherit;
+
+    border-radius:6px;
+
+    font-size:13px;
+
+    outline:none;
+
     background:#fff;
 }
 
-.clear-btn{
-    background:#e5e7eb;
-    color:#374151;
-    border:none;
-    border-radius:7px;
-    padding:11px 16px;
-    cursor:pointer;
-    font-weight:bold;
+.toolbar input{
+    flex:1;
+
+    min-width:230px;
 }
 
+.btn{
+    border:0;
+
+    border-radius:6px;
+
+    padding:10px 15px;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+.btn-primary{
+    background:#166534;
+
+    color:#fff;
+}
+
+.btn-secondary{
+    background:#f3f4f6;
+
+    color:#374151;
+}
+
+.btn:hover{
+    opacity:.9;
+}
+
+
 /* =========================================================
-   TABLE
+   TABLE CARD
 ========================================================= */
 
+.table-card{
+    background:#fff;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.035);
+}
+
+.table-header{
+    padding:17px 20px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    border-bottom:1px solid #e5e7eb;
+}
+
+.table-header h3{
+    margin:0;
+
+    font-size:16px;
+}
+
+.record-count{
+    font-size:12px;
+
+    color:#6b7280;
+}
+
 .table-wrapper{
-    width:100%;
     overflow-x:auto;
 }
 
 table{
     width:100%;
-    border-collapse:collapse;
-    min-width:950px;
-}
 
-th,
-td{
-    padding:13px 10px;
-    border-bottom:1px solid #e5e7eb;
-    text-align:left;
-    font-size:13px;
+    border-collapse:collapse;
+
+    min-width:850px;
 }
 
 th{
     background:#f9fafb;
-    color:#4b5563;
-    font-size:12px;
+
+    text-align:left;
+
+    padding:12px 15px;
+
+    font-size:11px;
+
     text-transform:uppercase;
+
+    color:#6b7280;
+
+    border-bottom:1px solid #e5e7eb;
 }
 
-tbody tr:hover{
-    background:#f9fafb;
+td{
+    padding:13px 15px;
+
+    font-size:13px;
+
+    border-bottom:1px solid #f0f1f2;
 }
+
+tr:hover td{
+    background:#fafafa;
+}
+
 
 /* =========================================================
-   STATUS
+   BADGES
 ========================================================= */
 
-.status{
+.badge{
     display:inline-block;
-    padding:5px 9px;
+
+    padding:4px 8px;
+
     border-radius:20px;
-    font-size:11px;
-    font-weight:bold;
+
+    font-size:10px;
+
+    font-weight:700;
 }
 
-.status-active{
+.badge-active{
     background:#dcfce7;
+
     color:#166534;
 }
 
-.status-inactive{
+.badge-permanent{
+    background:#dcfce7;
+
+    color:#166534;
+}
+
+.badge-parttime{
     background:#fee2e2;
+
     color:#991b1b;
 }
 
-.status-leave{
-    background:#fef3c7;
-    color:#92400e;
-}
 
 /* =========================================================
-   ACTION BUTTON
+   EMPTY / ERROR
 ========================================================= */
 
-.action-btn{
-    background:#1f2937;
-    color:#fff;
-    border:none;
-    border-radius:5px;
-    padding:7px 11px;
+.empty,
+.error{
+    text-align:center;
+
+    padding:35px;
+
+    color:#6b7280;
+}
+
+.error{
+    color:#b91c1c;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal{
+    display:none;
+
+    position:fixed;
+
+    z-index:1000;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    padding:30px;
+
+    overflow:auto;
+}
+
+.modal-content{
+    background:#fff;
+
+    max-width:700px;
+
+    margin:30px auto;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.2);
+}
+
+.modal-header{
+    padding:18px 20px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    border-bottom:1px solid #e5e7eb;
+}
+
+.modal-header h3{
+    margin:0;
+
+    font-size:17px;
+}
+
+.close{
+    border:0;
+
+    background:none;
+
+    font-size:22px;
+
     cursor:pointer;
-    font-size:12px;
-}
 
-.action-btn:hover{
-    background:#111827;
-}
-
-/* =========================================================
-   EMPTY / LOADING
-========================================================= */
-
-.loading{
-    text-align:center;
-    padding:35px;
     color:#6b7280;
 }
 
-.empty{
-    text-align:center;
-    padding:35px;
-    color:#6b7280;
+.form{
+    padding:20px;
 }
+
+.form-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:15px;
+}
+
+.form-group{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+}
+
+.form-group.full{
+    grid-column:1/-1;
+}
+
+.form-group label{
+    font-size:11px;
+
+    color:#4b5563;
+
+    font-weight:700;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    padding:10px 11px;
+
+    border:1px solid #d1d5db;
+
+    border-radius:6px;
+
+    font-size:13px;
+
+    outline:none;
+
+    background:#fff;
+}
+
+.form-group textarea{
+    min-height:80px;
+
+    resize:vertical;
+}
+
+.form-actions{
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:10px;
+
+    margin-top:20px;
+}
+
 
 /* =========================================================
    RESPONSIVE
 ========================================================= */
 
-@media(max-width:900px){
+@media(max-width:1050px){
+
+    .kpi-grid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+}
+
+@media(max-width:750px){
 
     .page-header{
         flex-direction:column;
+
         align-items:flex-start;
     }
 
-    .filters{
-        grid-template-columns:1fr 1fr;
+    .page-header-actions{
+        width:100%;
     }
 
     .head-card{
-        grid-template-columns:80px 1fr;
+        grid-template-columns:
+            80px 1fr;
     }
 
     .head-status{
         grid-column:2;
+
         width:max-content;
     }
 
 }
 
-@media(max-width:600px){
+@media(max-width:650px){
 
     .header{
+        padding:15px 18px;
+
         flex-direction:column;
+
         align-items:flex-start;
-        gap:8px;
+
+        gap:10px;
+    }
+
+    .user-info{
+        text-align:left;
     }
 
     .container{
-        padding:0 12px;
+        padding:20px 12px 30px;
     }
 
-    .card{
-        padding:18px;
-    }
-
-    .teacher-nav{
+    .page-header-actions{
         flex-direction:column;
-    }
 
-    .teacher-nav a{
+        align-items:stretch;
+
         width:100%;
     }
 
-    .filters{
+    .back-link,
+    .register-top-btn{
+        text-align:center;
+
+        width:100%;
+    }
+
+    .nav{
+        flex-direction:column;
+    }
+
+    .nav a{
+        width:100%;
+    }
+
+    .kpi-grid{
         grid-template-columns:1fr;
     }
 
     .head-card{
         grid-template-columns:1fr;
+
         text-align:center;
     }
 
@@ -440,15 +852,37 @@ tbody tr:hover{
 
     .head-status{
         grid-column:auto;
+
         margin:auto;
+    }
+
+    .toolbar{
+        flex-direction:column;
+    }
+
+    .toolbar input,
+    .toolbar select,
+    .toolbar button{
+        width:100%;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .modal{
+        padding:15px;
     }
 
 }
 
 </style>
+
 </head>
 
+
 <body>
+
 
 <!-- =========================================================
      HEADER
@@ -456,12 +890,30 @@ tbody tr:hover{
 
 <header class="header">
 
-    <h1>
-        GLOBAL EDUCATION ACADEMY — Teachers
-    </h1>
+    <div class="header-left">
 
-    <div id="userInfo" class="user-info">
-        Loading...
+        <div class="header-logo">
+            🏫
+        </div>
+
+        <div class="header-title">
+
+            <h1>
+                GLOBAL EDUCATION ACADEMY
+            </h1>
+
+            <p>
+                Primary School Teachers Management
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="userInfo"
+        class="user-info">
     </div>
 
 </header>
@@ -476,30 +928,36 @@ tbody tr:hover{
 
 <div class="page-header">
 
-    <div class="page-title">
+    <div class="page-header-left">
 
         <h2>
-            Primary School Teachers
+            Primary Teachers
         </h2>
 
         <p>
-            Manage teaching staff in the Primary School sector.
+            Manage teaching staff assigned to the Primary School.
         </p>
 
     </div>
 
-    <div class="button-group">
+
+    <div class="page-header-actions">
+
+        <a
+            href="teachers.html"
+            class="back-link">
+
+            ← Teachers Overview
+
+        </a>
+
 
         <button
-            class="btn back-btn"
-            onclick="goBack()">
-            ← Teachers Dashboard
-        </button>
+            class="register-top-btn"
+            onclick="openModal()">
 
-        <button
-            class="btn register-btn"
-            onclick="registerTeacher()">
             + Register Teacher
+
         </button>
 
     </div>
@@ -511,102 +969,125 @@ tbody tr:hover{
      NAVIGATION
 ========================================================= -->
 
-<nav class="teacher-nav">
+<nav class="nav">
 
-    <a href="teachers.html">
-        Overview
+    <a href="dashboard.html">
+        Main Dashboard
     </a>
 
-    <a href="primary-teachers.html" class="active">
+    <a href="teachers.html">
+        Teachers
+    </a>
+
+    <a
+        href="primary-teachers.html"
+        class="active">
+
         Primary School
+
     </a>
 
     <a href="secondary-teachers.html">
         Secondary School
     </a>
 
+    <a href="students.html">
+        Students
+    </a>
+
 </nav>
 
 
 <!-- =========================================================
-     SUMMARY
+     KPIs
 ========================================================= -->
 
-<section class="summary-grid">
+<section class="kpi-grid">
 
-    <div class="summary-card">
 
-        <h4>
-            Total Primary Teachers
-        </h4>
+    <div class="kpi-card">
+
+        <div class="kpi-label">
+            Primary Teachers
+        </div>
 
         <div
             id="totalTeachers"
-            class="summary-number">
+            class="kpi-number">
+
             0
+
+        </div>
+
+        <div class="kpi-note">
+            Total Primary teaching staff
         </div>
 
     </div>
 
 
-    <div class="summary-card">
+    <div class="kpi-card">
 
-        <h4>
-            Active Teachers
-        </h4>
+        <div class="kpi-label">
+            Permanent
+        </div>
 
         <div
-            id="activeTeachers"
-            class="summary-number">
+            id="permanentTeachers"
+            class="kpi-number">
+
             0
+
+        </div>
+
+        <div class="kpi-note">
+            Permanent Primary staff
         </div>
 
     </div>
 
 
-    <div class="summary-card">
+    <div class="kpi-card">
 
-        <h4>
-            Male Teachers
-        </h4>
+        <div class="kpi-label">
+            Male
+        </div>
 
         <div
             id="maleTeachers"
-            class="summary-number">
+            class="kpi-number">
+
             0
+
+        </div>
+
+        <div class="kpi-note">
+            Male Primary teachers
         </div>
 
     </div>
 
 
-    <div class="summary-card">
+    <div class="kpi-card">
 
-        <h4>
-            Female Teachers
-        </h4>
+        <div class="kpi-label">
+            Female
+        </div>
 
         <div
             id="femaleTeachers"
-            class="summary-number">
+            class="kpi-number">
+
             0
+
+        </div>
+
+        <div class="kpi-note">
+            Female Primary teachers
         </div>
 
     </div>
 
-
-    <div class="summary-card">
-
-        <h4>
-            Teachers on Leave
-        </h4>
-
-        <div
-            id="leaveTeachers"
-            class="summary-number">
-            0
-        </div>
-
-    </div>
 
 </section>
 
@@ -645,16 +1126,18 @@ tbody tr:hover{
             </p>
 
             <p id="headContact">
-                Contact information will appear here.
+                Head of Primary information will appear here.
             </p>
 
         </div>
 
 
         <div>
+
             <span class="head-status">
                 Head of Primary
             </span>
+
         </div>
 
     </div>
@@ -663,83 +1146,91 @@ tbody tr:hover{
 
 
 <!-- =========================================================
-     TEACHER LIST
+     TEACHER FILTERS
 ========================================================= -->
 
-<section class="card">
+<div class="toolbar">
 
-    <div class="section-header">
+    <input
+        id="search"
+        type="search"
+        placeholder="Search by name or staff number..."
+        oninput="filterTeachers"
+    >
+
+
+    <select
+        id="statusFilter"
+        onchange="filterTeachers()">
+
+        <option value="">
+            All Employment Status
+        </option>
+
+        <option value="Permanent">
+            Permanent
+        </option>
+
+        <option value="Part Time">
+            Part Time
+        </option>
+
+    </select>
+
+
+    <select
+        id="genderFilter"
+        onchange="filterTeachers()">
+
+        <option value="">
+            All Gender
+        </option>
+
+        <option value="Male">
+            Male
+        </option>
+
+        <option value="Female">
+            Female
+        </option>
+
+    </select>
+
+
+    <button
+        class="btn btn-secondary"
+        onclick="resetFilters()">
+
+        Reset
+
+    </button>
+
+</div>
+
+
+<!-- =========================================================
+     TEACHER TABLE
+========================================================= -->
+
+<div class="table-card">
+
+
+    <div class="table-header">
 
         <h3>
-            Primary School Teachers
+            Primary Teaching Staff
         </h3>
 
-        <button
-            class="btn refresh-btn"
-            onclick="loadTeachers()">
-            ↻ Refresh
-        </button>
+        <span
+            id="recordCount"
+            class="record-count">
+
+            0 Records
+
+        </span>
 
     </div>
 
-
-    <!-- FILTERS -->
-
-    <div class="filters">
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search by name or teacher number...">
-
-        <select id="genderFilter">
-
-            <option value="">
-                All Genders
-            </option>
-
-            <option value="Male">
-                Male
-            </option>
-
-            <option value="Female">
-                Female
-            </option>
-
-        </select>
-
-
-        <select id="statusFilter">
-
-            <option value="">
-                All Statuses
-            </option>
-
-            <option value="Active">
-                Active
-            </option>
-
-            <option value="Inactive">
-                Inactive
-            </option>
-
-            <option value="On Leave">
-                On Leave
-            </option>
-
-        </select>
-
-
-        <button
-            class="clear-btn"
-            onclick="clearFilters()">
-            Clear
-        </button>
-
-    </div>
-
-
-    <!-- TABLE -->
 
     <div class="table-wrapper">
 
@@ -750,11 +1241,11 @@ tbody tr:hover{
                 <tr>
 
                     <th>
-                        Teacher No.
+                        Teacher
                     </th>
 
                     <th>
-                        Teacher Name
+                        Staff Number
                     </th>
 
                     <th>
@@ -762,15 +1253,7 @@ tbody tr:hover{
                     </th>
 
                     <th>
-                        Qualification
-                    </th>
-
-                    <th>
-                        Specialization
-                    </th>
-
-                    <th>
-                        Phone
+                        Employment Type
                     </th>
 
                     <th>
@@ -778,7 +1261,7 @@ tbody tr:hover{
                     </th>
 
                     <th>
-                        Action
+                        Phone
                     </th>
 
                 </tr>
@@ -791,10 +1274,10 @@ tbody tr:hover{
                 <tr>
 
                     <td
-                        colspan="8"
-                        class="loading">
+                        colspan="6"
+                        class="empty">
 
-                        Loading teachers...
+                        Loading Primary teachers...
 
                     </td>
 
@@ -806,214 +1289,587 @@ tbody tr:hover{
 
     </div>
 
-</section>
+</div>
 
 
 </main>
 
 
+<!-- =========================================================
+     REGISTRATION MODAL
+========================================================= -->
+
+<div
+    id="modal"
+    class="modal">
+
+
+    <div class="modal-content">
+
+
+        <div class="modal-header">
+
+            <h3>
+                Register Primary Teacher
+            </h3>
+
+
+            <button
+                class="close"
+                onclick="closeModal()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <form
+            id="teacherForm"
+            class="form">
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Staff Number *
+                    </label>
+
+                    <input
+                        id="staff_number"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Gender
+                    </label>
+
+                    <select id="gender">
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        First Name *
+                    </label>
+
+                    <input
+                        id="first_name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Middle Name
+                    </label>
+
+                    <input id="middle_name">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Last Name *
+                    </label>
+
+                    <input
+                        id="last_name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Phone
+                    </label>
+
+                    <input
+                        id="phone"
+                        type="tel"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        id="email"
+                        type="email"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Employment Date
+                    </label>
+
+                    <input
+                        id="employment_date"
+                        type="date"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Employment Type
+                    </label>
+
+                    <select id="employment_type">
+
+                        <option value="">
+                            Select employment type
+                        </option>
+
+                        <option value="Permanent">
+                            Permanent
+                        </option>
+
+                        <option value="Part Time">
+                            Part Time
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Teacher Status
+                    </label>
+
+                    <select id="teacher_status">
+
+                        <option value="Active">
+                            Active
+                        </option>
+
+                        <option value="Inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label>
+                        Address
+                    </label>
+
+                    <textarea id="address"></textarea>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="closeModal()">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+
+                    Register Teacher
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
 <script>
+
+/* =========================================================
+   API
+========================================================= */
+
+const API_BASE='/api';
+
+let user=null;
+let token=null;
+
+let allTeachers=[];
+let primaryTeachers=[];
+
 
 /* =========================================================
    AUTHENTICATION
 ========================================================= */
 
-const token =
-    sessionStorage.getItem('authToken');
+function getAuthData(){
 
-const userData =
-    sessionStorage.getItem('user');
-
-
-if (!token || !userData) {
-
-    window.location.href = '/';
-
-}
+    token =
+        sessionStorage.getItem('token') ||
+        localStorage.getItem('token') ||
+        sessionStorage.getItem('authToken') ||
+        localStorage.getItem('authToken');
 
 
-let user;
+    const raw =
+        sessionStorage.getItem('user') ||
+        localStorage.getItem('user');
 
-try {
 
-    user =
-        JSON.parse(userData);
+    try{
 
-} catch (error) {
+        user =
+            raw
+                ? JSON.parse(raw)
+                : null;
 
-    sessionStorage.removeItem('authToken');
+    }catch(e){
 
-    sessionStorage.removeItem('user');
+        user=null;
 
-    window.location.href = '/';
+    }
 
 }
 
 
-document.getElementById('userInfo').textContent =
-    `${user.full_name || 'User'} (${user.role_name || ''})`;
+getAuthData();
+
+
+if(!token){
+
+    alert(
+        'Authentication required. Please log in.'
+    );
+
+    location.href='index.html';
+
+}
+
+
+const userInfo =
+    document.getElementById('userInfo');
+
+
+if(userInfo){
+
+    userInfo.textContent =
+        `${user?.full_name || user?.name || 'Administrator'} (${user?.role_name || user?.role || 'School Management'})`;
+
+}
 
 
 /* =========================================================
-   DATA
+   API REQUEST
 ========================================================= */
 
-let teachers = [];
+async function apiRequest(
+    url,
+    options={}
+){
 
-let filteredTeachers = [];
+    getAuthData();
+
+
+    if(!token){
+
+        throw new Error(
+            'Authentication required.'
+        );
+
+    }
+
+
+    const response =
+        await fetch(
+            `${API_BASE}${url}`,
+            {
+                ...options,
+
+                headers:{
+                    'Content-Type':
+                        'application/json',
+
+                    ...(options.headers || {}),
+
+                    Authorization:
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+    let data=null;
+
+
+    try{
+
+        data=
+            await response.json();
+
+    }catch(e){
+
+        data=null;
+
+    }
+
+
+    if(response.status===401){
+
+        [
+            'token',
+            'user',
+            'authToken'
+        ].forEach(k=>{
+
+            sessionStorage.removeItem(k);
+            localStorage.removeItem(k);
+
+        });
+
+
+        alert(
+            'Your session has expired. Please log in again.'
+        );
+
+
+        location.href='index.html';
+
+        return null;
+
+    }
+
+
+    if(!response.ok){
+
+        throw new Error(
+            data?.message ||
+            `Request failed with status ${response.status}`
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value ?? '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+
+}
 
 
 /* =========================================================
    LOAD TEACHERS
 ========================================================= */
 
-async function loadTeachers() {
+async function loadTeachers(){
 
-    const table =
-        document.getElementById('teacherTable');
+    try{
 
-    table.innerHTML = `
-        <tr>
-            <td colspan="8" class="loading">
-                Loading teachers...
-            </td>
-        </tr>
-    `;
+        const data =
+            await apiRequest(
+                '/teachers'
+            );
 
 
-    /*
-        BACKEND WILL BE CONNECTED HERE.
-
-        We will eventually use:
-
-        GET /api/teachers/primary
-
-    */
+        allTeachers =
+            Array.isArray(data)
+                ? data
+                : [];
 
 
-    /*
-        TEMPORARY EMPTY DATA
+        primaryTeachers =
+            allTeachers.filter(
+                teacher=>{
 
-        This allows us to test the complete
-        dashboard before creating the backend.
-    */
+                    const section =
+                        String(
+                            teacher.school_section || ''
+                        )
+                        .trim()
+                        .toLowerCase();
 
-    teachers = [];
 
-    filteredTeachers =
-        [...teachers];
+                    return(
+                        section==='primary' ||
+                        section==='primary school'
+                    );
 
-    updateSummary();
+                }
+            );
 
-    renderTeachers();
+
+        updateDashboard();
+
+
+        renderTeachers();
+
+
+    }catch(error){
+
+        console.error(
+            'Error loading Primary teachers:',
+            error
+        );
+
+
+        document.getElementById(
+            'teacherTable'
+        ).innerHTML=
+            `<tr>
+                <td
+                    colspan="6"
+                    class="error">
+
+                    ${escapeHtml(error.message)}
+
+                </td>
+            </tr>`;
+
+    }
 
 }
 
 
 /* =========================================================
-   UPDATE SUMMARY
+   UPDATE DASHBOARD
 ========================================================= */
 
-function updateSummary() {
+function updateDashboard(){
 
     const total =
-        teachers.length;
+        primaryTeachers.length;
 
 
-    const active =
-        teachers.filter(
-            teacher =>
-                teacher.status === 'Active'
+    const permanent =
+        primaryTeachers.filter(
+            teacher=>
+                String(
+                    teacher.employment_type || ''
+                )
+                .trim()
+                .toLowerCase()
+                ===
+                'permanent'
         ).length;
 
 
     const male =
-        teachers.filter(
-            teacher =>
-                teacher.gender === 'Male'
+        primaryTeachers.filter(
+            teacher=>
+                String(
+                    teacher.gender || ''
+                )
+                .trim()
+                .toLowerCase()
+                ===
+                'male'
         ).length;
 
 
     const female =
-        teachers.filter(
-            teacher =>
-                teacher.gender === 'Female'
-        ).length;
-
-
-    const leave =
-        teachers.filter(
-            teacher =>
-                teacher.status === 'On Leave'
+        primaryTeachers.filter(
+            teacher=>
+                String(
+                    teacher.gender || ''
+                )
+                .trim()
+                .toLowerCase()
+                ===
+                'female'
         ).length;
 
 
     document.getElementById(
         'totalTeachers'
-    ).textContent = total;
+    ).textContent=total;
 
 
     document.getElementById(
-        'activeTeachers'
-    ).textContent = active;
+        'permanentTeachers'
+    ).textContent=permanent;
 
 
     document.getElementById(
         'maleTeachers'
-    ).textContent = male;
+    ).textContent=male;
 
 
     document.getElementById(
         'femaleTeachers'
-    ).textContent = female;
-
-
-    document.getElementById(
-        'leaveTeachers'
-    ).textContent = leave;
-
-
-    /*
-        Find Head of Primary
-    */
-
-    const head =
-        teachers.find(
-            teacher =>
-                teacher.position ===
-                'Head of Primary'
-        );
-
-
-    if (head) {
-
-        document.getElementById(
-            'headName'
-        ).textContent =
-            head.teacher_name;
-
-
-        document.getElementById(
-            'headContact'
-        ).textContent =
-            head.phone ||
-            head.email ||
-            'Contact information unavailable.';
-
-    } else {
-
-        document.getElementById(
-            'headName'
-        ).textContent =
-            'Not Assigned';
-
-
-        document.getElementById(
-            'headContact'
-        ).textContent =
-            'No Head of Primary has been assigned.';
-
-    }
+    ).textContent=female;
 
 }
 
@@ -1022,7 +1878,7 @@ function updateSummary() {
    RENDER TEACHERS
 ========================================================= */
 
-function renderTeachers() {
+function renderTeachers(){
 
     const table =
         document.getElementById(
@@ -1030,19 +1886,28 @@ function renderTeachers() {
         );
 
 
-    if (!filteredTeachers.length) {
+    const list =
+        getFilteredTeachers();
 
-        table.innerHTML = `
-            <tr>
+
+    document.getElementById(
+        'recordCount'
+    ).textContent =
+        `${list.length} Record${list.length===1?'':'s'}`;
+
+
+    if(!list.length){
+
+        table.innerHTML=
+            `<tr>
                 <td
-                    colspan="8"
+                    colspan="6"
                     class="empty">
 
-                    No primary school teachers found.
+                    No Primary teachers found.
 
                 </td>
-            </tr>
-        `;
+            </tr>`;
 
         return;
 
@@ -1050,82 +1915,75 @@ function renderTeachers() {
 
 
     table.innerHTML =
-        filteredTeachers.map(
-            teacher => {
-
-                let statusClass =
-                    'status-active';
+        list.map(
+            teacher=>{
 
 
-                if (
-                    teacher.status ===
-                    'Inactive'
-                ) {
+                const name =
+                    [
+                        teacher.first_name,
+                        teacher.middle_name,
+                        teacher.last_name
+                    ]
+                    .filter(Boolean)
+                    .join(' ');
 
-                    statusClass =
-                        'status-inactive';
 
-                } else if (
-                    teacher.status ===
-                    'On Leave'
-                ) {
+                const employment =
+                    String(
+                        teacher.employment_type || '-'
+                    );
 
-                    statusClass =
-                        'status-leave';
 
-                }
+                const status =
+                    String(
+                        teacher.teacher_status || '-'
+                    );
+
+
+                const employmentClass =
+                    employment
+                        .toLowerCase()
+                        .includes('permanent')
+                            ? 'badge-permanent'
+                            : 'badge-parttime';
+
+
+                const statusClass =
+                    status
+                        .toLowerCase()
+                        === 'active'
+                            ? 'badge-active'
+                            : '';
 
 
                 return `
-
                     <tr>
 
                         <td>
-                            ${escapeHtml(
-                                teacher.teacher_number
-                            )}
-                        </td>
-
-                        <td>
                             <strong>
-                                ${escapeHtml(
-                                    teacher.teacher_name
-                                )}
+                                ${escapeHtml(name)}
                             </strong>
                         </td>
 
                         <td>
                             ${escapeHtml(
-                                teacher.gender
+                                teacher.staff_number || '-'
                             )}
                         </td>
 
                         <td>
                             ${escapeHtml(
-                                teacher.qualification
-                            )}
-                        </td>
-
-                        <td>
-                            ${escapeHtml(
-                                teacher.specialization
-                            )}
-                        </td>
-
-                        <td>
-                            ${escapeHtml(
-                                teacher.phone
+                                teacher.gender || '-'
                             )}
                         </td>
 
                         <td>
 
                             <span
-                                class="status ${statusClass}">
+                                class="badge ${employmentClass}">
 
-                                ${escapeHtml(
-                                    teacher.status
-                                )}
+                                ${escapeHtml(employment)}
 
                             </span>
 
@@ -1133,22 +1991,22 @@ function renderTeachers() {
 
                         <td>
 
-                            <button
-                                class="action-btn"
-                                onclick="viewTeacher(
-                                    ${Number(
-                                        teacher.teacher_id
-                                    )}
-                                )">
+                            <span
+                                class="badge ${statusClass}">
 
-                                View
+                                ${escapeHtml(status)}
 
-                            </button>
+                            </span>
 
                         </td>
 
-                    </tr>
+                        <td>
+                            ${escapeHtml(
+                                teacher.phone || '-'
+                            )}
+                        </td>
 
+                    </tr>
                 `;
 
             }
@@ -1158,97 +2016,103 @@ function renderTeachers() {
 
 
 /* =========================================================
-   SEARCH
+   FILTER
 ========================================================= */
 
-document.getElementById(
-    'searchInput'
-).addEventListener(
-    'input',
-    applyFilters
-);
-
-
-document.getElementById(
-    'genderFilter'
-).addEventListener(
-    'change',
-    applyFilters
-);
-
-
-document.getElementById(
-    'statusFilter'
-).addEventListener(
-    'change',
-    applyFilters
-);
-
-
-/* =========================================================
-   APPLY FILTERS
-========================================================= */
-
-function applyFilters() {
+function getFilteredTeachers(){
 
     const search =
         document.getElementById(
-            'searchInput'
-        ).value
+            'search'
+        )
+        .value
         .toLowerCase()
         .trim();
-
-
-    const gender =
-        document.getElementById(
-            'genderFilter'
-        ).value;
 
 
     const status =
         document.getElementById(
             'statusFilter'
-        ).value;
+        ).value
+        .toLowerCase();
 
 
-    filteredTeachers =
-        teachers.filter(
-            teacher => {
-
-                const matchesSearch =
-                    !search ||
-                    String(
-                        teacher.teacher_name || ''
-                    )
-                    .toLowerCase()
-                    .includes(search) ||
-
-                    String(
-                        teacher.teacher_number || ''
-                    )
-                    .toLowerCase()
-                    .includes(search);
+    const gender =
+        document.getElementById(
+            'genderFilter'
+        ).value
+        .toLowerCase();
 
 
-                const matchesGender =
-                    !gender ||
-                    teacher.gender === gender;
+    return primaryTeachers.filter(
+        teacher=>{
 
 
-                const matchesStatus =
-                    !status ||
-                    teacher.status === status;
+            const name =
+                [
+                    teacher.first_name,
+                    teacher.middle_name,
+                    teacher.last_name
+                ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
 
 
-                return (
-                    matchesSearch &&
-                    matchesGender &&
-                    matchesStatus
-                );
+            const staffNumber =
+                String(
+                    teacher.staff_number || ''
+                )
+                .toLowerCase();
 
-            }
-        );
 
+            const teacherStatus =
+                String(
+                    teacher.employment_type || ''
+                )
+                .toLowerCase();
+
+
+            const teacherGender =
+                String(
+                    teacher.gender || ''
+                )
+                .toLowerCase();
+
+
+            const searchOK =
+                !search ||
+                name.includes(search) ||
+                staffNumber.includes(search);
+
+
+            const statusOK =
+                !status ||
+                teacherStatus===status;
+
+
+            const genderOK =
+                !gender ||
+                teacherGender===gender;
+
+
+            return(
+                searchOK &&
+                statusOK &&
+                genderOK
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FILTER HANDLER
+========================================================= */
+
+function filterTeachers(){
 
     renderTeachers();
 
@@ -1256,28 +2120,24 @@ function applyFilters() {
 
 
 /* =========================================================
-   CLEAR FILTERS
+   RESET FILTERS
 ========================================================= */
 
-function clearFilters() {
+function resetFilters(){
 
     document.getElementById(
-        'searchInput'
-    ).value = '';
-
-
-    document.getElementById(
-        'genderFilter'
-    ).value = '';
+        'search'
+    ).value='';
 
 
     document.getElementById(
         'statusFilter'
-    ).value = '';
+    ).value='';
 
 
-    filteredTeachers =
-        [...teachers];
+    document.getElementById(
+        'genderFilter'
+    ).value='';
 
 
     renderTeachers();
@@ -1286,90 +2146,191 @@ function clearFilters() {
 
 
 /* =========================================================
-   NAVIGATION
+   OPEN MODAL
 ========================================================= */
 
-function goBack() {
+function openModal(){
 
-    window.location.href =
-        'teachers.html';
-
-}
-
-
-function registerTeacher() {
-
-    window.location.href =
-        'teacher-registration.html?sector=Primary';
-
-}
-
-
-function viewTeacher(teacherId) {
-
-    window.location.href =
-        `teacher-details.html?teacherId=${Number(
-            teacherId
-        )}`;
+    document.getElementById(
+        'modal'
+    ).style.display='block';
 
 }
 
 
 /* =========================================================
-   HTML ESCAPING
+   CLOSE MODAL
 ========================================================= */
 
-function escapeHtml(value) {
+function closeModal(){
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return '';
-
-    }
+    document.getElementById(
+        'modal'
+    ).style.display='none';
 
 
-    return String(value)
-        .replace(
-            /&/g,
-            '&amp;'
-        )
-        .replace(
-            /</g,
-            '&lt;'
-        )
-        .replace(
-            />/g,
-            '&gt;'
-        )
-        .replace(
-            /"/g,
-            '&quot;'
-        )
-        .replace(
-            /'/g,
-            '&#039;'
-        );
+    document.getElementById(
+        'teacherForm'
+    ).reset();
 
 }
+
+
+/* =========================================================
+   REGISTER PRIMARY TEACHER
+========================================================= */
+
+document.getElementById(
+    'teacherForm'
+).addEventListener(
+    'submit',
+    async function(event){
+
+        event.preventDefault();
+
+
+        try{
+
+            const payload={
+
+                staff_number:
+                    document.getElementById(
+                        'staff_number'
+                    ).value.trim(),
+
+                first_name:
+                    document.getElementById(
+                        'first_name'
+                    ).value.trim(),
+
+                middle_name:
+                    document.getElementById(
+                        'middle_name'
+                    ).value.trim(),
+
+                last_name:
+                    document.getElementById(
+                        'last_name'
+                    ).value.trim(),
+
+                gender:
+                    document.getElementById(
+                        'gender'
+                    ).value,
+
+                phone:
+                    document.getElementById(
+                        'phone'
+                    ).value.trim(),
+
+                email:
+                    document.getElementById(
+                        'email'
+                    ).value.trim(),
+
+                address:
+                    document.getElementById(
+                        'address'
+                    ).value.trim(),
+
+                employment_date:
+                    document.getElementById(
+                        'employment_date'
+                    ).value || null,
+
+                teacher_status:
+                    document.getElementById(
+                        'teacher_status'
+                    ).value,
+
+                school_section:
+                    'Primary',
+
+                employment_type:
+                    document.getElementById(
+                        'employment_type'
+                    ).value
+
+            };
+
+
+            const result =
+                await apiRequest(
+                    '/teachers',
+                    {
+                        method:'POST',
+
+                        body:
+                            JSON.stringify(
+                                payload
+                            )
+                    }
+                );
+
+
+            alert(
+                result?.message ||
+                'Primary teacher registered successfully.'
+            );
+
+
+            closeModal();
+
+
+            await loadTeachers();
+
+
+        }catch(error){
+
+            console.error(
+                'Error registering Primary teacher:',
+                error
+            );
+
+
+            alert(
+                error.message
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CLOSE MODAL WHEN CLICKING OUTSIDE
+========================================================= */
+
+window.addEventListener(
+    'click',
+    function(event){
+
+        const modal =
+            document.getElementById(
+                'modal'
+            );
+
+
+        if(event.target===modal){
+
+            closeModal();
+
+        }
+
+    }
+);
 
 
 /* =========================================================
    INITIALIZE
 ========================================================= */
 
-document.addEventListener(
-    'DOMContentLoaded',
-    function() {
-
-        loadTeachers();
-
-    }
-);
+loadTeachers();
 
 </script>
 
+
 </body>
+
 </html>
