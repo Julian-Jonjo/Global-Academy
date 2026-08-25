@@ -1371,7 +1371,7 @@ a{
                         Permanent
                     </span>
 
-                    <strong id="PermanentPercent">
+                    <strong id="permanentPercent">
                         0%
                     </strong>
 
@@ -1524,52 +1524,170 @@ a{
 
 </main>
 
-
-
 <script>
+
+const API_BASE = '/api';
+
+let user = null;
+let token = null;
+let teachers = [];
+
 
 /* ============================================================
    AUTHENTICATION
 ============================================================ */
 
-const token =
-    sessionStorage.getItem('authToken');
+function getAuthData(){
 
-const userData =
-    sessionStorage.getItem('user');
-
-
-if (!token || !userData){
-
-    window.location.href='/';
-
-}
+    token =
+        sessionStorage.getItem('token') ||
+        localStorage.getItem('token') ||
+        sessionStorage.getItem('authToken') ||
+        localStorage.getItem('authToken');
 
 
-let user;
+    const raw =
+        sessionStorage.getItem('user') ||
+        localStorage.getItem('user');
 
-try{
 
-    user =
-        JSON.parse(userData);
+    try{
 
-}catch(error){
+        user = raw ? JSON.parse(raw) : null;
 
-    sessionStorage.removeItem('authToken');
+    }catch(e){
 
-    sessionStorage.removeItem('user');
+        user = null;
 
-    window.location.href='/';
+    }
 
 }
 
 
-document.getElementById('userInfo').textContent =
-    `${user.full_name || 'User'} (${user.role_name || ''})`;
+getAuthData();
 
 
 /* ============================================================
-   TEMPORARY FRONTEND DATA
+   USER INFORMATION
+============================================================ */
+
+const userInfo =
+    document.getElementById('userInfo');
+
+
+if(userInfo){
+
+    userInfo.textContent =
+        `${user?.full_name || user?.name || 'Administrator'} (${user?.role_name || user?.role || 'School Management'})`;
+
+}
+
+
+/* ============================================================
+   API REQUEST
+============================================================ */
+
+async function apiRequest(url,options={}){
+
+    getAuthData();
+
+
+    if(!token){
+
+        alert(
+            'Authentication required. Please log in.'
+        );
+
+        location.href='index.html';
+
+        return null;
+
+    }
+
+
+    const response =
+        await fetch(
+            `${API_BASE}${url}`,
+            {
+                ...options,
+
+                headers:{
+                    'Content-Type':'application/json',
+
+                    ...(options.headers || {}),
+
+                    Authorization:
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+    let data=null;
+
+
+    try{
+
+        data=await response.json();
+
+    }catch(e){
+
+        data=null;
+
+    }
+
+
+    /* --------------------------------------------------------
+       SESSION EXPIRED
+    -------------------------------------------------------- */
+
+    if(response.status===401){
+
+        [
+            'token',
+            'user',
+            'authToken'
+        ].forEach(k=>{
+
+            sessionStorage.removeItem(k);
+            localStorage.removeItem(k);
+
+        });
+
+
+        alert(
+            'Your session has expired. Please log in again.'
+        );
+
+
+        location.href='index.html';
+
+        return null;
+
+    }
+
+
+    /* --------------------------------------------------------
+       OTHER ERRORS
+    -------------------------------------------------------- */
+
+    if(!response.ok){
+
+        throw new Error(
+            data?.message ||
+            `Request failed with status ${response.status}`
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* ============================================================
+   TEACHER SUMMARY
 ============================================================ */
 
 const teacherSummary = {
@@ -1580,9 +1698,9 @@ const teacherSummary = {
 
     secondary:0,
 
-    Permanent:0,
+    permanent:0,
 
-    Part Time:0,
+    partTime:0,
 
     male:0,
 
@@ -1590,9 +1708,257 @@ const teacherSummary = {
 
     primaryPermanent:0,
 
-    secondaryPermanent:0
+    secondaryPermanent:0,
+
+    primaryMale:0,
+
+    primaryFemale:0,
+
+    secondaryMale:0,
+
+    secondaryFemale:0
 
 };
+
+
+/* ============================================================
+   LOAD TEACHERS
+============================================================ */
+
+async function loadTeachers(){
+
+    const data =
+        await apiRequest('/teachers');
+
+
+    teachers =
+        Array.isArray(data)
+            ? data
+            : [];
+
+
+    calculateTeacherSummary();
+
+}
+
+
+/* ============================================================
+   CALCULATE SUMMARY
+============================================================ */
+
+function calculateTeacherSummary(){
+
+
+    /* --------------------------------------------------------
+       RESET
+    -------------------------------------------------------- */
+
+    teacherSummary.total=0;
+
+    teacherSummary.primary=0;
+
+    teacherSummary.secondary=0;
+
+    teacherSummary.permanent=0;
+
+    teacherSummary.partTime=0;
+
+    teacherSummary.male=0;
+
+    teacherSummary.female=0;
+
+    teacherSummary.primaryPermanent=0;
+
+    teacherSummary.secondaryPermanent=0;
+
+    teacherSummary.primaryMale=0;
+
+    teacherSummary.primaryFemale=0;
+
+    teacherSummary.secondaryMale=0;
+
+    teacherSummary.secondaryFemale=0;
+
+
+    /* --------------------------------------------------------
+       TOTAL
+    -------------------------------------------------------- */
+
+    teacherSummary.total =
+        teachers.length;
+
+
+    /* --------------------------------------------------------
+       PROCESS TEACHERS
+    -------------------------------------------------------- */
+
+    teachers.forEach(teacher=>{
+
+
+        const schoolSection =
+            String(
+                teacher.school_section || ''
+            )
+            .trim()
+            .toLowerCase();
+
+
+        const employmentType =
+            String(
+                teacher.employment_type || ''
+            )
+            .trim()
+            .toLowerCase();
+
+
+        const gender =
+            String(
+                teacher.gender || ''
+            )
+            .trim()
+            .toLowerCase();
+
+
+        /* ----------------------------------------------------
+           SCHOOL SECTION
+        ---------------------------------------------------- */
+
+        const isPrimary =
+            schoolSection === 'primary' ||
+            schoolSection === 'primary school';
+
+
+        const isSecondary =
+            schoolSection === 'secondary' ||
+            schoolSection === 'secondary school';
+
+
+        if(isPrimary){
+
+            teacherSummary.primary++;
+
+        }
+
+
+        if(isSecondary){
+
+            teacherSummary.secondary++;
+
+        }
+
+
+        /* ----------------------------------------------------
+           EMPLOYMENT TYPE
+        ---------------------------------------------------- */
+
+        const isPermanent =
+            employmentType === 'permanent';
+
+
+        const isPartTime =
+            employmentType === 'part time' ||
+            employmentType === 'part-time' ||
+            employmentType === 'parttime';
+
+
+        if(isPermanent){
+
+            teacherSummary.permanent++;
+
+        }
+
+
+        if(isPartTime){
+
+            teacherSummary.partTime++;
+
+        }
+
+
+        /* ----------------------------------------------------
+           GENDER
+        ---------------------------------------------------- */
+
+        if(gender === 'male'){
+
+            teacherSummary.male++;
+
+        }
+
+
+        if(gender === 'female'){
+
+            teacherSummary.female++;
+
+        }
+
+
+        /* ----------------------------------------------------
+           PRIMARY DETAILS
+        ---------------------------------------------------- */
+
+        if(isPrimary){
+
+            if(isPermanent){
+
+                teacherSummary.primaryPermanent++;
+
+            }
+
+
+            if(gender === 'male'){
+
+                teacherSummary.primaryMale++;
+
+            }
+
+
+            if(gender === 'female'){
+
+                teacherSummary.primaryFemale++;
+
+            }
+
+        }
+
+
+        /* ----------------------------------------------------
+           SECONDARY DETAILS
+        ---------------------------------------------------- */
+
+        if(isSecondary){
+
+            if(isPermanent){
+
+                teacherSummary.secondaryPermanent++;
+
+            }
+
+
+            if(gender === 'male'){
+
+                teacherSummary.secondaryMale++;
+
+            }
+
+
+            if(gender === 'female'){
+
+                teacherSummary.secondaryFemale++;
+
+            }
+
+        }
+
+    });
+
+
+    console.log(
+        'TEACHER SUMMARY:',
+        teacherSummary
+    );
+
+}
 
 
 /* ============================================================
@@ -1607,8 +1973,10 @@ function percentage(value,total){
 
     }
 
+
     return Math.round(
-        (Number(value)/Number(total))*100
+        (Number(value) /
+        Number(total)) * 100
     );
 
 }
@@ -1622,107 +1990,143 @@ function displayDashboard(){
 
 
     /* --------------------------------------------------------
+       SAFE TEXT
+    -------------------------------------------------------- */
+
+    function setText(id,value){
+
+        const element =
+            document.getElementById(id);
+
+
+        if(element){
+
+            element.textContent =
+                value;
+
+        }
+
+    }
+
+
+    /* --------------------------------------------------------
+       SAFE WIDTH
+    -------------------------------------------------------- */
+
+    function setWidth(id,value){
+
+        const element =
+            document.getElementById(id);
+
+
+        if(element){
+
+            element.style.width =
+                `${value}%`;
+
+        }
+
+    }
+
+
+    /* --------------------------------------------------------
        MAIN KPIs
     -------------------------------------------------------- */
 
-    document.getElementById(
-        'totalTeachers'
-    ).textContent =
-        teacherSummary.total;
+    setText(
+        'totalTeachers',
+        teacherSummary.total
+    );
 
 
-    document.getElementById(
-        'primaryTeachers'
-    ).textContent =
-        teacherSummary.primary;
+    setText(
+        'primaryTeachers',
+        teacherSummary.primary
+    );
 
 
-    document.getElementById(
-        'secondaryTeachers'
-    ).textContent =
-        teacherSummary.secondary;
+    setText(
+        'secondaryTeachers',
+        teacherSummary.secondary
+    );
 
 
-    document.getElementById(
-        'permanentTeachers'
-    ).textContent =
-        teacherSummary.permanent;
-
+    setText(
+        'permanentTeachers',
+        teacherSummary.permanent
+    );
 
 
     /* --------------------------------------------------------
        PRIMARY
     -------------------------------------------------------- */
 
-    document.getElementById(
-        'primaryTotal'
-    ).textContent =
-        teacherSummary.primary;
+    setText(
+        'primaryTotal',
+        teacherSummary.primary
+    );
 
 
-    document.getElementById(
-        'primaryPermanent'
-    ).textContent =
-        teacherSummary.primaryPermanent;
+    setText(
+        'primaryPermanent',
+        teacherSummary.primaryPermanent
+    );
 
 
-    document.getElementById(
-        'primaryMale'
-    ).textContent =
-        0;
+    setText(
+        'primaryMale',
+        teacherSummary.primaryMale
+    );
 
 
-    document.getElementById(
-        'primaryFemale'
-    ).textContent =
-        0;
-
+    setText(
+        'primaryFemale',
+        teacherSummary.primaryFemale
+    );
 
 
     /* --------------------------------------------------------
        SECONDARY
     -------------------------------------------------------- */
 
-    document.getElementById(
-        'secondaryTotal'
-    ).textContent =
-        teacherSummary.secondary;
+    setText(
+        'secondaryTotal',
+        teacherSummary.secondary
+    );
 
 
-    document.getElementById(
-        'secondaryPermanent'
-    ).textContent =
-        teacherSummary.secondaryPermanent;
+    setText(
+        'secondaryPermanent',
+        teacherSummary.secondaryPermanent
+    );
 
 
-    document.getElementById(
-        'secondaryMale'
-    ).textContent =
-        0;
+    setText(
+        'secondaryMale',
+        teacherSummary.secondaryMale
+    );
 
 
-    document.getElementById(
-        'secondaryFemale'
-    ).textContent =
-        0;
-
+    setText(
+        'secondaryFemale',
+        teacherSummary.secondaryFemale
+    );
 
 
     /* --------------------------------------------------------
        GENDER
     -------------------------------------------------------- */
 
-    document.getElementById(
-        'maleTeachers'
-    ).textContent =
-        teacherSummary.male;
+    setText(
+        'maleTeachers',
+        teacherSummary.male
+    );
 
 
-    document.getElementById(
-        'femaleTeachers'
-    ).textContent =
-        teacherSummary.female;
-
+    setText(
+        'femaleTeachers',
+        teacherSummary.female
+    );
 
 
     /* --------------------------------------------------------
@@ -1743,84 +2147,123 @@ function displayDashboard(){
         );
 
 
-    document.getElementById(
-        'primaryPercent'
-    ).textContent =
-        `${primaryPercent}%`;
+    setText(
+        'primaryPercent',
+        `${primaryPercent}%`
+    );
 
 
-    document.getElementById(
-        'secondaryPercent'
-    ).textContent =
-        `${secondaryPercent}%`;
+    setText(
+        'secondaryPercent',
+        `${secondaryPercent}%`
+    );
 
 
-    document.getElementById(
-        'primaryProgress'
-    ).style.width =
-        `${primaryPercent}%`;
+    setWidth(
+        'primaryProgress',
+        primaryPercent
+    );
 
 
-    document.getElementById(
-        'secondaryProgress'
-    ).style.width =
-        `${secondaryPercent}%`;
-
+    setWidth(
+        'secondaryProgress',
+        secondaryPercent
+    );
 
 
     /* --------------------------------------------------------
-       STATUS PERCENTAGES
+       EMPLOYMENT STATUS
     -------------------------------------------------------- */
 
-    const PermanentPercent =
+    const permanentPercent =
         percentage(
-            teacherSummary.Permanent,
+            teacherSummary.permanent,
             teacherSummary.total
         );
 
 
     const parttimePercent =
         percentage(
-            teacherSummary.parttime,
+            teacherSummary.partTime,
             teacherSummary.total
         );
 
 
-    document.getElementById(
-        'permaentPercent'
-    ).textContent =
-        `${peranentPercent}%`;
+    setText(
+        'permanentPercent',
+        `${permanentPercent}%`
+    );
 
 
-    document.getElementById(
-        'parttimePercent'
-    ).textContent =
-        `${parttimePercent}%`;
+    setText(
+        'parttimePercent',
+        `${parttimePercent}%`
+    );
 
 
-    document.getElementById(
-        'permanentProgress'
-    ).style.width =
-        `${permanentPercent}%`;
+    setWidth(
+        'permanentProgress',
+        permanentPercent
+    );
 
 
-    document.getElementById(
-        'parttimeProgress'
-    ).style.width =
-        `${parttimePercent}%`;
+    setWidth(
+        'parttimeProgress',
+        parttimePercent
+    );
 
 }
 
 
 /* ============================================================
-   INITIALIZE
+   INITIALIZE DASHBOARD
 ============================================================ */
 
-displayDashboard();
+async function loadPage(){
+
+    try{
+
+        getAuthData();
+
+
+        if(!token){
+
+            alert(
+                'Authentication required. Please log in.'
+            );
+
+            location.href='index.html';
+
+            return;
+
+        }
+
+
+        await loadTeachers();
+
+
+        displayDashboard();
+
+
+    }catch(error){
+
+        console.error(
+            'PAGE LOAD ERROR:',
+            error
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   START
+============================================================ */
+
+loadPage();
 
 </script>
-
-
 </body>
 
 </html>
