@@ -17,6 +17,7 @@ const classRoutes = require('./routes/classes');
 const guardianRoutes = require('./routes/guardians');
 const approvalRoutes = require('./routes/approvals');
 const paymentRoutes = require('./routes/payments');
+const teacherRoutes = require('./routes/teachers');
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use('/api/classes', classRoutes);
 app.use('/api/guardians', guardianRoutes);
 app.use('/api/approvals', approvalRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/teachers', teacherRoutes);
 
 
 // ============================================================
