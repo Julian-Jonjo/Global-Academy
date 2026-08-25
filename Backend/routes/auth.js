@@ -25,6 +25,7 @@ router.post('/login', async (req, res) => {
                 full_name,
                 is_active,
                 role_id,
+                teacher_id,
                 user_roles!inner (
                     role_name
                 )
@@ -62,25 +63,28 @@ router.post('/login', async (req, res) => {
         const roleName = user.user_roles?.role_name || null;
 
         const token = jwt.sign(
-            {
-                user_id: user.user_id,
-                username: user.username,
-                role_id: user.role_id,
-                role_name: roleName
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '8h' }
-        );
+    {
+        user_id: user.user_id,
+        username: user.username,
+        teacher_id: user.teacher_id || null,
+        student_id: user.student_id || null,
+        role_id: user.role_id,
+        role_name: roleName
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '8h' }
+);
 
         res.json({
             message: 'Login successful',
             token,
             user: {
                 user_id: user.user_id,
-                username: user.username,
-                full_name: user.full_name,
-                role_id: user.role_id,
-                role_name: roleName
+    username: user.username,
+    full_name: user.full_name,
+    teacher_id: user.teacher_id,
+    role_id: user.role_id,
+    role_name: roleName
             }
         });
 

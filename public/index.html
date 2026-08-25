@@ -171,94 +171,54 @@
 
 <script>
 
-    const loginForm =
-        document.getElementById('loginForm');
-
-    const message =
-        document.getElementById('message');
-
-
     loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-        event.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
 
-        const username =
-            document.getElementById('username').value.trim();
+    message.textContent = 'Signing in...';
 
-        const password =
-            document.getElementById('password').value;
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
 
-        message.textContent = 'Signing in...';
+        const data = await response.json();
 
-
-        try {
-
-            const response = await fetch(
-                '/api/auth/login',
-                {
-                    method: 'POST',
-
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-
-                    body: JSON.stringify({
-                        username,
-                        password
-                    })
-                }
-            );
-
-
-            const data = await response.json();
-
-
-            if (!response.ok) {
-
-                message.textContent =
-                    data.message || 'Login failed.';
-
-                return;
-            }
-
-
-            // Store authentication information temporarily.
-            sessionStorage.setItem(
-                'authToken',
-                data.token
-            );
-
-            sessionStorage.setItem(
-                'user',
-                JSON.stringify(data.user)
-            );
-
-
-            message.textContent =
-                'Login successful.';
-
-
-            // Temporary destination.
-            // We will replace this with the
-            // actual role-based dashboard.
-            setTimeout(() => {
-
-                window.location.href =
-                    '/dashboard.html';
-
-            }, 500);
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            message.textContent =
-                'Unable to connect to the server.';
-
+        if (!response.ok) {
+            message.textContent = data.message || 'Login failed.';
+            return;
         }
 
-    });
+        // Store authentication information
+        sessionStorage.setItem('authToken', data.token);
+        sessionStorage.setItem('user', JSON.stringify(data.user));
+
+        message.textContent = 'Login successful.';
+
+        // Role-based redirect
+        setTimeout(() => {
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            const roleName = user.role_name;
+
+            // Redirect based on role
+            if (roleName === 'Teacher') {
+                window.location.href = '/teachers-dashboard.html';
+            } else {
+                window.location.href = '/dashboard.html';
+            }
+        }, 500);
+
+    } catch (error) {
+        console.error(error);
+        message.textContent = 'Unable to connect to the server.';
+    }
+});
 
 </script>
 
