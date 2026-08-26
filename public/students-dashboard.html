@@ -3,12 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Education Academy | Student Management</title>
 
     <style>
@@ -50,6 +45,9 @@
 
         .page-title {
             margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .page-title h2 {
@@ -59,6 +57,22 @@
         .page-title p {
             margin: 0;
             color: #6b7280;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
         }
 
         .tabs {
@@ -141,7 +155,7 @@
 
         .filters {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -218,6 +232,11 @@
             color: #374151;
         }
 
+        .rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         .btn {
             border: none;
             padding: 9px 15px;
@@ -265,6 +284,15 @@
 
         .cancel-btn:hover {
             background: #4b5563;
+        }
+
+        .review-btn {
+            background: #d97706;
+            color: white;
+        }
+
+        .review-btn:hover {
+            background: #b45309;
         }
 
         .edit-action {
@@ -437,6 +465,12 @@
             .edit-form {
                 grid-template-columns: 1fr;
             }
+
+            .page-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
         }
 
         @media (max-width: 600px) {
@@ -477,16 +511,18 @@
 <main class="container">
 
     <div class="page-title">
-
-        <h2>
-            Student Management
-        </h2>
-
-        <p>
-            Manage student records, academic information,
-            attendance, finance and related records.
-        </p>
-
+        <div>
+            <h2>
+                Student Management
+            </h2>
+            <p>
+                Manage student records, academic information,
+                attendance, finance and related records.
+            </p>
+        </div>
+        <button class="back-btn" onclick="window.location.href='dashboard.html'">
+            ← Back to Dashboard
+        </button>
     </div>
 
 
@@ -507,12 +543,12 @@
         </button>
 
          <button
-    id="registerTab"
-    class="tab-button"
-    onclick="openRegistrationTab(this)"
->
-     Register Student
-     </button>
+            id="registerTab"
+            class="tab-button"
+            onclick="openRegistrationTab(this)"
+        >
+            Register Student
+        </button>
 
         <button
             class="tab-button"
@@ -629,11 +665,11 @@
             <div class="overview-card">
 
                 <h4>
-                    Inactive Students
+                    Rejected Students
                 </h4>
 
                 <div
-                    id="inactiveStudents"
+                    id="rejectedStudents"
                     class="number"
                 >
                     0
@@ -644,19 +680,20 @@
         </div>
 
     </section>
+    
     <section
-    id="registration"
-    class="tab-content"
->
-    <div id="registrationContainer">
-        <div class="module-placeholder">
-            <h3>Student Registration</h3>
-            <p>
-                Loading student registration form...
-            </p>
+        id="registration"
+        class="tab-content"
+    >
+        <div id="registrationContainer">
+            <div class="module-placeholder">
+                <h3>Student Registration</h3>
+                <p>
+                    Loading student registration form...
+                </p>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
     <section
@@ -713,10 +750,17 @@
                     Pending
                 </option>
 
-                <option value="Inactive">
-                    Inactive
+                <option value="Rejected">
+                    Rejected
                 </option>
 
+            </select>
+
+            <select
+                id="academicYearFilter"
+                onchange="applyFilters()"
+            >
+                <option value="">Current Academic Year</option>
             </select>
 
             <button
@@ -1209,6 +1253,10 @@
                         Inactive
                     </option>
 
+                    <option value="Rejected">
+                        Rejected
+                    </option>
+
                 </select>
 
             </div>
@@ -1364,6 +1412,44 @@ if (role === 'Proprietor') {
 
 
 /* ==========================================================
+   LOAD ACADEMIC YEARS
+========================================================== */
+
+async function loadAcademicYears() {
+    try {
+        const response = await fetch('/api/academic-years', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to load academic years');
+
+        const data = await response.json();
+        const select = document.getElementById('academicYearFilter');
+
+        select.innerHTML = '<option value="">All Academic Years</option>';
+
+        data.forEach(year => {
+            const option = document.createElement('option');
+            option.value = year.academic_year_id;
+            const label = year.is_current ? year.year_name + ' (Current)' : year.year_name;
+            option.textContent = label;
+            select.appendChild(option);
+        });
+
+        const currentYear = data.find(y => y.is_current);
+        if (currentYear) {
+            select.value = currentYear.academic_year_id;
+        }
+
+    } catch (error) {
+        console.error('Error loading academic years:', error);
+    }
+}
+
+
+/* ==========================================================
    REGISTER STUDENT
 ========================================================== */
 
@@ -1395,6 +1481,7 @@ async function openRegistrationTab(button) {
     if (
         container.dataset.loaded === 'true'
     ) {
+        attachFormListener();
         return;
     }
 
@@ -1428,6 +1515,11 @@ async function openRegistrationTab(button) {
         container.dataset.loaded =
             'true';
 
+        setTimeout(() => {
+            loadClasses();
+            attachFormListener();
+        }, 200);
+
     } catch (error) {
 
         console.error(
@@ -1449,6 +1541,278 @@ async function openRegistrationTab(button) {
 
     }
 
+}
+
+
+/* ==========================================================
+   ATTACH FORM LISTENER
+========================================================== */
+
+function attachFormListener() {
+    const form = document.getElementById('studentForm');
+    if (!form) {
+        console.log('Form not found yet');
+        return;
+    }
+
+    // Remove existing listener to avoid duplicates
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+
+    newForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        console.log('✅ Form submitted!');
+
+        const message = document.getElementById('message');
+        if (message) {
+            message.style.display = 'block';
+            message.className = '';
+            message.textContent = 'Submitting...';
+        }
+
+        const submitBtn = this.querySelector('.submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+        }
+
+        try {
+            const token = sessionStorage.getItem('authToken');
+            const formData = new FormData();
+
+            // Check if this is a re-submission
+            const reviewStudentId = document.getElementById('review_student_id')?.value;
+
+            // Get all form values
+            const fields = [
+                'admission_number', 'first_name', 'middle_name', 'last_name',
+                'gender', 'date_of_birth', 'nationality', 'phone', 'address',
+                'class_id', 'admission_date', 'previous_school',
+                'parent_name', 'parent_relationship', 'parent_phone', 'parent_email', 'parent_address',
+                'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship'
+            ];
+
+            // For re-submission, collect data for JSON update
+            const updateData = {};
+            fields.forEach(field => {
+                const el = document.getElementById(field);
+                if (el) {
+                    updateData[field] = el.value.trim();
+                }
+            });
+
+            // ============================================================
+// RE-SUBMISSION (Update existing student)
+// ============================================================
+if (reviewStudentId) {
+    console.log('🔄 Re-submitting student for review:', reviewStudentId);
+
+    // Update student data
+    const updateResponse = await fetch(`/api/students/${reviewStudentId}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            admission_number: updateData.admission_number,
+            first_name: updateData.first_name,
+            middle_name: updateData.middle_name,
+            last_name: updateData.last_name,
+            gender: updateData.gender,
+            date_of_birth: updateData.date_of_birth,
+            phone: updateData.phone,
+            address: updateData.address,
+            class_id: updateData.class_id,
+            admission_date: updateData.admission_date,
+            previous_school: updateData.previous_school,
+            nationality: updateData.nationality,
+            emergency_contact_name: updateData.emergency_contact_name,
+            emergency_contact_phone: updateData.emergency_contact_phone,
+            emergency_contact_relationship: updateData.emergency_contact_relationship,
+            student_status: 'Pending'
+        })
+    });
+
+    const updateResult = await updateResponse.json();
+
+    if (!updateResponse.ok) {
+        throw new Error(updateResult.message || 'Failed to update student');
+    }
+
+    // After the reapprove call
+const reapproveResponse = await fetch(`/api/students/${reviewStudentId}/reapprove`, {
+    method: 'PUT',
+    headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+});
+
+const reapproveResult = await reapproveResponse.json();
+
+if (!reapproveResponse.ok) {
+    throw new Error(reapproveResult.message || 'Failed to submit for re-approval');
+}
+
+console.log('✅ Re-approval submitted:', reapproveResult);
+
+// Force a reload of the approvals data
+if (message) {
+    message.textContent = '✅ Student updated and sent for re-approval successfully!';
+    message.className = 'success';
+    message.style.display = 'block';
+}
+
+
+    // Reset form
+    this.reset();
+    const preview = document.getElementById('photoPreview');
+    if (preview) preview.style.display = 'none';
+    document.querySelectorAll('.file-name-display').forEach(el => el.textContent = '');
+
+    // Remove review flag
+    const hiddenInput = document.getElementById('review_student_id');
+    if (hiddenInput) hiddenInput.remove();
+
+    // Reset submit button
+    const submitBtn2 = document.querySelector('#studentForm .submit-btn');
+    if (submitBtn2) {
+        submitBtn2.textContent = 'Submit Registration';
+    }
+
+    // Reload data
+    loadStudents();
+    return;
+}
+            // ============================================================
+            // NEW REGISTRATION
+            // ============================================================
+            console.log('📝 New student registration');
+
+            // For new registration, use FormData for file uploads
+            fields.forEach(field => {
+                const el = document.getElementById(field);
+                if (el) {
+                    formData.append(field, el.value.trim());
+                }
+            });
+
+            // Files
+            const fileFields = ['student_photo', 'result_file', 'birth_certificate_file', 'testimonial_file', 'transfer_file'];
+            fileFields.forEach(field => {
+                const el = document.getElementById(field);
+                if (el && el.files && el.files[0]) {
+                    formData.append(field, el.files[0]);
+                }
+            });
+
+            console.log('📤 Sending new registration...');
+
+            const response = await fetch('/api/students/register', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            console.log('📥 Response:', result);
+
+            if (response.ok) {
+                if (message) {
+                    message.textContent = result.message || 'Student registered successfully!';
+                    message.className = 'success';
+                    message.style.display = 'block';
+                }
+                this.reset();
+                const preview = document.getElementById('photoPreview');
+                if (preview) preview.style.display = 'none';
+                document.querySelectorAll('.file-name-display').forEach(el => el.textContent = '');
+                loadClasses();
+                loadStudents();
+            } else {
+                if (message) {
+                    message.textContent = result.message || 'Registration failed.';
+                    message.className = 'error';
+                    message.style.display = 'block';
+                }
+            }
+
+        } catch (error) {
+            console.error('❌ Registration error:', error);
+            const message = document.getElementById('message');
+            if (message) {
+                message.textContent = 'An error occurred. Please try again.';
+                message.className = 'error';
+                message.style.display = 'block';
+            }
+        } finally {
+            const submitBtn = document.querySelector('#studentForm .submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Registration';
+            }
+        }
+    });
+
+    console.log('✅ Form listener attached');
+}
+
+/* ==========================================================
+   LOAD CLASSES
+========================================================== */
+
+async function loadClasses() {
+    try {
+        const response = await fetch('/api/classes', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const select = document.getElementById('class_id');
+
+        if (!select) {
+            console.log('class_id element not found yet');
+            return;
+        }
+
+        select.innerHTML = '<option value="">Select class</option>';
+
+        const classes = Array.isArray(data) ? data : [];
+
+        if (classes.length === 0) {
+            select.innerHTML = '<option value="">No classes available</option>';
+            return;
+        }
+
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls.class_id;
+            let className = cls.class_name || 'Unnamed Class';
+            if (cls.arm) {
+                className += ' - ' + cls.arm;
+            }
+            option.textContent = className;
+            select.appendChild(option);
+        });
+
+        console.log('✅ Classes loaded successfully:', classes.length);
+
+    } catch (error) {
+        console.error('Error loading classes:', error);
+        const select = document.getElementById('class_id');
+        if (select) {
+            select.innerHTML = '<option value="">Failed to load classes</option>';
+        }
+    }
 }
 
 
@@ -1544,6 +1908,36 @@ async function loadStudents() {
 
     try {
 
+        // Build URL with filters
+        let url = '/api/students?';
+        const params = [];
+
+        // Academic year filter
+        const academicYearSelect = document.getElementById('academicYearFilter');
+        if (academicYearSelect && academicYearSelect.value) {
+            params.push(`academic_year_id=${academicYearSelect.value}`);
+        }
+
+        // Search filter
+        const searchInput = document.getElementById('search');
+        if (searchInput && searchInput.value.trim()) {
+            params.push(`search=${encodeURIComponent(searchInput.value.trim())}`);
+        }
+
+        // Class filter
+        const classFilter = document.getElementById('classFilter');
+        if (classFilter && classFilter.value) {
+            params.push(`class_id=${classFilter.value}`);
+        }
+
+        // Status filter
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter && statusFilter.value) {
+            params.push(`status=${statusFilter.value}`);
+        }
+
+        url += params.join('&');
+
         const controller =
             new AbortController();
 
@@ -1557,7 +1951,7 @@ async function loadStudents() {
 
         const response =
             await fetch(
-                '/api/students',
+                url,
                 {
                     method: 'GET',
 
@@ -1686,7 +2080,7 @@ async function loadStudents() {
 
 
         document.getElementById(
-            'inactiveStudents'
+            'rejectedStudents'
         ).textContent = '0';
 
 
@@ -1770,12 +2164,12 @@ function updateOverview() {
         ).length;
 
 
-    const inactive =
+    const rejected =
         students.filter(
             student =>
                 String(
                     student.student_status || ''
-                ).toLowerCase() === 'inactive'
+                ).toLowerCase() === 'rejected'
         ).length;
 
 
@@ -1795,8 +2189,8 @@ function updateOverview() {
 
 
     document.getElementById(
-        'inactiveStudents'
-    ).textContent = inactive;
+        'rejectedStudents'
+    ).textContent = rejected;
 
 }
 
@@ -2044,6 +2438,31 @@ function renderStudents() {
                             .toLowerCase();
 
 
+                    // Show Review button for rejected students
+                    let actionButtons = `
+                        <button
+                            class="btn view-btn"
+                            onclick="viewStudent(${Number(
+                                student.student_id
+                            )})"
+                        >
+                            View
+                        </button>
+                    `;
+
+                    if (status === 'Rejected') {
+                        actionButtons += `
+                            <button
+                                class="btn review-btn"
+                                onclick="reviewStudent(${Number(
+                                    student.student_id
+                                )})"
+                            >
+                                Review
+                            </button>
+                        `;
+                    }
+
                     return `
 
                         <tr>
@@ -2089,16 +2508,9 @@ function renderStudents() {
                             </td>
 
                             <td>
-
-                                <button
-                                    class="btn view-btn"
-                                    onclick="viewStudent(${Number(
-                                        student.student_id
-                                    )})"
-                                >
-                                    View
-                                </button>
-
+                                <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                                    ${actionButtons}
+                                </div>
                             </td>
 
                         </tr>
@@ -2304,6 +2716,100 @@ function viewStudent(studentId) {
 
 
 /* ==========================================================
+   REVIEW STUDENT (Open registration form with data)
+========================================================== */
+
+async function reviewStudent(studentId) {
+    try {
+        console.log('🔍 Fetching student data for review:', studentId);
+        
+        const response = await fetch(`/api/students/${studentId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error:', response.status, errorText);
+            throw new Error(`Failed to load student data: ${response.status}`);
+        }
+
+        const student = await response.json();
+        console.log('✅ Student data loaded:', student);
+
+        // Open the registration tab
+        const registerTab = document.getElementById('registerTab');
+        if (registerTab) {
+            registerTab.click();
+        }
+
+        // Wait for the form to load
+        setTimeout(() => {
+            const fieldMap = {
+                'admission_number': student.admission_number,
+                'first_name': student.first_name,
+                'middle_name': student.middle_name || '',
+                'last_name': student.last_name,
+                'gender': student.gender || '',
+                'date_of_birth': student.date_of_birth || '',
+                'nationality': student.nationality || 'Sierra Leonean',
+                'phone': student.phone || '',
+                'address': student.address || '',
+                'class_id': student.class_id || '',
+                'admission_date': student.admission_date || '',
+                'previous_school': student.previous_school || '',
+                'parent_name': student.guardian_name || '',
+                'parent_relationship': student.guardian_relationship || '',
+                'parent_phone': student.guardian_phone || '',
+                'parent_email': student.guardian_email || '',
+                'parent_address': student.guardian_address || '',
+                'emergency_contact_name': student.emergency_contact_name || '',
+                'emergency_contact_phone': student.emergency_contact_phone || '',
+                'emergency_contact_relationship': student.emergency_contact_relationship || ''
+            };
+
+            Object.keys(fieldMap).forEach(fieldId => {
+                const el = document.getElementById(fieldId);
+                if (el) {
+                    el.value = fieldMap[fieldId] || '';
+                }
+            });
+
+            const submitBtn = document.querySelector('#studentForm .submit-btn');
+            if (submitBtn) {
+                submitBtn.textContent = 'Resubmit for Approval';
+            }
+
+            const form = document.getElementById('studentForm');
+            let hiddenInput = document.getElementById('review_student_id');
+            if (!hiddenInput) {
+                hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.id = 'review_student_id';
+                hiddenInput.name = 'review_student_id';
+                form.appendChild(hiddenInput);
+            }
+            hiddenInput.value = student.student_id;
+
+            const message = document.getElementById('message');
+            if (message) {
+                message.style.display = 'block';
+                message.className = 'info';
+                message.textContent = `📝 Reviewing ${student.first_name} ${student.last_name}. Update information and resubmit for approval.`;
+            }
+
+            console.log('✅ Form populated for review');
+
+        }, 500);
+
+    } catch (error) {
+        console.error('Review error:', error);
+        alert('Error loading student data for review: ' + error.message);
+    }
+}
+
+/* ==========================================================
    EDIT STUDENT
 ========================================================== */
 
@@ -2460,7 +2966,7 @@ async function editStudent(studentId) {
 
 
 /* ==========================================================
-   LOAD CLASSES
+   LOAD CLASSES FOR EDIT
 ========================================================== */
 
 async function loadEditClasses() {
@@ -3038,6 +3544,8 @@ function formatDateForInput(value) {
    INITIAL LOAD
 ========================================================== */
 
+// Load everything
+loadAcademicYears();
 loadStudents();
 
 </script>

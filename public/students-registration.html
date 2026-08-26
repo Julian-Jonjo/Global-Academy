@@ -1,4 +1,12 @@
-<style>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Academy | Student Registration</title>
+
+    <style>
         * {
             box-sizing: border-box;
         }
@@ -75,9 +83,50 @@
             width: 100%;
         }
 
+        input[type="file"] {
+            padding: 10px;
+            background: #f9fafb;
+        }
+
         textarea {
             min-height: 90px;
             resize: vertical;
+        }
+
+        .photo-preview {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .photo-preview img {
+            max-width: 150px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+
+        .file-upload-group {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .file-upload-group label {
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .file-upload-group .file-hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .file-name-display {
+            font-size: 13px;
+            color: #166534;
+            margin-top: 5px;
         }
 
         .actions {
@@ -114,8 +163,8 @@
         #message {
             margin-top: 20px;
             padding: 12px;
-            display: none;
             border-radius: 6px;
+            display: none;
         }
 
         .success {
@@ -137,7 +186,6 @@
         }
 
         @media (max-width: 700px) {
-
             .form-grid {
                 grid-template-columns: 1fr;
             }
@@ -155,308 +203,482 @@
 
 <body>
 
-<header class="header">
-    <h1>GLOBAL ACADEMY — Student Registration</h1>
-</header>
-
-
-<main class="container">
-
-    <div class="card">
-
-        <h2>Register New Student</h2>
-
-        <p>
-            Complete the student's information below.
-            The registration will be submitted for approval.
-        </p>
-
-
-        <form id="studentForm">
-
-            <!-- PERSONAL INFORMATION -->
-
-            <h3 class="section-title">
-                Personal Information
-            </h3>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label for="admission_number">
-                        Admission Number *
-                    </label>
-
-                    <input
-                        type="text"
-                        id="admission_number"
-                        required
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="first_name">
-                        First Name *
-                    </label>
-
-                    <input
-                        type="text"
-                        id="first_name"
-                        required
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="middle_name">
-                        Middle Name
-                    </label>
-
-                    <input
-                        type="text"
-                        id="middle_name"
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="last_name">
-                        Last Name *
-                    </label>
-
-                    <input
-                        type="text"
-                        id="last_name"
-                        required
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="gender">
-                        Gender
-                    </label>
-
-                    <select id="gender">
-
-                        <option value="">
-                            Select gender
-                        </option>
-
-                        <option value="Male">
-                            Male
-                        </option>
-
-                        <option value="Female">
-                            Female
-                        </option>
-
-                    </select>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="date_of_birth">
-                        Date of Birth
-                    </label>
-
-                    <input
-                        type="date"
-                        id="date_of_birth"
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="nationality">
-                        Nationality
-                    </label>
-
-                    <input
-                        type="text"
-                        id="nationality"
-                        value="Sierra Leonean"
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="phone">
-                        Phone
-                    </label>
-
-                    <input
-                        type="tel"
-                        id="phone"
-                    >
-                </div>
-
-
-                <div class="form-group full-width">
-                    <label for="address">
-                        Address
-                    </label>
-
-                    <textarea id="address"></textarea>
-                </div>
-
-            </div>
-
-
-            <!-- SCHOOL INFORMATION -->
-
-            <h3 class="section-title">
-                School Information
-            </h3>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label for="class_id">
-                        Class *
-                    </label>
-
-                    <select id="class_id" required>
-
-                        <option value="">
-                            Loading classes...
-                        </option>
-
-                    </select>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="admission_date">
-                        Admission Date
-                    </label>
-
-                    <input
-                        type="date"
-                        id="admission_date"
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="previous_school">
-                        Previous School
-                    </label>
-
-                    <input
-                        type="text"
-                        id="previous_school"
-                    >
-                </div>
-
-            </div>
-
-
-            <!-- GUARDIAN INFORMATION -->
-
-            <h3 class="section-title">
-                Guardian Information
-            </h3>
-
-            <div class="form-grid">
-
-                <div class="form-group full-width">
-
-                    <label for="guardian_id">
-                        Guardian
-                    </label>
-
-                    <select id="guardian_id">
-
-                        <option value="">
-                            Loading guardians...
-                        </option>
-
-                    </select>
+    <header class="header">
+        <h1>GLOBAL ACADEMY — Student Registration</h1>
+    </header>
+
+    <main class="container">
+
+        <div class="card">
+
+            <h2>Register New Student</h2>
+
+            <p>
+                Complete the student's information below.
+                The registration will be submitted for approval.
+            </p>
+
+            <form id="studentForm" enctype="multipart/form-data">
+
+                <!-- ============================================ -->
+                <!-- PERSONAL INFORMATION -->
+                <!-- ============================================ -->
+
+                <h3 class="section-title">
+                    Personal Information
+                </h3>
+
+                <div class="form-grid">
+
+                    <!-- Photo Upload -->
+                    <div class="form-group full-width">
+                        <label for="student_photo">
+                            Student Photo
+                        </label>
+                        <input
+                            type="file"
+                            id="student_photo"
+                            accept="image/*"
+                            onchange="previewPhoto(event)"
+                        >
+                        <div id="photoPreview" class="photo-preview">
+                            <img id="photoPreviewImg" src="" alt="Student photo preview">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="admission_number">
+                            Admission Number *
+                        </label>
+                        <input
+                            type="text"
+                            id="admission_number"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="first_name">
+                            First Name *
+                        </label>
+                        <input
+                            type="text"
+                            id="first_name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="middle_name">
+                            Middle Name
+                        </label>
+                        <input
+                            type="text"
+                            id="middle_name"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="last_name">
+                            Last Name *
+                        </label>
+                        <input
+                            type="text"
+                            id="last_name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">
+                            Gender
+                        </label>
+                        <select id="gender">
+                            <option value="">Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_of_birth">
+                            Date of Birth
+                        </label>
+                        <input
+                            type="date"
+                            id="date_of_birth"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nationality">
+                            Nationality
+                        </label>
+                        <input
+                            type="text"
+                            id="nationality"
+                            value="Sierra Leonean"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">
+                            Phone
+                        </label>
+                        <input
+                            type="tel"
+                            id="phone"
+                        >
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="address">
+                            Address
+                        </label>
+                        <textarea id="address"></textarea>
+                    </div>
 
                 </div>
 
-            </div>
+                <!-- ============================================ -->
+                <!-- SCHOOL INFORMATION -->
+                <!-- ============================================ -->
 
+                <h3 class="section-title">
+                    School Information
+                </h3>
 
-            <!-- EMERGENCY CONTACT -->
+                <div class="form-grid">
 
-            <h3 class="section-title">
-                Emergency Contact
-            </h3>
+                    <div class="form-group">
+                        <label for="class_id">
+                            Class *
+                        </label>
+                        <select id="class_id" required>
+                            <option value="">Loading classes...</option>
+                        </select>
+                    </div>
 
-            <div class="form-grid">
+                    <div class="form-group">
+                        <label for="admission_date">
+                            Admission Date
+                        </label>
+                        <input
+                            type="date"
+                            id="admission_date"
+                        >
+                    </div>
 
-                <div class="form-group">
-                    <label for="emergency_contact_name">
-                        Name
-                    </label>
+                    <div class="form-group">
+                        <label for="previous_school">
+                            Previous School
+                        </label>
+                        <input
+                            type="text"
+                            id="previous_school"
+                        >
+                    </div>
 
-                    <input
-                        type="text"
-                        id="emergency_contact_name"
-                    >
                 </div>
 
+                <!-- ============================================ -->
+                <!-- PARENT / GUARDIAN INFORMATION -->
+                <!-- ============================================ -->
 
-                <div class="form-group">
-                    <label for="emergency_contact_phone">
-                        Phone
-                    </label>
+                <h3 class="section-title">
+                    Parent / Guardian Information
+                </h3>
 
-                    <input
-                        type="tel"
-                        id="emergency_contact_phone"
-                    >
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="parent_name">
+                            Full Name *
+                        </label>
+                        <input
+                            type="text"
+                            id="parent_name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent_relationship">
+                            Relationship *
+                        </label>
+                        <select id="parent_relationship" required>
+                            <option value="">Select relationship</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Guardian">Guardian</option>
+                            <option value="Uncle">Uncle</option>
+                            <option value="Aunt">Aunt</option>
+                            <option value="Grandparent">Grandparent</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent_phone">
+                            Phone Number
+                        </label>
+                        <input
+                            type="tel"
+                            id="parent_phone"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent_email">
+                            Email Address
+                        </label>
+                        <input
+                            type="email"
+                            id="parent_email"
+                        >
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="parent_address">
+                            Address
+                        </label>
+                        <textarea id="parent_address"></textarea>
+                    </div>
+
                 </div>
 
+                <!-- ============================================ -->
+                <!-- EMERGENCY CONTACT -->
+                <!-- ============================================ -->
 
-                <div class="form-group">
-                    <label for="emergency_contact_relationship">
-                        Relationship
-                    </label>
+                <h3 class="section-title">
+                    Emergency Contact
+                </h3>
 
-                    <input
-                        type="text"
-                        id="emergency_contact_relationship"
-                    >
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="emergency_contact_name">
+                            Name
+                        </label>
+                        <input
+                            type="text"
+                            id="emergency_contact_name"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emergency_contact_phone">
+                            Phone
+                        </label>
+                        <input
+                            type="tel"
+                            id="emergency_contact_phone"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emergency_contact_relationship">
+                            Relationship
+                        </label>
+                        <input
+                            type="text"
+                            id="emergency_contact_relationship"
+                        >
+                    </div>
+
                 </div>
 
-            </div>
+                <!-- ============================================ -->
+                <!-- STUDENT DOCUMENTS -->
+                <!-- ============================================ -->
 
+                <h3 class="section-title">
+                    Student Documents
+                </h3>
 
-            <!-- MESSAGE -->
+                <div class="form-grid">
 
-            <div id="message"></div>
+                    <div class="form-group full-width file-upload-group">
+                        <label for="result_file">
+                            Result / Report Card
+                        </label>
+                        <input
+                            type="file"
+                            id="result_file"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            onchange="showFileName(this, 'resultFileName')"
+                        >
+                        <div class="file-hint">Upload result or report card (PDF, DOC, JPG, PNG)</div>
+                        <div id="resultFileName" class="file-name-display"></div>
+                    </div>
 
+                    <div class="form-group full-width file-upload-group">
+                        <label for="birth_certificate_file">
+                            Birth Certificate
+                        </label>
+                        <input
+                            type="file"
+                            id="birth_certificate_file"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            onchange="showFileName(this, 'birthFileName')"
+                        >
+                        <div class="file-hint">Upload birth certificate (PDF, DOC, JPG, PNG)</div>
+                        <div id="birthFileName" class="file-name-display"></div>
+                    </div>
 
-            <!-- BUTTONS -->
+                    <div class="form-group full-width file-upload-group">
+                        <label for="testimonial_file">
+                            Testimonial / Reference Letter
+                        </label>
+                        <input
+                            type="file"
+                            id="testimonial_file"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            onchange="showFileName(this, 'testimonialFileName')"
+                        >
+                        <div class="file-hint">Upload testimonial or reference letter (PDF, DOC, JPG, PNG)</div>
+                        <div id="testimonialFileName" class="file-name-display"></div>
+                    </div>
 
-            <div class="actions">
+                    <div class="form-group full-width file-upload-group">
+                        <label for="transfer_file">
+                            Transfer Form
+                        </label>
+                        <input
+                            type="file"
+                            id="transfer_file"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            onchange="showFileName(this, 'transferFileName')"
+                        >
+                        <div class="file-hint">Upload transfer form (PDF, DOC, JPG, PNG)</div>
+                        <div id="transferFileName" class="file-name-display"></div>
+                    </div>
 
-                <button
-                    type="submit"
-                    class="submit-btn"
-                >
-                    Submit Registration
-                </button>
+                </div>
 
+                <!-- ============================================ -->
+                <!-- MESSAGE -->
+                <!-- ============================================ -->
 
-                <button
-                    type="button"
-                    class="back-btn"
-                    onclick="history.back()"
-                >
-                    Cancel
-                </button>
+                <div id="message"></div>
 
-            </div>
+                <!-- ============================================ -->
+                <!-- BUTTONS -->
+                <!-- ============================================ -->
 
-        </form>
+                <div class="actions">
+                    <button type="submit" class="submit-btn">
+                        Submit Registration
+                    </button>
 
-    </div>
+                    <button type="button" class="back-btn" onclick="history.back()">
+                        Cancel
+                    </button>
+                </div>
 
-</main>
+            </form>
 
+        </div>
 
+    </main>
+
+    <script>
+        // =========================================================
+        // AUTHENTICATION
+        // =========================================================
+
+        const token = sessionStorage.getItem('authToken');
+
+        if (!token) {
+            alert('Please login first.');
+            window.location.href = 'index.html';
+        }
+
+        // =========================================================
+        // PHOTO PREVIEW
+        // =========================================================
+
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('photoPreview');
+                const img = document.getElementById('photoPreviewImg');
+                img.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // =========================================================
+        // SHOW FILE NAME
+        // =========================================================
+
+        function showFileName(input, displayId) {
+            const display = document.getElementById(displayId);
+            if (input.files && input.files[0]) {
+                display.textContent = '📎 ' + input.files[0].name;
+            } else {
+                display.textContent = '';
+            }
+        }
+
+        // =========================================================
+        // LOAD CLASSES
+        // =========================================================
+
+        async function loadClasses() {
+            const classSelect = document.getElementById('class_id');
+            classSelect.innerHTML = '<option value="">Loading classes...</option>';
+
+            try {
+                const response = await fetch('/api/classes', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load classes');
+                }
+
+                const data = await response.json();
+                const classes = Array.isArray(data) ? data : [];
+
+                classSelect.innerHTML = '<option value="">Select class</option>';
+
+                if (classes.length === 0) {
+                    classSelect.innerHTML = '<option value="">No classes available</option>';
+                    return;
+                }
+
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls.class_id;
+                    let className = cls.class_name || 'Unnamed Class';
+                    if (cls.arm) {
+                        className += ' - ' + cls.arm;
+                    }
+                    option.textContent = className;
+                    classSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                classSelect.innerHTML = '<option value="">Failed to load classes</option>';
+            }
+        }
+
+        // =========================================================
+        // INITIALIZE
+        // =========================================================
+
+        loadClasses();
+    </script>
+
+</body>
+
+</html>

@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Global Education Academy | Dashboard</title>
 
     <style>
@@ -61,6 +60,13 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
 
         .card h3 {
@@ -87,122 +93,110 @@
 <body>
 
 <header class="header">
-
-    <div class="school-title">
-        GLOBAL EDUCATION ACADEMY
-    </div>
-
+    <div class="school-title">GLOBAL EDUCATION ACADEMY</div>
     <div class="user-info">
         <div id="userName"></div>
         <div id="userRole"></div>
     </div>
-
 </header>
-
 
 <main class="container">
 
     <div class="welcome">
-
         <h1>Dashboard</h1>
-
-        <p>
-            Welcome to the Global Education Academy Management System.
-        </p>
-
+        <p>Welcome to the Global Education Academy Management System.</p>
     </div>
 
-
     <div class="cards">
-
-        <div class="card" onclick="window.location.href='students-dashboard.html'" style="cursor: pointer;">
+        <!-- Students -->
+        <div class="card" onclick="window.location.href='students-dashboard.html'">
             <h3>Students</h3>
             <p>Manage student records.</p>
         </div>
 
-        <div class="card" onclick="window.location.href='teachers.html'" style="cursor: pointer;">
+        <!-- Teachers -->
+        <div class="card" onclick="window.location.href='teachers.html'">
             <h3>Teachers</h3>
             <p>Manage teachers and assignments.</p>
         </div>
 
-        <div class="card">
+        <!-- Classes -->
+        <div class="card" onclick="window.location.href='classes.html'">
             <h3>Classes</h3>
             <p>Manage classes and sections.</p>
         </div>
 
-        <div class="card">
+        <!-- Attendance -->
+        <div class="card" onclick="window.location.href='attendance.html'">
             <h3>Attendance</h3>
             <p>Manage student attendance.</p>
         </div>
 
-        <div class="card">
+        <!-- Academic Records -->
+        <div class="card" onclick="window.location.href='academic-records.html'">
             <h3>Academic Records</h3>
             <p>Manage academic results.</p>
         </div>
 
-        <div class="card" onclick="window.location.href='finance.html'" style="cursor: pointer;">
+        <!-- Finance -->
+        <div class="card" onclick="window.location.href='finance.html'">
             <h3>Finance</h3>
             <p>Manage fees and payments.</p>
         </div>
 
-        <div class="card">
+        <!-- Approvals -->
+        <div class="card" onclick="window.location.href='approvals.html'">
             <h3>Approvals</h3>
             <p>Review records requiring approval.</p>
         </div>
 
-        <div class="card">
+        <!-- Users & Roles -->
+        <div class="card" onclick="window.location.href='users.html'">
             <h3>Users & Roles</h3>
             <p>Manage system users and permissions.</p>
         </div>
-
     </div>
 
-
-    <button class="logout" onclick="logout()">
-        Logout
-    </button>
+    <button class="logout" onclick="logout()">Logout</button>
 
 </main>
 
-
 <script>
+    // =========================================================
+    // AUTHENTICATION
+    // =========================================================
 
-    const token =
-        sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
 
-    const userData =
-        sessionStorage.getItem('user');
-
-
-    // Prevent access without login.
-    if (!token || !userData) {
-
-        window.location.href = '/';
-
+    // Redirect teachers to their dashboard
+    if (userData) {
+        const user = JSON.parse(userData);
+        if (user.role_name === 'Teacher') {
+            window.location.href = '/teachers-dashboard.html';
+        }
     }
 
+    const token = sessionStorage.getItem('authToken');
 
-    const user =
-        JSON.parse(userData);
+    // Prevent access without login
+    if (!token || !userData) {
+        window.location.href = '/';
+    }
 
+    const user = JSON.parse(userData);
 
-    document.getElementById('userName').textContent =
-        user.full_name;
+    document.getElementById('userName').textContent = user.full_name;
+    document.getElementById('userRole').textContent = user.role_name;
 
-    document.getElementById('userRole').textContent =
-        user.role_name;
-
+    // =========================================================
+    // LOGOUT
+    // =========================================================
 
     function logout() {
-
         sessionStorage.removeItem('authToken');
-
         sessionStorage.removeItem('user');
-
         window.location.href = '/';
-
     }
-
 </script>
 
 </body>

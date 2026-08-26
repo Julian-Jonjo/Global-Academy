@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('multer');
 const supabase = require('../Config/db');
 
 const {
@@ -8,9 +9,56 @@ const {
 
 const router = express.Router();
 
+// Configure multer for memory storage
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type. Only JPEG, PNG, PDF, DOC, DOCX are allowed.'));
+        }
+    }
+});
+
+// Helper function to upload file to Supabase Storage
+async function uploadFileToSupabase(file, folder, fileName) {
+    if (!file) return null;
+    
+    try {
+        const filePath = `${folder}/${fileName}`;
+        const { data, error } = await supabase
+            .storage
+            .from('student_files')
+            .upload(filePath, file.buffer, {
+                contentType: file.mimetype,
+                cacheControl: '3600',
+                upsert: true
+            });
+
+        if (error) {
+            console.error('Upload error:', error);
+            return null;
+        }
+
+        const { data: urlData } = supabase
+            .storage
+            .from('student_files')
+            .getPublicUrl(filePath);
+
+        return urlData.publicUrl;
+    } catch (error) {
+        console.error('File upload error:', error);
+        return null;
+    }
+}
 
 // ============================================================
-// GET ALL STUDENTS
+// GET ALL STUDENTS (with Academic Year filter)
 // ============================================================
 router.get(
     '/',
@@ -18,9 +66,8 @@ router.get(
     requireRoles('Manager', 'Administrator', 'Proprietor'),
     async (req, res) => {
         try {
-            const { search, class_id, status } = req.query;
+            const { search, class_id, status, academic_year_id } = req.query;
 
-            // Start building the query
             let query = supabase
                 .from('students')
                 .select(`
@@ -45,6 +92,7 @@ router.get(
                     emergency_contact_phone,
                     emergency_contact_relationship,
                     registration_date,
+                    academic_year_id,
                     classes:class_id (
                         class_name,
                         arm
@@ -58,27 +106,42 @@ router.get(
                     )
                 `);
 
-            // Apply filters
+            // Academic Year Filter - if not specified, use current
+            if (!academic_year_id) {
+                const { data: currentYear } = await supabase
+                    .from('academic_years')
+                    .select('academic_year_id')
+                    .eq('is_current', true)
+                    .single();
+
+                if (currentYear) {
+                    query = query.eq('academic_year_id', currentYear.academic_year_id);
+                }
+            } else {
+                query = query.eq('academic_year_id', academic_year_id);
+            }
+
+            // Search filter
             if (search) {
                 query = query.or(`admission_number.ilike.%${search}%,first_name.ilike.%${search}%,middle_name.ilike.%${search}%,last_name.ilike.%${search}%`);
             }
 
+            // Class filter
             if (class_id) {
                 query = query.eq('class_id', class_id);
             }
 
+            // Status filter
             if (status) {
                 query = query.eq('student_status', status);
             }
 
-            // Order by admission_number
             query = query.order('admission_number', { ascending: true });
 
             const { data, error } = await query;
 
             if (error) throw error;
 
-            // Format the response
             const students = data.map(student => ({
                 student_id: student.student_id,
                 admission_number: student.admission_number,
@@ -101,6 +164,7 @@ router.get(
                 emergency_contact_phone: student.emergency_contact_phone,
                 emergency_contact_relationship: student.emergency_contact_relationship,
                 registration_date: student.registration_date,
+                academic_year_id: student.academic_year_id,
                 class_name: student.classes?.class_name || null,
                 arm: student.classes?.arm || null,
                 guardian_name: student.guardians?.full_name || null,
@@ -121,16 +185,144 @@ router.get(
     }
 );
 
+// ============================================================
+// GET SINGLE STUDENT (For Review/Edit)
+// ============================================================
+router.get(
+    '/:studentId',
+    authenticateToken,
+    requireRoles('Manager', 'Administrator', 'Proprietor'),
+    async (req, res) => {
+        const studentId = parseInt(req.params.studentId);
+
+        if (Number.isNaN(studentId)) {
+            return res.status(400).json({
+                message: 'Invalid student ID'
+            });
+        }
+
+        try {
+            const { data: student, error } = await supabase
+                .from('students')
+                .select(`
+                    student_id,
+                    admission_number,
+                    first_name,
+                    middle_name,
+                    last_name,
+                    gender,
+                    date_of_birth,
+                    phone,
+                    address,
+                    class_id,
+                    guardian_id,
+                    admission_date,
+                    student_status,
+                    photo_url,
+                    nationality,
+                    previous_school,
+                    emergency_contact_name,
+                    emergency_contact_phone,
+                    emergency_contact_relationship,
+                    registration_date,
+                    academic_year_id,
+                    classes:class_id (
+                        class_name,
+                        arm
+                    ),
+                    guardians:guardian_id (
+                        full_name,
+                        relationship,
+                        phone,
+                        email,
+                        address
+                    )
+                `)
+                .eq('student_id', studentId)
+                .single();
+
+            if (error || !student) {
+                return res.status(404).json({
+                    message: 'Student not found'
+                });
+            }
+
+            // Format the response
+            const formattedStudent = {
+                student_id: student.student_id,
+                admission_number: student.admission_number,
+                first_name: student.first_name,
+                middle_name: student.middle_name,
+                last_name: student.last_name,
+                gender: student.gender,
+                date_of_birth: student.date_of_birth,
+                phone: student.phone,
+                address: student.address,
+                class_id: student.class_id,
+                guardian_id: student.guardian_id,
+                admission_date: student.admission_date,
+                student_status: student.student_status,
+                photo_url: student.photo_url,
+                nationality: student.nationality,
+                previous_school: student.previous_school,
+                emergency_contact_name: student.emergency_contact_name,
+                emergency_contact_phone: student.emergency_contact_phone,
+                emergency_contact_relationship: student.emergency_contact_relationship,
+                registration_date: student.registration_date,
+                academic_year_id: student.academic_year_id,
+                class_name: student.classes?.class_name || null,
+                arm: student.classes?.arm || null,
+                guardian_name: student.guardians?.full_name || null,
+                guardian_relationship: student.guardians?.relationship || null,
+                guardian_phone: student.guardians?.phone || null,
+                guardian_email: student.guardians?.email || null,
+                guardian_address: student.guardians?.address || null
+            };
+
+            res.json(formattedStudent);
+
+        } catch (error) {
+            console.error('Error getting student:', error);
+            res.status(500).json({
+                message: 'Failed to load student data'
+            });
+        }
+    }
+);
 
 // ============================================================
-// CREATE NEW STUDENT REGISTRATION
+// CREATE NEW STUDENT REGISTRATION (WITH ACADEMIC YEAR)
 // ============================================================
 router.post(
-    '/',
+    '/register',
     authenticateToken,
     requireRoles('Manager', 'Administrator'),
+    upload.fields([
+        { name: 'photo', maxCount: 1 },
+        { name: 'result_file', maxCount: 1 },
+        { name: 'birth_certificate', maxCount: 1 },
+        { name: 'testimonial', maxCount: 1 },
+        { name: 'transfer_form', maxCount: 1 }
+    ]),
     async (req, res) => {
         try {
+            console.log('📝 Registration started');
+            console.log('📦 Body:', req.body);
+            console.log('📎 Files:', req.files ? Object.keys(req.files) : 'None');
+
+            // Get current academic year
+            const { data: currentYear, error: yearError } = await supabase
+                .from('academic_years')
+                .select('academic_year_id')
+                .eq('is_current', true)
+                .single();
+
+            if (yearError || !currentYear) {
+                return res.status(400).json({
+                    message: 'No current academic year set. Please contact administrator.'
+                });
+            }
+
             const {
                 admission_number,
                 first_name,
@@ -141,21 +333,30 @@ router.post(
                 phone,
                 address,
                 class_id,
-                guardian_id,
                 admission_date,
+                previous_school,
                 student_status,
                 nationality,
-                previous_school,
                 emergency_contact_name,
                 emergency_contact_phone,
                 emergency_contact_relationship,
-                registration_date
+                parent_name,
+                parent_relationship,
+                parent_phone,
+                parent_email,
+                parent_address
             } = req.body;
 
             // Required fields
             if (!admission_number || !first_name || !last_name) {
                 return res.status(400).json({
                     message: 'Admission number, first name and last name are required'
+                });
+            }
+
+            if (!parent_name || !parent_relationship) {
+                return res.status(400).json({
+                    message: 'Parent/Guardian name and relationship are required'
                 });
             }
 
@@ -172,7 +373,44 @@ router.post(
                 });
             }
 
-            // Create student
+            // ====================================================
+            // 1. CREATE PARENT/GUARDIAN FIRST
+            // ====================================================
+            const { data: guardian, error: guardianError } = await supabase
+                .from('guardians')
+                .insert({
+                    full_name: parent_name,
+                    relationship: parent_relationship,
+                    phone: parent_phone || null,
+                    email: parent_email || null,
+                    address: parent_address || null
+                })
+                .select()
+                .single();
+
+            if (guardianError) {
+                console.error('Guardian creation error:', guardianError);
+                return res.status(500).json({
+                    message: 'Failed to create guardian record'
+                });
+            }
+
+            console.log('✅ Guardian created:', guardian.guardian_id);
+
+            // ====================================================
+            // 2. UPLOAD PHOTO TO SUPABASE STORAGE
+            // ====================================================
+            let photoUrl = null;
+            if (req.files && req.files.photo) {
+                const photoFile = req.files.photo[0];
+                const fileName = `student_${admission_number}_${Date.now()}.jpg`;
+                photoUrl = await uploadFileToSupabase(photoFile, 'student-photos', fileName);
+                console.log('📸 Photo uploaded:', photoUrl);
+            }
+
+            // ====================================================
+            // 3. CREATE STUDENT WITH GUARDIAN ID & ACADEMIC YEAR
+            // ====================================================
             const { data: student, error: insertError } = await supabase
                 .from('students')
                 .insert({
@@ -185,7 +423,7 @@ router.post(
                     phone: phone || null,
                     address: address || null,
                     class_id: class_id || null,
-                    guardian_id: guardian_id || null,
+                    guardian_id: guardian.guardian_id,
                     admission_date: admission_date || null,
                     student_status: student_status || 'Pending',
                     nationality: nationality || null,
@@ -193,14 +431,50 @@ router.post(
                     emergency_contact_name: emergency_contact_name || null,
                     emergency_contact_phone: emergency_contact_phone || null,
                     emergency_contact_relationship: emergency_contact_relationship || null,
-                    registration_date: registration_date || new Date().toISOString()
+                    registration_date: new Date().toISOString(),
+                    photo_url: photoUrl,
+                    academic_year_id: currentYear.academic_year_id
                 })
                 .select()
                 .single();
 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('Student creation error:', insertError);
+                await supabase
+                    .from('guardians')
+                    .delete()
+                    .eq('guardian_id', guardian.guardian_id);
+                return res.status(500).json({
+                    message: 'Failed to create student record'
+                });
+            }
 
-            // Create approval record
+            console.log('✅ Student created:', student.student_id);
+
+            // ====================================================
+            // 4. UPLOAD DOCUMENTS
+            // ====================================================
+            const documentTypes = {
+                'result_file': 'results',
+                'birth_certificate': 'birth-certificates',
+                'testimonial': 'testimonials',
+                'transfer_form': 'transfer-forms'
+            };
+
+            if (req.files) {
+                for (const [fieldName, folder] of Object.entries(documentTypes)) {
+                    if (req.files[fieldName]) {
+                        const file = req.files[fieldName][0];
+                        const fileName = `student_${student.student_id}_${fieldName}_${Date.now()}.${file.originalname.split('.').pop()}`;
+                        await uploadFileToSupabase(file, folder, fileName);
+                        console.log(`📄 ${fieldName} uploaded`);
+                    }
+                }
+            }
+
+            // ====================================================
+            // 5. CREATE APPROVAL RECORD
+            // ====================================================
             const { error: approvalError } = await supabase
                 .from('record_approvals')
                 .insert({
@@ -211,26 +485,42 @@ router.post(
                     created_at: new Date().toISOString()
                 });
 
-            if (approvalError) throw approvalError;
+            if (approvalError) {
+                console.error('Approval creation error:', approvalError);
+                await supabase
+                    .from('students')
+                    .delete()
+                    .eq('student_id', student.student_id);
+                await supabase
+                    .from('guardians')
+                    .delete()
+                    .eq('guardian_id', guardian.guardian_id);
+                return res.status(500).json({
+                    message: 'Failed to create approval record'
+                });
+            }
+
+            console.log('✅ Approval record created');
 
             res.status(201).json({
-                message: 'Student registration submitted for approval',
+                message: 'Student registered successfully with Parent/Guardian',
                 student_id: student.student_id,
-                status: 'Pending'
+                guardian_id: guardian.guardian_id,
+                status: 'Pending',
+                academic_year: currentYear
             });
 
         } catch (error) {
-            console.error('Student registration error:', error);
+            console.error('❌ Student registration error:', error);
             res.status(500).json({
-                message: 'Failed to register student'
+                message: 'Failed to register student: ' + error.message
             });
         }
     }
 );
 
-
 // ============================================================
-// UPDATE STUDENT — ADMINISTRATOR ONLY
+// UPDATE STUDENT
 // ============================================================
 router.put(
     '/:student_id',
@@ -265,7 +555,6 @@ router.put(
             emergency_contact_relationship
         } = req.body;
 
-        // Required fields
         if (!admission_number || !first_name || !last_name) {
             return res.status(400).json({
                 message: 'Admission number, first name and last name are required'
@@ -273,7 +562,6 @@ router.put(
         }
 
         try {
-            // Check student exists
             const { data: existing, error: checkError } = await supabase
                 .from('students')
                 .select('student_id')
@@ -286,7 +574,6 @@ router.put(
                 });
             }
 
-            // Check duplicate admission number
             const { data: duplicate, error: dupError } = await supabase
                 .from('students')
                 .select('student_id')
@@ -300,7 +587,6 @@ router.put(
                 });
             }
 
-            // Update student
             const { data: student, error: updateError } = await supabase
                 .from('students')
                 .update({
@@ -342,7 +628,101 @@ router.put(
     }
 );
 
+// ============================================================
+// RE-APPROVE STUDENT (FIXED - Direct approach)
+// ============================================================
+router.put(
+    '/:studentId/reapprove',
+    authenticateToken,
+    requireRoles('Administrator', 'Proprietor'),
+    async (req, res) => {
+        const studentId = parseInt(req.params.studentId);
 
+        if (Number.isNaN(studentId)) {
+            return res.status(400).json({
+                message: 'Invalid student ID'
+            });
+        }
+
+        try {
+            console.log('🔄 Re-approving student:', studentId);
+
+            // 1. Update student status to Pending
+            const { error: updateError } = await supabase
+                .from('students')
+                .update({ student_status: 'Pending' })
+                .eq('student_id', studentId);
+
+            if (updateError) {
+                console.error('❌ Status update error:', updateError);
+                return res.status(500).json({
+                    message: 'Failed to update student status: ' + updateError.message
+                });
+            }
+            console.log('✅ Student status changed to Pending');
+
+            // 2. Delete ALL existing approvals for this student
+            const { error: deleteError } = await supabase
+                .from('record_approvals')
+                .delete()
+                .eq('record_id', studentId)
+                .eq('record_type', 'Student');
+
+            if (deleteError) {
+                console.error('❌ Delete error:', deleteError);
+                // Continue anyway
+            }
+            console.log('✅ Deleted existing approval records');
+
+            // 3. Insert a new approval record using raw SQL approach
+            // First, get the user_id from the token
+            const userId = req.user.user_id;
+            
+            const { data: newApproval, error: approvalError } = await supabase
+                .from('record_approvals')
+                .insert({
+                    record_type: 'Student',
+                    record_id: studentId,
+                    approval_status: 'Pending',
+                    created_by: userId,
+                    created_at: new Date().toISOString()
+                })
+                .select();
+
+            if (approvalError) {
+                console.error('❌ Approval creation error:', approvalError);
+                return res.status(500).json({
+                    message: 'Failed to create approval record: ' + approvalError.message
+                });
+            }
+
+            console.log('✅ New approval record created:', newApproval);
+
+            // 4. Verify the approval was created
+            const { data: verify, error: verifyError } = await supabase
+                .from('record_approvals')
+                .select('*')
+                .eq('record_id', studentId)
+                .eq('record_type', 'Student')
+                .eq('approval_status', 'Pending');
+
+            console.log('🔍 Verification:', verify);
+
+            res.json({
+                message: 'Student sent for re-approval successfully',
+                student_id: studentId,
+                approval_id: newApproval?.[0]?.approval_id || null,
+                status: 'Pending'
+            });
+
+        } catch (error) {
+            console.error('❌ Re-approve error:', error);
+            res.status(500).json({
+                message: 'Failed to re-approve student: ' + error.message
+            });
+        }
+    }
+);
 // ============================================================
 // GET STUDENT FINANCE SUMMARY
 // ============================================================
@@ -371,14 +751,12 @@ router.get(
 
             if (studentsError) throw studentsError;
 
-            // Get all fee balances
             const { data: balances, error: balancesError } = await supabase
                 .from('student_fee_balances')
                 .select('*');
 
             if (balancesError) throw balancesError;
 
-            // Combine data
             const result = students.map(student => {
                 const studentBalances = balances.filter(b => b.student_id === student.student_id);
                 
@@ -423,7 +801,6 @@ router.get(
     }
 );
 
-
 // ============================================================
 // GET FEE CATEGORY SUMMARY
 // ============================================================
@@ -433,7 +810,6 @@ router.get(
     requireRoles('Manager', 'Administrator', 'Proprietor'),
     async (req, res) => {
         try {
-            // Get all fee types
             const { data: feeTypes, error: feeError } = await supabase
                 .from('fee_types')
                 .select('fee_type_id, fee_name')
@@ -442,14 +818,12 @@ router.get(
 
             if (feeError) throw feeError;
 
-            // Get all fee balances
             const { data: balances, error: balanceError } = await supabase
                 .from('student_fee_balances')
                 .select('fee_name, amount_due, total_paid, balance');
 
             if (balanceError) throw balanceError;
 
-            // Group by fee_name
             const groupedData = feeTypes.map(ft => {
                 const feeBalances = balances.filter(b => b.fee_name === ft.fee_name);
                 
@@ -481,6 +855,5 @@ router.get(
         }
     }
 );
-
 
 module.exports = router;

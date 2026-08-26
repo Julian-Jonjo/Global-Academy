@@ -10,7 +10,7 @@ const router = express.Router();
 
 
 // ============================================================
-// GET PENDING APPROVALS
+// GET PENDING APPROVALS (SIMPLIFIED)
 // ============================================================
 router.get(
     '/pending',
@@ -18,56 +18,100 @@ router.get(
     requireRoles('Proprietor', 'Administrator'),
     async (req, res) => {
         try {
-            // Get pending approvals with related data
-            const { data: approvals, error } = await supabase
+            console.log('📋 Fetching pending approvals...');
+
+            // First, get all pending approvals
+            const { data: approvals, error: approvalsError } = await supabase
                 .from('record_approvals')
-                .select(`
-                    approval_id,
-                    record_type,
-                    record_id,
-                    approval_status,
-                    created_by,
-                    created_at,
-                    users:created_by (
-                        username,
-                        full_name
-                    ),
-                    students!record_type_student (
-                        admission_number,
-                        first_name,
-                        middle_name,
-                        last_name,
-                        gender,
-                        date_of_birth,
-                        phone,
-                        address,
-                        nationality,
-                        previous_school,
-                        admission_date,
-                        emergency_contact_name,
-                        emergency_contact_phone,
-                        emergency_contact_relationship,
-                        classes:class_id (
-                            class_name,
-                            arm
-                        ),
-                        guardians:guardian_id (
-                            full_name,
-                            relationship,
-                            phone,
-                            email,
-                            address
-                        )
-                    )
-                `)
+                .select('*')
+                .eq('record_type', 'Student')
                 .eq('approval_status', 'Pending')
                 .order('created_at', { ascending: true });
 
-            if (error) throw error;
+            if (approvalsError) {
+                console.error('❌ Approvals error:', approvalsError);
+                return res.status(500).json({
+                    message: 'Failed to fetch approvals: ' + approvalsError.message
+                });
+            }
+
+            console.log('✅ Found', approvals?.length || 0, 'pending approvals');
+
+            if (!approvals || approvals.length === 0) {
+                return res.json([]);
+            }
+
+            // Get student IDs from approvals
+            const studentIds = approvals.map(a => a.record_id);
+
+            // Fetch all students with their details in one query
+            const { data: students, error: studentsError } = await supabase
+                .from('students')
+                .select(`
+                    student_id,
+                    admission_number,
+                    first_name,
+                    middle_name,
+                    last_name,
+                    gender,
+                    date_of_birth,
+                    phone,
+                    address,
+                    nationality,
+                    previous_school,
+                    admission_date,
+                    class_id,
+                    guardian_id,
+                    emergency_contact_name,
+                    emergency_contact_phone,
+                    emergency_contact_relationship,
+                    classes:class_id (
+                        class_name,
+                        arm
+                    ),
+                    guardians:guardian_id (
+                        full_name,
+                        relationship,
+                        phone,
+                        email,
+                        address
+                    )
+                `)
+                .in('student_id', studentIds);
+
+            if (studentsError) {
+                console.error('❌ Students error:', studentsError);
+                return res.status(500).json({
+                    message: 'Failed to fetch students: ' + studentsError.message
+                });
+            }
+
+            // Create a map of student_id -> student data
+            const studentMap = {};
+            students.forEach(s => {
+                studentMap[s.student_id] = s;
+            });
+
+            // Get user names for created_by
+            const userIds = approvals.map(a => a.created_by).filter(id => id);
+            let userMap = {};
+            
+            if (userIds.length > 0) {
+                const { data: users, error: usersError } = await supabase
+                    .from('users')
+                    .select('user_id, full_name')
+                    .in('user_id', userIds);
+
+                if (!usersError && users) {
+                    users.forEach(u => {
+                        userMap[u.user_id] = u.full_name;
+                    });
+                }
+            }
 
             // Format the response
-            const formattedApprovals = approvals.map(approval => {
-                const student = approval.students || {};
+            const formatted = approvals.map(approval => {
+                const student = studentMap[approval.record_id] || {};
                 const classes = student.classes || {};
                 const guardian = student.guardians || {};
 
@@ -78,8 +122,9 @@ router.get(
                     approval_status: approval.approval_status,
                     created_by: approval.created_by,
                     created_at: approval.created_at,
-                    created_by_username: approval.users?.username,
-                    created_by_name: approval.users?.full_name,
+                    notes: approval.notes,
+                    rejection_reason: approval.rejection_reason,
+                    created_by_name: userMap[approval.created_by] || null,
                     admission_number: student.admission_number,
                     first_name: student.first_name,
                     middle_name: student.middle_name,
@@ -91,25 +136,25 @@ router.get(
                     nationality: student.nationality,
                     previous_school: student.previous_school,
                     admission_date: student.admission_date,
-                    emergency_contact_name: student.emergency_contact_name,
-                    emergency_contact_phone: student.emergency_contact_phone,
-                    emergency_contact_relationship: student.emergency_contact_relationship,
                     class_name: classes.class_name,
                     arm: classes.arm,
                     guardian_name: guardian.full_name,
                     guardian_relationship: guardian.relationship,
                     guardian_phone: guardian.phone,
                     guardian_email: guardian.email,
-                    guardian_address: guardian.address
+                    guardian_address: guardian.address,
+                    emergency_contact_name: student.emergency_contact_name,
+                    emergency_contact_phone: student.emergency_contact_phone,
+                    emergency_contact_relationship: student.emergency_contact_relationship
                 };
             });
 
-            res.json(formattedApprovals);
+            res.json(formatted);
 
         } catch (error) {
-            console.error('Error loading pending approvals:', error);
+            console.error('❌ Error loading pending approvals:', error);
             res.status(500).json({
-                message: 'Failed to load pending approvals'
+                message: 'Failed to load pending approvals: ' + error.message
             });
         }
     }
@@ -125,13 +170,10 @@ router.post(
     requireRoles('Proprietor', 'Administrator'),
     async (req, res) => {
         const approvalId = parseInt(req.params.approvalId);
-        const approverId = req.user.user_id;
-        const notes = req.body.notes || null;
+        const { notes } = req.body;
 
         if (Number.isNaN(approvalId)) {
-            return res.status(400).json({
-                message: 'Invalid approval ID'
-            });
+            return res.status(400).json({ message: 'Invalid approval ID' });
         }
 
         try {
@@ -143,9 +185,7 @@ router.post(
                 .single();
 
             if (fetchError || !approval) {
-                return res.status(404).json({
-                    message: 'Approval record not found'
-                });
+                return res.status(404).json({ message: 'Approval record not found' });
             }
 
             if (approval.approval_status !== 'Pending') {
@@ -154,14 +194,20 @@ router.post(
                 });
             }
 
+            // Update the student status to 'Active'
+            await supabase
+                .from('students')
+                .update({ student_status: 'Active' })
+                .eq('student_id', approval.record_id);
+
             // Update approval status
             const { error: updateError } = await supabase
                 .from('record_approvals')
                 .update({
                     approval_status: 'Approved',
-                    approved_by: approverId,
+                    approved_by: req.user.user_id,
                     approved_at: new Date().toISOString(),
-                    notes: notes
+                    notes: notes || null
                 })
                 .eq('approval_id', approvalId);
 
@@ -174,9 +220,7 @@ router.post(
 
         } catch (error) {
             console.error('Approval error:', error);
-            res.status(400).json({
-                message: error.message
-            });
+            res.status(500).json({ message: error.message || 'Failed to approve record' });
         }
     }
 );
@@ -191,33 +235,26 @@ router.post(
     requireRoles('Proprietor', 'Administrator'),
     async (req, res) => {
         const approvalId = parseInt(req.params.approvalId);
-        const approverId = req.user.user_id;
-        const reason = req.body.reason;
+        const { reason } = req.body;
 
         if (Number.isNaN(approvalId)) {
-            return res.status(400).json({
-                message: 'Invalid approval ID'
-            });
+            return res.status(400).json({ message: 'Invalid approval ID' });
         }
 
         if (!reason || !reason.trim()) {
-            return res.status(400).json({
-                message: 'Rejection reason is required'
-            });
+            return res.status(400).json({ message: 'Rejection reason is required' });
         }
 
         try {
             // Get the approval record
             const { data: approval, error: fetchError } = await supabase
                 .from('record_approvals')
-                .select('created_by, approval_status')
+                .select('*')
                 .eq('approval_id', approvalId)
                 .single();
 
             if (fetchError || !approval) {
-                return res.status(404).json({
-                    message: 'Approval record not found'
-                });
+                return res.status(404).json({ message: 'Approval record not found' });
             }
 
             if (approval.approval_status !== 'Pending') {
@@ -226,19 +263,18 @@ router.post(
                 });
             }
 
-            // Prevent self-rejection
-            if (approval.created_by === approverId) {
-                return res.status(403).json({
-                    message: 'A user cannot reject their own record'
-                });
-            }
+            // Update the student status to 'Rejected'
+            await supabase
+                .from('students')
+                .update({ student_status: 'Rejected' })
+                .eq('student_id', approval.record_id);
 
             // Update approval status
             const { error: updateError } = await supabase
                 .from('record_approvals')
                 .update({
                     approval_status: 'Rejected',
-                    approved_by: approverId,
+                    approved_by: req.user.user_id,
                     approved_at: new Date().toISOString(),
                     rejection_reason: reason.trim()
                 })
@@ -253,9 +289,7 @@ router.post(
 
         } catch (error) {
             console.error('Rejection error:', error);
-            res.status(500).json({
-                message: 'Failed to reject record'
-            });
+            res.status(500).json({ message: error.message || 'Failed to reject record' });
         }
     }
 );
