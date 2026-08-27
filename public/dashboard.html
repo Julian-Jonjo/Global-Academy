@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,32 +14,120 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
             color: #222;
+            min-height: 100vh;
+            /* Background Image */
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
         }
 
+        /* Light overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.82);
+            z-index: 0;
+        }
+
+        /* =========================================================
+           HEADER - SCHOOL COLORS
+        ========================================================= */
         .header {
-            background: #1f2937;
+            background: #1a3c6e;
+            /* Dark blue - match your logo */
             color: white;
-            padding: 18px 30px;
+            padding: 12px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .school-title {
-            font-size: 22px;
-            font-weight: bold;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-title p {
+            margin: 0;
+            font-size: 11px;
+            color: #a0c4ff;
         }
 
         .user-info {
             text-align: right;
+            font-size: 13px;
+            color: white;
+        }
+
+        .user-info .role {
+            display: block;
+            font-weight: 600;
             font-size: 14px;
         }
 
+        .user-info .role-label {
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+        .logout-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 4px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+        /* =========================================================
+           CONTAINER
+        ========================================================= */
         .container {
-            padding: 30px;
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .welcome {
@@ -47,6 +136,13 @@
 
         .welcome h1 {
             margin-bottom: 8px;
+            color: #1f2937;
+            font-size: 28px;
+        }
+
+        .welcome p {
+            color: #4b5563;
+            font-size: 15px;
         }
 
         .cards {
@@ -58,146 +154,222 @@
         .card {
             background: white;
             padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            border: 1px solid #e5e7eb;
         }
 
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border-color: #1a3c6e;
         }
 
         .card h3 {
             margin-bottom: 10px;
+            color: #1f2937;
+            font-size: 18px;
         }
 
         .card p {
-            color: #666;
+            color: #6b7280;
             font-size: 14px;
         }
 
-        .logout {
+        .card .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .logout-btn {
             margin-top: 30px;
-            padding: 10px 18px;
+            padding: 10px 24px;
             border: none;
             border-radius: 6px;
-            background: #b91c1c;
+            background: #dc2626;
             color: white;
             cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+        @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 20px;
+            }
+
+            .user-info {
+                text-align: left;
+                width: 100%;
+            }
+
+            .cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .header-title h1 {
+                font-size: 15px;
+            }
+
+            .header-logo {
+                width: 32px;
+                height: 32px;
+            }
+
+            .welcome h1 {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<header class="header">
-    <div class="school-title">GLOBAL EDUCATION ACADEMY</div>
-    <div class="user-info">
-        <div id="userName"></div>
-        <div id="userRole"></div>
-    </div>
-</header>
+    <!-- =========================================================
+         HEADER - SCHOOL COLORS
+    ========================================================= -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="Global Education Academy" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>Global Education Academy</h1>
+                <p>Management Information System</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <span class="role" id="userRole"></span>
+            <span class="role-label" id="userRoleLabel"></span>
+        </div>
+    </header>
 
-<main class="container">
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================= -->
+    <main class="container">
 
-    <div class="welcome">
-        <h1>Dashboard</h1>
-        <p>Welcome to the Global Education Academy Management System.</p>
-    </div>
-
-    <div class="cards">
-        <!-- Students -->
-        <div class="card" onclick="window.location.href='students-dashboard.html'">
-            <h3>Students</h3>
-            <p>Manage student records.</p>
+        <div class="welcome">
+            <h1>Dashboard</h1>
+            <p>Welcome to the Global Education Academy Management System.</p>
         </div>
 
-        <!-- Teachers -->
-        <div class="card" onclick="window.location.href='teachers.html'">
-            <h3>Teachers</h3>
-            <p>Manage teachers and assignments.</p>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='students-dashboard.html'">
+                <span class="icon">👨‍🎓</span>
+                <h3>Students</h3>
+                <p>Manage student records.</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='teachers.html'">
+                <span class="icon">👨‍🏫</span>
+                <h3>Teachers</h3>
+                <p>Manage teachers and assignments.</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='finance.html'">
+                <span class="icon">💰</span>
+                <h3>Finance</h3>
+                <p>Manage fees and payments.</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='approvals.html'">
+                <span class="icon">✅</span>
+                <h3>Approvals</h3>
+                <p>Review records requiring approval.</p>
+            </div>
+
+            <div class="card">
+                <span class="icon">📚</span>
+                <h3>Classes</h3>
+                <p>Manage classes and sections.</p>
+            </div>
+
+            <div class="card">
+                <span class="icon">📋</span>
+                <h3>Attendance</h3>
+                <p>Manage student attendance.</p>
+            </div>
+
+            <div class="card">
+                <span class="icon">📊</span>
+                <h3>Academic Records</h3>
+                <p>Manage academic results.</p>
+            </div>
+
+            <div class="card">
+                <span class="icon">👤</span>
+                <h3>Users & Roles</h3>
+                <p>Manage system users and permissions.</p>
+            </div>
         </div>
 
-        <!-- Classes -->
-        <div class="card" onclick="window.location.href='classes.html'">
-            <h3>Classes</h3>
-            <p>Manage classes and sections.</p>
-        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
 
-        <!-- Attendance -->
-        <div class="card" onclick="window.location.href='attendance.html'">
-            <h3>Attendance</h3>
-            <p>Manage student attendance.</p>
-        </div>
+    </main>
 
-        <!-- Academic Records -->
-        <div class="card" onclick="window.location.href='academic-records.html'">
-            <h3>Academic Records</h3>
-            <p>Manage academic results.</p>
-        </div>
+    <script>
+        // =========================================================
+        // AUTHENTICATION
+        // =========================================================
 
-        <!-- Finance -->
-        <div class="card" onclick="window.location.href='finance.html'">
-            <h3>Finance</h3>
-            <p>Manage fees and payments.</p>
-        </div>
+        const userData = sessionStorage.getItem('user');
 
-        <!-- Approvals -->
-        <div class="card" onclick="window.location.href='approvals.html'">
-            <h3>Approvals</h3>
-            <p>Review records requiring approval.</p>
-        </div>
-
-        <!-- Users & Roles -->
-        <div class="card" onclick="window.location.href='users.html'">
-            <h3>Users & Roles</h3>
-            <p>Manage system users and permissions.</p>
-        </div>
-    </div>
-
-    <button class="logout" onclick="logout()">Logout</button>
-
-</main>
-
-<script>
-    // =========================================================
-    // AUTHENTICATION
-    // =========================================================
-
-    const userData = sessionStorage.getItem('user');
-
-    // Redirect teachers to their dashboard
-    if (userData) {
-        const user = JSON.parse(userData);
-        if (user.role_name === 'Teacher') {
-            window.location.href = '/teachers-dashboard.html';
+        // Redirect teachers to their dashboard
+        if (userData) {
+            const user = JSON.parse(userData);
+            if (user.role_name === 'Teacher') {
+                window.location.href = '/teachers-dashboard.html';
+            }
         }
-    }
 
-    const token = sessionStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
-    // Prevent access without login
-    if (!token || !userData) {
-        window.location.href = '/';
-    }
+        // Prevent access without login
+        if (!token || !userData) {
+            window.location.href = '/login.html';
+        }
 
-    const user = JSON.parse(userData);
+        const user = JSON.parse(userData);
 
-    document.getElementById('userName').textContent = user.full_name;
-    document.getElementById('userRole').textContent = user.role_name;
+        // =========================================================
+        // USER INFORMATION - Show only role
+        // =========================================================
 
-    // =========================================================
-    // LOGOUT
-    // =========================================================
+        document.getElementById('userRole').textContent = user.role_name;
+        document.getElementById('userRoleLabel').textContent = '';
 
-    function logout() {
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('user');
-        window.location.href = '/';
-    }
-</script>
+        // =========================================================
+        // LOGOUT
+        // =========================================================
+
+        function logout() {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+    </script>
 
 </body>
+
 </html>

@@ -2,2268 +2,1293 @@
 <html lang="en">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,initial-scale=1.0"
->
-
-<title>Global Education Academy | Teachers Management</title>
-
-<style>
-
-/* =========================================================
-   GLOBAL
-========================================================= */
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f4f6f8;
-    color:#1f2937;
-}
-
-button,
-a{
-    font-family:inherit;
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.header{
-    background:#1f2937;
-    color:#fff;
-    padding:17px 30px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.header-left{
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
-
-.header-logo{
-    width:42px;
-    height:42px;
-    border-radius:8px;
-    background:#374151;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:21px;
-}
-
-.header-title h1{
-    margin:0;
-    font-size:20px;
-    font-weight:700;
-}
-
-.header-title p{
-    margin:3px 0 0;
-    font-size:12px;
-    color:#d1d5db;
-}
-
-.user-info{
-    font-size:13px;
-    text-align:right;
-    color:#e5e7eb;
-}
-
-
-/* =========================================================
-   CONTAINER
-========================================================= */
-
-.container{
-    max-width:1450px;
-    margin:0 auto;
-    padding:28px 24px 40px;
-}
-
-
-/* =========================================================
-   PAGE HEADER
-========================================================= */
-
-.page-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap:20px;
-    margin-bottom:25px;
-}
-
-.page-header h2{
-    margin:0 0 7px;
-    font-size:25px;
-    color:#111827;
-}
-
-.page-header p{
-    margin:0;
-    color:#6b7280;
-    font-size:14px;
-}
-
-.page-header-right{
-    color:#6b7280;
-    font-size:13px;
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-.teacher-nav{
-    display:flex;
-    gap:4px;
-    flex-wrap:wrap;
-
-    background:#fff;
-
-    padding:7px;
-
-    border:1px solid #e5e7eb;
-
-    border-radius:9px;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.04);
-
-    margin-bottom:25px;
-}
-
-.teacher-nav a{
-    text-decoration:none;
-    color:#4b5563;
-
-    padding:10px 15px;
-
-    border-radius:6px;
-
-    font-size:13px;
-    font-weight:600;
-}
-
-.teacher-nav a:hover{
-    background:#f3f4f6;
-}
-
-.teacher-nav a.permanent{
-    background:#1f2937;
-    color:#fff;
-}
-
-
-/* =========================================================
-   SECTION
-========================================================= */
-
-.section{
-    margin-bottom:25px;
-}
-
-.section-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    margin-bottom:13px;
-}
-
-.section-title h3{
-    margin:0;
-    font-size:17px;
-    color:#111827;
-}
-
-.section-title span{
-    font-size:12px;
-    color:#6b7280;
-}
-
-
-/* =========================================================
-   KPI GRID
-========================================================= */
-
-.kpi-grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
-    gap:15px;
-}
-
-.kpi-card{
-    background:#fff;
-
-    border:1px solid #e5e7eb;
-
-    border-radius:10px;
-
-    padding:19px;
-
-    position:relative;
-
-    overflow:hidden;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.035);
-}
-
-.kpi-card::before{
-    content:"";
-
-    position:absolute;
-
-    left:0;
-    top:0;
-    bottom:0;
-
-    width:4px;
-
-    background:#374151;
-}
-
-.kpi-card.primary::before{
-    background:#166534;
-}
-
-.kpi-card.secondary::before{
-    background:#1f2937;
-}
-
-.kpi-card.permanent::before{
-    background:#15803d;
-}
-
-.kpi-card.parttime::before{
-    background:#b91c1c;
-}
-
-.kpi-label{
-    font-size:11px;
-    color:#6b7280;
-
-    text-transform:uppercase;
-
-    letter-spacing:.4px;
-
-    margin-bottom:9px;
-}
-
-.kpi-number{
-    font-size:28px;
-    font-weight:700;
-
-    color:#111827;
-}
-
-.kpi-note{
-    margin-top:6px;
-
-    font-size:11px;
-
-    color:#9ca3af;
-}
-
-
-/* =========================================================
-   SCHOOL LEVEL
-========================================================= */
-
-.school-grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,minmax(0,1fr));
-
-    gap:18px;
-}
-
-.school-card{
-    background:#fff;
-
-    border:1px solid #e5e7eb;
-
-    border-radius:10px;
-
-    overflow:hidden;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.035);
-}
-
-.school-card-top{
-    padding:20px 21px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:flex-start;
-}
-
-.school-card.primary
-.school-card-top{
-    border-top:4px solid #166534;
-}
-
-.school-card.secondary
-.school-card-top{
-    border-top:4px solid #1f2937;
-}
-
-.school-heading{
-    display:flex;
-
-    gap:13px;
-
-    align-items:center;
-}
-
-.school-icon{
-    width:43px;
-    height:43px;
-
-    border-radius:8px;
-
-    background:#f3f4f6;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    font-size:20px;
-}
-
-.school-heading h4{
-    margin:0 0 4px;
-
-    font-size:17px;
-}
-
-.school-heading p{
-    margin:0;
-
-    color:#6b7280;
-
-    font-size:12px;
-}
-
-.school-total{
-    text-align:right;
-}
-
-.school-total strong{
-    display:block;
-
-    font-size:25px;
-}
-
-.school-total span{
-    color:#6b7280;
-
-    font-size:11px;
-}
-
-.school-card-body{
-    padding:0 21px 20px;
-}
-
-.school-stat-row{
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:10px;
-
-    margin-bottom:17px;
-}
-
-.school-stat{
-    background:#f9fafb;
-
-    border:1px solid #edf0f2;
-
-    border-radius:7px;
-
-    padding:11px;
-}
-
-.school-stat span{
-    display:block;
-
-    font-size:10px;
-
-    color:#6b7280;
-
-    text-transform:uppercase;
-
-    margin-bottom:4px;
-}
-
-.school-stat strong{
-    font-size:18px;
-}
-
-.school-actions{
-    display:flex;
-
-    gap:9px;
-}
-
-.school-button{
-    flex:1;
-
-    padding:10px;
-
-    border-radius:6px;
-
-    text-align:center;
-
-    text-decoration:none;
-
-    font-size:12px;
-
-    font-weight:700;
-}
-
-.primary-button{
-    background:#166534;
-    color:#fff;
-}
-
-.secondary-button{
-    background:#1f2937;
-    color:#fff;
-}
-
-.secondary-action{
-    background:#f3f4f6;
-    color:#374151;
-}
-
-
-/* =========================================================
-   ANALYTICS
-========================================================= */
-
-.analytics-grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,minmax(0,1fr));
-
-    gap:18px;
-}
-
-.analytics-card{
-    background:#fff;
-
-    border:1px solid #e5e7eb;
-
-    border-radius:10px;
-
-    padding:20px;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.035);
-}
-
-.analytics-card h4{
-    margin:0 0 18px;
-
-    font-size:14px;
-}
-
-
-/* =========================================================
-   DISTRIBUTION
-========================================================= */
-
-.distribution-row{
-    margin-bottom:15px;
-}
-
-.distribution-label{
-    display:flex;
-
-    justify-content:space-between;
-
-    margin-bottom:6px;
-
-    font-size:12px;
-}
-
-.distribution-label span{
-    color:#6b7280;
-}
-
-.distribution-label strong{
-    color:#374151;
-}
-
-.progress{
-    width:100%;
-
-    height:8px;
-
-    background:#e5e7eb;
-
-    border-radius:20px;
-
-    overflow:hidden;
-}
-
-.progress-bar{
-    height:100%;
-
-    width:0;
-
-    border-radius:20px;
-
-    background:#374151;
-
-    transition:width .4s ease;
-}
-
-.progress-primary{
-    background:#166534;
-}
-
-.progress-secondary{
-    background:#1f2937;
-}
-
-.progress-permanent{
-    background:#15803d;
-}
-
-.progress-parttime{
-    background:#b91c1c;
-}
-
-
-/* =========================================================
-   GENDER STAT
-========================================================= */
-
-.gender-grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,1fr);
-
-    gap:12px;
-}
-
-.gender-box{
-    background:#f9fafb;
-
-    border:1px solid #e5e7eb;
-
-    border-radius:8px;
-
-    padding:17px;
-
-    text-align:center;
-}
-
-.gender-box strong{
-    display:block;
-
-    font-size:25px;
-
-    margin-bottom:5px;
-}
-
-.gender-box span{
-    color:#6b7280;
-
-    font-size:11px;
-
-    text-transform:uppercase;
-}
-
-
-/* =========================================================
-   QUICK ACTIONS
-========================================================= */
-
-.action-grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
-    gap:12px;
-}
-
-.action-card{
-    background:#fff;
-
-    border:1px solid #e5e7eb;
-
-    border-radius:8px;
-
-    padding:16px;
-
-    text-decoration:none;
-
-    color:#1f2937;
-
-    transition:.15s;
-}
-
-.action-card:hover{
-    border-color:#9ca3af;
-
-    background:#f9fafb;
-}
-
-.action-card strong{
-    display:block;
-
-    font-size:13px;
-
-    margin-bottom:5px;
-}
-
-.action-card span{
-    color:#6b7280;
-
-    font-size:11px;
-
-    line-height:1.4;
-}
-
-
-/* =========================================================
-   FOOTER NOTE
-========================================================= */
-
-.dashboard-note{
-    background:#fff;
-
-    border:1px solid #e5e7eb;
-
-    border-radius:8px;
-
-    padding:14px 16px;
-
-    color:#6b7280;
-
-    font-size:12px;
-
-    line-height:1.5;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:1050px){
-
-    .kpi-grid{
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
-    }
-
-    .analytics-grid{
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
-    }
-
-    .action-grid{
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
-    }
-
-}
-
-@media(max-width:750px){
-
-    .page-header{
-        flex-direction:column;
-
-        align-items:flex-start;
-    }
-
-    .school-grid{
-        grid-template-columns:1fr;
-    }
-
-    .analytics-grid{
-        grid-template-columns:1fr;
-    }
-
-}
-
-@media(max-width:600px){
-
-    .header{
-        padding:15px 18px;
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        gap:10px;
-    }
-
-    .user-info{
-        text-align:left;
-    }
-
-    .container{
-        padding:20px 12px 30px;
-    }
-
-    .teacher-nav{
-        flex-direction:column;
-    }
-
-    .teacher-nav a{
-        width:100%;
-    }
-
-    .kpi-grid{
-        grid-template-columns:1fr;
-    }
-
-    .action-grid{
-        grid-template-columns:1fr;
-    }
-
-    .school-stat-row{
-        grid-template-columns:1fr 1fr 1fr;
-    }
-
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Global Education Academy | Teachers Management</title>
+
+    <style>
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.85);
+            z-index: 0;
+        }
+
+        button,
+        a {
+            font-family: inherit;
+        }
+
+        /* =========================================================
+           HEADER - SCHOOL COLORS
+        ========================================================= */
+        .header {
+            background: #1a3c6e;
+            color: #fff;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-title p {
+            margin: 0;
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        .user-info {
+            text-align: right;
+            font-size: 13px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .user-info .role {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info .role-label {
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        /* =========================================================
+           CONTAINER
+        ========================================================= */
+        .container {
+            max-width: 1450px;
+            margin: 0 auto;
+            padding: 28px 24px 100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* =========================================================
+           PAGE HEADER
+        ========================================================= */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .page-header h2 {
+            margin: 0 0 7px;
+            font-size: 25px;
+            color: #111827;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .page-header-right {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           NAVIGATION
+        ========================================================= */
+        .teacher-nav {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            background: #fff;
+            padding: 7px;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+            margin-bottom: 25px;
+        }
+
+        .teacher-nav a {
+            text-decoration: none;
+            color: #4b5563;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .teacher-nav a:hover {
+            background: #f3f4f6;
+        }
+
+        .teacher-nav a.active {
+            background: #1a3c6e;
+            color: #fff;
+        }
+
+        /* =========================================================
+           SECTION
+        ========================================================= */
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 13px;
+        }
+
+        .section-title h3 {
+            margin: 0;
+            font-size: 17px;
+            color: #111827;
+        }
+
+        .section-title span {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* =========================================================
+           KPI GRID
+        ========================================================= */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .kpi-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 19px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .035);
+        }
+
+        .kpi-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #1a3c6e;
+        }
+
+        .kpi-card.primary::before {
+            background: #166534;
+        }
+
+        .kpi-card.secondary::before {
+            background: #1a3c6e;
+        }
+
+        .kpi-card.permanent::before {
+            background: #15803d;
+        }
+
+        .kpi-card.parttime::before {
+            background: #b91c1c;
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 9px;
+        }
+
+        .kpi-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a3c6e;
+        }
+
+        .kpi-note {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        /* =========================================================
+           SCHOOL LEVEL
+        ========================================================= */
+        .school-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .school-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .035);
+        }
+
+        .school-card-top {
+            padding: 20px 21px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .school-card.primary .school-card-top {
+            border-top: 4px solid #166534;
+        }
+
+        .school-card.secondary .school-card-top {
+            border-top: 4px solid #1a3c6e;
+        }
+
+        .school-heading {
+            display: flex;
+            gap: 13px;
+            align-items: center;
+        }
+
+        .school-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .school-heading h4 {
+            margin: 0 0 4px;
+            font-size: 17px;
+        }
+
+        .school-heading p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .school-total {
+            text-align: right;
+        }
+
+        .school-total strong {
+            display: block;
+            font-size: 25px;
+            color: #1a3c6e;
+        }
+
+        .school-total span {
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        .school-card-body {
+            padding: 0 21px 20px;
+        }
+
+        .school-stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 17px;
+        }
+
+        .school-stat {
+            background: #f9fafb;
+            border: 1px solid #edf0f2;
+            border-radius: 7px;
+            padding: 11px;
+        }
+
+        .school-stat span {
+            display: block;
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .school-stat strong {
+            font-size: 18px;
+            color: #1a3c6e;
+        }
+
+        .school-actions {
+            display: flex;
+            gap: 9px;
+        }
+
+        .school-button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .primary-button {
+            background: #166534;
+            color: #fff;
+        }
+
+        .primary-button:hover {
+            background: #14532d;
+            transform: translateY(-2px);
+        }
+
+        .secondary-button {
+            background: #1a3c6e;
+            color: #fff;
+        }
+
+        .secondary-button:hover {
+            background: #0f2a4a;
+            transform: translateY(-2px);
+        }
+
+        .secondary-action {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .secondary-action:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           ANALYTICS
+        ========================================================= */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .analytics-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .035);
+        }
+
+        .analytics-card h4 {
+            margin: 0 0 18px;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        /* =========================================================
+           DISTRIBUTION
+        ========================================================= */
+        .distribution-row {
+            margin-bottom: 15px;
+        }
+
+        .distribution-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .distribution-label span {
+            color: #6b7280;
+        }
+
+        .distribution-label strong {
+            color: #374151;
+        }
+
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            border-radius: 20px;
+            background: #1a3c6e;
+            transition: width .4s ease;
+        }
+
+        .progress-primary {
+            background: #166534;
+        }
+
+        .progress-secondary {
+            background: #1a3c6e;
+        }
+
+        .progress-permanent {
+            background: #15803d;
+        }
+
+        .progress-parttime {
+            background: #b91c1c;
+        }
+
+        /* =========================================================
+           GENDER STAT
+        ========================================================= */
+        .gender-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .gender-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 17px;
+            text-align: center;
+        }
+
+        .gender-box strong {
+            display: block;
+            font-size: 25px;
+            color: #1a3c6e;
+            margin-bottom: 5px;
+        }
+
+        .gender-box span {
+            color: #6b7280;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        /* =========================================================
+           QUICK ACTIONS
+        ========================================================= */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .action-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            text-decoration: none;
+            color: #1f2937;
+            transition: .15s;
+        }
+
+        .action-card:hover {
+            border-color: #1a3c6e;
+            background: #f9fafb;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .action-card strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .action-card span {
+            color: #6b7280;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        /* =========================================================
+           FOOTER NOTE
+        ========================================================= */
+        .dashboard-note {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 14px 16px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================================================
+           LOGOUT BUTTON - BOTTOM LEFT
+        ========================================================= */
+        .logout-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-bottom:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5);
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+        @media (max-width: 1050px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .analytics-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .action-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 750px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .school-grid {
+                grid-template-columns: 1fr;
+            }
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 12px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .user-info {
+                text-align: left;
+                align-items: flex-start;
+            }
+            .container {
+                padding: 20px 12px 80px;
+            }
+            .teacher-nav {
+                flex-direction: column;
+            }
+            .teacher-nav a {
+                width: 100%;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+            .school-stat-row {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .logout-bottom {
+                bottom: 10px;
+                left: 10px;
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+            .header-title h1 {
+                font-size: 15px;
+            }
+            .header-logo {
+                width: 32px;
+                height: 32px;
+            }
+        }
+    </style>
 
 </head>
 
-
 <body>
 
+    <!-- =========================================================
+         HEADER - SCHOOL COLORS
+    ========================================================= -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="Global Education Academy" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>Global Education Academy</h1>
+                <p>Teachers Management</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <span class="role" id="userRole"></span>
+            <span class="role-label" id="userRoleLabel"></span>
+        </div>
+    </header>
 
-<!-- =========================================================
-     HEADER
-========================================================= -->
+    <main class="container">
 
-<header class="header">
-
-    <div class="header-left">
-
-        <div class="header-logo">
-            🎓
+        <!-- =========================================================
+             PAGE HEADER
+        ========================================================= -->
+        <div class="page-header">
+            <div>
+                <h2>Teachers Management Dashboard</h2>
+                <p>Institutional overview of teaching staff across Primary and Secondary School.</p>
+            </div>
+            <div class="page-header-right">
+                <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+            </div>
         </div>
 
-        <div class="header-title">
+        <!-- =========================================================
+             NAVIGATION
+        ========================================================= -->
+        <nav class="teacher-nav">
+            <a href="dashboard.html">Main Dashboard</a>
+            <a href="teachers.html" class="active">Teachers</a>
+            <a href="students.html">Students</a>
+            <a href="classes.html">Classes</a>
+            <a href="subjects.html">Subjects</a>
+        </nav>
 
-            <h1>
-                GLOBAL EDUCATION ACADEMY
-            </h1>
+        <!-- =========================================================
+             OVERALL KPIs
+        ========================================================= -->
+        <section class="section">
+            <div class="section-title">
+                <h3>Staff Overview</h3>
+                <span>All teaching staff</span>
+            </div>
 
-            <p>
-                Teachers Management
-            </p>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Teachers</div>
+                    <div id="totalTeachers" class="kpi-number">0</div>
+                    <div class="kpi-note">Registered teaching staff</div>
+                </div>
 
+                <div class="kpi-card primary">
+                    <div class="kpi-label">Primary School</div>
+                    <div id="primaryTeachers" class="kpi-number">0</div>
+                    <div class="kpi-note">Primary teaching staff</div>
+                </div>
+
+                <div class="kpi-card secondary">
+                    <div class="kpi-label">Secondary School</div>
+                    <div id="secondaryTeachers" class="kpi-number">0</div>
+                    <div class="kpi-note">Secondary teaching staff</div>
+                </div>
+
+                <div class="kpi-card permanent">
+                    <div class="kpi-label">Permanent Teachers</div>
+                    <div id="permanentTeachers" class="kpi-number">0</div>
+                    <div class="kpi-note">Currently permanent staff</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SCHOOL LEVEL MANAGEMENT
+        ========================================================= -->
+        <section class="section">
+            <div class="section-title">
+                <h3>School-Level Management</h3>
+                <span>Select a school sector to manage staff</span>
+            </div>
+
+            <div class="school-grid">
+
+                <!-- PRIMARY -->
+                <div class="school-card primary">
+                    <div class="school-card-top">
+                        <div class="school-heading">
+                            <div class="school-icon">🏫</div>
+                            <div>
+                                <h4>Primary School</h4>
+                                <p>Primary teaching staff</p>
+                            </div>
+                        </div>
+                        <div class="school-total">
+                            <strong id="primaryTotal">0</strong>
+                            <span>Teachers</span>
+                        </div>
+                    </div>
+                    <div class="school-card-body">
+                        <div class="school-stat-row">
+                            <div class="school-stat">
+                                <span>Permanent</span>
+                                <strong id="primaryPermanent">0</strong>
+                            </div>
+                            <div class="school-stat">
+                                <span>Male</span>
+                                <strong id="primaryMale">0</strong>
+                            </div>
+                            <div class="school-stat">
+                                <span>Female</span>
+                                <strong id="primaryFemale">0</strong>
+                            </div>
+                        </div>
+                        <div class="school-actions">
+                            <a href="primary-teachers.html" class="school-button primary-button">Open Dashboard</a>
+                            <a href="primary-teachers.html" class="school-button secondary-action">Manage Staff</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECONDARY -->
+                <div class="school-card secondary">
+                    <div class="school-card-top">
+                        <div class="school-heading">
+                            <div class="school-icon">🎓</div>
+                            <div>
+                                <h4>Secondary School</h4>
+                                <p>Secondary teaching staff</p>
+                            </div>
+                        </div>
+                        <div class="school-total">
+                            <strong id="secondaryTotal">0</strong>
+                            <span>Teachers</span>
+                        </div>
+                    </div>
+                    <div class="school-card-body">
+                        <div class="school-stat-row">
+                            <div class="school-stat">
+                                <span>Permanent</span>
+                                <strong id="secondaryPermanent">0</strong>
+                            </div>
+                            <div class="school-stat">
+                                <span>Male</span>
+                                <strong id="secondaryMale">0</strong>
+                            </div>
+                            <div class="school-stat">
+                                <span>Female</span>
+                                <strong id="secondaryFemale">0</strong>
+                            </div>
+                        </div>
+                        <div class="school-actions">
+                            <a href="secondary-teachers.html" class="school-button secondary-button">Open Dashboard</a>
+                            <a href="secondary-teachers.html" class="school-button secondary-action">Manage Staff</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =========================================================
+             ANALYTICS
+        ========================================================= -->
+        <section class="section">
+            <div class="section-title">
+                <h3>Staff Distribution</h3>
+                <span>Current teacher composition</span>
+            </div>
+
+            <div class="analytics-grid">
+
+                <!-- SCHOOL LEVEL -->
+                <div class="analytics-card">
+                    <h4>By School Level</h4>
+
+                    <div class="distribution-row">
+                        <div class="distribution-label">
+                            <span>Primary School</span>
+                            <strong id="primaryPercent">0%</strong>
+                        </div>
+                        <div class="progress">
+                            <div id="primaryProgress" class="progress-bar progress-primary"></div>
+                        </div>
+                    </div>
+
+                    <div class="distribution-row">
+                        <div class="distribution-label">
+                            <span>Secondary School</span>
+                            <strong id="secondaryPercent">0%</strong>
+                        </div>
+                        <div class="progress">
+                            <div id="secondaryProgress" class="progress-bar progress-secondary"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GENDER -->
+                <div class="analytics-card">
+                    <h4>Gender Distribution</h4>
+
+                    <div class="gender-grid">
+                        <div class="gender-box">
+                            <strong id="maleTeachers">0</strong>
+                            <span>Male</span>
+                        </div>
+                        <div class="gender-box">
+                            <strong id="femaleTeachers">0</strong>
+                            <span>Female</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATUS -->
+                <div class="analytics-card">
+                    <h4>Employment Status</h4>
+
+                    <div class="distribution-row">
+                        <div class="distribution-label">
+                            <span>Permanent</span>
+                            <strong id="permanentPercent">0%</strong>
+                        </div>
+                        <div class="progress">
+                            <div id="permanentProgress" class="progress-bar progress-permanent"></div>
+                        </div>
+                    </div>
+
+                    <div class="distribution-row">
+                        <div class="distribution-label">
+                            <span>Part Time</span>
+                            <strong id="parttimePercent">0%</strong>
+                        </div>
+                        <div class="progress">
+                            <div id="parttimeProgress" class="progress-bar progress-parttime"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =========================================================
+             QUICK ACTIONS
+        ========================================================= -->
+        <section class="section">
+            <div class="section-title">
+                <h3>Quick Actions</h3>
+            </div>
+
+            <div class="action-grid">
+
+                <a href="primary-teachers.html" class="action-card">
+                    <strong>Register Primary Teacher</strong>
+                    <span>Add and manage Primary School teaching staff.</span>
+                </a>
+
+                <a href="secondary-teachers.html" class="action-card">
+                    <strong>Register Secondary Teacher</strong>
+                    <span>Add and manage Secondary School teaching staff.</span>
+                </a>
+
+                <a href="primary-teachers.html" class="action-card">
+                    <strong>Primary Staff Records</strong>
+                    <span>View and manage Primary teacher records.</span>
+                </a>
+
+                <a href="secondary-teachers.html" class="action-card">
+                    <strong>Secondary Staff Records</strong>
+                    <span>View and manage Secondary teacher records.</span>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- =========================================================
+             ADMINISTRATIVE NOTE
+        ========================================================= -->
+        <div class="dashboard-note">
+            <strong>Teachers Administration:</strong>
+            The Teachers Management Dashboard provides an overall
+            institutional view of teaching staff. Primary and Secondary
+            School teacher records are managed independently through
+            their respective dashboards and access controls.
         </div>
 
-    </div>
-
-
-    <div
-        id="userInfo"
-        class="user-info">
-    </div>
-
-</header>
-
-
-
-<main class="container">
-
-
-<!-- =========================================================
-     PAGE HEADER
-========================================================= -->
-
-<div class="page-header">
-
-    <div>
-
-        <h2>
-            Teachers Management Dashboard
-        </h2>
-
-        <p>
-            Institutional overview of teaching staff across
-            Primary and Secondary School.
-        </p>
-
-    </div>
-
-
-    <div class="page-header-right">
-
-        Academic Staff Administration
-
-    </div>
-
-</div>
-
-
-
-<!-- =========================================================
-     NAVIGATION
-========================================================= -->
-
-<nav class="teacher-nav">
-
-    <a href="dashboard.html">
-        Main Dashboard
-    </a>
-
-    <a
-        href="teachers.html"
-        class="permanent">
-        Teachers
-    </a>
-
-    <a href="students.html">
-        Students
-    </a>
-
-    <a href="classes.html">
-        Classes
-    </a>
-
-    <a href="subjects.html">
-        Subjects
-    </a>
-
-</nav>
-
-
-
-<!-- =========================================================
-     OVERALL KPIs
-========================================================= -->
-
-<section class="section">
-
-    <div class="section-title">
-
-        <h3>
-            Staff Overview
-        </h3>
-
-        <span>
-            All teaching staff
-        </span>
-
-    </div>
-
-
-    <div class="kpi-grid">
-
-
-        <div class="kpi-card">
-
-            <div class="kpi-label">
-                Total Teachers
-            </div>
-
-            <div
-                id="totalTeachers"
-                class="kpi-number">
-                0
-            </div>
-
-            <div class="kpi-note">
-                Registered teaching staff
-            </div>
-
-        </div>
-
-
-        <div class="kpi-card primary">
-
-            <div class="kpi-label">
-                Primary School
-            </div>
-
-            <div
-                id="primaryTeachers"
-                class="kpi-number">
-                0
-            </div>
-
-            <div class="kpi-note">
-                Primary teaching staff
-            </div>
-
-        </div>
-
-
-        <div class="kpi-card secondary">
-
-            <div class="kpi-label">
-                Secondary School
-            </div>
-
-            <div
-                id="secondaryTeachers"
-                class="kpi-number">
-                0
-            </div>
-
-            <div class="kpi-note">
-                Secondary teaching staff
-            </div>
-
-        </div>
-
-
-        <div class="kpi-card permanent">
-
-            <div class="kpi-label">
-                Permanent Teachers
-            </div>
-
-            <div
-                id="permenentTeachers"
-                class="kpi-number">
-                0
-            </div>
-
-            <div class="kpi-note">
-                Currently permanent staff
-            </div>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     SCHOOL LEVEL MANAGEMENT
-========================================================= -->
-
-<section class="section">
-
-    <div class="section-title">
-
-        <h3>
-            School-Level Management
-        </h3>
-
-        <span>
-            Select a school sector to manage staff
-        </span>
-
-    </div>
-
-
-    <div class="school-grid">
-
-
-        <!-- PRIMARY -->
-
-        <div class="school-card primary">
-
-            <div class="school-card-top">
-
-                <div class="school-heading">
-
-                    <div class="school-icon">
-                        🏫
-                    </div>
-
-                    <div>
-
-                        <h4>
-                            Primary School
-                        </h4>
-
-                        <p>
-                            Primary teaching staff
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="school-total">
-
-                    <strong id="primaryTotal">
-                        0
-                    </strong>
-
-                    <span>
-                        Teachers
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="school-card-body">
-
-
-                <div class="school-stat-row">
-
-                    <div class="school-stat">
-
-                        <span>
-                            Permanent
-                        </span>
-
-                        <strong id="primaryPermanent">
-                            0
-                        </strong>
-
-                    </div>
-
-
-                    <div class="school-stat">
-
-                        <span>
-                            Male
-                        </span>
-
-                        <strong id="primaryMale">
-                            0
-                        </strong>
-
-                    </div>
-
-
-                    <div class="school-stat">
-
-                        <span>
-                            Female
-                        </span>
-
-                        <strong id="primaryFemale">
-                            0
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <div class="school-actions">
-
-                    <a
-                        href="primary-teachers.html"
-                        class="school-button primary-button">
-
-                        Open Dashboard
-
-                    </a>
-
-                    <a
-                        href="primary-teachers.html"
-                        class="school-button secondary-action">
-
-                        Manage Staff
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- SECONDARY -->
-
-        <div class="school-card secondary">
-
-            <div class="school-card-top">
-
-                <div class="school-heading">
-
-                    <div class="school-icon">
-                        🎓
-                    </div>
-
-                    <div>
-
-                        <h4>
-                            Secondary School
-                        </h4>
-
-                        <p>
-                            Secondary teaching staff
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="school-total">
-
-                    <strong id="secondaryTotal">
-                        0
-                    </strong>
-
-                    <span>
-                        Teachers
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="school-card-body">
-
-
-                <div class="school-stat-row">
-
-                    <div class="school-stat">
-
-                        <span>
-                            Permanent
-                        </span>
-
-                        <strong id="secondaryPermanent">
-                            0
-                        </strong>
-
-                    </div>
-
-
-                    <div class="school-stat">
-
-                        <span>
-                            Male
-                        </span>
-
-                        <strong id="secondaryMale">
-                            0
-                        </strong>
-
-                    </div>
-
-
-                    <div class="school-stat">
-
-                        <span>
-                            Female
-                        </span>
-
-                        <strong id="secondaryFemale">
-                            0
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <div class="school-actions">
-
-                    <a
-                        href="secondary-teachers.html"
-                        class="school-button secondary-button">
-
-                        Open Dashboard
-
-                    </a>
-
-                    <a
-                        href="secondary-teachers.html"
-                        class="school-button secondary-action">
-
-                        Manage Staff
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     ANALYTICS
-========================================================= -->
-
-<section class="section">
-
-    <div class="section-title">
-
-        <h3>
-            Staff Distribution
-        </h3>
-
-        <span>
-            Current teacher composition
-        </span>
-
-    </div>
-
-
-    <div class="analytics-grid">
-
-
-        <!-- SCHOOL LEVEL -->
-
-        <div class="analytics-card">
-
-            <h4>
-                By School Level
-            </h4>
-
-
-            <div class="distribution-row">
-
-                <div class="distribution-label">
-
-                    <span>
-                        Primary School
-                    </span>
-
-                    <strong id="primaryPercent">
-                        0%
-                    </strong>
-
-                </div>
-
-                <div class="progress">
-
-                    <div
-                        id="primaryProgress"
-                        class="progress-bar progress-primary">
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="distribution-row">
-
-                <div class="distribution-label">
-
-                    <span>
-                        Secondary School
-                    </span>
-
-                    <strong id="secondaryPercent">
-                        0%
-                    </strong>
-
-                </div>
-
-                <div class="progress">
-
-                    <div
-                        id="secondaryProgress"
-                        class="progress-bar progress-secondary">
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- GENDER -->
-
-        <div class="analytics-card">
-
-            <h4>
-                Gender Distribution
-            </h4>
-
-
-            <div class="gender-grid">
-
-                <div class="gender-box">
-
-                    <strong id="maleTeachers">
-                        0
-                    </strong>
-
-                    <span>
-                        Male
-                    </span>
-
-                </div>
-
-
-                <div class="gender-box">
-
-                    <strong id="femaleTeachers">
-                        0
-                    </strong>
-
-                    <span>
-                        Female
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- STATUS -->
-
-        <div class="analytics-card">
-
-            <h4>
-                Employment Status
-            </h4>
-
-
-            <div class="distribution-row">
-
-                <div class="distribution-label">
-
-                    <span>
-                        Permanent
-                    </span>
-
-                    <strong id="permanentPercent">
-                        0%
-                    </strong>
-
-                </div>
-
-                <div class="progress">
-
-                    <div
-                        id="permanentProgress"
-                        class="progress-bar progress-permanent">
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="distribution-row">
-
-                <div class="distribution-label">
-
-                    <span>
-                        Part Time
-                    </span>
-
-                    <strong id="parttimePercent">
-                        0%
-                    </strong>
-
-                </div>
-
-                <div class="progress">
-
-                    <div
-                        id="parttimeProgress"
-                        class="progress-bar progress-parttime">
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     QUICK ACTIONS
-========================================================= -->
-
-<section class="section">
-
-    <div class="section-title">
-
-        <h3>
-            Quick Actions
-        </h3>
-
-    </div>
-
-
-    <div class="action-grid">
-
-
-        <a
-            href="primary-teachers.html"
-            class="action-card">
-
-            <strong>
-                Register Primary Teacher
-            </strong>
-
-            <span>
-                Add and manage Primary School teaching staff.
-            </span>
-
-        </a>
-
-
-        <a
-            href="secondary-teachers.html"
-            class="action-card">
-
-            <strong>
-                Register Secondary Teacher
-            </strong>
-
-            <span>
-                Add and manage Secondary School teaching staff.
-            </span>
-
-        </a>
-
-
-        <a
-            href="primary-teachers.html"
-            class="action-card">
-
-            <strong>
-                Primary Staff Records
-            </strong>
-
-            <span>
-                View and manage Primary teacher records.
-            </span>
-
-        </a>
-
-
-        <a
-            href="secondary-teachers.html"
-            class="action-card">
-
-            <strong>
-                Secondary Staff Records
-            </strong>
-
-            <span>
-                View and manage Secondary teacher records.
-            </span>
-
-        </a>
-
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     ADMINISTRATIVE NOTE
-========================================================= -->
-
-<div class="dashboard-note">
-
-    <strong>Teachers Administration:</strong>
-    The Teachers Management Dashboard provides an overall
-    institutional view of teaching staff. Primary and Secondary
-    School teacher records are managed independently through
-    their respective dashboards and access controls.
-
-</div>
-
-
-</main>
-
-<script>
-
-const API_BASE = '/api';
-
-let user = null;
-let token = null;
-let teachers = [];
-
-
-/* ============================================================
-   AUTHENTICATION
-============================================================ */
-
-function getAuthData(){
-
-    token =
-        sessionStorage.getItem('token') ||
-        localStorage.getItem('token') ||
-        sessionStorage.getItem('authToken') ||
-        localStorage.getItem('authToken');
-
-
-    const raw =
-        sessionStorage.getItem('user') ||
-        localStorage.getItem('user');
-
-
-    try{
-
-        user = raw ? JSON.parse(raw) : null;
-
-    }catch(e){
-
-        user = null;
-
-    }
-
-}
-
-
-getAuthData();
-
-
-/* ============================================================
-   USER INFORMATION
-============================================================ */
-
-const userInfo =
-    document.getElementById('userInfo');
-
-
-if(userInfo){
-
-    userInfo.textContent =
-        `${user?.full_name || user?.name || 'Administrator'} (${user?.role_name || user?.role || 'School Management'})`;
-
-}
-
-
-/* ============================================================
-   API REQUEST
-============================================================ */
-
-async function apiRequest(url,options={}){
-
-    getAuthData();
-
-
-    if(!token){
-
-        alert(
-            'Authentication required. Please log in.'
-        );
-
-        location.href='index.html';
-
-        return null;
-
-    }
-
-
-    const response =
-        await fetch(
-            `${API_BASE}${url}`,
-            {
-                ...options,
-
-                headers:{
-                    'Content-Type':'application/json',
-
-                    ...(options.headers || {}),
-
-                    Authorization:
-                        `Bearer ${token}`
-                }
+    </main>
+
+    <!-- =========================================================
+         LOGOUT BUTTON - BOTTOM LEFT
+    ========================================================= -->
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
+
+    <script>
+        const API_BASE = '/api';
+
+        let user = null;
+        let token = null;
+        let teachers = [];
+
+        /* ============================================================
+           AUTHENTICATION
+        ============================================================ */
+
+        function getAuthData() {
+            token = sessionStorage.getItem('token') ||
+                localStorage.getItem('token') ||
+                sessionStorage.getItem('authToken') ||
+                localStorage.getItem('authToken');
+
+            const raw = sessionStorage.getItem('user') ||
+                localStorage.getItem('user');
+
+            try {
+                user = raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                user = null;
             }
-        );
-
-
-    let data=null;
-
-
-    try{
-
-        data=await response.json();
-
-    }catch(e){
-
-        data=null;
-
-    }
-
-
-    /* --------------------------------------------------------
-       SESSION EXPIRED
-    -------------------------------------------------------- */
-
-    if(response.status===401){
-
-        [
-            'token',
-            'user',
-            'authToken'
-        ].forEach(k=>{
-
-            sessionStorage.removeItem(k);
-            localStorage.removeItem(k);
-
-        });
-
-
-        alert(
-            'Your session has expired. Please log in again.'
-        );
-
-
-        location.href='index.html';
-
-        return null;
-
-    }
-
-
-    /* --------------------------------------------------------
-       OTHER ERRORS
-    -------------------------------------------------------- */
-
-    if(!response.ok){
-
-        throw new Error(
-            data?.message ||
-            `Request failed with status ${response.status}`
-        );
-
-    }
-
-
-    return data;
-
-}
-
-
-/* ============================================================
-   TEACHER SUMMARY
-============================================================ */
-
-const teacherSummary = {
-
-    total:0,
-
-    primary:0,
-
-    secondary:0,
-
-    permanent:0,
-
-    partTime:0,
-
-    male:0,
-
-    female:0,
-
-    primaryPermanent:0,
-
-    secondaryPermanent:0,
-
-    primaryMale:0,
-
-    primaryFemale:0,
-
-    secondaryMale:0,
-
-    secondaryFemale:0
-
-};
-
-
-/* ============================================================
-   LOAD TEACHERS
-============================================================ */
-
-async function loadTeachers(){
-
-    const data =
-        await apiRequest('/teachers');
-
-
-    teachers =
-        Array.isArray(data)
-            ? data
-            : [];
-
-
-    calculateTeacherSummary();
-
-}
-
-
-/* ============================================================
-   CALCULATE SUMMARY
-============================================================ */
-
-function calculateTeacherSummary(){
-
-
-    /* --------------------------------------------------------
-       RESET
-    -------------------------------------------------------- */
-
-    teacherSummary.total=0;
-
-    teacherSummary.primary=0;
-
-    teacherSummary.secondary=0;
-
-    teacherSummary.permanent=0;
-
-    teacherSummary.partTime=0;
-
-    teacherSummary.male=0;
-
-    teacherSummary.female=0;
-
-    teacherSummary.primaryPermanent=0;
-
-    teacherSummary.secondaryPermanent=0;
-
-    teacherSummary.primaryMale=0;
-
-    teacherSummary.primaryFemale=0;
-
-    teacherSummary.secondaryMale=0;
-
-    teacherSummary.secondaryFemale=0;
-
-
-    /* --------------------------------------------------------
-       TOTAL
-    -------------------------------------------------------- */
-
-    teacherSummary.total =
-        teachers.length;
-
-
-    /* --------------------------------------------------------
-       PROCESS TEACHERS
-    -------------------------------------------------------- */
-
-    teachers.forEach(teacher=>{
-
-
-        const schoolSection =
-            String(
-                teacher.school_section || ''
-            )
-            .trim()
-            .toLowerCase();
-
-
-        const employmentType =
-            String(
-                teacher.employment_type || ''
-            )
-            .trim()
-            .toLowerCase();
-
-
-        const gender =
-            String(
-                teacher.gender || ''
-            )
-            .trim()
-            .toLowerCase();
-
-
-        /* ----------------------------------------------------
-           SCHOOL SECTION
-        ---------------------------------------------------- */
-
-        const isPrimary =
-            schoolSection === 'primary' ||
-            schoolSection === 'primary school';
-
-
-        const isSecondary =
-            schoolSection === 'secondary' ||
-            schoolSection === 'secondary school';
-
-
-        if(isPrimary){
-
-            teacherSummary.primary++;
-
         }
-
-
-        if(isSecondary){
-
-            teacherSummary.secondary++;
-
-        }
-
-
-        /* ----------------------------------------------------
-           EMPLOYMENT TYPE
-        ---------------------------------------------------- */
-
-        const isPermanent =
-            employmentType === 'permanent';
-
-
-        const isPartTime =
-            employmentType === 'part time' ||
-            employmentType === 'part-time' ||
-            employmentType === 'parttime';
-
-
-        if(isPermanent){
-
-            teacherSummary.permanent++;
-
-        }
-
-
-        if(isPartTime){
-
-            teacherSummary.partTime++;
-
-        }
-
-
-        /* ----------------------------------------------------
-           GENDER
-        ---------------------------------------------------- */
-
-        if(gender === 'male'){
-
-            teacherSummary.male++;
-
-        }
-
-
-        if(gender === 'female'){
-
-            teacherSummary.female++;
-
-        }
-
-
-        /* ----------------------------------------------------
-           PRIMARY DETAILS
-        ---------------------------------------------------- */
-
-        if(isPrimary){
-
-            if(isPermanent){
-
-                teacherSummary.primaryPermanent++;
-
-            }
-
-
-            if(gender === 'male'){
-
-                teacherSummary.primaryMale++;
-
-            }
-
-
-            if(gender === 'female'){
-
-                teacherSummary.primaryFemale++;
-
-            }
-
-        }
-
-
-        /* ----------------------------------------------------
-           SECONDARY DETAILS
-        ---------------------------------------------------- */
-
-        if(isSecondary){
-
-            if(isPermanent){
-
-                teacherSummary.secondaryPermanent++;
-
-            }
-
-
-            if(gender === 'male'){
-
-                teacherSummary.secondaryMale++;
-
-            }
-
-
-            if(gender === 'female'){
-
-                teacherSummary.secondaryFemale++;
-
-            }
-
-        }
-
-    });
-
-
-    console.log(
-        'TEACHER SUMMARY:',
-        teacherSummary
-    );
-
-}
-
-
-/* ============================================================
-   PERCENTAGE
-============================================================ */
-
-function percentage(value,total){
-
-    if(!total){
-
-        return 0;
-
-    }
-
-
-    return Math.round(
-        (Number(value) /
-        Number(total)) * 100
-    );
-
-}
-
-
-/* ============================================================
-   DISPLAY DASHBOARD
-============================================================ */
-
-function displayDashboard(){
-
-
-    /* --------------------------------------------------------
-       SAFE TEXT
-    -------------------------------------------------------- */
-
-    function setText(id,value){
-
-        const element =
-            document.getElementById(id);
-
-
-        if(element){
-
-            element.textContent =
-                value;
-
-        }
-
-    }
-
-
-    /* --------------------------------------------------------
-       SAFE WIDTH
-    -------------------------------------------------------- */
-
-    function setWidth(id,value){
-
-        const element =
-            document.getElementById(id);
-
-
-        if(element){
-
-            element.style.width =
-                `${value}%`;
-
-        }
-
-    }
-
-
-    /* --------------------------------------------------------
-       MAIN KPIs
-    -------------------------------------------------------- */
-
-    setText(
-        'totalTeachers',
-        teacherSummary.total
-    );
-
-
-    setText(
-        'primaryTeachers',
-        teacherSummary.primary
-    );
-
-
-    setText(
-        'secondaryTeachers',
-        teacherSummary.secondary
-    );
-
-
-    setText(
-        'permanentTeachers',
-        teacherSummary.permanent
-    );
-
-
-    /* --------------------------------------------------------
-       PRIMARY
-    -------------------------------------------------------- */
-
-    setText(
-        'primaryTotal',
-        teacherSummary.primary
-    );
-
-
-    setText(
-        'primaryPermanent',
-        teacherSummary.primaryPermanent
-    );
-
-
-    setText(
-        'primaryMale',
-        teacherSummary.primaryMale
-    );
-
-
-    setText(
-        'primaryFemale',
-        teacherSummary.primaryFemale
-    );
-
-
-    /* --------------------------------------------------------
-       SECONDARY
-    -------------------------------------------------------- */
-
-    setText(
-        'secondaryTotal',
-        teacherSummary.secondary
-    );
-
-
-    setText(
-        'secondaryPermanent',
-        teacherSummary.secondaryPermanent
-    );
-
-
-    setText(
-        'secondaryMale',
-        teacherSummary.secondaryMale
-    );
-
-
-    setText(
-        'secondaryFemale',
-        teacherSummary.secondaryFemale
-    );
-
-
-    /* --------------------------------------------------------
-       GENDER
-    -------------------------------------------------------- */
-
-    setText(
-        'maleTeachers',
-        teacherSummary.male
-    );
-
-
-    setText(
-        'femaleTeachers',
-        teacherSummary.female
-    );
-
-
-    /* --------------------------------------------------------
-       SCHOOL LEVEL PERCENTAGES
-    -------------------------------------------------------- */
-
-    const primaryPercent =
-        percentage(
-            teacherSummary.primary,
-            teacherSummary.total
-        );
-
-
-    const secondaryPercent =
-        percentage(
-            teacherSummary.secondary,
-            teacherSummary.total
-        );
-
-
-    setText(
-        'primaryPercent',
-        `${primaryPercent}%`
-    );
-
-
-    setText(
-        'secondaryPercent',
-        `${secondaryPercent}%`
-    );
-
-
-    setWidth(
-        'primaryProgress',
-        primaryPercent
-    );
-
-
-    setWidth(
-        'secondaryProgress',
-        secondaryPercent
-    );
-
-
-    /* --------------------------------------------------------
-       EMPLOYMENT STATUS
-    -------------------------------------------------------- */
-
-    const permanentPercent =
-        percentage(
-            teacherSummary.permanent,
-            teacherSummary.total
-        );
-
-
-    const parttimePercent =
-        percentage(
-            teacherSummary.partTime,
-            teacherSummary.total
-        );
-
-
-    setText(
-        'permanentPercent',
-        `${permanentPercent}%`
-    );
-
-
-    setText(
-        'parttimePercent',
-        `${parttimePercent}%`
-    );
-
-
-    setWidth(
-        'permanentProgress',
-        permanentPercent
-    );
-
-
-    setWidth(
-        'parttimeProgress',
-        parttimePercent
-    );
-
-}
-
-
-/* ============================================================
-   INITIALIZE DASHBOARD
-============================================================ */
-
-async function loadPage(){
-
-    try{
 
         getAuthData();
 
+        /* ============================================================
+           USER INFORMATION
+        ============================================================ */
 
-        if(!token){
+        // Show only role in header
+        document.getElementById('userRole').textContent = user?.role_name || 'School Management';
+        document.getElementById('userRoleLabel').textContent = '';
 
-            alert(
-                'Authentication required. Please log in.'
-            );
+        /* ============================================================
+           LOGOUT
+        ============================================================ */
 
-            location.href='index.html';
-
-            return;
-
+        function logout() {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+            window.location.href = '/login.html';
         }
 
+        /* ============================================================
+           API REQUEST
+        ============================================================ */
 
-        await loadTeachers();
+        async function apiRequest(url, options = {}) {
+            getAuthData();
 
+            if (!token) {
+                alert('Authentication required. Please log in.');
+                location.href = 'login.html';
+                return null;
+            }
 
-        displayDashboard();
+            const response = await fetch(`${API_BASE}${url}`, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {}),
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (e) {
+                data = null;
+            }
 
-    }catch(error){
+            if (response.status === 401) {
+                ['token', 'user', 'authToken'].forEach(k => {
+                    sessionStorage.removeItem(k);
+                    localStorage.removeItem(k);
+                });
+                alert('Your session has expired. Please log in again.');
+                location.href = 'login.html';
+                return null;
+            }
 
-        console.error(
-            'PAGE LOAD ERROR:',
-            error
-        );
+            if (!response.ok) {
+                throw new Error(data?.message || `Request failed with status ${response.status}`);
+            }
 
-    }
+            return data;
+        }
 
-}
+        /* ============================================================
+           TEACHER SUMMARY
+        ============================================================ */
 
+        const teacherSummary = {
+            total: 0,
+            primary: 0,
+            secondary: 0,
+            permanent: 0,
+            partTime: 0,
+            male: 0,
+            female: 0,
+            primaryPermanent: 0,
+            secondaryPermanent: 0,
+            primaryMale: 0,
+            primaryFemale: 0,
+            secondaryMale: 0,
+            secondaryFemale: 0
+        };
 
-/* ============================================================
-   START
-============================================================ */
+        /* ============================================================
+           LOAD TEACHERS
+        ============================================================ */
 
-loadPage();
+        async function loadTeachers() {
+            const data = await apiRequest('/teachers');
+            teachers = Array.isArray(data) ? data : [];
+            calculateTeacherSummary();
+        }
 
-</script>
+        /* ============================================================
+           CALCULATE SUMMARY
+        ============================================================ */
+
+        function calculateTeacherSummary() {
+            // Reset
+            teacherSummary.total = 0;
+            teacherSummary.primary = 0;
+            teacherSummary.secondary = 0;
+            teacherSummary.permanent = 0;
+            teacherSummary.partTime = 0;
+            teacherSummary.male = 0;
+            teacherSummary.female = 0;
+            teacherSummary.primaryPermanent = 0;
+            teacherSummary.secondaryPermanent = 0;
+            teacherSummary.primaryMale = 0;
+            teacherSummary.primaryFemale = 0;
+            teacherSummary.secondaryMale = 0;
+            teacherSummary.secondaryFemale = 0;
+
+            teacherSummary.total = teachers.length;
+
+            teachers.forEach(teacher => {
+                const schoolSection = String(teacher.school_section || '').trim().toLowerCase();
+                const employmentType = String(teacher.employment_type || '').trim().toLowerCase();
+                const gender = String(teacher.gender || '').trim().toLowerCase();
+
+                const isPrimary = schoolSection === 'primary' || schoolSection === 'primary school';
+                const isSecondary = schoolSection === 'secondary' || schoolSection === 'secondary school';
+
+                if (isPrimary) teacherSummary.primary++;
+                if (isSecondary) teacherSummary.secondary++;
+
+                const isPermanent = employmentType === 'permanent';
+                const isPartTime = employmentType === 'part time' || employmentType === 'part-time' || employmentType ===
+                    'parttime';
+
+                if (isPermanent) teacherSummary.permanent++;
+                if (isPartTime) teacherSummary.partTime++;
+
+                if (gender === 'male') teacherSummary.male++;
+                if (gender === 'female') teacherSummary.female++;
+
+                if (isPrimary) {
+                    if (isPermanent) teacherSummary.primaryPermanent++;
+                    if (gender === 'male') teacherSummary.primaryMale++;
+                    if (gender === 'female') teacherSummary.primaryFemale++;
+                }
+
+                if (isSecondary) {
+                    if (isPermanent) teacherSummary.secondaryPermanent++;
+                    if (gender === 'male') teacherSummary.secondaryMale++;
+                    if (gender === 'female') teacherSummary.secondaryFemale++;
+                }
+            });
+
+            console.log('TEACHER SUMMARY:', teacherSummary);
+        }
+
+        /* ============================================================
+           PERCENTAGE
+        ============================================================ */
+
+        function percentage(value, total) {
+            if (!total) return 0;
+            return Math.round((Number(value) / Number(total)) * 100);
+        }
+
+        /* ============================================================
+           DISPLAY DASHBOARD
+        ============================================================ */
+
+        function displayDashboard() {
+            function setText(id, value) {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
+            }
+
+            function setWidth(id, value) {
+                const element = document.getElementById(id);
+                if (element) element.style.width = `${value}%`;
+            }
+
+            // Main KPIs
+            setText('totalTeachers', teacherSummary.total);
+            setText('primaryTeachers', teacherSummary.primary);
+            setText('secondaryTeachers', teacherSummary.secondary);
+            setText('permanentTeachers', teacherSummary.permanent);
+
+            // Primary
+            setText('primaryTotal', teacherSummary.primary);
+            setText('primaryPermanent', teacherSummary.primaryPermanent);
+            setText('primaryMale', teacherSummary.primaryMale);
+            setText('primaryFemale', teacherSummary.primaryFemale);
+
+            // Secondary
+            setText('secondaryTotal', teacherSummary.secondary);
+            setText('secondaryPermanent', teacherSummary.secondaryPermanent);
+            setText('secondaryMale', teacherSummary.secondaryMale);
+            setText('secondaryFemale', teacherSummary.secondaryFemale);
+
+            // Gender
+            setText('maleTeachers', teacherSummary.male);
+            setText('femaleTeachers', teacherSummary.female);
+
+            // School Level Percentages
+            const primaryPercent = percentage(teacherSummary.primary, teacherSummary.total);
+            const secondaryPercent = percentage(teacherSummary.secondary, teacherSummary.total);
+
+            setText('primaryPercent', `${primaryPercent}%`);
+            setText('secondaryPercent', `${secondaryPercent}%`);
+            setWidth('primaryProgress', primaryPercent);
+            setWidth('secondaryProgress', secondaryPercent);
+
+            // Employment Status
+            const permanentPercent = percentage(teacherSummary.permanent, teacherSummary.total);
+            const parttimePercent = percentage(teacherSummary.partTime, teacherSummary.total);
+
+            setText('permanentPercent', `${permanentPercent}%`);
+            setText('parttimePercent', `${parttimePercent}%`);
+            setWidth('permanentProgress', permanentPercent);
+            setWidth('parttimeProgress', parttimePercent);
+        }
+
+        /* ============================================================
+           INITIALIZE DASHBOARD
+        ============================================================ */
+
+        async function loadPage() {
+            try {
+                getAuthData();
+
+                if (!token) {
+                    alert('Authentication required. Please log in.');
+                    location.href = 'login.html';
+                    return;
+                }
+
+                await loadTeachers();
+                displayDashboard();
+
+            } catch (error) {
+                console.error('PAGE LOAD ERROR:', error);
+            }
+        }
+
+        /* ============================================================
+           START
+        ============================================================ */
+
+        loadPage();
+    </script>
+
 </body>
 
 </html>

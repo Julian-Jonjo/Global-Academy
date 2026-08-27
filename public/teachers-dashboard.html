@@ -2,1759 +2,993 @@
 <html lang="en">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-    Global Education Academy | Teacher Dashboard
-</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f8;
-    color: #1f2937;
-}
-
-button,
-input,
-select {
-    font-family: inherit;
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.header {
-    background: #1f2937;
-    color: #ffffff;
-    padding: 18px 30px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 22px;
-}
-
-.header p {
-    margin: 5px 0 0;
-    color: #d1d5db;
-    font-size: 13px;
-}
-
-.user {
-    text-align: right;
-    font-size: 13px;
-}
-
-.user strong {
-    display: block;
-    font-size: 14px;
-}
-
-
-/* =========================================================
-   CONTAINER
-========================================================= */
-
-.container {
-    max-width: 1500px;
-    margin: 25px auto;
-    padding: 0 20px;
-}
-
-
-/* =========================================================
-   PAGE HEADER
-========================================================= */
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    margin-bottom: 22px;
-}
-
-.page-header h2 {
-    margin: 0 0 5px;
-    font-size: 25px;
-}
-
-.page-header p {
-    margin: 0;
-    color: #6b7280;
-    font-size: 14px;
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-.nav {
-    background: #ffffff;
-    border-radius: 10px;
-
-    padding: 8px;
-
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-
-    box-shadow: 0 3px 12px rgba(0,0,0,.06);
-
-    margin-bottom: 22px;
-}
-
-.nav a {
-    text-decoration: none;
-    color: #4b5563;
-
-    padding: 11px 15px;
-
-    border-radius: 6px;
-
-    font-size: 13px;
-    font-weight: bold;
-}
-
-.nav a:hover {
-    background: #f3f4f6;
-}
-
-.nav a.active {
-    background: #1f2937;
-    color: #ffffff;
-}
-
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-.summary {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit,minmax(190px,1fr));
-
-    gap: 17px;
-
-    margin-bottom: 22px;
-}
-
-.summary-card {
-    background: #ffffff;
-
-    border-radius: 10px;
-
-    padding: 20px;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.06);
-
-    border-left: 4px solid #166534;
-}
-
-.summary-label {
-    color: #6b7280;
-
-    font-size: 12px;
-
-    font-weight: bold;
-
-    text-transform: uppercase;
-
-    margin-bottom: 10px;
-}
-
-.summary-number {
-    font-size: 28px;
-    font-weight: bold;
-}
-
-
-/* =========================================================
-   CARDS
-========================================================= */
-
-.card {
-    background: #ffffff;
-
-    border-radius: 10px;
-
-    padding: 22px;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,.07);
-
-    margin-bottom: 22px;
-}
-
-.card-header {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    margin-bottom: 18px;
-}
-
-.card-header h3 {
-    margin: 0;
-    font-size: 18px;
-}
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-.profile-grid {
-    display: grid;
-
-    grid-template-columns:
-        100px 1fr;
-
-    gap: 20px;
-
-    align-items: center;
-}
-
-.profile-photo {
-    width: 85px;
-    height: 85px;
-
-    border-radius: 50%;
-
-    background: #f3f4f6;
-
-    border: 1px solid #e5e7eb;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    font-size: 38px;
-
-    overflow: hidden;
-}
-
-.profile-photo img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-}
-
-.profile-info h3 {
-    margin: 0 0 8px;
-
-    font-size: 20px;
-}
-
-.profile-info p {
-    margin: 5px 0;
-
-    color: #6b7280;
-
-    font-size: 13px;
-}
-
-.profile-info strong {
-    color: #374151;
-}
-
-
-/* =========================================================
-   TABLE
-========================================================= */
-
-.table-wrapper {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-
-    border-collapse: collapse;
-
-    min-width: 850px;
-}
-
-th,
-td {
-    padding: 12px 10px;
-
-    border-bottom:
-        1px solid #e5e7eb;
-
-    text-align: left;
-
-    font-size: 13px;
-}
-
-th {
-    background: #f9fafb;
-
-    color: #4b5563;
-
-    font-size: 12px;
-
-    text-transform: uppercase;
-}
-
-tbody tr:hover {
-    background: #f9fafb;
-}
-
-
-/* =========================================================
-   BADGES
-========================================================= */
-
-.badge {
-    display: inline-block;
-
-    padding: 5px 9px;
-
-    border-radius: 20px;
-
-    background: #dbeafe;
-
-    color: #1e40af;
-
-    font-size: 11px;
-
-    font-weight: bold;
-}
-
-.green-badge {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.primary-badge {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.secondary-badge {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-.search-box {
-    width: 100%;
-
-    padding: 10px 11px;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 6px;
-
-    margin-bottom: 15px;
-
-    outline: none;
-}
-
-.search-box:focus {
-    border-color: #166534;
-}
-
-
-/* =========================================================
-   ASSIGNMENT CARDS
-========================================================= */
-
-.assignment-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit,minmax(250px,1fr));
-
-    gap: 15px;
-}
-
-.assignment-card {
-    border: 1px solid #e5e7eb;
-
-    border-radius: 8px;
-
-    padding: 17px;
-
-    background: #fafafa;
-}
-
-.assignment-card h4 {
-    margin: 0 0 10px;
-
-    font-size: 16px;
-}
-
-.assignment-card p {
-    margin: 5px 0;
-
-    color: #6b7280;
-
-    font-size: 13px;
-}
-
-.assignment-section {
-    margin-bottom: 10px;
-}
-
-
-/* =========================================================
-   STATES
-========================================================= */
-
-.loading,
-.empty,
-.error {
-    text-align: center;
-
-    padding: 30px;
-
-    color: #6b7280;
-}
-
-.error {
-    color: #b91c1c;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:700px) {
-
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .user {
-        text-align: left;
-    }
-
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .nav {
-        flex-direction: column;
-    }
-
-    .nav a {
-        width: 100%;
-    }
-
-    .profile-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-
-    .profile-photo {
-        margin: auto;
-    }
-
-    .card {
-        padding: 17px;
-    }
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Teacher Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.85);
+            z-index: 0;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        /* =========================================================
+           HEADER - SCHOOL COLORS
+        ========================================================= */
+        .header {
+            background: #1a3c6e;
+            color: white;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-title p {
+            margin: 0;
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        .user-info {
+            text-align: right;
+            font-size: 13px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .user-info .role {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info .role-label {
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        /* =========================================================
+           CONTAINER
+        ========================================================= */
+        .container {
+            max-width: 1500px;
+            margin: 25px auto;
+            padding: 0 20px 80px;
+            /* Added padding for bottom logout */
+            position: relative;
+            z-index: 1;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* =========================================================
+           PAGE HEADER
+        ========================================================= */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .page-header h2 {
+            margin: 0 0 5px;
+            font-size: 25px;
+            color: #1f2937;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           NAVIGATION
+        ========================================================= */
+        .nav {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 22px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #4b5563;
+            padding: 11px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .nav a:hover {
+            background: #f3f4f6;
+        }
+
+        .nav a.active {
+            background: #1a3c6e;
+            color: #ffffff;
+        }
+
+        /* =========================================================
+           SUMMARY
+        ========================================================= */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 17px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            border-left: 4px solid #1a3c6e;
+            transition: all 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary-label {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .summary-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a3c6e;
+        }
+
+        /* =========================================================
+           CARDS
+        ========================================================= */
+        .card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.07);
+            margin-bottom: 22px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #1f2937;
+        }
+
+        /* =========================================================
+           PROFILE
+        ========================================================= */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .profile-photo {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            overflow: hidden;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h3 {
+            margin: 0 0 8px;
+            font-size: 20px;
+            color: #1f2937;
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .profile-info strong {
+            color: #374151;
+        }
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f9fafb;
+            color: #4b5563;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        /* =========================================================
+           BADGES
+        ========================================================= */
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .green-badge {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .primary-badge {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .secondary-badge {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* =========================================================
+           SEARCH
+        ========================================================= */
+        .search-box {
+            width: 100%;
+            padding: 10px 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: #166534;
+        }
+
+        /* =========================================================
+           ASSIGNMENT CARDS
+        ========================================================= */
+        .assignment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .assignment-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 17px;
+            background: #fafafa;
+            transition: all 0.3s;
+        }
+
+        .assignment-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .assignment-card h4 {
+            margin: 0 0 10px;
+            font-size: 16px;
+            color: #1f2937;
+        }
+
+        .assignment-card p {
+            margin: 5px 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .assignment-section {
+            margin-bottom: 10px;
+        }
+
+        /* =========================================================
+           STATES
+        ========================================================= */
+        .loading,
+        .empty,
+        .error {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+
+        .error {
+            color: #b91c1c;
+        }
+
+        /* =========================================================
+           LOGOUT BUTTON - BOTTOM LEFT
+        ========================================================= */
+        .logout-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-bottom:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5);
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+        @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 20px;
+            }
+
+            .user-info {
+                text-align: left;
+                width: 100%;
+                align-items: flex-start;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .nav {
+                flex-direction: column;
+            }
+
+            .nav a {
+                width: 100%;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .profile-photo {
+                margin: auto;
+            }
+
+            .card {
+                padding: 17px;
+            }
+
+            .logout-bottom {
+                bottom: 10px;
+                left: 10px;
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .header-title h1 {
+                font-size: 15px;
+            }
+
+            .header-logo {
+                width: 32px;
+                height: 32px;
+            }
+
+            .summary {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
+    <!-- =========================================================
+         HEADER - SCHOOL COLORS
+    ========================================================= -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="Global Education Academy" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>Global Education Academy</h1>
+                <p>Teacher Dashboard</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <span class="role" id="userRole"></span>
+            <span class="role-label" id="userRoleLabel"></span>
+        </div>
+    </header>
 
-<header class="header">
+    <main class="container">
 
-    <div>
-
-        <h1>
-            GLOBAL EDUCATION ACADEMY
-        </h1>
-
-        <p>
-            Primary & Secondary School • Teacher Portal
-        </p>
-
-    </div>
-
-
-    <div class="user">
-
-        <strong id="userName">
-            Loading...
-        </strong>
-
-        <span id="userRole">
-            Teacher
-        </span>
-
-    </div>
-
-</header>
-
-
-<main class="container">
-
-
-<div class="page-header">
-
-    <div>
-
-        <h2>
-            Teacher Dashboard
-        </h2>
-
-        <p>
-            Teaching information, classes, subjects and school staff directory.
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     TEACHER NAVIGATION
-===================================================== -->
-
-<nav class="nav">
-
-    <a
-        href="teachers-dashboard.html"
-        class="active"
-    >
-        My Dashboard
-    </a>
-
-    <a href="#">
-        My Classes
-    </a>
-
-    <a href="#">
-        Attendance
-    </a>
-
-    <a href="#">
-        Results
-    </a>
-
-    <a href="#">
-        Timetable
-    </a>
-
-    <a href="#teacherDirectory">
-        School Teachers
-    </a>
-
-</nav>
-
-
-<!-- =====================================================
-     SUMMARY
-===================================================== -->
-
-<section class="summary">
-
-
-    <div class="summary-card">
-
-        <div class="summary-label">
-            My Subjects
+        <div class="page-header">
+            <div>
+                <h2>Teacher Dashboard</h2>
+                <p>Teaching information, classes, subjects and school staff directory.</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
         </div>
 
-        <div
-            id="subjectCount"
-            class="summary-number"
-        >
-            0
-        </div>
-
-    </div>
-
-
-    <div class="summary-card">
-
-        <div class="summary-label">
-            My Classes
-        </div>
-
-        <div
-            id="classCount"
-            class="summary-number"
-        >
-            0
-        </div>
-
-    </div>
-
-
-    <div class="summary-card">
-
-        <div class="summary-label">
-            My Assignments
-        </div>
-
-        <div
-            id="assignmentCount"
-            class="summary-number"
-        >
-            0
-        </div>
-
-    </div>
-
-
-    <div class="summary-card">
-
-        <div class="summary-label">
-            Academic Year
-        </div>
-
-        <div
-            id="academicYear"
-            class="summary-number"
-            style="font-size:20px"
-        >
-            -
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     MY PROFILE
-===================================================== -->
-
-<section class="card">
-
-    <div class="card-header">
-
-        <h3>
-            My Profile
-        </h3>
-
-    </div>
-
-
-    <div class="profile-grid">
-
-        <div
-            id="profilePhoto"
-            class="profile-photo"
-        >
-            👨‍🏫
-        </div>
-
-
-        <div class="profile-info">
-
-            <h3 id="profileName">
-                Loading...
-            </h3>
-
-            <p>
-                <strong>Staff ID:</strong>
-                <span id="profileStaffId">-</span>
-            </p>
-
-            <p>
-                <strong>Phone:</strong>
-                <span id="profilePhone">-</span>
-            </p>
-
-            <p>
-                <strong>Email:</strong>
-                <span id="profileEmail">-</span>
-            </p>
-
-            <p>
-                <strong>Employment:</strong>
-                <span id="profileEmployment">-</span>
-            </p>
-
-            <p>
-                <strong>Section:</strong>
-                <span id="profileSection">-</span>
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     MY TEACHING ASSIGNMENTS
-===================================================== -->
-
-<section class="card">
-
-    <div class="card-header">
-
-        <h3>
-            My Teaching Assignments
-        </h3>
-
-    </div>
-
-
-    <div
-        id="myAssignments"
-        class="assignment-grid"
-    >
-
-        <div class="loading">
-            Loading assignments...
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     SCHOOL TEACHERS
-===================================================== -->
-
-<section
-    id="teacherDirectory"
-    class="card"
->
-
-    <div class="card-header">
-
-        <h3>
-            School Teachers
-        </h3>
-
-        <span
-            id="teacherDirectoryCount"
-            style="font-size:13px;color:#6b7280"
-        >
-            0 Teachers
-        </span>
-
-    </div>
-
-
-    <input
-        id="teacherSearch"
-        class="search-box"
-        placeholder="Search teacher, staff ID, section, department or subject..."
-        oninput="filterDirectory()"
-    >
-
-
-    <div class="table-wrapper">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Staff ID
-                    </th>
-
-                    <th>
-                        Teacher
-                    </th>
-
-                    <th>
-                        Section
-                    </th>
-
-                    <th>
-                        Department
-                    </th>
-
-                    <th>
-                        Subjects
-                    </th>
-
-                    <th>
-                        Classes
-                    </th>
-
-                    <th>
-                        Phone
-                    </th>
-
-                    <th>
-                        Email
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="teacherDirectoryTable">
-
-                <tr>
-
-                    <td
-                        colspan="8"
-                        class="loading"
-                    >
-                        Loading teachers...
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<script>
-
-
-/* =========================================================
-   CONFIGURATION
-========================================================= */
-
-const API_BASE = '/api';
-
-
-let token = null;
-
-let user = null;
-
-let currentTeacher = null;
-
-let myAssignments = [];
-
-let teacherDirectory = [];
-
-let academicYear = null;
-
-
-/* =========================================================
-   AUTHENTICATION
-========================================================= */
-
-function loadAuth() {
-
-    token =
-        sessionStorage.getItem('token') ||
-        localStorage.getItem('token') ||
-        sessionStorage.getItem('authToken') ||
-        localStorage.getItem('authToken');
-
-
-    const raw =
-        sessionStorage.getItem('user') ||
-        localStorage.getItem('user');
-
-
-    try {
-
-        user =
-            raw
-                ? JSON.parse(raw)
-                : null;
-
-    } catch {
-
-        user = null;
-
-    }
-
-}
-
-
-/* =========================================================
-   API REQUEST
-========================================================= */
-
-async function apiRequest(
-    url,
-    options = {}
-) {
-
-    loadAuth();
-
-
-    if (!token) {
-
-        location.href = 'index.html';
-
-        return null;
-
-    }
-
-
-    const response =
-        await fetch(
-            `${API_BASE}${url}`,
-            {
-
-                ...options,
-
-                headers: {
-
-                    'Content-Type':
-                        'application/json',
-
-                    ...(options.headers || {}),
-
-                    Authorization:
-                        `Bearer ${token}`
-
-                }
-
+        <!-- =====================================================
+             TEACHER NAVIGATION
+        ===================================================== -->
+        <nav class="nav">
+            <a href="teachers-dashboard.html" class="active">My Dashboard</a>
+            <a href="#">My Classes</a>
+            <a href="#">Attendance</a>
+            <a href="#">Results</a>
+            <a href="#">Timetable</a>
+            <a href="#teacherDirectory">School Teachers</a>
+        </nav>
+
+        <!-- =====================================================
+             SUMMARY
+        ===================================================== -->
+        <section class="summary">
+            <div class="summary-card">
+                <div class="summary-label">My Subjects</div>
+                <div id="subjectCount" class="summary-number">0</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">My Classes</div>
+                <div id="classCount" class="summary-number">0</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">My Assignments</div>
+                <div id="assignmentCount" class="summary-number">0</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">Academic Year</div>
+                <div id="academicYear" class="summary-number" style="font-size:20px;">-</div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             MY PROFILE
+        ===================================================== -->
+        <section class="card">
+            <div class="card-header">
+                <h3>My Profile</h3>
+            </div>
+
+            <div class="profile-grid">
+                <div id="profilePhoto" class="profile-photo">👨‍🏫</div>
+                <div class="profile-info">
+                    <h3 id="profileName">Loading...</h3>
+                    <p><strong>Staff ID:</strong> <span id="profileStaffId">-</span></p>
+                    <p><strong>Phone:</strong> <span id="profilePhone">-</span></p>
+                    <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
+                    <p><strong>Employment:</strong> <span id="profileEmployment">-</span></p>
+                    <p><strong>Section:</strong> <span id="profileSection">-</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             MY TEACHING ASSIGNMENTS
+        ===================================================== -->
+        <section class="card">
+            <div class="card-header">
+                <h3>My Teaching Assignments</h3>
+            </div>
+            <div id="myAssignments" class="assignment-grid">
+                <div class="loading">Loading assignments...</div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             SCHOOL TEACHERS
+        ===================================================== -->
+        <section id="teacherDirectory" class="card">
+            <div class="card-header">
+                <h3>School Teachers</h3>
+                <span id="teacherDirectoryCount" style="font-size:13px;color:#6b7280;">0 Teachers</span>
+            </div>
+
+            <input id="teacherSearch" class="search-box" placeholder="Search teacher, staff ID, section, department or subject..." oninput="filterDirectory()">
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Staff ID</th>
+                            <th>Teacher</th>
+                            <th>Section</th>
+                            <th>Department</th>
+                            <th>Subjects</th>
+                            <th>Classes</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherDirectoryTable">
+                        <tr>
+                            <td colspan="8" class="loading">Loading teachers...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =========================================================
+         LOGOUT BUTTON - BOTTOM LEFT
+    ========================================================= -->
+    <button class="logout-bottom" onclick="logout()">
+        🚪 Logout
+    </button>
+
+    <script>
+        /* =========================================================
+           CONFIGURATION
+        ========================================================= */
+
+        const API_BASE = '/api';
+
+        let token = null;
+        let user = null;
+        let currentTeacher = null;
+        let myAssignments = [];
+        let teacherDirectory = [];
+        let academicYear = null;
+
+        /* =========================================================
+           AUTHENTICATION
+        ========================================================= */
+
+        function loadAuth() {
+            token = sessionStorage.getItem('token') ||
+                localStorage.getItem('token') ||
+                sessionStorage.getItem('authToken') ||
+                localStorage.getItem('authToken');
+
+            const raw = sessionStorage.getItem('user') ||
+                localStorage.getItem('user');
+
+            try {
+                user = raw ? JSON.parse(raw) : null;
+            } catch {
+                user = null;
             }
-        );
-
-
-    let data = null;
-
-
-    try {
-
-        data =
-            await response.json();
-
-    } catch {
-
-        data = null;
-
-    }
-
-
-    if (
-        response.status === 401 ||
-        response.status === 403
-    ) {
-
-
-        if (response.status === 403) {
-
-            alert(
-                data?.message ||
-                'You do not have permission to access this page.'
-            );
-
         }
 
+        /* =========================================================
+           LOGOUT
+        ========================================================= */
 
-        if (response.status === 401) {
-
-            sessionStorage.clear();
-
-            localStorage.removeItem('token');
-
-            localStorage.removeItem('authToken');
-
-            localStorage.removeItem('user');
-
+        function logout() {
+            sessionStorage.removeItem('authToken');
             sessionStorage.removeItem('user');
-
-            location.href = 'index.html';
-
+            window.location.href = '/login.html';
         }
 
-
-        return null;
-
-    }
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            data?.message ||
-            `Request failed (${response.status})`
-        );
-
-    }
-
-
-    return data;
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function esc(value) {
-
-    return String(value ?? '')
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;')
-        .replace(/'/g,'&#039;');
-
-}
-
-
-/* =========================================================
-   LOAD PAGE
-========================================================= */
-
-async function loadPage() {
-
-    try {
-
-        loadAuth();
-
-
-        /* -------------------------------------------------
-           DISPLAY USER
-        ------------------------------------------------- */
-
-        document.getElementById(
-            'userName'
-        ).textContent =
-            user?.full_name ||
-            user?.name ||
-            'Teacher';
-
-
-        document.getElementById(
-            'userRole'
-        ).textContent =
-            user?.role_name ||
-            user?.role ||
-            'Teacher';
-
-
-        /* -------------------------------------------------
-           LOAD TEACHER PROFILE
-           
-           Backend:
-           GET /teachers/me
-        ------------------------------------------------- */
-
-        const profileData =
-            await apiRequest(
-                '/teachers/me'
-            );
-
-
-        if (!profileData) {
-            return;
-        }
-
-
-        currentTeacher =
-            profileData.teacher ||
-            null;
-
-
-        /* Use backend user information where available */
-
-        if (profileData.user) {
-
-            document.getElementById(
-                'userName'
-            ).textContent =
-                profileData.user.full_name ||
-                user?.full_name ||
-                'Teacher';
-
-
-            document.getElementById(
-                'userRole'
-            ).textContent =
-                profileData.user.role_name ||
-                'Teacher';
-
-        }
-
-
-        if (!currentTeacher) {
-
-            throw new Error(
-                'Teacher profile was not returned by the server.'
-            );
-
-        }
-
-
-        /* -------------------------------------------------
-           LOAD CURRENT ACADEMIC YEAR
-           
-           Backend:
-           GET /teachers/academic-year/current
-        ------------------------------------------------- */
-
-        academicYear =
-            await apiRequest(
-                '/teachers/academic-year/current'
-            );
-
-
-        if (!academicYear) {
-
-            throw new Error(
-                'Current academic year could not be loaded.'
-            );
-
-        }
-
-
-        /* -------------------------------------------------
-           LOAD TEACHING ASSIGNMENTS
-           
-           Backend:
-           GET /teachers/assignments
-        ------------------------------------------------- */
-
-        const assignmentData =
-            await apiRequest(
-                `/teachers/assignments?academic_year_id=${
-                    encodeURIComponent(
-                        academicYear.academic_year_id
-                    )
-                }`
-            );
-
-
-        myAssignments =
-            Array.isArray(assignmentData)
-                ? assignmentData
-                : [];
-
-
-        /* -------------------------------------------------
-           LOAD TEACHER DIRECTORY
-           
-           Backend:
-           GET /teachers/teachers
-        ------------------------------------------------- */
-
-         const directoryData = await apiRequest('/teachers/directory');
-
-
-        teacherDirectory =
-            Array.isArray(directoryData)
-                ? directoryData
-                : [];
-
-
-        /* -------------------------------------------------
-           RENDER
-        ------------------------------------------------- */
-
-        renderProfile();
-
-        renderSummary();
-
-        renderAssignments();
-
-        renderDirectory(
-            teacherDirectory
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            'TEACHER DASHBOARD ERROR:',
-            error
-        );
-
-
-        document.getElementById(
-            'myAssignments'
-        ).innerHTML =
-            `
-                <div class="error">
-                    ${esc(
-                        error.message ||
-                        'Failed to load teaching assignments.'
-                    )}
-                </div>
-            `;
-
-
-        document.getElementById(
-            'teacherDirectoryTable'
-        ).innerHTML =
-            `
-                <tr>
-
-                    <td
-                        colspan="8"
-                        class="error"
-                    >
-                        ${esc(
-                            error.message ||
-                            'Failed to load teacher information.'
-                        )}
-                    </td>
-
-                </tr>
-            `;
-
-    }
-
-}
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-function renderProfile() {
-
-    if (!currentTeacher) {
-        return;
-    }
-
-
-    const name =
-        [
-            currentTeacher.first_name,
-            currentTeacher.middle_name,
-            currentTeacher.last_name
-        ]
-        .filter(Boolean)
-        .join(' ');
-
-
-    document.getElementById(
-        'profileName'
-    ).textContent =
-        name || '-';
-
-
-    document.getElementById(
-        'profileStaffId'
-    ).textContent =
-        currentTeacher.staff_number || '-';
-
-
-    document.getElementById(
-        'profilePhone'
-    ).textContent =
-        currentTeacher.phone || '-';
-
-
-    document.getElementById(
-        'profileEmail'
-    ).textContent =
-        currentTeacher.email || '-';
-
-
-    document.getElementById(
-        'profileEmployment'
-    ).textContent =
-        currentTeacher.employment_type || '-';
-
-
-    document.getElementById(
-        'profileSection'
-    ).textContent =
-        currentTeacher.school_section || '-';
-
-
-    const photo =
-        document.getElementById(
-            'profilePhoto'
-        );
-
-
-    if (currentTeacher.photo_url) {
-
-        photo.innerHTML =
-            `
-                <img
-                    src="${esc(currentTeacher.photo_url)}"
-                    alt="Teacher photo"
-                >
-            `;
-
-    }
-
-}
-
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-function renderSummary() {
-
-
-    /*
-       Count unique subjects.
-    */
-
-    const subjects =
-        new Set(
-            myAssignments
-                .map(
-                    assignment =>
-                        assignment.subject_id
-                )
-                .filter(
-                    id =>
-                        id !== null &&
-                        id !== undefined
-                )
-        );
-
-
-    /*
-       Count unique classes.
-    */
-
-    const classes =
-        new Set(
-            myAssignments
-                .map(
-                    assignment =>
-                        assignment.class_id
-                )
-                .filter(
-                    id =>
-                        id !== null &&
-                        id !== undefined
-                )
-        );
-
-
-    document.getElementById(
-        'subjectCount'
-    ).textContent =
-        subjects.size;
-
-
-    document.getElementById(
-        'classCount'
-    ).textContent =
-        classes.size;
-
-
-    document.getElementById(
-        'assignmentCount'
-    ).textContent =
-        myAssignments.length;
-
-
-    document.getElementById(
-        'academicYear'
-    ).textContent =
-        academicYear?.year_name ||
-        '-';
-
-}
-
-
-/* =========================================================
-   GET SECTION BADGE
-========================================================= */
-
-function getSectionBadge(section) {
-
-    const value =
-        String(
-            section || ''
-        )
-        .trim();
-
-
-    if (
-        value.toLowerCase() ===
-        'primary'
-    ) {
-
-        return `
-            <span class="badge primary-badge">
-                Primary
-            </span>
-        `;
-
-    }
-
-
-    if (
-        value.toLowerCase() ===
-        'secondary'
-    ) {
-
-        return `
-            <span class="badge secondary-badge">
-                Secondary
-            </span>
-        `;
-
-    }
-
-
-    return `
-        <span class="badge">
-            ${esc(value || '-')}
-        </span>
-    `;
-
-}
-
-
-/* =========================================================
-   MY ASSIGNMENTS
-========================================================= */
-
-function renderAssignments() {
-
-    const container =
-        document.getElementById(
-            'myAssignments'
-        );
-
-
-    if (!myAssignments.length) {
-
-        container.innerHTML =
-            `
-                <div class="empty">
-                    You currently have no teaching assignments
-                    for the current academic year.
-                </div>
-            `;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        myAssignments
-            .map(
-                assignment => {
-
-
-                    const subject =
-                        assignment.subjects ||
-                        {};
-
-
-                    const classData =
-                        assignment.classes ||
-                        {};
-
-
-                    const department =
-                        subject.departments ||
-                        {};
-
-
-                    const className =
-                        `
-                            ${
-                                classData.class_name ||
-                                ''
-                            }
-                            ${
-                                classData.arm ||
-                                ''
-                            }
-                        `
-                        .trim();
-
-
-                    const section =
-                        classData.school_section ||
-                        subject.school_level ||
-                        currentTeacher?.school_section ||
-                        '';
-
-
-                    return `
-
-                        <div class="assignment-card">
-
-                            <div class="assignment-section">
-
-                                ${getSectionBadge(section)}
-
-                            </div>
-
-
-                            <h4>
-
-                                ${esc(
-                                    subject.subject_name ||
-                                    '-'
-                                )}
-
-                            </h4>
-
-
-                            <p>
-
-                                <strong>
-                                    Subject Code:
-                                </strong>
-
-                                ${esc(
-                                    subject.subject_code ||
-                                    '-'
-                                )}
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    Department:
-                                </strong>
-
-                                ${esc(
-                                    department.department_name ||
-                                    '-'
-                                )}
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    Class:
-                                </strong>
-
-                                <span class="badge">
-
-                                    ${esc(
-                                        className ||
-                                        '-'
-                                    )}
-
-                                </span>
-
-                            </p>
-
-                        </div>
-
-                    `;
-
-                }
-            )
-            .join('');
-
-}
-
-/* =========================================================
-   TEACHER DIRECTORY
-========================================================= */
-
-function renderDirectory(list) {
-    const table = document.getElementById('teacherDirectoryTable');
-
-    if (!list || !list.length) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="8" class="empty">
-                    No teachers found in your section.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    table.innerHTML = list.map(teacher => {
-        const name = [teacher.first_name, teacher.middle_name, teacher.last_name]
-            .filter(Boolean).join(' ');
-
-        return `
-            <tr>
-                <td>
-                    <strong>${esc(teacher.staff_number || '-')}</strong>
-                    ${teacher.isHOD ? ' 👑' : ''}
-                    ${teacher.isClassMaster ? ' 🎯' : ''}
-                </td>
-                <td>
-                    ${esc(name || '-')}
-                    <br>
-                    <small style="color:#6b7280;font-size:11px;">
-                        ${esc(teacher.role || 'Teacher')}
-                    </small>
-                </td>
-                <td>
-                    ${getSectionBadge(teacher.school_section)}
-                </td>
-                <td>
-                    ${esc(teacher.department || '-')}
-                </td>
-                <td>
-                    ${esc(teacher.subjects || '-')}
-                </td>
-                <td>
-                    ${esc(teacher.classes || '-')}
-                </td>
-                <td>
-                    ${esc(teacher.phone || '-')}
-                </td>
-                <td>
-                    ${esc(teacher.email || '-')}
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-/* =========================================================
-   FILTER DIRECTORY
-========================================================= */
-
-function filterDirectory() {
-
-    const query =
-        document.getElementById(
-            'teacherSearch'
-        )
-        .value
-        .toLowerCase()
-        .trim();
-
-
-    const filtered =
-        teacherDirectory.filter(
-            teacher => {
-
-
-                const name =
-                    [
-                        teacher.first_name,
-                        teacher.middle_name,
-                        teacher.last_name
-                    ]
-                    .filter(Boolean)
-                    .join(' ')
-                    .toLowerCase();
-
-
-                const staffId =
-                    String(
-                        teacher.staff_number ||
-                        ''
-                    )
-                    .toLowerCase();
-
-
-                const phone =
-                    String(
-                        teacher.phone ||
-                        ''
-                    )
-                    .toLowerCase();
-
-
-                const email =
-                    String(
-                        teacher.email ||
-                        ''
-                    )
-                    .toLowerCase();
-
-
-                const section =
-                    String(
-                        teacher.school_section ||
-                        ''
-                    )
-                    .toLowerCase();
-
-
-                const employment =
-                    String(
-                        teacher.employment_type ||
-                        ''
-                    )
-                    .toLowerCase();
-
-
-                return (
-
-                    !query ||
-
-                    name.includes(query) ||
-
-                    staffId.includes(query) ||
-
-                    phone.includes(query) ||
-
-                    email.includes(query) ||
-
-                    section.includes(query) ||
-
-                    employment.includes(query)
-
-                );
-
+        /* =========================================================
+           API REQUEST
+        ========================================================= */
+
+        async function apiRequest(url, options = {}) {
+            loadAuth();
+
+            if (!token) {
+                location.href = 'index.html';
+                return null;
             }
-        );
 
+            const response = await fetch(`${API_BASE}${url}`, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {}),
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
-    renderDirectory(
-        filtered
-    );
+            let data = null;
+            try {
+                data = await response.json();
+            } catch {
+                data = null;
+            }
 
-}
+            if (response.status === 401 || response.status === 403) {
+                if (response.status === 403) {
+                    alert(data?.message || 'You do not have permission to access this page.');
+                }
+                if (response.status === 401) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('user');
+                    sessionStorage.removeItem('user');
+                    location.href = 'index.html';
+                }
+                return null;
+            }
 
+            if (!response.ok) {
+                throw new Error(data?.message || `Request failed (${response.status})`);
+            }
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
+            return data;
+        }
 
-loadPage();
+        /* =========================================================
+           ESCAPE HTML
+        ========================================================= */
 
-</script>
+        function esc(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        /* =========================================================
+           LOAD PAGE
+        ========================================================= */
+
+        async function loadPage() {
+            try {
+                loadAuth();
+
+                document.getElementById('userRole').textContent = user?.role_name || 'Teacher';
+                document.getElementById('userRoleLabel').textContent = '';
+
+                const profileData = await apiRequest('/teachers/me');
+                if (!profileData) return;
+
+                currentTeacher = profileData.teacher || null;
+
+                if (profileData.user) {
+                    document.getElementById('userRole').textContent = profileData.user.role_name || 'Teacher';
+                }
+
+                if (!currentTeacher) {
+                    throw new Error('Teacher profile was not returned by the server.');
+                }
+
+                academicYear = await apiRequest('/teachers/academic-year/current');
+                if (!academicYear) {
+                    throw new Error('Current academic year could not be loaded.');
+                }
+
+                const assignmentData = await apiRequest(`/teachers/assignments?academic_year_id=${encodeURIComponent(academicYear.academic_year_id)}`);
+                myAssignments = Array.isArray(assignmentData) ? assignmentData : [];
+
+                const directoryData = await apiRequest('/teachers/directory');
+                if (directoryData && directoryData.teachers) {
+                    teacherDirectory = directoryData.teachers;
+                } else {
+                    teacherDirectory = Array.isArray(directoryData) ? directoryData : [];
+                }
+
+                renderProfile();
+                renderSummary();
+                renderAssignments();
+                renderDirectory(teacherDirectory);
+
+            } catch (error) {
+                console.error('TEACHER DASHBOARD ERROR:', error);
+
+                document.getElementById('myAssignments').innerHTML =
+                    `<div class="error">${esc(error.message || 'Failed to load teaching assignments.')}</div>`;
+
+                document.getElementById('teacherDirectoryTable').innerHTML =
+                    `<tr><td colspan="8" class="error">${esc(error.message || 'Failed to load teacher information.')}</td></tr>`;
+            }
+        }
+
+        /* =========================================================
+           PROFILE
+        ========================================================= */
+
+        function renderProfile() {
+            if (!currentTeacher) return;
+
+            const name = [currentTeacher.first_name, currentTeacher.middle_name, currentTeacher.last_name]
+                .filter(Boolean).join(' ');
+
+            document.getElementById('profileName').textContent = name || '-';
+            document.getElementById('profileStaffId').textContent = currentTeacher.staff_number || '-';
+            document.getElementById('profilePhone').textContent = currentTeacher.phone || '-';
+            document.getElementById('profileEmail').textContent = currentTeacher.email || '-';
+            document.getElementById('profileEmployment').textContent = currentTeacher.employment_type || '-';
+            document.getElementById('profileSection').textContent = currentTeacher.school_section || '-';
+
+            const photo = document.getElementById('profilePhoto');
+            if (currentTeacher.photo_url) {
+                photo.innerHTML = `<img src="${esc(currentTeacher.photo_url)}" alt="Teacher photo">`;
+            }
+        }
+
+        /* =========================================================
+           SUMMARY
+        ========================================================= */
+
+        function renderSummary() {
+            const subjects = new Set(myAssignments.map(a => a.subject_id).filter(id => id !== null && id !== undefined));
+            const classes = new Set(myAssignments.map(a => a.class_id).filter(id => id !== null && id !== undefined));
+
+            document.getElementById('subjectCount').textContent = subjects.size;
+            document.getElementById('classCount').textContent = classes.size;
+            document.getElementById('assignmentCount').textContent = myAssignments.length;
+            document.getElementById('academicYear').textContent = academicYear?.year_name || '-';
+        }
+
+        /* =========================================================
+           GET SECTION BADGE
+        ========================================================= */
+
+        function getSectionBadge(section) {
+            const value = String(section || '').trim();
+            if (value.toLowerCase() === 'primary') {
+                return `<span class="badge primary-badge">Primary</span>`;
+            }
+            if (value.toLowerCase() === 'secondary') {
+                return `<span class="badge secondary-badge">Secondary</span>`;
+            }
+            return `<span class="badge">${esc(value || '-')}</span>`;
+        }
+
+        /* =========================================================
+           MY ASSIGNMENTS
+        ========================================================= */
+
+        function renderAssignments() {
+            const container = document.getElementById('myAssignments');
+
+            if (!myAssignments.length) {
+                container.innerHTML = `<div class="empty">You currently have no teaching assignments for the current academic year.</div>`;
+                return;
+            }
+
+            container.innerHTML = myAssignments.map(assignment => {
+                const subject = assignment.subjects || {};
+                const classData = assignment.classes || {};
+                const department = subject.departments || {};
+                const className = `${classData.class_name || ''} ${classData.arm || ''}`.trim();
+                const section = classData.school_section || subject.school_level || currentTeacher?.school_section || '';
+
+                return `
+                    <div class="assignment-card">
+                        <div class="assignment-section">${getSectionBadge(section)}</div>
+                        <h4>${esc(subject.subject_name || '-')}</h4>
+                        <p><strong>Subject Code:</strong> ${esc(subject.subject_code || '-')}</p>
+                        <p><strong>Department:</strong> ${esc(department.department_name || '-')}</p>
+                        <p><strong>Class:</strong> <span class="badge">${esc(className || '-')}</span></p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* =========================================================
+           TEACHER DIRECTORY
+        ========================================================= */
+
+        function renderDirectory(list) {
+            const table = document.getElementById('teacherDirectoryTable');
+
+            if (!list || !list.length) {
+                table.innerHTML = `<tr><td colspan="8" class="empty">No teachers found in your section.</td></tr>`;
+                return;
+            }
+
+            document.getElementById('teacherDirectoryCount').textContent = `${list.length} Teacher${list.length === 1 ? '' : 's'}`;
+
+            table.innerHTML = list.map(teacher => {
+                const name = [teacher.first_name, teacher.middle_name, teacher.last_name]
+                    .filter(Boolean).join(' ');
+
+                return `
+                    <tr>
+                        <td><strong>${esc(teacher.staff_number || '-')}</strong> ${teacher.isHOD ? ' 👑' : ''} ${teacher.isClassMaster ? ' 🎯' : ''}</td>
+                        <td>${esc(name || '-')}<br><small style="color:#6b7280;font-size:11px;">${esc(teacher.role || 'Teacher')}</small></td>
+                        <td>${getSectionBadge(teacher.school_section)}</td>
+                        <td>${esc(teacher.department || '-')}</td>
+                        <td>${esc(teacher.subjects || '-')}</td>
+                        <td>${esc(teacher.classes || '-')}</td>
+                        <td>${esc(teacher.phone || '-')}</td>
+                        <td>${esc(teacher.email || '-')}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        /* =========================================================
+           FILTER DIRECTORY
+        ========================================================= */
+
+        function filterDirectory() {
+            const query = document.getElementById('teacherSearch').value.toLowerCase().trim();
+
+            const filtered = teacherDirectory.filter(teacher => {
+                const name = [teacher.first_name, teacher.middle_name, teacher.last_name]
+                    .filter(Boolean).join(' ').toLowerCase();
+                const staffId = String(teacher.staff_number || '').toLowerCase();
+                const phone = String(teacher.phone || '').toLowerCase();
+                const email = String(teacher.email || '').toLowerCase();
+                const section = String(teacher.school_section || '').toLowerCase();
+                const employment = String(teacher.employment_type || '').toLowerCase();
+
+                return !query ||
+                    name.includes(query) ||
+                    staffId.includes(query) ||
+                    phone.includes(query) ||
+                    email.includes(query) ||
+                    section.includes(query) ||
+                    employment.includes(query);
+            });
+
+            renderDirectory(filtered);
+        }
+
+        /* =========================================================
+           INITIALIZE
+        ========================================================= */
+
+        loadPage();
+    </script>
 
 </body>
 

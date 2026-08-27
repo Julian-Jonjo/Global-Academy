@@ -15,8 +15,7 @@
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f0f2f5;
-            color: #0c0b0b;
-            /* Background Image */
+            color: #222;
             background-image: url('/images/school-bg.jpg');
             background-size: cover;
             background-position: center;
@@ -26,13 +25,11 @@
             min-height: 100vh;
         }
 
-        /* Light overlay so content is readable */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background: rgba(255, 255, 255, 0.70);
-            backdrop-filter: blur(2px);
+            background: rgba(255, 255, 255, 0.85);
             z-index: 0;
         }
 
@@ -41,7 +38,6 @@
         ========================================================= */
         .header {
             background: #1a3c6e;
-            /* Dark blue - match your logo */
             color: white;
             padding: 12px 30px;
             display: flex;
@@ -114,7 +110,7 @@
         .container {
             max-width: 1400px;
             margin: 25px auto;
-            padding: 0 20px;
+            padding: 0 20px 80px;
             position: relative;
             z-index: 1;
         }
@@ -182,7 +178,6 @@
 
         .tab-button.active {
             background: #1a3c6e;
-            /* School color */
             color: white;
         }
 
@@ -542,6 +537,35 @@
             margin-top: 15px;
         }
 
+        /* =========================================================
+           LOGOUT BUTTON - BOTTOM LEFT
+        ========================================================= */
+        .logout-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-bottom:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5);
+        }
+
         @media (max-width: 900px) {
             .filters {
                 grid-template-columns: 1fr 1fr;
@@ -574,6 +598,12 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 10px;
+            }
+            .logout-bottom {
+                bottom: 10px;
+                left: 10px;
+                padding: 8px 16px;
+                font-size: 12px;
             }
         }
 
@@ -890,6 +920,11 @@
         </div>
     </div>
 
+    <!-- =========================================================
+         LOGOUT BUTTON - BOTTOM LEFT
+    ========================================================= -->
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
+
     <script>
         // =========================================================
         // AUTHENTICATION
@@ -920,6 +955,16 @@
 
         document.getElementById('userRole').textContent = role;
         document.getElementById('userRoleLabel').textContent = '';
+
+        // =========================================================
+        // LOGOUT
+        // =========================================================
+
+        function logout() {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
 
         // =========================================================
         // ROLE PERMISSIONS
