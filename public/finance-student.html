@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Global Academy | Student Finance</title>
+<title>Global Education Academy | Student Finance</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#222}
@@ -81,7 +81,7 @@ table{display:block;overflow-x:auto;white-space:nowrap}
 <body>
 
 <header class="header">
-<h1>GLOBAL ACADEMY — Finance</h1>
+<h1>GLOBAL EDUCATION ACADEMY — Finance</h1>
 <div id="userInfo" class="user-info"></div>
 </header>
 
@@ -94,10 +94,8 @@ table{display:block;overflow-x:auto;white-space:nowrap}
 
 <nav class="finance-nav">
 <a href="finance.html">Overview</a>
-<a href="finance-students.html">Students</a>
-<a href="finance-balances.html">Fee Balances</a>
-<a href="finance-payments.html">Payments</a>
-<a href="finance-categories.html">Fee Categories</a>
+
+<button class="back-btn" onclick="goBack()">← Back to Students</button>
 </nav>
 
 <div id="message"></div>
@@ -105,7 +103,7 @@ table{display:block;overflow-x:auto;white-space:nowrap}
 <section class="card">
 <div class="section-header">
 <h3>Student Information</h3>
-<button class="back-btn" onclick="goBack()">← Back to Students</button>
+
 </div>
 
 <div id="studentInfo" class="loading">Loading student information...</div>

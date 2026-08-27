@@ -13,45 +13,122 @@
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            color: #222;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #0c0b0b;
+            /* Background Image */
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+            min-height: 100vh;
         }
 
+        /* Light overlay so content is readable */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(2px);
+            z-index: 0;
+        }
+
+        /* =========================================================
+           HEADER - SCHOOL COLORS
+        ========================================================= */
         .header {
-            background: #1f2937;
+            background: #1a3c6e;
+            /* Dark blue - match your logo */
             color: white;
-            padding: 18px 30px;
+            padding: 12px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .header h1 {
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .header-title h1 {
             margin: 0;
-            font-size: 22px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-title p {
+            margin: 0;
+            font-size: 11px;
+            color: #a0c4ff;
         }
 
         .user-info {
-            font-size: 14px;
             text-align: right;
+            font-size: 13px;
+            color: white;
         }
 
+        .user-info .role {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info .role-label {
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        /* =========================================================
+           CONTAINER
+        ========================================================= */
         .container {
             max-width: 1400px;
             margin: 25px auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .page-title {
-            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
         }
 
         .page-title h2 {
             margin: 0 0 6px 0;
+            color: #1f2937;
         }
 
         .page-title p {
@@ -69,10 +146,12 @@
             font-weight: bold;
             text-decoration: none;
             display: inline-block;
+            transition: all 0.3s;
         }
 
         .back-btn:hover {
             background: #4b5563;
+            transform: translateY(-2px);
         }
 
         .tabs {
@@ -82,7 +161,7 @@
             background: white;
             padding: 8px;
             border-radius: 10px 10px 0 0;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
         }
 
         .tab-button {
@@ -94,6 +173,7 @@
             font-size: 14px;
             font-weight: bold;
             color: #4b5563;
+            transition: all 0.3s;
         }
 
         .tab-button:hover {
@@ -101,7 +181,8 @@
         }
 
         .tab-button.active {
-            background: #1f2937;
+            background: #1a3c6e;
+            /* School color */
             color: white;
         }
 
@@ -110,7 +191,7 @@
             background: white;
             padding: 25px;
             border-radius: 0 0 10px 10px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
         }
 
         .tab-content.active {
@@ -126,6 +207,7 @@
 
         .section-header h3 {
             margin: 0;
+            color: #1f2937;
         }
 
         .overview-grid {
@@ -139,6 +221,12 @@
             border-radius: 10px;
             background: #f9fafb;
             border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .overview-card h4 {
@@ -146,11 +234,13 @@
             color: #6b7280;
             font-size: 13px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .overview-card .number {
             font-size: 28px;
             font-weight: bold;
+            color: #1a3c6e;
         }
 
         .filters {
@@ -166,20 +256,30 @@
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 14px;
+            background: white;
+        }
+
+        .filters input:focus,
+        .filters select:focus {
+            outline: none;
+            border-color: #1a3c6e;
+            box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1);
         }
 
         .refresh-btn {
-            background: #374151;
+            background: #1a3c6e;
             color: white;
             border: none;
             border-radius: 6px;
             padding: 11px 18px;
             cursor: pointer;
             font-weight: bold;
+            transition: all 0.3s;
         }
 
         .refresh-btn:hover {
-            background: #1f2937;
+            background: #0f2a4a;
+            transform: translateY(-2px);
         }
 
         .table-container {
@@ -197,6 +297,7 @@
             padding: 13px;
             font-size: 13px;
             border-bottom: 2px solid #ddd;
+            color: #374151;
         }
 
         td {
@@ -205,7 +306,7 @@
             font-size: 14px;
         }
 
-        tr:hover {
+        tr:hover td {
             background: #f9fafb;
         }
 
@@ -243,6 +344,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            transition: all 0.3s;
         }
 
         .view-btn {
@@ -254,14 +356,18 @@
             background: #111827;
         }
 
+        .review-btn {
+            background: #d97706;
+            color: white;
+        }
+
+        .review-btn:hover {
+            background: #b45309;
+        }
+
         .edit-btn {
             background: #2563eb;
             color: white;
-            padding: 10px 18px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
         }
 
         .edit-btn:hover {
@@ -284,15 +390,6 @@
 
         .cancel-btn:hover {
             background: #4b5563;
-        }
-
-        .review-btn {
-            background: #d97706;
-            color: white;
-        }
-
-        .review-btn:hover {
-            background: #b45309;
         }
 
         .edit-action {
@@ -336,7 +433,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.55);
+            background: rgba(0, 0, 0, 0.55);
             overflow-y: auto;
         }
 
@@ -452,20 +549,27 @@
         }
 
         @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 20px;
+            }
+            .user-info {
+                text-align: left;
+                width: 100%;
+            }
             .tabs {
                 flex-direction: column;
             }
-
             .tab-button {
                 width: 100%;
                 text-align: left;
             }
-
             .profile-grid,
             .edit-form {
                 grid-template-columns: 1fr;
             }
-
             .page-title {
                 flex-direction: column;
                 align-items: flex-start;
@@ -474,19 +578,28 @@
         }
 
         @media (max-width: 600px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
             .filters {
                 grid-template-columns: 1fr;
             }
-
             .modal-content {
                 margin: 20px;
                 padding: 20px;
+            }
+            .overview-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-title h1 {
+                font-size: 15px;
+            }
+            .header-logo {
+                width: 32px;
+                height: 32px;
             }
         }
     </style>
@@ -494,3061 +607,1219 @@
 
 <body>
 
-<header class="header">
-
-    <h1>
-        GLOBAL EDUCATION ACADEMY — Student Management
-    </h1>
-
-    <div
-        id="userInfo"
-        class="user-info"
-    ></div>
-
-</header>
-
-
-<main class="container">
-
-    <div class="page-title">
-        <div>
-            <h2>
-                Student Management
-            </h2>
-            <p>
-                Manage student records, academic information,
-                attendance, finance and related records.
-            </p>
+    <!-- =========================================================
+         HEADER - SCHOOL COLORS
+    ========================================================= -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="Global Education Academy" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>Global Education Academy</h1>
+                <p>Student Management</p>
+            </div>
         </div>
-        <button class="back-btn" onclick="window.location.href='dashboard.html'">
-            ← Back to Dashboard
-        </button>
-    </div>
+        <div class="user-info">
+            <span class="role" id="userRole"></span>
+            <span class="role-label" id="userRoleLabel"></span>
+        </div>
+    </header>
 
+    <main class="container">
 
-    <div class="tabs">
-
-        <button
-            class="tab-button active"
-            onclick="openTab('overview', this)"
-        >
-            Overview
-        </button>
-
-        <button
-            class="tab-button"
-            onclick="openTab('students', this)"
-        >
-            Student List
-        </button>
-
-         <button
-            id="registerTab"
-            class="tab-button"
-            onclick="openRegistrationTab(this)"
-        >
-            Register Student
-        </button>
-
-        <button
-            class="tab-button"
-            onclick="openTab('academic', this)"
-        >
-            Academic Records
-        </button>
-
-        <button
-            class="tab-button"
-            onclick="openTab('attendance', this)"
-        >
-            Attendance
-        </button>
-
-        <button
-            class="tab-button"
-            onclick="openTab('finance', this)"
-        >
-            Finance
-        </button>
-
-        <button
-            class="tab-button"
-            onclick="openTab('documents', this)"
-        >
-            Documents
-        </button>
-
-        <button
-            class="tab-button"
-            onclick="openTab('discipline', this)"
-        >
-            Discipline
-        </button>
-
-        <button
-            class="tab-button"
-            onclick="openTab('transfer', this)"
-        >
-            Transfer / Withdrawal
-        </button>
-
-        <button
-            class="tab-button"
-            onclick="openTab('audit', this)"
-        >
-            Activity / Audit
-        </button>
-
-    </div>
-
-
-    <section
-        id="overview"
-        class="tab-content active"
-    >
-
-        <div class="section-header">
-
-            <h3>
-                Student Overview
-            </h3>
-
+        <div class="page-title">
+            <div>
+                <h2>Student Management</h2>
+                <p>Manage student records, academic information, attendance, finance and related records.</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
         </div>
 
-        <div class="overview-grid">
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('overview', this)">Overview</button>
+            <button class="tab-button" onclick="openTab('students', this)">Student List</button>
+            <button id="registerTab" class="tab-button" onclick="openRegistrationTab(this)">Register Student</button>
+            <button class="tab-button" onclick="openTab('academic', this)">Academic Records</button>
+            <button class="tab-button" onclick="openTab('attendance', this)">Attendance</button>
+            <button class="tab-button" onclick="openTab('finance', this)">Finance</button>
+            <button class="tab-button" onclick="openTab('documents', this)">Documents</button>
+            <button class="tab-button" onclick="openTab('discipline', this)">Discipline</button>
+            <button class="tab-button" onclick="openTab('transfer', this)">Transfer / Withdrawal</button>
+            <button class="tab-button" onclick="openTab('audit', this)">Activity / Audit</button>
+        </div>
 
-            <div class="overview-card">
-
-                <h4>
-                    Total Students
-                </h4>
-
-                <div
-                    id="totalStudents"
-                    class="number"
-                >
-                    0
+        <section id="overview" class="tab-content active">
+            <div class="section-header">
+                <h3>Student Overview</h3>
+            </div>
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <h4>Total Students</h4>
+                    <div id="totalStudents" class="number">0</div>
                 </div>
-
-            </div>
-
-            <div class="overview-card">
-
-                <h4>
-                    Active Students
-                </h4>
-
-                <div
-                    id="activeStudents"
-                    class="number"
-                >
-                    0
+                <div class="overview-card">
+                    <h4>Active Students</h4>
+                    <div id="activeStudents" class="number">0</div>
                 </div>
-
-            </div>
-
-            <div class="overview-card">
-
-                <h4>
-                    Pending Registrations
-                </h4>
-
-                <div
-                    id="pendingStudents"
-                    class="number"
-                >
-                    0
+                <div class="overview-card">
+                    <h4>Pending Registrations</h4>
+                    <div id="pendingStudents" class="number">0</div>
                 </div>
-
-            </div>
-
-            <div class="overview-card">
-
-                <h4>
-                    Rejected Students
-                </h4>
-
-                <div
-                    id="rejectedStudents"
-                    class="number"
-                >
-                    0
+                <div class="overview-card">
+                    <h4>Rejected Students</h4>
+                    <div id="rejectedStudents" class="number">0</div>
                 </div>
+            </div>
+        </section>
 
+        <section id="registration" class="tab-content">
+            <div id="registrationContainer">
+                <div class="module-placeholder">
+                    <h3>Student Registration</h3>
+                    <p>Loading student registration form...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="students" class="tab-content">
+            <div class="section-header">
+                <h3>Student List</h3>
+                <span id="studentCount">0 Students</span>
             </div>
 
-        </div>
-
-    </section>
-    
-    <section
-        id="registration"
-        class="tab-content"
-    >
-        <div id="registrationContainer">
-            <div class="module-placeholder">
-                <h3>Student Registration</h3>
-                <p>
-                    Loading student registration form...
-                </p>
-            </div>
-        </div>
-    </section>
-
-
-    <section
-        id="students"
-        class="tab-content"
-    >
-
-        <div class="section-header">
-
-            <h3>
-                Student List
-            </h3>
-
-            <span id="studentCount">
-                0 Students
-            </span>
-
-        </div>
-
-        <div class="filters">
-
-            <input
-                type="text"
-                id="search"
-                placeholder="Search name or admission number..."
-                oninput="applyFilters()"
-            >
-
-            <select
-                id="classFilter"
-                onchange="applyFilters()"
-            >
-
-                <option value="">
-                    All Classes
-                </option>
-
-            </select>
-
-            <select
-                id="statusFilter"
-                onchange="applyFilters()"
-            >
-
-                <option value="">
-                    All Statuses
-                </option>
-
-                <option value="Active">
-                    Active
-                </option>
-
-                <option value="Pending">
-                    Pending
-                </option>
-
-                <option value="Rejected">
-                    Rejected
-                </option>
-
-            </select>
-
-            <select
-                id="academicYearFilter"
-                onchange="applyFilters()"
-            >
-                <option value="">Current Academic Year</option>
-            </select>
-
-            <button
-                class="refresh-btn"
-                onclick="loadStudents()"
-            >
-                Refresh
-            </button>
-
-        </div>
-
-        <div id="loadError"></div>
-
-        <div class="table-container">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Admission No.
-                        </th>
-
-                        <th>
-                            Student Name
-                        </th>
-
-                        <th>
-                            Gender
-                        </th>
-
-                        <th>
-                            Class
-                        </th>
-
-                        <th>
-                            Guardian
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Action
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="studentTable">
-
-                    <tr>
-
-                        <td
-                            colspan="7"
-                            class="empty"
-                        >
-                            Loading students...
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="academic"
-        class="tab-content"
-    >
-
-        <div class="module-placeholder">
-
-            <h3>
-                Academic Records
-            </h3>
-
-            <p>
-                Student subjects, results, grades,
-                promotion history and academic performance
-                will be managed here.
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="attendance"
-        class="tab-content"
-    >
-
-        <div class="module-placeholder">
-
-            <h3>
-                Attendance
-            </h3>
-
-            <p>
-                Student attendance records will be managed here.
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="finance"
-        class="tab-content"
-    >
-
-        <div class="module-placeholder">
-
-            <h3>
-                Student Finance
-            </h3>
-
-            <p>
-                Fees, payments, balances, payment slips
-                and payment history will be managed here.
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="documents"
-        class="tab-content"
-    >
-
-        <div class="module-placeholder">
-
-            <h3>
-                Student Documents
-            </h3>
-
-            <p>
-                Student documents and uploaded records
-                will be managed here.
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="discipline"
-        class="tab-content"
-    >
-
-        <div class="module-placeholder">
-
-            <h3>
-                Discipline
-            </h3>
-
-            <p>
-                Disciplinary incidents, warnings,
-                actions and history will be managed here.
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="transfer"
-        class="tab-content"
-    >
-
-        <div class="module-placeholder">
-
-            <h3>
-                Transfer / Withdrawal
-            </h3>
-
-            <p>
-                Student transfers, withdrawals and
-                related records will be managed here.
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="audit"
-        class="tab-content"
-    >
-
-        <div class="module-placeholder">
-
-            <h3>
-                Activity / Audit
-            </h3>
-
-            <p>
-                Registration, approval, editing and
-                other student record activities will
-                be recorded here.
-            </p>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-<div
-    id="studentModal"
-    class="modal"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2>
-                Student Profile
-            </h2>
-
-            <span
-                class="close"
-                onclick="closeModal()"
-            >
-                &times;
-            </span>
-
-        </div>
-
-        <div
-            id="profile"
-            class="profile-grid"
-        ></div>
-
-    </div>
-
-</div>
-
-
-<div
-    id="editModal"
-    class="modal"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2>
-                Edit Student
-            </h2>
-
-            <span
-                class="close"
-                onclick="closeEditModal()"
-            >
-                &times;
-            </span>
-
-        </div>
-
-        <form
-            id="editStudentForm"
-            class="edit-form"
-        >
-
-            <input
-                type="hidden"
-                id="editStudentId"
-            >
-
-            <div class="section-title">
-                Personal Information
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Admission Number
-                </label>
-
-                <input
-                    type="text"
-                    id="editAdmissionNumber"
-                    required
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Gender
-                </label>
-
-                <select id="editGender">
-
-                    <option value="">
-                        Select Gender
-                    </option>
-
-                    <option value="Male">
-                        Male
-                    </option>
-
-                    <option value="Female">
-                        Female
-                    </option>
-
+            <div class="filters">
+                <input type="text" id="search" placeholder="Search name or admission number..." oninput="applyFilters()">
+                <select id="classFilter" onchange="applyFilters()">
+                    <option value="">All Classes</option>
                 </select>
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    First Name
-                </label>
-
-                <input
-                    type="text"
-                    id="editFirstName"
-                    required
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Middle Name
-                </label>
-
-                <input
-                    type="text"
-                    id="editMiddleName"
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Last Name
-                </label>
-
-                <input
-                    type="text"
-                    id="editLastName"
-                    required
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Date of Birth
-                </label>
-
-                <input
-                    type="date"
-                    id="editDateOfBirth"
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Nationality
-                </label>
-
-                <input
-                    type="text"
-                    id="editNationality"
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Phone
-                </label>
-
-                <input
-                    type="text"
-                    id="editPhone"
-                >
-
-            </div>
-
-            <div class="form-field full">
-
-                <label>
-                    Address
-                </label>
-
-                <textarea
-                    id="editAddress"
-                ></textarea>
-
-            </div>
-
-            <div class="section-title">
-                School Information
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Class
-                </label>
-
-                <select
-                    id="editClassId"
-                    required
-                >
-
-                    <option value="">
-                        Loading classes...
-                    </option>
-
+                <select id="statusFilter" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="Active">Active</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Rejected">Rejected</option>
                 </select>
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Admission Date
-                </label>
-
-                <input
-                    type="date"
-                    id="editAdmissionDate"
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Previous School
-                </label>
-
-                <input
-                    type="text"
-                    id="editPreviousSchool"
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Student Status
-                </label>
-
-                <select id="editStudentStatus">
-
-                    <option value="Active">
-                        Active
-                    </option>
-
-                    <option value="Pending">
-                        Pending
-                    </option>
-
-                    <option value="Inactive">
-                        Inactive
-                    </option>
-
-                    <option value="Rejected">
-                        Rejected
-                    </option>
-
+                <select id="academicYearFilter" onchange="applyFilters()">
+                    <option value="">Current Academic Year</option>
                 </select>
-
+                <button class="refresh-btn" onclick="loadStudents()">Refresh</button>
             </div>
 
-            <div class="section-title">
-                Emergency Contact
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Contact Name
-                </label>
-
-                <input
-                    type="text"
-                    id="editEmergencyName"
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Contact Phone
-                </label>
-
-                <input
-                    type="text"
-                    id="editEmergencyPhone"
-                >
-
-            </div>
-
-            <div class="form-field">
-
-                <label>
-                    Relationship
-                </label>
-
-                <input
-                    type="text"
-                    id="editEmergencyRelationship"
-                >
-
-            </div>
-
-            <div class="edit-form-actions">
-
-                <button
-                    type="button"
-                    class="btn cancel-btn"
-                    onclick="closeEditModal()"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="submit"
-                    class="btn save-btn"
-                >
-                    Save Changes
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-<script>
-
-/* ==========================================================
-   AUTHENTICATION
-========================================================== */
-
-const token =
-    sessionStorage.getItem('authToken');
-
-const userData =
-    sessionStorage.getItem('user');
-
-
-if (!token || !userData) {
-
-    window.location.href = '/';
-
-}
-
-
-/* ==========================================================
-   USER DATA
-========================================================== */
-
-let user;
-
-try {
-
-    user = JSON.parse(userData);
-
-} catch (error) {
-
-    console.error(
-        'Invalid user data:',
-        error
-    );
-
-    sessionStorage.removeItem('authToken');
-
-    sessionStorage.removeItem('user');
-
-    window.location.href = '/';
-
-}
-
-
-const role =
-    user.role_name;
-
-
-/* ==========================================================
-   USER INFORMATION
-========================================================== */
-
-document.getElementById(
-    'userInfo'
-).textContent =
-    `${user.full_name || 'User'} (${role})`;
-
-
-/* ==========================================================
-   ROLE PERMISSIONS
-========================================================== */
-
-if (role === 'Proprietor') {
-
-    const registerTab =
-        document.getElementById(
-            'registerTab'
-        );
-
-    if (registerTab) {
-
-        registerTab.style.display =
-            'none';
-
-    }
-
-}
-
-
-/* ==========================================================
-   LOAD ACADEMIC YEARS
-========================================================== */
-
-async function loadAcademicYears() {
-    try {
-        const response = await fetch('/api/academic-years', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) throw new Error('Failed to load academic years');
-
-        const data = await response.json();
-        const select = document.getElementById('academicYearFilter');
-
-        select.innerHTML = '<option value="">All Academic Years</option>';
-
-        data.forEach(year => {
-            const option = document.createElement('option');
-            option.value = year.academic_year_id;
-            const label = year.is_current ? year.year_name + ' (Current)' : year.year_name;
-            option.textContent = label;
-            select.appendChild(option);
-        });
-
-        const currentYear = data.find(y => y.is_current);
-        if (currentYear) {
-            select.value = currentYear.academic_year_id;
-        }
-
-    } catch (error) {
-        console.error('Error loading academic years:', error);
-    }
-}
-
-
-/* ==========================================================
-   REGISTER STUDENT
-========================================================== */
-
-async function openRegistrationTab(button) {
-
-    if (
-        role !== 'Manager' &&
-        role !== 'Administrator'
-    ) {
-
-        alert(
-            'You do not have permission to register students.'
-        );
-
-        return;
-
-    }
-
-    openTab(
-        'registration',
-        button
-    );
-
-    const container =
-        document.getElementById(
-            'registrationContainer'
-        );
-
-    if (
-        container.dataset.loaded === 'true'
-    ) {
-        attachFormListener();
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="module-placeholder">
-            <h3>Loading Student Registration</h3>
-            <p>Please wait...</p>
-        </div>
-    `;
-
-    try {
-
-        const response =
-            await fetch(
-                './students-registration.html'
-            );
-
-        if (!response.ok) {
-
-            throw new Error(
-                `Unable to load registration form. HTTP ${response.status}`
-            );
-
-        }
-
-        const html =
-            await response.text();
-
-        container.innerHTML = html;
-
-        container.dataset.loaded =
-            'true';
-
-        setTimeout(() => {
-            loadClasses();
-            attachFormListener();
-        }, 200);
-
-    } catch (error) {
-
-        console.error(
-            'REGISTRATION LOAD ERROR:',
-            error
-        );
-
-        container.innerHTML = `
-            <div class="error-message">
-                <strong>
-                    Unable to load registration form
-                </strong>
-
-                <br><br>
-
-                ${escapeHtml(error.message)}
-            </div>
-        `;
-
-    }
-
-}
-
-
-/* ==========================================================
-   ATTACH FORM LISTENER
-========================================================== */
-
-function attachFormListener() {
-    const form = document.getElementById('studentForm');
-    if (!form) {
-        console.log('Form not found yet');
-        return;
-    }
-
-    // Remove existing listener to avoid duplicates
-    const newForm = form.cloneNode(true);
-    form.parentNode.replaceChild(newForm, form);
-
-    newForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        console.log('✅ Form submitted!');
-
-        const message = document.getElementById('message');
-        if (message) {
-            message.style.display = 'block';
-            message.className = '';
-            message.textContent = 'Submitting...';
-        }
-
-        const submitBtn = this.querySelector('.submit-btn');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-        }
-
-        try {
-            const token = sessionStorage.getItem('authToken');
-            const formData = new FormData();
-
-            // Check if this is a re-submission
-            const reviewStudentId = document.getElementById('review_student_id')?.value;
-
-            // Get all form values
-            const fields = [
-                'admission_number', 'first_name', 'middle_name', 'last_name',
-                'gender', 'date_of_birth', 'nationality', 'phone', 'address',
-                'class_id', 'admission_date', 'previous_school',
-                'parent_name', 'parent_relationship', 'parent_phone', 'parent_email', 'parent_address',
-                'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship'
-            ];
-
-            // For re-submission, collect data for JSON update
-            const updateData = {};
-            fields.forEach(field => {
-                const el = document.getElementById(field);
-                if (el) {
-                    updateData[field] = el.value.trim();
-                }
-            });
-
-            // ============================================================
-// RE-SUBMISSION (Update existing student)
-// ============================================================
-if (reviewStudentId) {
-    console.log('🔄 Re-submitting student for review:', reviewStudentId);
-
-    // Update student data
-    const updateResponse = await fetch(`/api/students/${reviewStudentId}`, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            admission_number: updateData.admission_number,
-            first_name: updateData.first_name,
-            middle_name: updateData.middle_name,
-            last_name: updateData.last_name,
-            gender: updateData.gender,
-            date_of_birth: updateData.date_of_birth,
-            phone: updateData.phone,
-            address: updateData.address,
-            class_id: updateData.class_id,
-            admission_date: updateData.admission_date,
-            previous_school: updateData.previous_school,
-            nationality: updateData.nationality,
-            emergency_contact_name: updateData.emergency_contact_name,
-            emergency_contact_phone: updateData.emergency_contact_phone,
-            emergency_contact_relationship: updateData.emergency_contact_relationship,
-            student_status: 'Pending'
-        })
-    });
-
-    const updateResult = await updateResponse.json();
-
-    if (!updateResponse.ok) {
-        throw new Error(updateResult.message || 'Failed to update student');
-    }
-
-    // After the reapprove call
-const reapproveResponse = await fetch(`/api/students/${reviewStudentId}/reapprove`, {
-    method: 'PUT',
-    headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    }
-});
-
-const reapproveResult = await reapproveResponse.json();
-
-if (!reapproveResponse.ok) {
-    throw new Error(reapproveResult.message || 'Failed to submit for re-approval');
-}
-
-console.log('✅ Re-approval submitted:', reapproveResult);
-
-// Force a reload of the approvals data
-if (message) {
-    message.textContent = '✅ Student updated and sent for re-approval successfully!';
-    message.className = 'success';
-    message.style.display = 'block';
-}
-
-
-    // Reset form
-    this.reset();
-    const preview = document.getElementById('photoPreview');
-    if (preview) preview.style.display = 'none';
-    document.querySelectorAll('.file-name-display').forEach(el => el.textContent = '');
-
-    // Remove review flag
-    const hiddenInput = document.getElementById('review_student_id');
-    if (hiddenInput) hiddenInput.remove();
-
-    // Reset submit button
-    const submitBtn2 = document.querySelector('#studentForm .submit-btn');
-    if (submitBtn2) {
-        submitBtn2.textContent = 'Submit Registration';
-    }
-
-    // Reload data
-    loadStudents();
-    return;
-}
-            // ============================================================
-            // NEW REGISTRATION
-            // ============================================================
-            console.log('📝 New student registration');
-
-            // For new registration, use FormData for file uploads
-            fields.forEach(field => {
-                const el = document.getElementById(field);
-                if (el) {
-                    formData.append(field, el.value.trim());
-                }
-            });
-
-            // Files
-            const fileFields = ['student_photo', 'result_file', 'birth_certificate_file', 'testimonial_file', 'transfer_file'];
-            fileFields.forEach(field => {
-                const el = document.getElementById(field);
-                if (el && el.files && el.files[0]) {
-                    formData.append(field, el.files[0]);
-                }
-            });
-
-            console.log('📤 Sending new registration...');
-
-            const response = await fetch('/api/students/register', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
-            });
-
-            const result = await response.json();
-            console.log('📥 Response:', result);
-
-            if (response.ok) {
-                if (message) {
-                    message.textContent = result.message || 'Student registered successfully!';
-                    message.className = 'success';
-                    message.style.display = 'block';
-                }
-                this.reset();
-                const preview = document.getElementById('photoPreview');
-                if (preview) preview.style.display = 'none';
-                document.querySelectorAll('.file-name-display').forEach(el => el.textContent = '');
-                loadClasses();
-                loadStudents();
-            } else {
-                if (message) {
-                    message.textContent = result.message || 'Registration failed.';
-                    message.className = 'error';
-                    message.style.display = 'block';
-                }
-            }
-
-        } catch (error) {
-            console.error('❌ Registration error:', error);
-            const message = document.getElementById('message');
-            if (message) {
-                message.textContent = 'An error occurred. Please try again.';
-                message.className = 'error';
-                message.style.display = 'block';
-            }
-        } finally {
-            const submitBtn = document.querySelector('#studentForm .submit-btn');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Registration';
-            }
-        }
-    });
-
-    console.log('✅ Form listener attached');
-}
-
-/* ==========================================================
-   LOAD CLASSES
-========================================================== */
-
-async function loadClasses() {
-    try {
-        const response = await fetch('/api/classes', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const select = document.getElementById('class_id');
-
-        if (!select) {
-            console.log('class_id element not found yet');
-            return;
-        }
-
-        select.innerHTML = '<option value="">Select class</option>';
-
-        const classes = Array.isArray(data) ? data : [];
-
-        if (classes.length === 0) {
-            select.innerHTML = '<option value="">No classes available</option>';
-            return;
-        }
-
-        classes.forEach(cls => {
-            const option = document.createElement('option');
-            option.value = cls.class_id;
-            let className = cls.class_name || 'Unnamed Class';
-            if (cls.arm) {
-                className += ' - ' + cls.arm;
-            }
-            option.textContent = className;
-            select.appendChild(option);
-        });
-
-        console.log('✅ Classes loaded successfully:', classes.length);
-
-    } catch (error) {
-        console.error('Error loading classes:', error);
-        const select = document.getElementById('class_id');
-        if (select) {
-            select.innerHTML = '<option value="">Failed to load classes</option>';
-        }
-    }
-}
-
-
-/* ==========================================================
-   TAB SYSTEM
-========================================================== */
-
-function openTab(
-    tabId,
-    button
-) {
-
-    document
-        .querySelectorAll('.tab-content')
-        .forEach(
-            content =>
-                content.classList.remove('active')
-        );
-
-
-    document
-        .querySelectorAll('.tab-button')
-        .forEach(
-            btn =>
-                btn.classList.remove('active')
-        );
-
-
-    const selected =
-        document.getElementById(tabId);
-
-
-    if (selected) {
-
-        selected.classList.add('active');
-
-    }
-
-
-    if (button) {
-
-        button.classList.add('active');
-
-    }
-
-}
-
-
-/* ==========================================================
-   GLOBAL STUDENT ARRAYS
-========================================================== */
-
-let students = [];
-
-let filteredStudents = [];
-
-
-/* ==========================================================
-   LOAD STUDENTS
-========================================================== */
-
-async function loadStudents() {
-
-    const table =
-        document.getElementById(
-            'studentTable'
-        );
-
-    const errorBox =
-        document.getElementById(
-            'loadError'
-        );
-
-
-    table.innerHTML = `
-
-        <tr>
-
-            <td
-                colspan="7"
-                class="empty"
-            >
-                Loading students...
-            </td>
-
-        </tr>
-
-    `;
-
-
-    errorBox.innerHTML = '';
-
-
-    try {
-
-        // Build URL with filters
-        let url = '/api/students?';
-        const params = [];
-
-        // Academic year filter
-        const academicYearSelect = document.getElementById('academicYearFilter');
-        if (academicYearSelect && academicYearSelect.value) {
-            params.push(`academic_year_id=${academicYearSelect.value}`);
-        }
-
-        // Search filter
-        const searchInput = document.getElementById('search');
-        if (searchInput && searchInput.value.trim()) {
-            params.push(`search=${encodeURIComponent(searchInput.value.trim())}`);
-        }
-
-        // Class filter
-        const classFilter = document.getElementById('classFilter');
-        if (classFilter && classFilter.value) {
-            params.push(`class_id=${classFilter.value}`);
-        }
-
-        // Status filter
-        const statusFilter = document.getElementById('statusFilter');
-        if (statusFilter && statusFilter.value) {
-            params.push(`status=${statusFilter.value}`);
-        }
-
-        url += params.join('&');
-
-        const controller =
-            new AbortController();
-
-
-        const timeout =
-            setTimeout(
-                () => controller.abort(),
-                15000
-            );
-
-
-        const response =
-            await fetch(
-                url,
-                {
-                    method: 'GET',
-
-                    headers: {
-                        'Authorization':
-                            `Bearer ${token}`,
-
-                        'Accept':
-                            'application/json'
-                    },
-
-                    signal:
-                        controller.signal
-                }
-            );
-
-
-        clearTimeout(timeout);
-
-
-        const raw =
-            await response.text();
-
-
-        let data;
-
-
-        try {
-
-            data =
-                raw
-                    ? JSON.parse(raw)
-                    : null;
-
-        } catch (jsonError) {
-
-            console.error(
-                'Server returned non-JSON response:',
-                raw
-            );
-
-            throw new Error(
-                `Server returned an invalid response. HTTP ${response.status}.`
-            );
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data?.message ||
-                data?.error ||
-                `Failed to load students. HTTP ${response.status}.`
-            );
-
-        }
-
-
-        if (Array.isArray(data)) {
-
-            students = data;
-
-        } else if (
-            data &&
-            Array.isArray(data.students)
-        ) {
-
-            students =
-                data.students;
-
-        } else if (
-            data &&
-            Array.isArray(data.data)
-        ) {
-
-            students =
-                data.data;
-
-        } else {
-
-            throw new Error(
-                'The server response does not contain a student list.'
-            );
-
-        }
-
-
-        filteredStudents =
-            [...students];
-
-
-        populateClassFilter();
-
-        renderStudents();
-
-        updateOverview();
-
-
-    } catch (error) {
-
-        console.error(
-            'LOAD STUDENTS ERROR:',
-            error
-        );
-
-
-        students = [];
-
-        filteredStudents = [];
-
-
-        document.getElementById(
-            'totalStudents'
-        ).textContent = '0';
-
-
-        document.getElementById(
-            'activeStudents'
-        ).textContent = '0';
-
-
-        document.getElementById(
-            'pendingStudents'
-        ).textContent = '0';
-
-
-        document.getElementById(
-            'rejectedStudents'
-        ).textContent = '0';
-
-
-        let message =
-            error.message ||
-            'Unable to load students.';
-
-
-        if (
-            error.name === 'AbortError'
-        ) {
-
-            message =
-                'The server took too long to respond.';
-
-        }
-
-
-        errorBox.innerHTML = `
-
-            <div class="error-message">
-
-                <strong>
-                    Unable to load students
-                </strong>
-
-                <br><br>
-
-                ${escapeHtml(message)}
-
-            </div>
-
-        `;
-
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="7"
-                    class="empty"
-                >
-                    Student records could not be loaded.
-                </td>
-
-            </tr>
-
-        `;
-
-    }
-
-}
-
-
-/* ==========================================================
-   UPDATE OVERVIEW
-========================================================== */
-
-function updateOverview() {
-
-    const total =
-        students.length;
-
-
-    const active =
-        students.filter(
-            student =>
-                String(
-                    student.student_status || ''
-                ).toLowerCase() === 'active'
-        ).length;
-
-
-    const pending =
-        students.filter(
-            student =>
-                String(
-                    student.student_status || ''
-                ).toLowerCase() === 'pending'
-        ).length;
-
-
-    const rejected =
-        students.filter(
-            student =>
-                String(
-                    student.student_status || ''
-                ).toLowerCase() === 'rejected'
-        ).length;
-
-
-    document.getElementById(
-        'totalStudents'
-    ).textContent = total;
-
-
-    document.getElementById(
-        'activeStudents'
-    ).textContent = active;
-
-
-    document.getElementById(
-        'pendingStudents'
-    ).textContent = pending;
-
-
-    document.getElementById(
-        'rejectedStudents'
-    ).textContent = rejected;
-
-}
-
-
-/* ==========================================================
-   POPULATE CLASS FILTER
-========================================================== */
-
-function populateClassFilter() {
-
-    const select =
-        document.getElementById(
-            'classFilter'
-        );
-
-
-    const classes =
-        new Set();
-
-
-    students.forEach(
-        student => {
-
-            if (student.class_name) {
-
-                classes.add(
-                    `${student.class_name}|${student.arm || ''}`
-                );
-
-            }
-
-        }
-    );
-
-
-    select.innerHTML = `
-
-        <option value="">
-            All Classes
-        </option>
-
-    `;
-
-
-    [...classes]
-        .sort()
-        .forEach(
-            value => {
-
-                const parts =
-                    value.split('|');
-
-                const className =
-                    parts[0];
-
-                const arm =
-                    parts[1];
-
-
-                const option =
-                    document.createElement(
-                        'option'
-                    );
-
-
-                option.value =
-                    value;
-
-
-                option.textContent =
-                    arm
-                        ? `${className} — ${arm}`
-                        : className;
-
-
-                select.appendChild(
-                    option
-                );
-
-            }
-        );
-
-}
-
-
-/* ==========================================================
-   APPLY FILTERS
-========================================================== */
-
-function applyFilters() {
-
-    const search =
-        document.getElementById(
-            'search'
-        ).value
-        .trim()
-        .toLowerCase();
-
-
-    const classFilter =
-        document.getElementById(
-            'classFilter'
-        ).value;
-
-
-    const statusFilter =
-        document.getElementById(
-            'statusFilter'
-        ).value;
-
-
-    filteredStudents =
-        students.filter(
-            student => {
-
-                const fullName =
-                    [
-                        student.first_name,
-                        student.middle_name,
-                        student.last_name
-                    ]
-                    .filter(Boolean)
-                    .join(' ')
-                    .toLowerCase();
-
-
-                const admissionNumber =
-                    String(
-                        student.admission_number || ''
-                    )
-                    .toLowerCase();
-
-
-                const matchesSearch =
-                    !search ||
-                    fullName.includes(search) ||
-                    admissionNumber.includes(search);
-
-
-                const studentClass =
-                    `${student.class_name || ''}|${student.arm || ''}`;
-
-
-                const matchesClass =
-                    !classFilter ||
-                    studentClass === classFilter;
-
-
-                const matchesStatus =
-                    !statusFilter ||
-                    student.student_status === statusFilter;
-
-
-                return (
-                    matchesSearch &&
-                    matchesClass &&
-                    matchesStatus
-                );
-
-            }
-        );
-
-
-    renderStudents();
-
-}
-
-
-/* ==========================================================
-   RENDER STUDENTS
-========================================================== */
-
-function renderStudents() {
-
-    const table =
-        document.getElementById(
-            'studentTable'
-        );
-
-
-    document.getElementById(
-        'studentCount'
-    ).textContent =
-        `${filteredStudents.length} Student${
-            filteredStudents.length === 1 ? '' : 's'
-        }`;
-
-
-    if (!filteredStudents.length) {
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="7"
-                    class="empty"
-                >
-                    No students found.
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    table.innerHTML =
-        filteredStudents
-            .map(
-                student => {
-
-                    const fullName =
-                        [
-                            student.first_name,
-                            student.middle_name,
-                            student.last_name
-                        ]
-                        .filter(Boolean)
-                        .map(escapeHtml)
-                        .join(' ');
-
-
-                    const className =
-                        student.class_name
-                            ? escapeHtml(student.class_name) +
-                              (
-                                  student.arm
-                                      ? ` — ${escapeHtml(student.arm)}`
-                                      : ''
-                              )
-                            : 'Not assigned';
-
-
-                    const status =
-                        student.student_status ||
-                        'Not provided';
-
-
-                    const statusClass =
-                        String(status)
-                            .toLowerCase();
-
-
-                    // Show Review button for rejected students
-                    let actionButtons = `
-                        <button
-                            class="btn view-btn"
-                            onclick="viewStudent(${Number(
-                                student.student_id
-                            )})"
-                        >
-                            View
-                        </button>
-                    `;
-
-                    if (status === 'Rejected') {
-                        actionButtons += `
-                            <button
-                                class="btn review-btn"
-                                onclick="reviewStudent(${Number(
-                                    student.student_id
-                                )})"
-                            >
-                                Review
-                            </button>
-                        `;
-                    }
-
-                    return `
-
+            <div id="loadError"></div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
                         <tr>
-
-                            <td>
-                                ${display(
-                                    student.admission_number
-                                )}
-                            </td>
-
-                            <td>
-                                <strong>
-                                    ${fullName}
-                                </strong>
-                            </td>
-
-                            <td>
-                                ${display(
-                                    student.gender
-                                )}
-                            </td>
-
-                            <td>
-                                ${className}
-                            </td>
-
-                            <td>
-                                ${display(
-                                    student.guardian_name
-                                )}
-                            </td>
-
-                            <td>
-
-                                <span
-                                    class="status ${escapeHtml(
-                                        statusClass
-                                    )}"
-                                >
-                                    ${escapeHtml(status)}
-                                </span>
-
-                            </td>
-
-                            <td>
-                                <div style="display:flex;gap:5px;flex-wrap:wrap;">
-                                    ${actionButtons}
-                                </div>
-                            </td>
-
+                            <th>Admission No.</th>
+                            <th>Student Name</th>
+                            <th>Gender</th>
+                            <th>Class</th>
+                            <th>Guardian</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
+                    </thead>
+                    <tbody id="studentTable">
+                        <tr>
+                            <td colspan="7" class="empty">Loading students...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-                    `;
+        <section id="academic" class="tab-content">
+            <div class="module-placeholder">
+                <h3>Academic Records</h3>
+                <p>Student subjects, results, grades, promotion history and academic performance will be managed here.</p>
+            </div>
+        </section>
 
-                }
-            )
-            .join('');
+        <section id="attendance" class="tab-content">
+            <div class="module-placeholder">
+                <h3>Attendance</h3>
+                <p>Student attendance records will be managed here.</p>
+            </div>
+        </section>
 
-}
+        <section id="finance" class="tab-content">
+            <div class="module-placeholder">
+                <h3>Student Finance</h3>
+                <p>Fees, payments, balances, payment slips and payment history will be managed here.</p>
+            </div>
+        </section>
 
+        <section id="documents" class="tab-content">
+            <div class="module-placeholder">
+                <h3>Student Documents</h3>
+                <p>Student documents and uploaded records will be managed here.</p>
+            </div>
+        </section>
 
-/* ==========================================================
-   VIEW STUDENT
-========================================================== */
+        <section id="discipline" class="tab-content">
+            <div class="module-placeholder">
+                <h3>Discipline</h3>
+                <p>Disciplinary incidents, warnings, actions and history will be managed here.</p>
+            </div>
+        </section>
 
-function viewStudent(studentId) {
+        <section id="transfer" class="tab-content">
+            <div class="module-placeholder">
+                <h3>Transfer / Withdrawal</h3>
+                <p>Student transfers, withdrawals and related records will be managed here.</p>
+            </div>
+        </section>
 
-    const student =
-        students.find(
-            item =>
-                Number(item.student_id) ===
-                Number(studentId)
-        );
+        <section id="audit" class="tab-content">
+            <div class="module-placeholder">
+                <h3>Activity / Audit</h3>
+                <p>Registration, approval, editing and other student record activities will be recorded here.</p>
+            </div>
+        </section>
 
+    </main>
 
-    if (!student) {
+    <!-- =========================================================
+         STUDENT PROFILE MODAL
+    ========================================================= -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Student Profile</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="profile" class="profile-grid"></div>
+        </div>
+    </div>
 
-        alert(
-            'Student record not found.'
-        );
+    <!-- =========================================================
+         EDIT STUDENT MODAL
+    ========================================================= -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Student</h2>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="editStudentForm" class="edit-form">
+                <input type="hidden" id="editStudentId">
+                <div class="section-title">Personal Information</div>
+                <div class="form-field">
+                    <label>Admission Number</label>
+                    <input type="text" id="editAdmissionNumber" required>
+                </div>
+                <div class="form-field">
+                    <label>Gender</label>
+                    <select id="editGender">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>First Name</label>
+                    <input type="text" id="editFirstName" required>
+                </div>
+                <div class="form-field">
+                    <label>Middle Name</label>
+                    <input type="text" id="editMiddleName">
+                </div>
+                <div class="form-field">
+                    <label>Last Name</label>
+                    <input type="text" id="editLastName" required>
+                </div>
+                <div class="form-field">
+                    <label>Date of Birth</label>
+                    <input type="date" id="editDateOfBirth">
+                </div>
+                <div class="form-field">
+                    <label>Nationality</label>
+                    <input type="text" id="editNationality">
+                </div>
+                <div class="form-field">
+                    <label>Phone</label>
+                    <input type="text" id="editPhone">
+                </div>
+                <div class="form-field full">
+                    <label>Address</label>
+                    <textarea id="editAddress"></textarea>
+                </div>
+                <div class="section-title">School Information</div>
+                <div class="form-field">
+                    <label>Class</label>
+                    <select id="editClassId" required>
+                        <option value="">Loading classes...</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Admission Date</label>
+                    <input type="date" id="editAdmissionDate">
+                </div>
+                <div class="form-field">
+                    <label>Previous School</label>
+                    <input type="text" id="editPreviousSchool">
+                </div>
+                <div class="form-field">
+                    <label>Student Status</label>
+                    <select id="editStudentStatus">
+                        <option value="Active">Active</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="section-title">Emergency Contact</div>
+                <div class="form-field">
+                    <label>Contact Name</label>
+                    <input type="text" id="editEmergencyName">
+                </div>
+                <div class="form-field">
+                    <label>Contact Phone</label>
+                    <input type="text" id="editEmergencyPhone">
+                </div>
+                <div class="form-field">
+                    <label>Relationship</label>
+                    <input type="text" id="editEmergencyRelationship">
+                </div>
+                <div class="edit-form-actions">
+                    <button type="button" class="btn cancel-btn" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        return;
+    <script>
+        // =========================================================
+        // AUTHENTICATION
+        // =========================================================
 
-    }
+        const token = sessionStorage.getItem('authToken');
+        const userData = sessionStorage.getItem('user');
 
-
-    document.getElementById(
-        'profile'
-    ).innerHTML = `
-
-        ${
-            role === 'Administrator'
-                ? `
-                    <div class="edit-action">
-
-                        <button
-                            class="edit-btn"
-                            onclick="editStudent(${Number(
-                                student.student_id
-                            )})"
-                        >
-                            Edit Student
-                        </button>
-
-                    </div>
-                `
-                : ''
+        if (!token || !userData) {
+            window.location.href = '/login.html';
         }
 
-        <div class="section-title">
-            Personal Information
-        </div>
-
-        ${field(
-            'Admission Number',
-            student.admission_number
-        )}
-
-        ${field(
-            'First Name',
-            student.first_name
-        )}
-
-        ${field(
-            'Middle Name',
-            student.middle_name
-        )}
-
-        ${field(
-            'Last Name',
-            student.last_name
-        )}
-
-        ${field(
-            'Gender',
-            student.gender
-        )}
-
-        ${field(
-            'Date of Birth',
-            formatDateOnly(student.date_of_birth)
-        )}
-
-        ${field(
-            'Nationality',
-            student.nationality
-        )}
-
-        ${field(
-            'Phone',
-            student.phone
-        )}
-
-        ${field(
-            'Address',
-            student.address
-        )}
-
-        <div class="section-title">
-            School Information
-        </div>
-
-        ${field(
-            'Class',
-            student.class_name
-                ? `${student.class_name}${
-                    student.arm
-                        ? ' — ' + student.arm
-                        : ''
-                }`
-                : 'Not assigned'
-        )}
-
-        ${field(
-            'Admission Date',
-            formatDateOnly(student.admission_date)
-        )}
-
-        ${field(
-            'Registration Date',
-            formatDateOnly(student.registration_date)
-        )}
-
-        ${field(
-            'Previous School',
-            student.previous_school
-        )}
-
-        ${field(
-            'Student Status',
-            student.student_status
-        )}
-
-        <div class="section-title">
-            Guardian Information
-        </div>
-
-        ${field(
-            'Guardian Name',
-            student.guardian_name
-        )}
-
-        ${field(
-            'Relationship',
-            student.guardian_relationship
-        )}
-
-        ${field(
-            'Guardian Phone',
-            student.guardian_phone
-        )}
-
-        ${field(
-            'Guardian Email',
-            student.guardian_email
-        )}
-
-        ${field(
-            'Guardian Address',
-            student.guardian_address
-        )}
-
-        <div class="section-title">
-            Emergency Contact
-        </div>
-
-        ${field(
-            'Name',
-            student.emergency_contact_name
-        )}
-
-        ${field(
-            'Phone',
-            student.emergency_contact_phone
-        )}
-
-        ${field(
-            'Relationship',
-            student.emergency_contact_relationship
-        )}
-
-    `;
-
-
-    document.getElementById(
-        'studentModal'
-    ).style.display =
-        'block';
-
-}
-
-
-/* ==========================================================
-   REVIEW STUDENT (Open registration form with data)
-========================================================== */
-
-async function reviewStudent(studentId) {
-    try {
-        console.log('🔍 Fetching student data for review:', studentId);
-        
-        const response = await fetch(`/api/students/${studentId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('API Error:', response.status, errorText);
-            throw new Error(`Failed to load student data: ${response.status}`);
-        }
-
-        const student = await response.json();
-        console.log('✅ Student data loaded:', student);
-
-        // Open the registration tab
-        const registerTab = document.getElementById('registerTab');
-        if (registerTab) {
-            registerTab.click();
-        }
-
-        // Wait for the form to load
-        setTimeout(() => {
-            const fieldMap = {
-                'admission_number': student.admission_number,
-                'first_name': student.first_name,
-                'middle_name': student.middle_name || '',
-                'last_name': student.last_name,
-                'gender': student.gender || '',
-                'date_of_birth': student.date_of_birth || '',
-                'nationality': student.nationality || 'Sierra Leonean',
-                'phone': student.phone || '',
-                'address': student.address || '',
-                'class_id': student.class_id || '',
-                'admission_date': student.admission_date || '',
-                'previous_school': student.previous_school || '',
-                'parent_name': student.guardian_name || '',
-                'parent_relationship': student.guardian_relationship || '',
-                'parent_phone': student.guardian_phone || '',
-                'parent_email': student.guardian_email || '',
-                'parent_address': student.guardian_address || '',
-                'emergency_contact_name': student.emergency_contact_name || '',
-                'emergency_contact_phone': student.emergency_contact_phone || '',
-                'emergency_contact_relationship': student.emergency_contact_relationship || ''
-            };
-
-            Object.keys(fieldMap).forEach(fieldId => {
-                const el = document.getElementById(fieldId);
-                if (el) {
-                    el.value = fieldMap[fieldId] || '';
-                }
-            });
-
-            const submitBtn = document.querySelector('#studentForm .submit-btn');
-            if (submitBtn) {
-                submitBtn.textContent = 'Resubmit for Approval';
-            }
-
-            const form = document.getElementById('studentForm');
-            let hiddenInput = document.getElementById('review_student_id');
-            if (!hiddenInput) {
-                hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.id = 'review_student_id';
-                hiddenInput.name = 'review_student_id';
-                form.appendChild(hiddenInput);
-            }
-            hiddenInput.value = student.student_id;
-
-            const message = document.getElementById('message');
-            if (message) {
-                message.style.display = 'block';
-                message.className = 'info';
-                message.textContent = `📝 Reviewing ${student.first_name} ${student.last_name}. Update information and resubmit for approval.`;
-            }
-
-            console.log('✅ Form populated for review');
-
-        }, 500);
-
-    } catch (error) {
-        console.error('Review error:', error);
-        alert('Error loading student data for review: ' + error.message);
-    }
-}
-
-/* ==========================================================
-   EDIT STUDENT
-========================================================== */
-
-async function editStudent(studentId) {
-
-    if (role !== 'Administrator') {
-
-        alert(
-            'Only an Administrator can edit student records.'
-        );
-
-        return;
-
-    }
-
-
-    const student =
-        students.find(
-            item =>
-                Number(item.student_id) ===
-                Number(studentId)
-        );
-
-
-    if (!student) {
-
-        alert(
-            'Student record not found.'
-        );
-
-        return;
-
-    }
-
-
-    await loadEditClasses();
-
-
-    document.getElementById(
-        'editStudentId'
-    ).value =
-        student.student_id;
-
-
-    document.getElementById(
-        'editAdmissionNumber'
-    ).value =
-        student.admission_number || '';
-
-
-    document.getElementById(
-        'editFirstName'
-    ).value =
-        student.first_name || '';
-
-
-    document.getElementById(
-        'editMiddleName'
-    ).value =
-        student.middle_name || '';
-
-
-    document.getElementById(
-        'editLastName'
-    ).value =
-        student.last_name || '';
-
-
-    document.getElementById(
-        'editGender'
-    ).value =
-        student.gender || '';
-
-
-    document.getElementById(
-        'editDateOfBirth'
-    ).value =
-        formatDateForInput(
-            student.date_of_birth
-        );
-
-
-    document.getElementById(
-        'editNationality'
-    ).value =
-        student.nationality || '';
-
-
-    document.getElementById(
-        'editPhone'
-    ).value =
-        student.phone || '';
-
-
-    document.getElementById(
-        'editAddress'
-    ).value =
-        student.address || '';
-
-
-    document.getElementById(
-        'editClassId'
-    ).value =
-        student.class_id || '';
-
-
-    document.getElementById(
-        'editAdmissionDate'
-    ).value =
-        formatDateForInput(
-            student.admission_date
-        );
-
-
-    document.getElementById(
-        'editPreviousSchool'
-    ).value =
-        student.previous_school || '';
-
-
-    document.getElementById(
-        'editStudentStatus'
-    ).value =
-        student.student_status || 'Active';
-
-
-    document.getElementById(
-        'editEmergencyName'
-    ).value =
-        student.emergency_contact_name || '';
-
-
-    document.getElementById(
-        'editEmergencyPhone'
-    ).value =
-        student.emergency_contact_phone || '';
-
-
-    document.getElementById(
-        'editEmergencyRelationship'
-    ).value =
-        student.emergency_contact_relationship || '';
-
-
-    closeModal();
-
-
-    document.getElementById(
-        'editModal'
-    ).style.display =
-        'block';
-
-}
-
-
-/* ==========================================================
-   LOAD CLASSES FOR EDIT
-========================================================== */
-
-async function loadEditClasses() {
-
-    const classSelect =
-        document.getElementById(
-            'editClassId'
-        );
-
-
-    classSelect.innerHTML = `
-
-        <option value="">
-            Loading classes...
-        </option>
-
-    `;
-
-
-    try {
-
-        const response =
-            await fetch(
-                '/api/classes',
-                {
-                    method: 'GET',
-
-                    headers: {
-                        'Authorization':
-                            `Bearer ${token}`,
-
-                        'Accept':
-                            'application/json'
-                    }
-                }
-            );
-
-
-        const raw =
-            await response.text();
-
-
-        let data;
-
-
+        let user;
         try {
-
-            data =
-                raw
-                    ? JSON.parse(raw)
-                    : null;
-
+            user = JSON.parse(userData);
         } catch (error) {
-
-            throw new Error(
-                'Classes API returned an invalid response.'
-            );
-
+            console.error('Invalid user data:', error);
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+            window.location.href = '/login.html';
         }
 
+        const role = user.role_name;
 
-        if (!response.ok) {
+        // =========================================================
+        // USER INFORMATION - Show only role
+        // =========================================================
 
-            throw new Error(
-                data?.message ||
-                data?.error ||
-                'Failed to load classes.'
-            );
+        document.getElementById('userRole').textContent = role;
+        document.getElementById('userRoleLabel').textContent = '';
 
-        }
+        // =========================================================
+        // ROLE PERMISSIONS
+        // =========================================================
 
-
-        const classes =
-            Array.isArray(data)
-                ? data
-                : Array.isArray(data?.classes)
-                    ? data.classes
-                    : Array.isArray(data?.data)
-                        ? data.data
-                        : [];
-
-
-        classSelect.innerHTML = `
-
-            <option value="">
-                Select class
-            </option>
-
-        `;
-
-
-        classes.forEach(
-            item => {
-
-                const option =
-                    document.createElement(
-                        'option'
-                    );
-
-
-                option.value =
-                    item.class_id;
-
-
-                option.textContent =
-                    `${item.class_name}${
-                        item.arm
-                            ? ' — ' + item.arm
-                            : ''
-                    }`;
-
-
-                classSelect.appendChild(
-                    option
-                );
-
+        if (role === 'Proprietor') {
+            const registerTab = document.getElementById('registerTab');
+            if (registerTab) {
+                registerTab.style.display = 'none';
             }
-        );
-
-
-        if (!classes.length) {
-
-            classSelect.innerHTML = `
-
-                <option value="">
-                    No classes found
-                </option>
-
-            `;
-
         }
 
-    } catch (error) {
+        // =========================================================
+        // LOAD ACADEMIC YEARS
+        // =========================================================
 
-        console.error(
-            'LOAD EDIT CLASSES ERROR:',
-            error
-        );
-
-
-        classSelect.innerHTML = `
-
-            <option value="">
-                Unable to load classes
-            </option>
-
-        `;
-
-    }
-
-}
-
-
-/* ==========================================================
-   SAVE EDITED STUDENT
-========================================================== */
-
-document.getElementById(
-    'editStudentForm'
-).addEventListener(
-    'submit',
-    async function(event) {
-
-        event.preventDefault();
-
-
-        if (role !== 'Administrator') {
-
-            alert(
-                'Only an Administrator can edit student records.'
-            );
-
-            return;
-
-        }
-
-
-        const studentId =
-            document.getElementById(
-                'editStudentId'
-            ).value;
-
-
-        const payload = {
-
-            admission_number:
-                document.getElementById(
-                    'editAdmissionNumber'
-                ).value.trim(),
-
-            first_name:
-                document.getElementById(
-                    'editFirstName'
-                ).value.trim(),
-
-            middle_name:
-                document.getElementById(
-                    'editMiddleName'
-                ).value.trim() || null,
-
-            last_name:
-                document.getElementById(
-                    'editLastName'
-                ).value.trim(),
-
-            gender:
-                document.getElementById(
-                    'editGender'
-                ).value || null,
-
-            date_of_birth:
-                document.getElementById(
-                    'editDateOfBirth'
-                ).value || null,
-
-            nationality:
-                document.getElementById(
-                    'editNationality'
-                ).value.trim() || null,
-
-            phone:
-                document.getElementById(
-                    'editPhone'
-                ).value.trim() || null,
-
-            address:
-                document.getElementById(
-                    'editAddress'
-                ).value.trim() || null,
-
-            class_id:
-                document.getElementById(
-                    'editClassId'
-                ).value || null,
-
-            admission_date:
-                document.getElementById(
-                    'editAdmissionDate'
-                ).value || null,
-
-            previous_school:
-                document.getElementById(
-                    'editPreviousSchool'
-                ).value.trim() || null,
-
-            student_status:
-                document.getElementById(
-                    'editStudentStatus'
-                ).value,
-
-            emergency_contact_name:
-                document.getElementById(
-                    'editEmergencyName'
-                ).value.trim() || null,
-
-            emergency_contact_phone:
-                document.getElementById(
-                    'editEmergencyPhone'
-                ).value.trim() || null,
-
-            emergency_contact_relationship:
-                document.getElementById(
-                    'editEmergencyRelationship'
-                ).value.trim() || null
-
-        };
-
-
-        try {
-
-            const response =
-                await fetch(
-                    `/api/students/${studentId}`,
-                    {
-                        method: 'PUT',
-
-                        headers: {
-
-                            'Content-Type':
-                                'application/json',
-
-                            'Authorization':
-                                `Bearer ${token}`,
-
-                            'Accept':
-                                'application/json'
-                        },
-
-                        body:
-                            JSON.stringify(payload)
-                    }
-                );
-
-
-            const raw =
-                await response.text();
-
-
-            let data;
-
-
+        async function loadAcademicYears() {
             try {
+                const response = await fetch('/api/academic-years', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-                data =
-                    raw
-                        ? JSON.parse(raw)
-                        : {};
+                if (!response.ok) throw new Error('Failed to load academic years');
+
+                const data = await response.json();
+                const select = document.getElementById('academicYearFilter');
+
+                select.innerHTML = '<option value="">All Academic Years</option>';
+
+                data.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year.academic_year_id;
+                    const label = year.is_current ? year.year_name + ' (Current)' : year.year_name;
+                    option.textContent = label;
+                    select.appendChild(option);
+                });
+
+                const currentYear = data.find(y => y.is_current);
+                if (currentYear) {
+                    select.value = currentYear.academic_year_id;
+                }
 
             } catch (error) {
-
-                throw new Error(
-                    'Server returned an invalid response.'
-                );
-
+                console.error('Error loading academic years:', error);
             }
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data?.message ||
-                    data?.error ||
-                    `Failed to update student. HTTP ${response.status}.`
-                );
-
-            }
-
-
-            alert(
-                'Student record updated successfully.'
-            );
-
-
-            closeEditModal();
-
-            await loadStudents();
-
-
-        } catch (error) {
-
-            console.error(
-                'UPDATE STUDENT ERROR:',
-                error
-            );
-
-
-            alert(
-                error.message ||
-                'Failed to update student.'
-            );
-
         }
 
-    }
-);
+        // =========================================================
+        // TAB SYSTEM
+        // =========================================================
 
+        function openTab(tabId, button) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            const selected = document.getElementById(tabId);
+            if (selected) selected.classList.add('active');
+            if (button) button.classList.add('active');
+        }
 
-/* ==========================================================
-   FIELD HELPER
-========================================================== */
+        // =========================================================
+        // REGISTER STUDENT
+        // =========================================================
 
-function field(
-    label,
-    value
-) {
+        async function openRegistrationTab(button) {
+            if (role !== 'Manager' && role !== 'Administrator') {
+                alert('You do not have permission to register students.');
+                return;
+            }
 
-    return `
+            openTab('registration', button);
+            const container = document.getElementById('registrationContainer');
 
-        <div class="field">
+            if (container.dataset.loaded === 'true') {
+                attachFormListener();
+                return;
+            }
 
-            <span class="field-label">
-                ${escapeHtml(label)}
-            </span>
+            container.innerHTML = `
+                <div class="module-placeholder">
+                    <h3>Loading Student Registration</h3>
+                    <p>Please wait...</p>
+                </div>
+            `;
 
-            <span class="field-value">
-                ${display(value)}
-            </span>
+            try {
+                const response = await fetch('./students-registration.html');
+                if (!response.ok) {
+                    throw new Error(`Unable to load registration form. HTTP ${response.status}`);
+                }
+                const html = await response.text();
+                container.innerHTML = html;
+                container.dataset.loaded = 'true';
 
-        </div>
+                setTimeout(() => {
+                    loadClasses();
+                    attachFormListener();
+                }, 200);
 
-    `;
+            } catch (error) {
+                console.error('REGISTRATION LOAD ERROR:', error);
+                container.innerHTML = `
+                    <div class="error-message">
+                        <strong>Unable to load registration form</strong>
+                        <br><br>
+                        ${escapeHtml(error.message)}
+                    </div>
+                `;
+            }
+        }
 
-}
+        // =========================================================
+        // ATTACH FORM LISTENER
+        // =========================================================
 
+        function attachFormListener() {
+            const form = document.getElementById('studentForm');
+            if (!form) {
+                console.log('Form not found yet');
+                return;
+            }
 
-/* ==========================================================
-   CLOSE MODALS
-========================================================== */
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
 
-function closeModal() {
+            newForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                console.log('✅ Form submitted!');
 
-    document.getElementById(
-        'studentModal'
-    ).style.display =
-        'none';
+                const message = document.getElementById('message');
+                if (message) {
+                    message.style.display = 'block';
+                    message.className = '';
+                    message.textContent = 'Submitting...';
+                }
 
-}
+                const submitBtn = this.querySelector('.submit-btn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Submitting...';
+                }
 
+                try {
+                    const token = sessionStorage.getItem('authToken');
+                    const reviewStudentId = document.getElementById('review_student_id')?.value;
 
-function closeEditModal() {
+                    const fields = [
+                        'admission_number', 'first_name', 'middle_name', 'last_name',
+                        'gender', 'date_of_birth', 'nationality', 'phone', 'address',
+                        'class_id', 'admission_date', 'previous_school',
+                        'parent_name', 'parent_relationship', 'parent_phone', 'parent_email', 'parent_address',
+                        'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship'
+                    ];
 
-    document.getElementById(
-        'editModal'
-    ).style.display =
-        'none';
+                    const updateData = {};
+                    fields.forEach(field => {
+                        const el = document.getElementById(field);
+                        if (el) {
+                            updateData[field] = el.value.trim();
+                        }
+                    });
 
-}
+                    if (reviewStudentId) {
+                        console.log('🔄 Re-submitting student for review:', reviewStudentId);
 
+                        const updateResponse = await fetch(`/api/students/${reviewStudentId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                admission_number: updateData.admission_number,
+                                first_name: updateData.first_name,
+                                middle_name: updateData.middle_name,
+                                last_name: updateData.last_name,
+                                gender: updateData.gender,
+                                date_of_birth: updateData.date_of_birth,
+                                phone: updateData.phone,
+                                address: updateData.address,
+                                class_id: updateData.class_id,
+                                admission_date: updateData.admission_date,
+                                previous_school: updateData.previous_school,
+                                nationality: updateData.nationality,
+                                emergency_contact_name: updateData.emergency_contact_name,
+                                emergency_contact_phone: updateData.emergency_contact_phone,
+                                emergency_contact_relationship: updateData.emergency_contact_relationship,
+                                student_status: 'Pending'
+                            })
+                        });
 
-window.addEventListener(
-    'click',
-    function(event) {
+                        const updateResult = await updateResponse.json();
+                        if (!updateResponse.ok) {
+                            throw new Error(updateResult.message || 'Failed to update student');
+                        }
 
-        const studentModal =
-            document.getElementById(
-                'studentModal'
-            );
+                        const reapproveResponse = await fetch(`/api/students/${reviewStudentId}/reapprove`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
 
+                        const reapproveResult = await reapproveResponse.json();
+                        if (!reapproveResponse.ok) {
+                            throw new Error(reapproveResult.message || 'Failed to submit for re-approval');
+                        }
 
-        const editModal =
-            document.getElementById(
-                'editModal'
-            );
+                        if (message) {
+                            message.textContent = '✅ Student updated and sent for re-approval successfully!';
+                            message.className = 'success';
+                            message.style.display = 'block';
+                        }
 
+                        this.reset();
+                        const preview = document.getElementById('photoPreview');
+                        if (preview) preview.style.display = 'none';
+                        document.querySelectorAll('.file-name-display').forEach(el => el.textContent = '');
 
-        if (
-            event.target ===
-            studentModal
-        ) {
+                        const hiddenInput = document.getElementById('review_student_id');
+                        if (hiddenInput) hiddenInput.remove();
+
+                        const submitBtn2 = document.querySelector('#studentForm .submit-btn');
+                        if (submitBtn2) {
+                            submitBtn2.textContent = 'Submit Registration';
+                        }
+
+                        loadStudents();
+                        return;
+                    }
+
+                    // New Registration
+                    const formData = new FormData();
+                    fields.forEach(field => {
+                        const el = document.getElementById(field);
+                        if (el) {
+                            formData.append(field, el.value.trim());
+                        }
+                    });
+
+                    const fileFields = ['student_photo', 'result_file', 'birth_certificate_file', 'testimonial_file',
+                        'transfer_file'
+                    ];
+                    fileFields.forEach(field => {
+                        const el = document.getElementById(field);
+                        if (el && el.files && el.files[0]) {
+                            formData.append(field, el.files[0]);
+                        }
+                    });
+
+                    const response = await fetch('/api/students/register', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        if (message) {
+                            message.textContent = result.message || 'Student registered successfully!';
+                            message.className = 'success';
+                            message.style.display = 'block';
+                        }
+                        this.reset();
+                        const preview = document.getElementById('photoPreview');
+                        if (preview) preview.style.display = 'none';
+                        document.querySelectorAll('.file-name-display').forEach(el => el.textContent = '');
+                        loadClasses();
+                        loadStudents();
+                    } else {
+                        if (message) {
+                            message.textContent = result.message || 'Registration failed.';
+                            message.className = 'error';
+                            message.style.display = 'block';
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('❌ Registration error:', error);
+                    const message = document.getElementById('message');
+                    if (message) {
+                        message.textContent = 'An error occurred. Please try again.';
+                        message.className = 'error';
+                        message.style.display = 'block';
+                    }
+                } finally {
+                    const submitBtn = document.querySelector('#studentForm .submit-btn');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Registration';
+                    }
+                }
+            });
+
+            console.log('✅ Form listener attached');
+        }
+
+        // =========================================================
+        // LOAD CLASSES
+        // =========================================================
+
+        async function loadClasses() {
+            try {
+                const response = await fetch('/api/classes', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const select = document.getElementById('class_id');
+
+                if (!select) {
+                    console.log('class_id element not found yet');
+                    return;
+                }
+
+                select.innerHTML = '<option value="">Select class</option>';
+
+                const classes = Array.isArray(data) ? data : [];
+
+                if (classes.length === 0) {
+                    select.innerHTML = '<option value="">No classes available</option>';
+                    return;
+                }
+
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls.class_id;
+                    let className = cls.class_name || 'Unnamed Class';
+                    if (cls.arm) {
+                        className += ' - ' + cls.arm;
+                    }
+                    option.textContent = className;
+                    select.appendChild(option);
+                });
+
+                console.log('✅ Classes loaded successfully:', classes.length);
+
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                const select = document.getElementById('class_id');
+                if (select) {
+                    select.innerHTML = '<option value="">Failed to load classes</option>';
+                }
+            }
+        }
+
+        // =========================================================
+        // LOAD STUDENTS
+        // =========================================================
+
+        let students = [];
+        let filteredStudents = [];
+
+        async function loadStudents() {
+            const table = document.getElementById('studentTable');
+            const errorBox = document.getElementById('loadError');
+
+            table.innerHTML = `<tr><td colspan="7" class="empty">Loading students...</td></tr>`;
+            errorBox.innerHTML = '';
+
+            try {
+                let url = '/api/students?';
+                const params = [];
+
+                const academicYearSelect = document.getElementById('academicYearFilter');
+                if (academicYearSelect && academicYearSelect.value) {
+                    params.push(`academic_year_id=${academicYearSelect.value}`);
+                }
+
+                const searchInput = document.getElementById('search');
+                if (searchInput && searchInput.value.trim()) {
+                    params.push(`search=${encodeURIComponent(searchInput.value.trim())}`);
+                }
+
+                const classFilter = document.getElementById('classFilter');
+                if (classFilter && classFilter.value) {
+                    params.push(`class_id=${classFilter.value}`);
+                }
+
+                const statusFilter = document.getElementById('statusFilter');
+                if (statusFilter && statusFilter.value) {
+                    params.push(`status=${statusFilter.value}`);
+                }
+
+                url += params.join('&');
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load students. HTTP ${response.status}.`);
+                }
+
+                const data = await response.json();
+                students = Array.isArray(data) ? data : [];
+                filteredStudents = [...students];
+
+                populateClassFilter();
+                renderStudents();
+                updateOverview();
+
+            } catch (error) {
+                console.error('LOAD STUDENTS ERROR:', error);
+                students = [];
+                filteredStudents = [];
+                document.getElementById('totalStudents').textContent = '0';
+                document.getElementById('activeStudents').textContent = '0';
+                document.getElementById('pendingStudents').textContent = '0';
+                document.getElementById('rejectedStudents').textContent = '0';
+                errorBox.innerHTML = `
+                    <div class="error-message">
+                        <strong>Unable to load students</strong>
+                        <br><br>
+                        ${escapeHtml(error.message)}
+                    </div>
+                `;
+                table.innerHTML = `<tr><td colspan="7" class="empty">Student records could not be loaded.</td></tr>`;
+            }
+        }
+
+        // =========================================================
+        // UPDATE OVERVIEW
+        // =========================================================
+
+        function updateOverview() {
+            const total = students.length;
+            const active = students.filter(s => String(s.student_status || '').toLowerCase() === 'active').length;
+            const pending = students.filter(s => String(s.student_status || '').toLowerCase() === 'pending').length;
+            const rejected = students.filter(s => String(s.student_status || '').toLowerCase() === 'rejected').length;
+
+            document.getElementById('totalStudents').textContent = total;
+            document.getElementById('activeStudents').textContent = active;
+            document.getElementById('pendingStudents').textContent = pending;
+            document.getElementById('rejectedStudents').textContent = rejected;
+        }
+
+        // =========================================================
+        // POPULATE CLASS FILTER
+        // =========================================================
+
+        function populateClassFilter() {
+            const select = document.getElementById('classFilter');
+            const classes = new Set();
+
+            students.forEach(student => {
+                if (student.class_name) {
+                    classes.add(`${student.class_name}|${student.arm || ''}`);
+                }
+            });
+
+            select.innerHTML = '<option value="">All Classes</option>';
+
+            [...classes].sort().forEach(value => {
+                const parts = value.split('|');
+                const className = parts[0];
+                const arm = parts[1];
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = arm ? `${className} — ${arm}` : className;
+                select.appendChild(option);
+            });
+        }
+
+        // =========================================================
+        // APPLY FILTERS
+        // =========================================================
+
+        function applyFilters() {
+            const search = document.getElementById('search').value.trim().toLowerCase();
+            const classFilter = document.getElementById('classFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredStudents = students.filter(student => {
+                const fullName = [student.first_name, student.middle_name, student.last_name]
+                    .filter(Boolean).join(' ').toLowerCase();
+                const admissionNumber = String(student.admission_number || '').toLowerCase();
+
+                const matchesSearch = !search || fullName.includes(search) || admissionNumber.includes(search);
+                const studentClass = `${student.class_name || ''}|${student.arm || ''}`;
+                const matchesClass = !classFilter || studentClass === classFilter;
+                const matchesStatus = !statusFilter || student.student_status === statusFilter;
+
+                return matchesSearch && matchesClass && matchesStatus;
+            });
+
+            renderStudents();
+        }
+
+        // =========================================================
+        // RENDER STUDENTS
+        // =========================================================
+
+        function renderStudents() {
+            const table = document.getElementById('studentTable');
+
+            document.getElementById('studentCount').textContent =
+                `${filteredStudents.length} Student${filteredStudents.length === 1 ? '' : 's'}`;
+
+            if (!filteredStudents.length) {
+                table.innerHTML = `<tr><td colspan="7" class="empty">No students found.</td></tr>`;
+                return;
+            }
+
+            table.innerHTML = filteredStudents.map(student => {
+                const fullName = [student.first_name, student.middle_name, student.last_name]
+                    .filter(Boolean).map(escapeHtml).join(' ');
+
+                const className = student.class_name ?
+                    escapeHtml(student.class_name) + (student.arm ? ` — ${escapeHtml(student.arm)}` : '') :
+                    'Not assigned';
+
+                const status = student.student_status || 'Not provided';
+                const statusClass = String(status).toLowerCase();
+
+                let actionButtons = `
+                    <button class="btn view-btn" onclick="viewStudent(${Number(student.student_id)})">View</button>
+                `;
+
+                if (status === 'Rejected') {
+                    actionButtons += `
+                        <button class="btn review-btn" onclick="reviewStudent(${Number(student.student_id)})">Review</button>
+                    `;
+                }
+
+                return `
+                    <tr>
+                        <td>${display(student.admission_number)}</td>
+                        <td><strong>${fullName}</strong></td>
+                        <td>${display(student.gender)}</td>
+                        <td>${className}</td>
+                        <td>${display(student.guardian_name)}</td>
+                        <td><span class="status ${escapeHtml(statusClass)}">${escapeHtml(status)}</span></td>
+                        <td><div style="display:flex;gap:5px;flex-wrap:wrap;">${actionButtons}</div></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // =========================================================
+        // VIEW STUDENT
+        // =========================================================
+
+        function viewStudent(studentId) {
+            const student = students.find(item => Number(item.student_id) === Number(studentId));
+            if (!student) {
+                alert('Student record not found.');
+                return;
+            }
+
+            document.getElementById('profile').innerHTML = `
+                ${role === 'Administrator' ? `
+                    <div class="edit-action">
+                        <button class="edit-btn" onclick="editStudent(${Number(student.student_id)})">Edit Student</button>
+                    </div>
+                ` : ''}
+
+                <div class="section-title">Personal Information</div>
+                ${field('Admission Number', student.admission_number)}
+                ${field('First Name', student.first_name)}
+                ${field('Middle Name', student.middle_name)}
+                ${field('Last Name', student.last_name)}
+                ${field('Gender', student.gender)}
+                ${field('Date of Birth', formatDateOnly(student.date_of_birth))}
+                ${field('Nationality', student.nationality)}
+                ${field('Phone', student.phone)}
+                ${field('Address', student.address)}
+
+                <div class="section-title">School Information</div>
+                ${field('Class', student.class_name ? `${student.class_name}${student.arm ? ' — ' + student.arm : ''}` : 'Not assigned')}
+                ${field('Admission Date', formatDateOnly(student.admission_date))}
+                ${field('Registration Date', formatDateOnly(student.registration_date))}
+                ${field('Previous School', student.previous_school)}
+                ${field('Student Status', student.student_status)}
+
+                <div class="section-title">Guardian Information</div>
+                ${field('Guardian Name', student.guardian_name)}
+                ${field('Relationship', student.guardian_relationship)}
+                ${field('Guardian Phone', student.guardian_phone)}
+                ${field('Guardian Email', student.guardian_email)}
+                ${field('Guardian Address', student.guardian_address)}
+
+                <div class="section-title">Emergency Contact</div>
+                ${field('Name', student.emergency_contact_name)}
+                ${field('Phone', student.emergency_contact_phone)}
+                ${field('Relationship', student.emergency_contact_relationship)}
+            `;
+
+            document.getElementById('studentModal').style.display = 'block';
+        }
+
+        // =========================================================
+        // REVIEW STUDENT
+        // =========================================================
+
+        async function reviewStudent(studentId) {
+            try {
+                const response = await fetch(`/api/students/${studentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load student data');
+                }
+
+                const student = await response.json();
+
+                const registerTab = document.getElementById('registerTab');
+                if (registerTab) {
+                    registerTab.click();
+                }
+
+                setTimeout(() => {
+                    const fieldMap = {
+                        'admission_number': student.admission_number,
+                        'first_name': student.first_name,
+                        'middle_name': student.middle_name || '',
+                        'last_name': student.last_name,
+                        'gender': student.gender || '',
+                        'date_of_birth': student.date_of_birth || '',
+                        'nationality': student.nationality || 'Sierra Leonean',
+                        'phone': student.phone || '',
+                        'address': student.address || '',
+                        'class_id': student.class_id || '',
+                        'admission_date': student.admission_date || '',
+                        'previous_school': student.previous_school || '',
+                        'parent_name': student.guardian_name || '',
+                        'parent_relationship': student.guardian_relationship || '',
+                        'parent_phone': student.guardian_phone || '',
+                        'parent_email': student.guardian_email || '',
+                        'parent_address': student.guardian_address || '',
+                        'emergency_contact_name': student.emergency_contact_name || '',
+                        'emergency_contact_phone': student.emergency_contact_phone || '',
+                        'emergency_contact_relationship': student.emergency_contact_relationship || ''
+                    };
+
+                    Object.keys(fieldMap).forEach(fieldId => {
+                        const el = document.getElementById(fieldId);
+                        if (el) {
+                            el.value = fieldMap[fieldId] || '';
+                        }
+                    });
+
+                    const submitBtn = document.querySelector('#studentForm .submit-btn');
+                    if (submitBtn) {
+                        submitBtn.textContent = 'Resubmit for Approval';
+                    }
+
+                    const form = document.getElementById('studentForm');
+                    let hiddenInput = document.getElementById('review_student_id');
+                    if (!hiddenInput) {
+                        hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.id = 'review_student_id';
+                        hiddenInput.name = 'review_student_id';
+                        form.appendChild(hiddenInput);
+                    }
+                    hiddenInput.value = student.student_id;
+
+                    const message = document.getElementById('message');
+                    if (message) {
+                        message.style.display = 'block';
+                        message.className = 'info';
+                        message.textContent = `📝 Reviewing ${student.first_name} ${student.last_name}. Update information and resubmit for approval.`;
+                    }
+
+                    console.log('✅ Form populated for review');
+
+                }, 500);
+
+            } catch (error) {
+                console.error('Review error:', error);
+                alert('Error loading student data for review: ' + error.message);
+            }
+        }
+
+        // =========================================================
+        // EDIT STUDENT
+        // =========================================================
+
+        async function editStudent(studentId) {
+            if (role !== 'Administrator') {
+                alert('Only an Administrator can edit student records.');
+                return;
+            }
+
+            const student = students.find(item => Number(item.student_id) === Number(studentId));
+            if (!student) {
+                alert('Student record not found.');
+                return;
+            }
+
+            await loadEditClasses();
+
+            document.getElementById('editStudentId').value = student.student_id;
+            document.getElementById('editAdmissionNumber').value = student.admission_number || '';
+            document.getElementById('editFirstName').value = student.first_name || '';
+            document.getElementById('editMiddleName').value = student.middle_name || '';
+            document.getElementById('editLastName').value = student.last_name || '';
+            document.getElementById('editGender').value = student.gender || '';
+            document.getElementById('editDateOfBirth').value = formatDateForInput(student.date_of_birth);
+            document.getElementById('editNationality').value = student.nationality || '';
+            document.getElementById('editPhone').value = student.phone || '';
+            document.getElementById('editAddress').value = student.address || '';
+            document.getElementById('editClassId').value = student.class_id || '';
+            document.getElementById('editAdmissionDate').value = formatDateForInput(student.admission_date);
+            document.getElementById('editPreviousSchool').value = student.previous_school || '';
+            document.getElementById('editStudentStatus').value = student.student_status || 'Active';
+            document.getElementById('editEmergencyName').value = student.emergency_contact_name || '';
+            document.getElementById('editEmergencyPhone').value = student.emergency_contact_phone || '';
+            document.getElementById('editEmergencyRelationship').value = student.emergency_contact_relationship || '';
 
             closeModal();
-
+            document.getElementById('editModal').style.display = 'block';
         }
 
+        // =========================================================
+        // LOAD CLASSES FOR EDIT
+        // =========================================================
 
-        if (
-            event.target ===
-            editModal
-        ) {
+        async function loadEditClasses() {
+            const classSelect = document.getElementById('editClassId');
+            classSelect.innerHTML = '<option value="">Loading classes...</option>';
 
-            closeEditModal();
+            try {
+                const response = await fetch('/api/classes', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
 
+                const data = await response.json();
+                const classes = Array.isArray(data) ? data : [];
+
+                classSelect.innerHTML = '<option value="">Select class</option>';
+
+                classes.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.class_id;
+                    option.textContent = `${item.class_name}${item.arm ? ' — ' + item.arm : ''}`;
+                    classSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('LOAD EDIT CLASSES ERROR:', error);
+                classSelect.innerHTML = '<option value="">Unable to load classes</option>';
+            }
         }
 
-    }
-);
+        // =========================================================
+        // SAVE EDITED STUDENT
+        // =========================================================
 
+        document.getElementById('editStudentForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-/* ==========================================================
-   UTILITIES
-========================================================== */
+            if (role !== 'Administrator') {
+                alert('Only an Administrator can edit student records.');
+                return;
+            }
 
-function display(value) {
+            const studentId = document.getElementById('editStudentId').value;
+            const payload = {
+                admission_number: document.getElementById('editAdmissionNumber').value.trim(),
+                first_name: document.getElementById('editFirstName').value.trim(),
+                middle_name: document.getElementById('editMiddleName').value.trim() || null,
+                last_name: document.getElementById('editLastName').value.trim(),
+                gender: document.getElementById('editGender').value || null,
+                date_of_birth: document.getElementById('editDateOfBirth').value || null,
+                nationality: document.getElementById('editNationality').value.trim() || null,
+                phone: document.getElementById('editPhone').value.trim() || null,
+                address: document.getElementById('editAddress').value.trim() || null,
+                class_id: document.getElementById('editClassId').value || null,
+                admission_date: document.getElementById('editAdmissionDate').value || null,
+                previous_school: document.getElementById('editPreviousSchool').value.trim() || null,
+                student_status: document.getElementById('editStudentStatus').value,
+                emergency_contact_name: document.getElementById('editEmergencyName').value.trim() || null,
+                emergency_contact_phone: document.getElementById('editEmergencyPhone').value.trim() || null,
+                emergency_contact_relationship: document.getElementById('editEmergencyRelationship').value.trim() || null
+            };
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === ''
-    ) {
+            try {
+                const response = await fetch(`/api/students/${studentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-        return 'Not provided';
+                const raw = await response.text();
+                let data;
+                try {
+                    data = raw ? JSON.parse(raw) : {};
+                } catch {
+                    throw new Error('Server returned an invalid response.');
+                }
 
-    }
+                if (!response.ok) {
+                    throw new Error(data?.message || data?.error || `Failed to update student. HTTP ${response.status}.`);
+                }
 
+                alert('Student record updated successfully.');
+                closeEditModal();
+                await loadStudents();
 
-    return escapeHtml(
-        String(value)
-    );
+            } catch (error) {
+                console.error('UPDATE STUDENT ERROR:', error);
+                alert(error.message || 'Failed to update student.');
+            }
+        });
 
-}
+        // =========================================================
+        // HELPER FUNCTIONS
+        // =========================================================
 
+        function field(label, value) {
+            return `
+                <div class="field">
+                    <span class="field-label">${escapeHtml(label)}</span>
+                    <span class="field-value">${display(value)}</span>
+                </div>
+            `;
+        }
 
-function escapeHtml(value) {
+        function display(value) {
+            if (value === null || value === undefined || value === '') {
+                return 'Not provided';
+            }
+            return escapeHtml(String(value));
+        }
 
-    return String(value)
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
-        .replace(/&/g, '&amp;')
+        function formatDateOnly(value) {
+            if (!value) return 'Not provided';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return 'Not provided';
+            return date.toLocaleDateString();
+        }
 
-        .replace(/</g, '&lt;')
+        function formatDateForInput(value) {
+            if (!value) return '';
+            if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return '';
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
-        .replace(/>/g, '&gt;')
+        function closeModal() {
+            document.getElementById('studentModal').style.display = 'none';
+        }
 
-        .replace(/"/g, '&quot;')
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
 
-        .replace(/'/g, '&#039;');
+        window.addEventListener('click', function(event) {
+            const studentModal = document.getElementById('studentModal');
+            const editModal = document.getElementById('editModal');
+            if (event.target === studentModal) closeModal();
+            if (event.target === editModal) closeEditModal();
+        });
 
-}
+        // =========================================================
+        // INITIALIZE
+        // =========================================================
 
-
-function formatDateOnly(value) {
-
-    if (!value) {
-
-        return 'Not provided';
-
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return 'Not provided';
-
-    }
-
-
-    return date.toLocaleDateString();
-
-}
-
-
-function formatDateForInput(value) {
-
-    if (!value) {
-
-        return '';
-
-    }
-
-
-    if (
-        typeof value === 'string' &&
-        /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ) {
-
-        return value;
-
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return '';
-
-    }
-
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, '0');
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, '0');
-
-
-    return `${year}-${month}-${day}`;
-
-}
-
-
-/* ==========================================================
-   INITIAL LOAD
-========================================================== */
-
-// Load everything
-loadAcademicYears();
-loadStudents();
-
-</script>
+        loadAcademicYears();
+        loadStudents();
+    </script>
 
 </body>
 

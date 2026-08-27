@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Global Education Academy | Login</title>
-
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
@@ -18,209 +16,291 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: Arial, sans-serif;
-            background: #f2f4f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 0;
         }
 
         .login-container {
             width: 100%;
             max-width: 420px;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .login-card {
             background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+            padding: 40px 35px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
-        .school-name {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .school-location {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .login-title {
+        /* =========================================================
+           LOGO SECTION - SQUARE
+        ========================================================= */
+        .brand {
             text-align: center;
             margin-bottom: 25px;
         }
 
+        .brand-logo {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 12px;
+            background: white;
+            border: 2px solid #e5e7eb;
+        }
+
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 8px;
+        }
+
+        /* Fallback if logo doesn't load */
+        .brand-logo .fallback-text {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .brand h1 {
+            font-size: 22px;
+            color: #1f2937;
+            letter-spacing: 0.5px;
+        }
+
+        .brand .subtitle {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .brand .motto {
+            color: #9ca3af;
+            font-size: 11px;
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        /* =========================================================
+           FORM
+        ========================================================= */
         .form-group {
             margin-bottom: 18px;
         }
 
         label {
             display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #374151;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            font-size: 16px;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f9fafb;
         }
 
         input:focus {
             outline: none;
-            border-color: #333;
+            border-color: #1f2937;
+            box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
+            background: white;
         }
 
         button {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             border: none;
-            border-radius: 7px;
+            border-radius: 8px;
             background: #1f2937;
             color: white;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 6px;
         }
 
         button:hover {
-            opacity: 0.9;
+            background: #111827;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(31, 41, 55, 0.25);
         }
 
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* =========================================================
+           MESSAGES
+        ========================================================= */
         #message {
-            margin-top: 18px;
+            margin-top: 16px;
             text-align: center;
+            font-size: 14px;
             min-height: 20px;
         }
 
-        .footer {
+        .error {
+            color: #dc2626;
+        }
+        .success {
+            color: #16a34a;
+        }
+        .info {
+            color: #2563eb;
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+        .version {
             text-align: center;
-            margin-top: 25px;
-            font-size: 13px;
-            color: #777;
+            margin-top: 20px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+
+            .brand-logo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .brand h1 {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
-
 <body>
 
-<div class="login-container">
+    <div class="login-container">
+        <div class="login-card">
 
-    <div class="login-card">
+            <!-- =================================================
+                 LOGO SECTION - SQUARE
+            ================================================= -->
+            <div class="brand">
 
-        <div class="school-name">
-            GLOBAL EDUCATION ACADEMY
-        </div>
+                <!-- Logo Image - Square -->
+                <div class="brand-logo">
+                    <img src="/images/logo.png" alt="Global Education Academy Logo" onerror="this.style.display='none'; this.parentElement.querySelector('.fallback-text').style.display='block';">
+                    <span class="fallback-text" style="display:none;">🏫</span>
+                </div>
 
-        <div class="school-location">
-            Kono, Sierra Leone
-        </div>
-
-        <h3 class="login-title">
-            Sign in to your account
-        </h3>
-
-        <form id="loginForm">
-
-            <div class="form-group">
-                <label for="username">
-                    Username
-                </label>
-
-                <input
-                    type="text"
-                    id="username"
-                    required
-                    autocomplete="username"
-                >
+                <h1>Global Education Academy</h1>
+                <p class="subtitle">Management Information System</p>
+                <p class="motto">"Excellence in Education"</p>
             </div>
 
-            <div class="form-group">
-                <label for="password">
-                    Password
-                </label>
+            <!-- =================================================
+                 LOGIN FORM
+            ================================================= -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required autocomplete="username">
+                </div>
 
-                <input
-                    type="password"
-                    id="password"
-                    required
-                    autocomplete="current-password"
-                >
-            </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
 
-            <button type="submit">
-                Login
-            </button>
+                <button type="submit">Sign In</button>
+            </form>
 
-        </form>
+            <div id="message"></div>
+            <div class="version">Version 1.0 • Global Education Academy</div>
 
-        <div id="message"></div>
-
-        <div class="footer">
-            Global Education Academy Management System
         </div>
-
     </div>
 
-</div>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const message = document.getElementById('message');
 
-<script>
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-    loginForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
 
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
+            message.textContent = 'Signing in...';
+            message.className = 'info';
 
-    message.textContent = 'Signing in...';
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
 
-    try {
-        const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
+                const data = await response.json();
 
-        const data = await response.json();
+                if (!response.ok) {
+                    message.textContent = data.message || 'Login failed.';
+                    message.className = 'error';
+                    return;
+                }
 
-        if (!response.ok) {
-            message.textContent = data.message || 'Login failed.';
-            return;
-        }
+                sessionStorage.setItem('authToken', data.token);
+                sessionStorage.setItem('user', JSON.stringify(data.user));
 
-        // Store authentication information
-        sessionStorage.setItem('authToken', data.token);
-        sessionStorage.setItem('user', JSON.stringify(data.user));
+                message.textContent = 'Login successful. Redirecting...';
+                message.className = 'success';
 
-        message.textContent = 'Login successful.';
+                setTimeout(() => {
+                    const user = JSON.parse(sessionStorage.getItem('user'));
+                    if (user.role_name === 'Teacher') {
+                        window.location.href = '/teachers-dashboard.html';
+                    } else {
+                        window.location.href = '/dashboard.html';
+                    }
+                }, 500);
 
-        // Role-based redirect
-        setTimeout(() => {
-            const user = JSON.parse(sessionStorage.getItem('user'));
-            const roleName = user.role_name;
-
-            // Redirect based on role
-            if (roleName === 'Teacher') {
-                window.location.href = '/teachers-dashboard.html';
-            } else {
-                window.location.href = '/dashboard.html';
+            } catch (error) {
+                console.error(error);
+                message.textContent = 'Unable to connect to the server.';
+                message.className = 'error';
             }
-        }, 500);
-
-    } catch (error) {
-        console.error(error);
-        message.textContent = 'Unable to connect to the server.';
-    }
-});
-
-</script>
+        });
+    </script>
 
 </body>
 </html>

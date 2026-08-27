@@ -64,7 +64,7 @@ app.use('/api/academic-years', academicYearRoutes);
 
 app.get('/', (req, res) => {
     res.json({
-        message: 'Global Academy, Kono API is running'
+        message: 'Global Education Academy, Kono API is running'
     });
 });
 
@@ -129,7 +129,7 @@ app.get(
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Global Academy server running on port ${PORT}`);
+    console.log(`Global Education Academy server running on port ${PORT}`);
     console.log(`Frontend available at: http://localhost:${PORT}`);
     console.log(`Student registration: http://localhost:${PORT}/students-registration.html`);
 });
