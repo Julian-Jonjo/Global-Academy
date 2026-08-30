@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Classes</title>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; }
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+        .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-title h2 { margin: 0 0 6px 0; color: #1f2937; }
+        .page-title p { margin: 0; color: #6b7280; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .sector-section { margin-bottom: 30px; }
+        .sector-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px 20px; border-radius: 8px; }
+        .sector-header.primary { background: #dcfce7; border-left: 4px solid #166534; }
+        .sector-header.secondary { background: #dbeafe; border-left: 4px solid #1a3c6e; }
+        .sector-header h3 { margin: 0; font-size: 18px; }
+        .sector-count { font-size: 14px; font-weight: bold; }
+        .classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+        .class-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.3s; border-left: 4px solid #1a3c6e; }
+        .class-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        .class-card.primary { border-left-color: #166534; }
+        .class-card.jss { border-left-color: #1a3c6e; }
+        .class-card.sss { border-left-color: #7c3aed; }
+        .class-card.nursery { border-left-color: #f59e0b; }
+        .class-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .class-arm { font-size: 13px; color: #6b7280; margin-bottom: 10px; }
+        .class-section { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 10px; }
+        .section-nursery { background: #fef3c7; color: #92400e; }
+        .section-primary { background: #dcfce7; color: #166534; }
+        .section-jss { background: #dbeafe; color: #1e40af; }
+        .section-sss { background: #ede9fe; color: #6d28d9; }
+        .class-students { font-size: 24px; font-weight: bold; color: #1a3c6e; }
+        .class-students-label { font-size: 11px; color: #6b7280; text-transform: uppercase; }
+        .empty { text-align: center; padding: 30px; color: #6b7280; }
+        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; } .user-info { text-align: left; } .classes-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>Classes Management</p>
+            </div>
+        </div>
+        <div id="userInfo" class="user-info"></div>
+    </header>
+
+    <main class="container">
+        <div class="page-title">
+            <div>
+                <h2>Classes</h2>
+                <p>View classes by school sector.</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+        </div>
+
+        <!-- PRIMARY SECTOR -->
+        <div class="sector-section">
+            <div class="sector-header primary">
+                <h3>🏫 Primary School</h3>
+                <span class="sector-count" id="primaryCount">0 Classes</span>
+            </div>
+            <div class="classes-grid" id="primaryClasses">
+                <div class="empty">Loading Primary classes...</div>
+            </div>
+        </div>
+
+        <!-- SECONDARY SECTOR -->
+        <div class="sector-section">
+            <div class="sector-header secondary">
+                <h3>🎓 Secondary School</h3>
+                <span class="sector-count" id="secondaryCount">0 Classes</span>
+            </div>
+            <div class="classes-grid" id="secondaryClasses">
+                <div class="empty">Loading Secondary classes...</div>
+            </div>
+        </div>
+    </main>
+
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
+
+<script>
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
+
+    const user = JSON.parse(userData);
+    document.getElementById('userInfo').textContent = `${user.full_name || 'User'} (${user.role_name})`;
+
+    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+    let studentCounts = {};
+
+    async function loadClasses() {
+        try {
+            // Fetch classes
+            const classesResponse = await fetch('/api/classes', {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!classesResponse.ok) throw new Error('Failed to load classes');
+            const classes = await classesResponse.json();
+
+            // Fetch students for counts
+            const studentsResponse = await fetch('/api/students', {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            const students = studentsResponse.ok ? await studentsResponse.json() : [];
+
+            // Count students per class
+            studentCounts = {};
+            (students || []).forEach(student => {
+                if (student.class_id) {
+                    studentCounts[student.class_id] = (studentCounts[student.class_id] || 0) + 1;
+                }
+            });
+
+            // Split classes by sector
+            const primaryClasses = (classes || []).filter(c => ['Nursery', 'Primary'].includes(c.school_section));
+            const secondaryClasses = (classes || []).filter(c => ['JSS', 'SSS', 'Secondary'].includes(c.school_section));
+
+            document.getElementById('primaryCount').textContent = `${primaryClasses.length} Classes`;
+            document.getElementById('secondaryCount').textContent = `${secondaryClasses.length} Classes`;
+
+            renderClasses('primaryClasses', primaryClasses);
+            renderClasses('secondaryClasses', secondaryClasses);
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('primaryClasses').innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`;
+            document.getElementById('secondaryClasses').innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    function renderClasses(containerId, classes) {
+        const container = document.getElementById(containerId);
+        if (!classes || classes.length === 0) {
+            container.innerHTML = '<div class="empty">No classes available.</div>';
+            return;
+        }
+
+        container.innerHTML = classes.map(cls => {
+            const section = (cls.school_section || '').toLowerCase();
+            const count = studentCounts[cls.class_id] || 0;
+            const sectionClass = section === 'nursery' ? 'section-nursery' : section === 'primary' ? 'section-primary' : section === 'jss' ? 'section-jss' : 'section-sss';
+            const cardClass = section === 'nursery' ? 'nursery' : section === 'primary' ? 'primary' : section === 'jss' ? 'jss' : 'sss';
+
+            return `
+                <div class="class-card ${cardClass}" onclick="viewStudents(${cls.class_id}, '${escapeHtml(cls.class_name || '')}${cls.arm ? ' ' + escapeHtml(cls.arm) : ''}')">
+                    <div class="class-name">${escapeHtml(cls.class_name || 'Unnamed Class')}</div>
+                    <div class="class-arm">${cls.arm ? 'Arm: ' + escapeHtml(cls.arm) : 'No arm'}</div>
+                    <span class="class-section ${sectionClass}">${escapeHtml(cls.school_section || 'Unknown')}</span>
+                    <div>
+                        <span class="class-students">${count}</span>
+                        <span class="class-students-label"> Students</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function viewStudents(classId, className) {
+        const userRole = (user.role_name || '').toLowerCase();
+        if (userRole.includes('manager-primary')) {
+            window.location.href = `primary-students.html?class_id=${classId}&class_name=${encodeURIComponent(className)}`;
+        } else if (userRole.includes('manager-secondary')) {
+            window.location.href = `secondary-students.html?class_id=${classId}&class_name=${encodeURIComponent(className)}`;
+        } else {
+            window.location.href = `students.html?class_id=${classId}`;
+        }
+    }
+
+    loadClasses();
+</script>
+
+</body>
+
+</html>

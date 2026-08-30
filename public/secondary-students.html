@@ -7,622 +7,92 @@
     <title>Global Education Academy Secondary School | Student Management</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            color: #222;
-            background-image: url('/images/school-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            position: relative;
-            min-height: 100vh;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.85);
-            z-index: 0;
-        }
-
-        .header {
-            background: #1a3c6e;
-            color: white;
-            padding: 12px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            overflow: hidden;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .header-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 4px;
-        }
-
-        .header-title h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-        }
-
-        .header-title p {
-            margin: 0;
-            font-size: 11px;
-            color: #a0c4ff;
-        }
-
-        .user-info {
-            text-align: right;
-            font-size: 13px;
-            color: white;
-        }
-
-        .user-info .role {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .user-info .role-label {
-            font-size: 11px;
-            color: #a0c4ff;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 25px auto;
-            padding: 0 20px 80px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .page-title h2 {
-            margin: 0 0 6px 0;
-            color: #1f2937;
-        }
-
-        .page-title p {
-            margin: 0;
-            color: #6b7280;
-        }
-
-        .back-btn {
-            background: #6b7280;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 18px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s;
-        }
-
-        .back-btn:hover {
-            background: #4b5563;
-            transform: translateY(-2px);
-        }
-
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            background: white;
-            padding: 8px;
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-        }
-
-        .tab-button {
-            border: none;
-            background: transparent;
-            padding: 12px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            color: #4b5563;
-            transition: all 0.3s;
-        }
-
-        .tab-button:hover {
-            background: #f3f4f6;
-        }
-
-        .tab-button.active {
-            background: #1a3c6e;
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-            background: white;
-            padding: 25px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .section-header h3 {
-            margin: 0;
-            color: #1f2937;
-        }
-
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 18px;
-        }
-
-        .overview-card {
-            padding: 22px;
-            border-radius: 10px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s;
-        }
-
-        .overview-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .overview-card h4 {
-            margin: 0 0 10px 0;
-            color: #6b7280;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .overview-card .number {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1a3c6e;
-        }
-
-        .filters {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr auto;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .filters input,
-        .filters select {
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-        }
-
-        .filters input:focus,
-        .filters select:focus {
-            outline: none;
-            border-color: #1a3c6e;
-            box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1);
-        }
-
-        .refresh-btn {
-            background: #1a3c6e;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 11px 18px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .refresh-btn:hover {
-            background: #0f2a4a;
-            transform: translateY(-2px);
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #f3f4f6;
-            text-align: left;
-            padding: 13px;
-            font-size: 13px;
-            border-bottom: 2px solid #ddd;
-            color: #374151;
-        }
-
-        td {
-            padding: 13px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-
-        tr:hover td {
-            background: #f9fafb;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .active {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .inactive {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .btn {
-            border: none;
-            padding: 9px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .view-btn {
-            background: #1f2937;
-            color: white;
-        }
-
-        .view-btn:hover {
-            background: #111827;
-        }
-
-        .review-btn {
-            background: #d97706;
-            color: white;
-        }
-
-        .review-btn:hover {
-            background: #b45309;
-        }
-
-        .edit-btn {
-            background: #2563eb;
-            color: white;
-        }
-
-        .edit-btn:hover {
-            background: #1d4ed8;
-        }
-
-        .save-btn {
-            background: #16a34a;
-            color: white;
-        }
-
-        .save-btn:hover {
-            background: #15803d;
-        }
-
-        .cancel-btn {
-            background: #6b7280;
-            color: white;
-        }
-
-        .cancel-btn:hover {
-            background: #4b5563;
-        }
-
-        .edit-action {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 10px;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 50px;
-            color: #6b7280;
-        }
-
-        .error-message {
-            color: #991b1b;
-            background: #fee2e2;
-            border: 1px solid #fca5a5;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
-        .module-placeholder {
-            text-align: center;
-            padding: 70px 20px;
-            color: #6b7280;
-        }
-
-        .module-placeholder h3 {
-            color: #374151;
-            margin-bottom: 10px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            overflow-y: auto;
-        }
-
-        .modal-content {
-            background: white;
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 10px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-        }
-
-        .close {
-            font-size: 30px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .close:hover {
-            color: #111;
-        }
-
-        .section-title {
-            grid-column: 1 / -1;
-            margin-top: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #ddd;
-            font-weight: bold;
-        }
-
-        .profile-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .field-label {
-            font-size: 11px;
-            color: #6b7280;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .field-value {
-            font-size: 15px;
-        }
-
-        .edit-form {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-        }
-
-        .form-field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-field.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-field label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #4b5563;
-        }
-
-        .form-field input,
-        .form-field select,
-        .form-field textarea {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .form-field textarea {
-            min-height: 90px;
-            resize: vertical;
-        }
-
-        .edit-form-actions {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .logout-bottom {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 1000;
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logout-bottom:hover {
-            background: #b91c1c;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5);
-        }
-
-        @media (max-width: 900px) {
-            .filters {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-                padding: 12px 20px;
-            }
-            .user-info {
-                text-align: left;
-                width: 100%;
-            }
-            .tabs {
-                flex-direction: column;
-            }
-            .tab-button {
-                width: 100%;
-                text-align: left;
-            }
-            .profile-grid,
-            .edit-form {
-                grid-template-columns: 1fr;
-            }
-            .page-title {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .logout-bottom {
-                bottom: 10px;
-                left: 10px;
-                padding: 8px 16px;
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .filters {
-                grid-template-columns: 1fr;
-            }
-            .modal-content {
-                margin: 20px;
-                padding: 20px;
-            }
-            .overview-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 450px) {
-            .overview-grid {
-                grid-template-columns: 1fr;
-            }
-            .header-title h1 {
-                font-size: 15px;
-            }
-            .header-logo {
-                width: 32px;
-                height: 32px;
-            }
-        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; position: relative; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; font-weight: 700; color: white; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; }
+        .user-info .role { display: block; font-weight: 600; font-size: 14px; }
+        .user-info .role-label { font-size: 11px; color: #a0c4ff; }
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+        .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-title h2 { margin: 0 0 6px 0; color: #1f2937; }
+        .page-title p { margin: 0; color: #6b7280; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; transition: all 0.3s; }
+        .back-btn:hover { background: #4b5563; transform: translateY(-2px); }
+        .tabs { display: flex; flex-wrap: wrap; gap: 5px; background: white; padding: 8px; border-radius: 10px 10px 0 0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06); }
+        .tab-button { border: none; background: transparent; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #4b5563; transition: all 0.3s; }
+        .tab-button:hover { background: #f3f4f6; }
+        .tab-button.active { background: #1a3c6e; color: white; }
+        .tab-content { display: none; background: white; padding: 25px; border-radius: 0 0 10px 10px; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); }
+        .tab-content.active { display: block; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-header h3 { margin: 0; color: #1f2937; }
+        .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+        .overview-card { padding: 22px; border-radius: 10px; background: #f9fafb; border: 1px solid #e5e7eb; transition: all 0.3s; }
+        .overview-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .overview-card h4 { margin: 0 0 10px 0; color: #6b7280; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .overview-card .number { font-size: 28px; font-weight: bold; color: #1a3c6e; }
+        .filters { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 12px; margin-bottom: 20px; }
+        .filters input, .filters select { padding: 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: white; }
+        .filters input:focus, .filters select:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1); }
+        .refresh-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 11px 18px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .refresh-btn:hover { background: #0f2a4a; transform: translateY(-2px); }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f3f4f6; text-align: left; padding: 13px; font-size: 13px; border-bottom: 2px solid #ddd; color: #374151; }
+        td { padding: 13px; border-bottom: 1px solid #eee; font-size: 14px; }
+        tr:hover td { background: #f9fafb; }
+        .status { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
+        .active { background: #dcfce7; color: #166534; }
+        .pending { background: #fef3c7; color: #92400e; }
+        .inactive { background: #e5e7eb; color: #374151; }
+        .rejected { background: #fee2e2; color: #991b1b; }
+        .btn { border: none; padding: 9px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .view-btn { background: #1f2937; color: white; }
+        .view-btn:hover { background: #111827; }
+        .review-btn { background: #d97706; color: white; }
+        .review-btn:hover { background: #b45309; }
+        .edit-btn { background: #1a3c6e; color: white; padding: 8px 16px; font-size: 12px; border-radius: 4px; }
+        .edit-btn:hover { background: #153158; }
+        .save-btn { background: #16a34a; color: white; }
+        .save-btn:hover { background: #15803d; }
+        .cancel-btn { background: #6b7280; color: white; }
+        .cancel-btn:hover { background: #4b5563; }
+        .edit-action { grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .empty { text-align: center; padding: 50px; color: #6b7280; }
+        .error-message { color: #991b1b; background: #fee2e2; border: 1px solid #fca5a5; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .module-placeholder { text-align: center; padding: 70px 20px; color: #6b7280; }
+        .module-placeholder h3 { color: #374151; margin-bottom: 10px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.55); overflow-y: auto; }
+        .modal-content { background: white; max-width: 900px; margin: 50px auto; padding: 30px; border-radius: 10px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; }
+        .close { font-size: 30px; cursor: pointer; color: #666; }
+        .close:hover { color: #111; }
+        .section-title { grid-column: 1 / -1; margin-top: 10px; padding-bottom: 5px; border-bottom: 1px solid #ddd; font-weight: bold; }
+        .profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .field { display: flex; flex-direction: column; gap: 5px; }
+        .field-label { font-size: 11px; color: #6b7280; font-weight: bold; text-transform: uppercase; }
+        .field-value { font-size: 15px; }
+        .edit-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field.full { grid-column: 1 / -1; }
+        .form-field label { font-size: 12px; font-weight: bold; color: #4b5563; }
+        .form-field input, .form-field select, .form-field textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .form-field textarea { min-height: 80px; resize: vertical; }
+        .edit-form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); display: flex; align-items: center; gap: 8px; }
+        .logout-bottom:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5); }
+        @media (max-width: 900px) { .filters { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 20px; } .user-info { text-align: left; width: 100%; } .tabs { flex-direction: column; } .tab-button { width: 100%; text-align: left; } .profile-grid, .edit-form { grid-template-columns: 1fr; } .page-title { flex-direction: column; align-items: flex-start; gap: 10px; } .logout-bottom { bottom: 10px; left: 10px; padding: 8px 16px; font-size: 12px; } }
+        @media (max-width: 600px) { .filters { grid-template-columns: 1fr; } .modal-content { margin: 20px; padding: 20px; } .overview-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 450px) { .overview-grid { grid-template-columns: 1fr; } .header-title h1 { font-size: 15px; } .header-logo { width: 32px; height: 32px; } }
     </style>
 </head>
 
@@ -645,7 +115,6 @@
     </header>
 
     <main class="container">
-
         <div class="page-title">
             <div>
                 <h2>Student Management</h2>
@@ -668,232 +137,107 @@
         </div>
 
         <section id="overview" class="tab-content active">
-            <div class="section-header">
-                <h3>Student Overview</h3>
-            </div>
+            <div class="section-header"><h3>Student Overview</h3></div>
             <div class="overview-grid">
-                <div class="overview-card">
-                    <h4>Total Students</h4>
-                    <div id="totalStudents" class="number">0</div>
-                </div>
-                <div class="overview-card">
-                    <h4>Active Students</h4>
-                    <div id="activeStudents" class="number">0</div>
-                </div>
-                <div class="overview-card">
-                    <h4>Pending Registrations</h4>
-                    <div id="pendingStudents" class="number">0</div>
-                </div>
-                <div class="overview-card">
-                    <h4>Rejected Students</h4>
-                    <div id="rejectedStudents" class="number">0</div>
-                </div>
+                <div class="overview-card"><h4>Total Students</h4><div id="totalStudents" class="number">0</div></div>
+                <div class="overview-card"><h4>Active Students</h4><div id="activeStudents" class="number">0</div></div>
+                <div class="overview-card"><h4>Pending Registrations</h4><div id="pendingStudents" class="number">0</div></div>
+                <div class="overview-card"><h4>Rejected Students</h4><div id="rejectedStudents" class="number">0</div></div>
             </div>
         </section>
 
         <section id="registration" class="tab-content">
             <div id="registrationContainer">
-                <div class="module-placeholder">
-                    <h3>Student Registration</h3>
-                    <p>Loading student registration form...</p>
-                </div>
+                <div class="module-placeholder"><h3>Student Registration</h3><p>Loading student registration form...</p></div>
             </div>
         </section>
 
         <section id="students" class="tab-content">
-            <div class="section-header">
-                <h3>Student List</h3>
-                <span id="studentCount">0 Students</span>
-            </div>
-
+            <div class="section-header"><h3>Student List</h3><span id="studentCount">0 Students</span></div>
             <div class="filters">
                 <input type="text" id="search" placeholder="Search name or admission number..." oninput="applyFilters()">
-                <select id="classFilter" onchange="applyFilters()">
-                    <option value="">All Classes</option>
-                </select>
-                <select id="statusFilter" onchange="applyFilters()">
-                    <option value="">All Statuses</option>
-                    <option value="Active">Active</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Rejected">Rejected</option>
-                </select>
-                <select id="academicYearFilter" onchange="applyFilters()">
-                    <option value="">Current Academic Year</option>
-                </select>
+                <select id="classFilter" onchange="applyFilters()"><option value="">All Classes</option></select>
+                <select id="statusFilter" onchange="applyFilters()"><option value="">All Statuses</option><option value="Active">Active</option><option value="Pending">Pending</option><option value="Rejected">Rejected</option></select>
+                <select id="academicYearFilter" onchange="applyFilters()"><option value="">Current Academic Year</option></select>
                 <button class="refresh-btn" onclick="loadStudents()">Refresh</button>
             </div>
-
             <div id="loadError"></div>
-
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Admission No.</th>
-                            <th>Student Name</th>
-                            <th>Gender</th>
-                            <th>Class</th>
-                            <th>Guardian</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTable">
-                        <tr>
-                            <td colspan="7" class="empty">Loading students...</td>
-                        </tr>
-                    </tbody>
+                    <thead><tr><th>Admission No.</th><th>Student Name</th><th>Gender</th><th>Class</th><th>Guardian</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="studentTable"><tr><td colspan="7" class="empty">Loading students...</td></tr></tbody>
                 </table>
             </div>
         </section>
 
-        <section id="academic" class="tab-content">
-            <div class="module-placeholder">
-                <h3>Academic Records</h3>
-                <p>Student subjects, results, grades, promotion history and academic performance will be managed here.</p>
-            </div>
-        </section>
-
-        <section id="attendance" class="tab-content">
-            <div class="module-placeholder">
-                <h3>Attendance</h3>
-                <p>Student attendance records will be managed here.</p>
-            </div>
-        </section>
-
-        <section id="finance" class="tab-content">
-            <div class="module-placeholder">
-                <h3>Student Finance</h3>
-                <p>Fees, payments, balances, payment slips and payment history will be managed here.</p>
-            </div>
-        </section>
-
-        <section id="documents" class="tab-content">
-            <div class="module-placeholder">
-                <h3>Student Documents</h3>
-                <p>Student documents and uploaded records will be managed here.</p>
-            </div>
-        </section>
-
-        <section id="discipline" class="tab-content">
-            <div class="module-placeholder">
-                <h3>Discipline</h3>
-                <p>Disciplinary incidents, warnings, actions and history will be managed here.</p>
-            </div>
-        </section>
-
-        <section id="transfer" class="tab-content">
-            <div class="module-placeholder">
-                <h3>Transfer / Withdrawal</h3>
-                <p>Student transfers, withdrawals and related records will be managed here.</p>
-            </div>
-        </section>
-
-        <section id="audit" class="tab-content">
-            <div class="module-placeholder">
-                <h3>Activity / Audit</h3>
-                <p>Registration, approval, editing and other student record activities will be recorded here.</p>
-            </div>
-        </section>
-
+        <section id="academic" class="tab-content"><div class="module-placeholder"><h3>Academic Records</h3><p>Student subjects, results, grades, promotion history and academic performance will be managed here.</p></div></section>
+        <section id="attendance" class="tab-content"><div class="module-placeholder"><h3>Attendance</h3><p>Student attendance records will be managed here.</p></div></section>
+        <section id="finance" class="tab-content"><div class="module-placeholder"><h3>Student Finance</h3><p>Fees, payments, balances, payment slips and payment history will be managed here.</p></div></section>
+        <section id="documents" class="tab-content"><div class="module-placeholder"><h3>Student Documents</h3><p>Student documents and uploaded records will be managed here.</p></div></section>
+        <section id="discipline" class="tab-content"><div class="module-placeholder"><h3>Discipline</h3><p>Disciplinary incidents, warnings, actions and history will be managed here.</p></div></section>
+        <section id="transfer" class="tab-content"><div class="module-placeholder"><h3>Transfer / Withdrawal</h3><p>Student transfers, withdrawals and related records will be managed here.</p></div></section>
+        <section id="audit" class="tab-content"><div class="module-placeholder"><h3>Activity / Audit</h3><p>Registration, approval, editing and other student record activities will be recorded here.</p></div></section>
     </main>
 
     <div id="studentModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Student Profile</h2>
-                <span class="close" onclick="closeModal()">&times;</span>
-            </div>
+            <div class="modal-header"><h2>Student Profile</h2><span class="close" onclick="closeModal()">&times;</span></div>
             <div id="profile" class="profile-grid"></div>
         </div>
     </div>
 
     <div id="editModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Student</h2>
-                <span class="close" onclick="closeEditModal()">&times;</span>
-            </div>
+            <div class="modal-header"><h2>Edit Student</h2><span class="close" onclick="closeEditModal()">&times;</span></div>
             <form id="editStudentForm" class="edit-form">
                 <input type="hidden" id="editStudentId">
-                <div class="section-title">Personal Information</div>
-                <div class="form-field">
-                    <label>Admission Number</label>
-                    <input type="text" id="editAdmissionNumber" required>
+                <div class="form-field full" style="display:flex;align-items:center;gap:15px;margin-bottom:5px;">
+                    <div style="width:120px;height:140px;flex-shrink:0;">
+                        <img id="editPhotoImg" src="" alt="No photo" style="width:120px;height:140px;border-radius:6px;border:1px solid #ddd;object-fit:cover;">
+                    </div>
+                    <div>
+                        <label style="font-size:11px;font-weight:bold;color:#4b5563;">Change Photo</label>
+                        <input type="file" id="editStudentPhoto" accept="image/*" onchange="previewEditPhoto(event)" style="padding:5px;font-size:12px;">
+                    </div>
                 </div>
-                <div class="form-field">
-                    <label>Gender</label>
-                    <select id="editGender">
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="form-field">
-                    <label>First Name</label>
-                    <input type="text" id="editFirstName" required>
-                </div>
-                <div class="form-field">
-                    <label>Middle Name</label>
-                    <input type="text" id="editMiddleName">
-                </div>
-                <div class="form-field">
-                    <label>Last Name</label>
-                    <input type="text" id="editLastName" required>
-                </div>
-                <div class="form-field">
-                    <label>Date of Birth</label>
-                    <input type="date" id="editDateOfBirth">
-                </div>
-                <div class="form-field">
-                    <label>Nationality</label>
-                    <input type="text" id="editNationality">
-                </div>
-                <div class="form-field">
-                    <label>Phone</label>
-                    <input type="text" id="editPhone">
-                </div>
+                <div class="section-title">Documents</div>
                 <div class="form-field full">
-                    <label>Address</label>
-                    <textarea id="editAddress"></textarea>
+                    <label style="font-size:11px;font-weight:bold;color:#4b5563;">Current Documents</label>
+                    <div id="editDocumentsList" style="margin-bottom:10px;">Loading documents...</div>
+                    <label style="font-size:11px;font-weight:bold;color:#4b5563;margin-top:10px;">Replace Result / Report Card</label>
+                    <input type="file" id="editResultFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="margin-bottom:5px;padding:5px;font-size:12px;">
+                    <label style="font-size:11px;font-weight:bold;color:#4b5563;">Replace Birth Certificate</label>
+                    <input type="file" id="editBirthCertificate" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="margin-bottom:5px;padding:5px;font-size:12px;">
+                    <label style="font-size:11px;font-weight:bold;color:#4b5563;">Replace Testimonial</label>
+                    <input type="file" id="editTestimonial" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="margin-bottom:5px;padding:5px;font-size:12px;">
+                    <label style="font-size:11px;font-weight:bold;color:#4b5563;">Replace Transfer Form</label>
+                    <input type="file" id="editTransferForm" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="padding:5px;font-size:12px;">
                 </div>
+                <div class="section-title">Personal Information</div>
+                <div class="form-field"><label>Admission Number</label><input type="text" id="editAdmissionNumber" required></div>
+                <div class="form-field"><label>Gender</label><select id="editGender"><option value="">Select Gender</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                <div class="form-field"><label>First Name</label><input type="text" id="editFirstName" required></div>
+                <div class="form-field"><label>Middle Name</label><input type="text" id="editMiddleName"></div>
+                <div class="form-field"><label>Last Name</label><input type="text" id="editLastName" required></div>
+                <div class="form-field"><label>Date of Birth</label><input type="date" id="editDateOfBirth"></div>
+                <div class="form-field"><label>Nationality</label><input type="text" id="editNationality"></div>
+                <div class="form-field"><label>Phone</label><input type="text" id="editPhone"></div>
+                <div class="form-field full"><label>Address</label><textarea id="editAddress"></textarea></div>
                 <div class="section-title">School Information</div>
-                <div class="form-field">
-                    <label>Class</label>
-                    <select id="editClassId" required>
-                        <option value="">Loading classes...</option>
-                    </select>
-                </div>
-                <div class="form-field">
-                    <label>Admission Date</label>
-                    <input type="date" id="editAdmissionDate">
-                </div>
-                <div class="form-field">
-                    <label>Previous School</label>
-                    <input type="text" id="editPreviousSchool">
-                </div>
-                <div class="form-field">
-                    <label>Student Status</label>
-                    <select id="editStudentStatus">
-                        <option value="Active">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Inactive">Inactive</option>
-                        <option value="Rejected">Rejected</option>
-                    </select>
-                </div>
+                <div class="form-field"><label>Class</label><select id="editClassId" required><option value="">Loading classes...</option></select></div>
+                <div class="form-field"><label>Admission Date</label><input type="date" id="editAdmissionDate"></div>
+                <div class="form-field"><label>Previous School</label><input type="text" id="editPreviousSchool"></div>
+                <div class="form-field"><label>Student Status</label><select id="editStudentStatus"><option value="Active">Active</option><option value="Pending">Pending</option><option value="Inactive">Inactive</option><option value="Rejected">Rejected</option></select></div>
+                <div class="section-title">Guardian Information</div>
+                <div class="form-field"><label>Guardian Name</label><input type="text" id="editGuardianName"></div>
+                <div class="form-field"><label>Relationship</label><select id="editGuardianRelationship"><option value="">Select relationship</option><option value="Father">Father</option><option value="Mother">Mother</option><option value="Guardian">Guardian</option><option value="Uncle">Uncle</option><option value="Aunt">Aunt</option><option value="Grandparent">Grandparent</option><option value="Other">Other</option></select></div>
+                <div class="form-field"><label>Guardian Phone</label><input type="text" id="editGuardianPhone"></div>
+                <div class="form-field"><label>Guardian Email</label><input type="text" id="editGuardianEmail"></div>
+                <div class="form-field full"><label>Guardian Address</label><textarea id="editGuardianAddress"></textarea></div>
                 <div class="section-title">Emergency Contact</div>
-                <div class="form-field">
-                    <label>Contact Name</label>
-                    <input type="text" id="editEmergencyName">
-                </div>
-                <div class="form-field">
-                    <label>Contact Phone</label>
-                    <input type="text" id="editEmergencyPhone">
-                </div>
-                <div class="form-field">
-                    <label>Relationship</label>
-                    <input type="text" id="editEmergencyRelationship">
-                </div>
+                <div class="form-field"><label>Contact Name</label><input type="text" id="editEmergencyName"></div>
+                <div class="form-field"><label>Contact Phone</label><input type="text" id="editEmergencyPhone"></div>
+                <div class="form-field"><label>Relationship</label><input type="text" id="editEmergencyRelationship"></div>
                 <div class="edit-form-actions">
                     <button type="button" class="btn cancel-btn" onclick="closeEditModal()">Cancel</button>
                     <button type="submit" class="btn save-btn">Save Changes</button>
@@ -904,903 +248,521 @@
 
     <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
-    <script>
-        const token = sessionStorage.getItem('authToken');
-        const userData = sessionStorage.getItem('user');
+<script>
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
 
-        if (!token || !userData) {
-            window.location.href = '/login.html';
-        }
+    let user;
+    try { user = JSON.parse(userData); } catch (error) { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
 
-        let user;
+    const role = user?.role_name || '';
+    const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
+
+    // SECONDARY ACCESS CONTROL - Block Primary roles
+    if (userRoleForAccess.includes('manager-primary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+    if (userRoleForAccess.includes('finance officer (primary)')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+    if (userRoleForAccess.includes('teacher - primary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+
+    const allowedRoles = ['manager-secondary', 'admin', 'proprietor'];
+    const hasAccess = allowedRoles.some(r => userRoleForAccess.includes(r));
+    if (!hasAccess) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+
+    document.getElementById('userRole').textContent = role;
+    document.getElementById('userRoleLabel').textContent = '';
+
+    function previewPhoto(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const preview = document.getElementById('photoPreview'); const img = document.getElementById('photoPreviewImg'); if (img && preview) { img.src = e.target.result; preview.style.display = 'block'; } }; reader.readAsDataURL(file); }
+    function showFileName(input, displayId) { const display = document.getElementById(displayId); if (display && input.files && input.files[0]) { display.textContent = '📎 ' + input.files[0].name; } }
+    function previewEditPhoto(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const img = document.getElementById('editPhotoImg'); if (img) img.src = e.target.result; }; reader.readAsDataURL(file); }
+    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+    function escapeHtml(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+    function display(value) { if (value === null || value === undefined || value === '') return 'Not provided'; return escapeHtml(String(value)); }
+    function formatDateOnly(value) { if (!value) return 'Not provided'; const date = new Date(value); if (Number.isNaN(date.getTime())) return 'Not provided'; return date.toLocaleDateString(); }
+    function formatDateForInput(value) { if (!value) return ''; if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value; const date = new Date(value); if (Number.isNaN(date.getTime())) return ''; return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
+    function field(label, value) { return `<div class="field"><span class="field-label">${escapeHtml(label)}</span><span class="field-value">${display(value)}</span></div>`; }
+    function closeModal() { document.getElementById('studentModal').style.display = 'none'; }
+    function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+    if (role === 'Proprietor') { const registerTab = document.getElementById('registerTab'); if (registerTab) registerTab.style.display = 'none'; }
+
+    async function loadAcademicYears() {
         try {
-            user = JSON.parse(userData);
-        } catch (error) {
-            console.error('Invalid user data:', error);
-            sessionStorage.removeItem('authToken');
-            sessionStorage.removeItem('user');
-            window.location.href = '/login.html';
-        }
-
-        const role = user.role_name;
-        const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
-
-        // =========================================================
-        // ACCESS CONTROL - SECONDARY STUDENTS ONLY
-        // =========================================================
-
-        if (userRoleForAccess.includes('manager-primary')) {
-            alert('Access denied. You do not have permission to view Secondary School students.');
-            window.location.href = 'dashboard.html';
-        }
-
-        if (userRoleForAccess.includes('finance officer (primary)')) {
-            alert('Access denied. You do not have permission to view Secondary School students.');
-            window.location.href = 'dashboard.html';
-        }
-
-        if (userRoleForAccess.includes('teacher - primary')) {
-            alert('Access denied. You do not have permission to view Secondary School students.');
-            window.location.href = 'dashboard.html';
-        }
-
-        const allowedRoles = ['manager-secondary', 'admin', 'proprietor'];
-        const hasAccess = allowedRoles.some(r => userRoleForAccess.includes(r));
-
-        if (!hasAccess) {
-            alert('Access denied. Insufficient permissions.');
-            window.location.href = 'dashboard.html';
-        }
-
-        document.getElementById('userRole').textContent = role;
-        document.getElementById('userRoleLabel').textContent = '';
-
-        function logout() {
-            sessionStorage.removeItem('authToken');
-            sessionStorage.removeItem('user');
-            window.location.href = '/login.html';
-        }
-
-        // Hide register tab from Proprietor
-        if (role === 'Proprietor') {
-            const registerTab = document.getElementById('registerTab');
-            if (registerTab) {
-                registerTab.style.display = 'none';
-            }
-        }
-
-        async function loadAcademicYears() {
-            try {
-                const response = await fetch('/api/academic-years', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Failed to load academic years');
-
-                const data = await response.json();
-                const select = document.getElementById('academicYearFilter');
-
-                select.innerHTML = '<option value="">All Academic Years</option>';
-
-                data.forEach(year => {
-                    const option = document.createElement('option');
-                    option.value = year.academic_year_id;
-                    const label = year.is_current ? year.year_name + ' (Current)' : year.year_name;
-                    option.textContent = label;
-                    select.appendChild(option);
-                });
-
-                const currentYear = data.find(y => y.is_current);
-                if (currentYear) {
-                    select.value = currentYear.academic_year_id;
-                }
-
-            } catch (error) {
-                console.error('Error loading academic years:', error);
-            }
-        }
-
-        function openTab(tabId, button) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            const selected = document.getElementById(tabId);
-            if (selected) selected.classList.add('active');
-            if (button) button.classList.add('active');
-        }
-
-        async function openRegistrationTab(button) {
-            if (role !== 'Manager-Secondary' && role !== 'Administrator') {
-                alert('You do not have permission to register students.');
-                return;
-            }
-
-            openTab('registration', button);
-            const container = document.getElementById('registrationContainer');
-
-            if (container.dataset.loaded === 'true') {
-                attachFormListener();
-                return;
-            }
-
-            container.innerHTML = `
-                <div class="module-placeholder">
-                    <h3>Loading Student Registration</h3>
-                    <p>Please wait...</p>
-                </div>
-            `;
-
-            try {
-                const response = await fetch('./students-registration.html');
-                if (!response.ok) {
-                    throw new Error(`Unable to load registration form. HTTP ${response.status}`);
-                }
-                const html = await response.text();
-                container.innerHTML = html;
-                container.dataset.loaded = 'true';
-
-                setTimeout(() => {
-                    loadClasses();
-                    attachFormListener();
-                }, 200);
-
-            } catch (error) {
-                console.error('REGISTRATION LOAD ERROR:', error);
-                container.innerHTML = `
-                    <div class="error-message">
-                        <strong>Unable to load registration form</strong>
-                        <br><br>
-                        ${escapeHtml(error.message)}
-                    </div>
-                `;
-            }
-        }
-
-        function attachFormListener() {
-            const form = document.getElementById('studentForm');
-            if (!form) {
-                console.log('Form not found yet');
-                return;
-            }
-
-            const newForm = form.cloneNode(true);
-            form.parentNode.replaceChild(newForm, form);
-
-            newForm.addEventListener('submit', async function(event) {
-                event.preventDefault();
-
-                const message = document.getElementById('message');
-                if (message) {
-                    message.style.display = 'block';
-                    message.className = '';
-                    message.textContent = 'Submitting...';
-                }
-
-                const submitBtn = this.querySelector('.submit-btn');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = 'Submitting...';
-                }
-
-                try {
-                    const token = sessionStorage.getItem('authToken');
-                    const reviewStudentId = document.getElementById('review_student_id')?.value;
-
-                    const fields = [
-                        'admission_number', 'first_name', 'middle_name', 'last_name',
-                        'gender', 'date_of_birth', 'nationality', 'phone', 'address',
-                        'class_id', 'admission_date', 'previous_school',
-                        'parent_name', 'parent_relationship', 'parent_phone', 'parent_email', 'parent_address',
-                        'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship'
-                    ];
-
-                    const updateData = {};
-                    fields.forEach(field => {
-                        const el = document.getElementById(field);
-                        if (el) {
-                            updateData[field] = el.value.trim();
-                        }
-                    });
-
-                    if (reviewStudentId) {
-                        const updateResponse = await fetch(`/api/students/${reviewStudentId}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                admission_number: updateData.admission_number,
-                                first_name: updateData.first_name,
-                                middle_name: updateData.middle_name,
-                                last_name: updateData.last_name,
-                                gender: updateData.gender,
-                                date_of_birth: updateData.date_of_birth,
-                                phone: updateData.phone,
-                                address: updateData.address,
-                                class_id: updateData.class_id,
-                                admission_date: updateData.admission_date,
-                                previous_school: updateData.previous_school,
-                                nationality: updateData.nationality,
-                                emergency_contact_name: updateData.emergency_contact_name,
-                                emergency_contact_phone: updateData.emergency_contact_phone,
-                                emergency_contact_relationship: updateData.emergency_contact_relationship,
-                                student_status: 'Pending'
-                            })
-                        });
-
-                        const updateResult = await updateResponse.json();
-                        if (!updateResponse.ok) {
-                            throw new Error(updateResult.message || 'Failed to update student');
-                        }
-
-                        const reapproveResponse = await fetch(`/api/students/${reviewStudentId}/reapprove`, {
-                            method: 'PUT',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            }
-                        });
-
-                        const reapproveResult = await reapproveResponse.json();
-                        if (!reapproveResponse.ok) {
-                            throw new Error(reapproveResult.message || 'Failed to submit for re-approval');
-                        }
-
-                        if (message) {
-                            message.textContent = '✅ Student updated and sent for re-approval successfully!';
-                            message.className = 'success';
-                            message.style.display = 'block';
-                        }
-
-                        this.reset();
-                        const preview = document.getElementById('photoPreview');
-                        if (preview) preview.style.display = 'none';
-                        document.querySelectorAll('.file-name-display').forEach(el => el.textContent = '');
-
-                        const hiddenInput = document.getElementById('review_student_id');
-                        if (hiddenInput) hiddenInput.remove();
-
-                        const submitBtn2 = document.querySelector('#studentForm .submit-btn');
-                        if (submitBtn2) {
-                            submitBtn2.textContent = 'Submit Registration';
-                        }
-
-                        loadStudents();
-                        return;
-                    }
-
-                    const formData = new FormData();
-                    fields.forEach(field => {
-                        const el = document.getElementById(field);
-                        if (el) {
-                            formData.append(field, el.value.trim());
-                        }
-                    });
-
-                    const fileFields = ['student_photo', 'result_file', 'birth_certificate_file', 'testimonial_file',
-                        'transfer_file'
-                    ];
-                    fileFields.forEach(field => {
-                        const el = document.getElementById(field);
-                        if (el && el.files && el.files[0]) {
-                            formData.append(field, el.files[0]);
-                        }
-                    });
-
-                    const response = await fetch('/api/students/register', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: formData
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        if (message) {
-                            message.textContent = result.message || 'Student registered successfully!';
-                            message.className = 'success';
-                            message.style.display = 'block';
-                        }
-                        this.reset();
-                        const preview = document.getElementById('photoPreview');
-                        if (preview) preview.style.display = 'none';
-                        document.querySelectorAll('.file-name-display').forEach(el => el.textContent = '');
-                        loadClasses();
-                        loadStudents();
-                    } else {
-                        if (message) {
-                            message.textContent = result.message || 'Registration failed.';
-                            message.className = 'error';
-                            message.style.display = 'block';
-                        }
-                    }
-
-                } catch (error) {
-                    console.error('Registration error:', error);
-                    const message = document.getElementById('message');
-                    if (message) {
-                        message.textContent = 'An error occurred. Please try again.';
-                        message.className = 'error';
-                        message.style.display = 'block';
-                    }
-                } finally {
-                    const submitBtn = document.querySelector('#studentForm .submit-btn');
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Submit Registration';
-                    }
-                }
-            });
-
-            console.log('Form listener attached');
-        }
-
-        async function loadClasses() {
-            try {
-                const response = await fetch('/api/classes', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                const select = document.getElementById('class_id');
-
-                if (!select) {
-                    console.log('class_id element not found yet');
-                    return;
-                }
-
-                select.innerHTML = '<option value="">Select class</option>';
-
-                const classes = Array.isArray(data) ? data : [];
-
-                if (classes.length === 0) {
-                    select.innerHTML = '<option value="">No classes available</option>';
-                    return;
-                }
-
-                classes.forEach(cls => {
-                    const option = document.createElement('option');
-                    option.value = cls.class_id;
-                    let className = cls.class_name || 'Unnamed Class';
-                    if (cls.arm) {
-                        className += ' - ' + cls.arm;
-                    }
-                    option.textContent = className;
-                    select.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error('Error loading classes:', error);
-                const select = document.getElementById('class_id');
-                if (select) {
-                    select.innerHTML = '<option value="">Failed to load classes</option>';
-                }
-            }
-        }
-
-        let students = [];
-        let filteredStudents = [];
-
-        async function loadStudents() {
-            const table = document.getElementById('studentTable');
-            const errorBox = document.getElementById('loadError');
-
-            table.innerHTML = `<tr><td colspan="7" class="empty">Loading students...</td></tr>`;
-            errorBox.innerHTML = '';
-
-            try {
-                let url = '/api/students?';
-                const params = [];
-
-                const academicYearSelect = document.getElementById('academicYearFilter');
-                if (academicYearSelect && academicYearSelect.value) {
-                    params.push(`academic_year_id=${academicYearSelect.value}`);
-                }
-
-                const searchInput = document.getElementById('search');
-                if (searchInput && searchInput.value.trim()) {
-                    params.push(`search=${encodeURIComponent(searchInput.value.trim())}`);
-                }
-
-                const classFilter = document.getElementById('classFilter');
-                if (classFilter && classFilter.value) {
-                    params.push(`class_id=${classFilter.value}`);
-                }
-
-                const statusFilter = document.getElementById('statusFilter');
-                if (statusFilter && statusFilter.value) {
-                    params.push(`status=${statusFilter.value}`);
-                }
-
-                url += params.join('&');
-
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Failed to load students. HTTP ${response.status}.`);
-                }
-
-                const data = await response.json();
-                students = Array.isArray(data) ? data : [];
-                filteredStudents = [...students];
-
-                populateClassFilter();
-                renderStudents();
-                updateOverview();
-
-            } catch (error) {
-                console.error('LOAD STUDENTS ERROR:', error);
-                students = [];
-                filteredStudents = [];
-                document.getElementById('totalStudents').textContent = '0';
-                document.getElementById('activeStudents').textContent = '0';
-                document.getElementById('pendingStudents').textContent = '0';
-                document.getElementById('rejectedStudents').textContent = '0';
-                errorBox.innerHTML = `
-                    <div class="error-message">
-                        <strong>Unable to load students</strong>
-                        <br><br>
-                        ${escapeHtml(error.message)}
-                    </div>
-                `;
-                table.innerHTML = `<tr><td colspan="7" class="empty">Student records could not be loaded.</td></tr>`;
-            }
-        }
-
-        function updateOverview() {
-            const total = students.length;
-            const active = students.filter(s => String(s.student_status || '').toLowerCase() === 'active').length;
-            const pending = students.filter(s => String(s.student_status || '').toLowerCase() === 'pending').length;
-            const rejected = students.filter(s => String(s.student_status || '').toLowerCase() === 'rejected').length;
-
-            document.getElementById('totalStudents').textContent = total;
-            document.getElementById('activeStudents').textContent = active;
-            document.getElementById('pendingStudents').textContent = pending;
-            document.getElementById('rejectedStudents').textContent = rejected;
-        }
-
-        function populateClassFilter() {
-            const select = document.getElementById('classFilter');
-            const classes = new Set();
-
-            students.forEach(student => {
-                if (student.class_name) {
-                    classes.add(`${student.class_name}|${student.arm || ''}`);
-                }
-            });
-
-            select.innerHTML = '<option value="">All Classes</option>';
-
-            [...classes].sort().forEach(value => {
-                const parts = value.split('|');
-                const className = parts[0];
-                const arm = parts[1];
-                const option = document.createElement('option');
-                option.value = value;
-                option.textContent = arm ? `${className} — ${arm}` : className;
-                select.appendChild(option);
-            });
-        }
-
-        function applyFilters() {
-            const search = document.getElementById('search').value.trim().toLowerCase();
-            const classFilter = document.getElementById('classFilter').value;
-            const statusFilter = document.getElementById('statusFilter').value;
-
-            filteredStudents = students.filter(student => {
-                const fullName = [student.first_name, student.middle_name, student.last_name]
-                    .filter(Boolean).join(' ').toLowerCase();
-                const admissionNumber = String(student.admission_number || '').toLowerCase();
-
-                const matchesSearch = !search || fullName.includes(search) || admissionNumber.includes(search);
-                const studentClass = `${student.class_name || ''}|${student.arm || ''}`;
-                const matchesClass = !classFilter || studentClass === classFilter;
-                const matchesStatus = !statusFilter || student.student_status === statusFilter;
-
-                return matchesSearch && matchesClass && matchesStatus;
-            });
-
-            renderStudents();
-        }
-
-        function renderStudents() {
-            const table = document.getElementById('studentTable');
-
-            document.getElementById('studentCount').textContent =
-                `${filteredStudents.length} Student${filteredStudents.length === 1 ? '' : 's'}`;
-
-            if (!filteredStudents.length) {
-                table.innerHTML = `<tr><td colspan="7" class="empty">No students found.</td></tr>`;
-                return;
-            }
-
-            table.innerHTML = filteredStudents.map(student => {
-                const fullName = [student.first_name, student.middle_name, student.last_name]
-                    .filter(Boolean).map(escapeHtml).join(' ');
-
-                const className = student.class_name ?
-                    escapeHtml(student.class_name) + (student.arm ? ` — ${escapeHtml(student.arm)}` : '') :
-                    'Not assigned';
-
-                const status = student.student_status || 'Not provided';
-                const statusClass = String(status).toLowerCase();
-
-                let actionButtons = `
-                    <button class="btn view-btn" onclick="viewStudent(${Number(student.student_id)})">View</button>
-                `;
-
-                if (status === 'Rejected') {
-                    actionButtons += `
-                        <button class="btn review-btn" onclick="reviewStudent(${Number(student.student_id)})">Review</button>
-                    `;
-                }
-
-                return `
-                    <tr>
-                        <td>${display(student.admission_number)}</td>
-                        <td><strong>${fullName}</strong></td>
-                        <td>${display(student.gender)}</td>
-                        <td>${className}</td>
-                        <td>${display(student.guardian_name)}</td>
-                        <td><span class="status ${escapeHtml(statusClass)}">${escapeHtml(status)}</span></td>
-                        <td><div style="display:flex;gap:5px;flex-wrap:wrap;">${actionButtons}</div></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function viewStudent(studentId) {
-            const student = students.find(item => Number(item.student_id) === Number(studentId));
-            if (!student) {
-                alert('Student record not found.');
-                return;
-            }
-
-            document.getElementById('profile').innerHTML = `
-                ${(role === 'Administrator' || role === 'Manager-Secondary') ? `
-                    <div class="edit-action">
-                        <button class="edit-btn" onclick="editStudent(${Number(student.student_id)})">Edit Student</button>
-                    </div>
-                ` : ''}
-
-                <div class="section-title">Personal Information</div>
-                ${field('Admission Number', student.admission_number)}
-                ${field('First Name', student.first_name)}
-                ${field('Middle Name', student.middle_name)}
-                ${field('Last Name', student.last_name)}
-                ${field('Gender', student.gender)}
-                ${field('Date of Birth', formatDateOnly(student.date_of_birth))}
-                ${field('Nationality', student.nationality)}
-                ${field('Phone', student.phone)}
-                ${field('Address', student.address)}
-
-                <div class="section-title">School Information</div>
-                ${field('Class', student.class_name ? `${student.class_name}${student.arm ? ' — ' + student.arm : ''}` : 'Not assigned')}
-                ${field('Admission Date', formatDateOnly(student.admission_date))}
-                ${field('Registration Date', formatDateOnly(student.registration_date))}
-                ${field('Previous School', student.previous_school)}
-                ${field('Student Status', student.student_status)}
-
-                <div class="section-title">Guardian Information</div>
-                ${field('Guardian Name', student.guardian_name)}
-                ${field('Relationship', student.guardian_relationship)}
-                ${field('Guardian Phone', student.guardian_phone)}
-                ${field('Guardian Email', student.guardian_email)}
-                ${field('Guardian Address', student.guardian_address)}
-
-                <div class="section-title">Emergency Contact</div>
-                ${field('Name', student.emergency_contact_name)}
-                ${field('Phone', student.emergency_contact_phone)}
-                ${field('Relationship', student.emergency_contact_relationship)}
-            `;
-
-            document.getElementById('studentModal').style.display = 'block';
-        }
-
-        async function reviewStudent(studentId) {
-            try {
-                const response = await fetch(`/api/students/${studentId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to load student data');
-                }
-
-                const student = await response.json();
-
-                const registerTab = document.getElementById('registerTab');
-                if (registerTab) {
-                    registerTab.click();
-                }
-
-                setTimeout(() => {
-                    const fieldMap = {
-                        'admission_number': student.admission_number,
-                        'first_name': student.first_name,
-                        'middle_name': student.middle_name || '',
-                        'last_name': student.last_name,
-                        'gender': student.gender || '',
-                        'date_of_birth': student.date_of_birth || '',
-                        'nationality': student.nationality || 'Sierra Leonean',
-                        'phone': student.phone || '',
-                        'address': student.address || '',
-                        'class_id': student.class_id || '',
-                        'admission_date': student.admission_date || '',
-                        'previous_school': student.previous_school || '',
-                        'parent_name': student.guardian_name || '',
-                        'parent_relationship': student.guardian_relationship || '',
-                        'parent_phone': student.guardian_phone || '',
-                        'parent_email': student.guardian_email || '',
-                        'parent_address': student.guardian_address || '',
-                        'emergency_contact_name': student.emergency_contact_name || '',
-                        'emergency_contact_phone': student.emergency_contact_phone || '',
-                        'emergency_contact_relationship': student.emergency_contact_relationship || ''
-                    };
-
-                    Object.keys(fieldMap).forEach(fieldId => {
-                        const el = document.getElementById(fieldId);
-                        if (el) {
-                            el.value = fieldMap[fieldId] || '';
-                        }
-                    });
-
-                    const submitBtn = document.querySelector('#studentForm .submit-btn');
-                    if (submitBtn) {
-                        submitBtn.textContent = 'Resubmit for Approval';
-                    }
-
-                    const form = document.getElementById('studentForm');
-                    let hiddenInput = document.getElementById('review_student_id');
-                    if (!hiddenInput) {
-                        hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.id = 'review_student_id';
-                        hiddenInput.name = 'review_student_id';
-                        form.appendChild(hiddenInput);
-                    }
-                    hiddenInput.value = student.student_id;
-
-                    const message = document.getElementById('message');
-                    if (message) {
-                        message.style.display = 'block';
-                        message.className = 'info';
-                        message.textContent = `Reviewing ${student.first_name} ${student.last_name}. Update information and resubmit for approval.`;
-                    }
-                }, 500);
-
-            } catch (error) {
-                console.error('Review error:', error);
-                alert('Error loading student data for review: ' + error.message);
-            }
-        }
-
-        async function editStudent(studentId) {
-            if (role !== 'Administrator' && role !== 'Manager-Secondary') {
-                alert('Only an Administrator or Manager-Secondary can edit student records.');
-                return;
-            }
-
-            const student = students.find(item => Number(item.student_id) === Number(studentId));
-            if (!student) {
-                alert('Student record not found.');
-                return;
-            }
-
-            await loadEditClasses();
-
-            document.getElementById('editStudentId').value = student.student_id;
-            document.getElementById('editAdmissionNumber').value = student.admission_number || '';
-            document.getElementById('editFirstName').value = student.first_name || '';
-            document.getElementById('editMiddleName').value = student.middle_name || '';
-            document.getElementById('editLastName').value = student.last_name || '';
-            document.getElementById('editGender').value = student.gender || '';
-            document.getElementById('editDateOfBirth').value = formatDateForInput(student.date_of_birth);
-            document.getElementById('editNationality').value = student.nationality || '';
-            document.getElementById('editPhone').value = student.phone || '';
-            document.getElementById('editAddress').value = student.address || '';
-            document.getElementById('editClassId').value = student.class_id || '';
-            document.getElementById('editAdmissionDate').value = formatDateForInput(student.admission_date);
-            document.getElementById('editPreviousSchool').value = student.previous_school || '';
-            document.getElementById('editStudentStatus').value = student.student_status || 'Active';
-            document.getElementById('editEmergencyName').value = student.emergency_contact_name || '';
-            document.getElementById('editEmergencyPhone').value = student.emergency_contact_phone || '';
-            document.getElementById('editEmergencyRelationship').value = student.emergency_contact_relationship || '';
-
-            closeModal();
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        async function loadEditClasses() {
-            const classSelect = document.getElementById('editClassId');
-            classSelect.innerHTML = '<option value="">Loading classes...</option>';
-
-            try {
-                const response = await fetch('/api/classes', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                });
-
-                const data = await response.json();
-                const classes = Array.isArray(data) ? data : [];
-
-                classSelect.innerHTML = '<option value="">Select class</option>';
-
-                classes.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.class_id;
-                    option.textContent = `${item.class_name}${item.arm ? ' — ' + item.arm : ''}`;
-                    classSelect.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error('LOAD EDIT CLASSES ERROR:', error);
-                classSelect.innerHTML = '<option value="">Unable to load classes</option>';
-            }
-        }
-
-        document.getElementById('editStudentForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            if (role !== 'Administrator' && role !== 'Manager-Secondary') {
-                alert('Only an Administrator or Manager-Secondary can edit student records.');
-                return;
-            }
-
-            const studentId = document.getElementById('editStudentId').value;
-            const payload = {
-                admission_number: document.getElementById('editAdmissionNumber').value.trim(),
-                first_name: document.getElementById('editFirstName').value.trim(),
-                middle_name: document.getElementById('editMiddleName').value.trim() || null,
-                last_name: document.getElementById('editLastName').value.trim(),
-                gender: document.getElementById('editGender').value || null,
-                date_of_birth: document.getElementById('editDateOfBirth').value || null,
-                nationality: document.getElementById('editNationality').value.trim() || null,
-                phone: document.getElementById('editPhone').value.trim() || null,
-                address: document.getElementById('editAddress').value.trim() || null,
-                class_id: document.getElementById('editClassId').value || null,
-                admission_date: document.getElementById('editAdmissionDate').value || null,
-                previous_school: document.getElementById('editPreviousSchool').value.trim() || null,
-                student_status: document.getElementById('editStudentStatus').value,
-                emergency_contact_name: document.getElementById('editEmergencyName').value.trim() || null,
-                emergency_contact_phone: document.getElementById('editEmergencyPhone').value.trim() || null,
-                emergency_contact_relationship: document.getElementById('editEmergencyRelationship').value.trim() || null
-            };
-
-            try {
-                const response = await fetch(`/api/students/${studentId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const raw = await response.text();
-                let data;
-                try {
-                    data = raw ? JSON.parse(raw) : {};
-                } catch {
-                    throw new Error('Server returned an invalid response.');
-                }
-
-                if (!response.ok) {
-                    throw new Error(data?.message || data?.error || `Failed to update student. HTTP ${response.status}.`);
-                }
-
-                alert('Student record updated successfully.');
-                closeEditModal();
-                await loadStudents();
-
-            } catch (error) {
-                console.error('UPDATE STUDENT ERROR:', error);
-                alert(error.message || 'Failed to update student.');
-            }
-        });
-
-        function field(label, value) {
-            return `
-                <div class="field">
-                    <span class="field-label">${escapeHtml(label)}</span>
-                    <span class="field-value">${display(value)}</span>
-                </div>
-            `;
-        }
-
-        function display(value) {
-            if (value === null || value === undefined || value === '') {
-                return 'Not provided';
-            }
-            return escapeHtml(String(value));
-        }
-
-        function escapeHtml(value) {
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function formatDateOnly(value) {
-            if (!value) return 'Not provided';
-            const date = new Date(value);
-            if (Number.isNaN(date.getTime())) return 'Not provided';
-            return date.toLocaleDateString();
-        }
-
-        function formatDateForInput(value) {
-            if (!value) return '';
-            if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
-            const date = new Date(value);
-            if (Number.isNaN(date.getTime())) return '';
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function closeModal() {
-            document.getElementById('studentModal').style.display = 'none';
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-        function previewPhoto(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const preview = document.getElementById('photoPreview');
-        const img = document.getElementById('photoPreviewImg');
-        if (img && preview) {
-            img.src = e.target.result;
-            preview.style.display = 'block';
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-function showFileName(input, displayId) {
-    const display = document.getElementById(displayId);
-    if (display && input.files && input.files[0]) {
-        display.textContent = '📎 ' + input.files[0].name;
+            const response = await fetch('/api/academic-years', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!response.ok) throw new Error('Failed to load academic years');
+            const data = await response.json();
+            const select = document.getElementById('academicYearFilter');
+            select.innerHTML = '<option value="">All Academic Years</option>';
+            data.forEach(year => { const option = document.createElement('option'); option.value = year.academic_year_id; option.textContent = year.is_current ? year.year_name + ' (Current)' : year.year_name; select.appendChild(option); });
+            const currentYear = data.find(y => y.is_current);
+            if (currentYear) select.value = currentYear.academic_year_id;
+        } catch (error) {}
     }
-}
 
-        window.addEventListener('click', function(event) {
-            const studentModal = document.getElementById('studentModal');
-            const editModal = document.getElementById('editModal');
-            if (event.target === studentModal) closeModal();
-            if (event.target === editModal) closeEditModal();
+    function openTab(tabId, button) { document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active')); const selected = document.getElementById(tabId); if (selected) selected.classList.add('active'); if (button) button.classList.add('active'); }
+
+    async function loadClasses() {
+        try {
+            const response = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            const select = document.getElementById('class_id');
+            if (!select) return;
+            select.innerHTML = '<option value="">Select class</option>';
+            const classes = Array.isArray(data) ? data : [];
+            classes.forEach(cls => { const option = document.createElement('option'); option.value = cls.class_id; let className = cls.class_name || 'Unnamed Class'; if (cls.arm) className += ' - ' + cls.arm; option.textContent = className; select.appendChild(option); });
+        } catch (error) {}
+    }
+
+    async function openRegistrationTab(button) {
+        if (role !== 'Manager-Secondary' && role !== 'Administrator') { alert('You do not have permission to register students.'); return; }
+        openTab('registration', button);
+        const container = document.getElementById('registrationContainer');
+        if (container.dataset.loaded === 'true') { attachFormListener(); return; }
+        container.innerHTML = '<div class="module-placeholder"><h3>Loading Student Registration</h3><p>Please wait...</p></div>';
+        try {
+            const response = await fetch('./students-registration.html');
+            if (!response.ok) throw new Error(`Unable to load registration form. HTTP ${response.status}`);
+            const html = await response.text();
+            container.innerHTML = html;
+            container.dataset.loaded = 'true';
+            setTimeout(() => { loadClasses(); attachFormListener(); }, 200);
+        } catch (error) { container.innerHTML = `<div class="error-message"><strong>Unable to load registration form</strong><br><br>${escapeHtml(error.message)}</div>`; }
+    }
+
+    function attachFormListener() {
+        const form = document.getElementById('studentForm');
+        if (!form) return;
+        if (form.dataset.submitListenerAttached === 'true') return;
+        form.dataset.submitListenerAttached = 'true';
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            if (form.dataset.submitting === 'true') return;
+            const message = document.getElementById('message');
+            const submitBtn = form.querySelector('.submit-btn');
+
+            const getValue = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+            const getSelectValue = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+
+            const admissionNumber = getValue('admission_number');
+            const firstName = getValue('first_name');
+            const middleName = getValue('middle_name');
+            const lastName = getValue('last_name');
+            const gender = getSelectValue('gender');
+            const dateOfBirth = getValue('date_of_birth');
+            const nationality = getValue('nationality') || 'Sierra Leonean';
+            const phone = getValue('phone');
+            const address = getValue('address');
+            const classElement = document.getElementById('class_id');
+            const classValue = classElement ? classElement.value : '';
+            const classId = classValue ? Number(classValue) : null;
+            const admissionDate = getValue('admission_date');
+            const previousSchool = getValue('previous_school');
+            const parentName = getValue('parent_name') || getValue('guardian_name');
+            const parentRelationship = getSelectValue('parent_relationship') || getSelectValue('guardian_relationship');
+            const parentPhone = getValue('parent_phone') || getValue('guardian_phone');
+            const parentEmail = getValue('parent_email') || getValue('guardian_email');
+            const parentAddress = getValue('parent_address') || getValue('guardian_address');
+            const emergencyContactName = getValue('emergency_contact_name');
+            const emergencyContactPhone = getValue('emergency_contact_phone');
+            const emergencyContactRelationship = getValue('emergency_contact_relationship');
+
+            if (!admissionNumber || !firstName || !lastName || !classId) { alert('Please fill in all required fields: Admission Number, First Name, Last Name, and Class'); return; }
+
+            const formData = new FormData();
+            formData.append('admission_number', admissionNumber);
+            formData.append('first_name', firstName);
+            formData.append('middle_name', middleName || '');
+            formData.append('last_name', lastName);
+            formData.append('gender', gender || '');
+            formData.append('date_of_birth', dateOfBirth || '');
+            formData.append('nationality', nationality);
+            formData.append('phone', phone || '');
+            formData.append('address', address || '');
+            formData.append('class_id', classId);
+            formData.append('admission_date', admissionDate || '');
+            formData.append('previous_school', previousSchool || '');
+            formData.append('parent_name', parentName || '');
+            formData.append('parent_relationship', parentRelationship || '');
+            formData.append('parent_phone', parentPhone || '');
+            formData.append('parent_email', parentEmail || '');
+            formData.append('parent_address', parentAddress || '');
+            formData.append('guardian_name', parentName || '');
+            formData.append('guardian_relationship', parentRelationship || '');
+            formData.append('guardian_phone', parentPhone || '');
+            formData.append('guardian_email', parentEmail || '');
+            formData.append('guardian_address', parentAddress || '');
+            formData.append('emergency_contact_name', emergencyContactName || '');
+            formData.append('emergency_contact_phone', emergencyContactPhone || '');
+            formData.append('emergency_contact_relationship', emergencyContactRelationship || '');
+
+            const fileFields = ['student_photo', 'result_file', 'birth_certificate_file', 'testimonial_file', 'transfer_file'];
+            fileFields.forEach(fieldId => { const input = document.getElementById(fieldId); if (input && input.files && input.files[0]) { formData.append(fieldId, input.files[0]); } });
+
+            form.dataset.submitting = 'true';
+            if (message) { message.style.display = 'block'; message.className = 'info'; message.textContent = 'Submitting...'; }
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
+
+            try {
+                const response = await fetch('/api/students/register', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || `Registration failed. HTTP ${response.status}.`);
+                if (message) { message.className = 'success'; message.style.display = 'block'; message.textContent = result.message || 'Student registered successfully!'; }
+                form.reset();
+                if (classElement) classElement.value = '';
+                const preview = document.getElementById('photoPreview');
+                const previewImg = document.getElementById('photoPreviewImg');
+                if (preview) preview.style.display = 'none';
+                if (previewImg) previewImg.src = '';
+                ['resultFileName', 'birthFileName', 'testimonialFileName', 'transferFileName'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = ''; });
+                await loadStudents();
+            } catch (error) {
+                console.error('REGISTRATION ERROR:', error);
+                if (message) { message.className = 'error'; message.style.display = 'block'; message.textContent = error.message || 'Registration failed.'; }
+            } finally {
+                form.dataset.submitting = 'false';
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Registration'; }
+            }
         });
+    }
 
-        loadAcademicYears();
-        loadStudents();
-    </script>
+    let students = [];
+    let filteredStudents = [];
+
+    async function loadStudents() {
+        const table = document.getElementById('studentTable');
+        table.innerHTML = '<tr><td colspan="7" class="empty">Loading students...</td></tr>';
+        try {
+            const response = await fetch('/api/students', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            students = Array.isArray(data) ? data : [];
+            filteredStudents = [...students];
+            populateClassFilter();
+            renderStudents();
+            updateOverview();
+        } catch (error) {
+            students = []; filteredStudents = [];
+            document.getElementById('totalStudents').textContent = '0';
+            document.getElementById('activeStudents').textContent = '0';
+            document.getElementById('pendingStudents').textContent = '0';
+            document.getElementById('rejectedStudents').textContent = '0';
+            table.innerHTML = '<tr><td colspan="7" class="empty">Student records could not be loaded.</td></tr>';
+        }
+    }
+
+    function updateOverview() {
+        const total = students.length;
+        const active = students.filter(s => String(s.student_status || '').toLowerCase() === 'active').length;
+        const pending = students.filter(s => String(s.student_status || '').toLowerCase() === 'pending').length;
+        const rejected = students.filter(s => String(s.student_status || '').toLowerCase() === 'rejected').length;
+        document.getElementById('totalStudents').textContent = total;
+        document.getElementById('activeStudents').textContent = active;
+        document.getElementById('pendingStudents').textContent = pending;
+        document.getElementById('rejectedStudents').textContent = rejected;
+    }
+
+    function populateClassFilter() {
+        const select = document.getElementById('classFilter');
+        const classes = new Set();
+        students.forEach(student => { if (student.class_name) classes.add(`${student.class_name}|${student.arm || ''}`); });
+        select.innerHTML = '<option value="">All Classes</option>';
+        [...classes].sort().forEach(value => {
+            const parts = value.split('|');
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = parts[1] ? `${parts[0]} — ${parts[1]}` : parts[0];
+            select.appendChild(option);
+        });
+    }
+
+    function applyFilters() {
+        const search = document.getElementById('search').value.trim().toLowerCase();
+        const classFilter = document.getElementById('classFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        filteredStudents = students.filter(student => {
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ').toLowerCase();
+            const admissionNumber = String(student.admission_number || '').toLowerCase();
+            const matchesSearch = !search || fullName.includes(search) || admissionNumber.includes(search);
+            const studentClass = `${student.class_name || ''}|${student.arm || ''}`;
+            const matchesClass = !classFilter || studentClass === classFilter;
+            const matchesStatus = !statusFilter || student.student_status === statusFilter;
+            return matchesSearch && matchesClass && matchesStatus;
+        });
+        renderStudents();
+    }
+
+    function renderStudents() {
+        const table = document.getElementById('studentTable');
+        document.getElementById('studentCount').textContent = `${filteredStudents.length} Student${filteredStudents.length === 1 ? '' : 's'}`;
+        if (!filteredStudents.length) { table.innerHTML = '<tr><td colspan="7" class="empty">No students found.</td></tr>'; return; }
+        table.innerHTML = filteredStudents.map(student => {
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).map(escapeHtml).join(' ');
+            const className = student.class_name ? escapeHtml(student.class_name) + (student.arm ? ` — ${escapeHtml(student.arm)}` : '') : 'Not assigned';
+            const status = student.student_status || 'Not provided';
+            const statusClass = String(status).toLowerCase();
+            let actionButtons = `<button class="btn view-btn" onclick="viewStudent(${Number(student.student_id)})">View</button>`;
+            if (status === 'Rejected') actionButtons += `<button class="btn review-btn" onclick="reviewStudent(${Number(student.student_id)})">Review</button>`;
+            return `<tr><td>${display(student.admission_number)}</td><td><strong>${fullName}</strong></td><td>${display(student.gender)}</td><td>${className}</td><td>${display(student.guardian_name)}</td><td><span class="status ${escapeHtml(statusClass)}">${escapeHtml(status)}</span></td><td><div style="display:flex;gap:5px;flex-wrap:wrap;">${actionButtons}</div></td></tr>`;
+        }).join('');
+    }
+
+    function viewStudent(studentId) {
+        const student = students.find(item => Number(item.student_id) === Number(studentId));
+        if (!student) { alert('Student record not found.'); return; }
+        
+        const photoHtml = student.photo_url 
+            ? `<img src="${student.photo_url}" alt="Student" style="width:120px;height:140px;border-radius:6px;border:1px solid #ddd;object-fit:cover;display:block;">`
+            : `<div style="width:120px;height:140px;border-radius:6px;border:1px solid #ddd;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:40px;color:#9ca3af;">👤</div>`;
+
+        document.getElementById('profile').innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;grid-column:1/-1;margin-bottom:5px;">
+                ${photoHtml}
+                ${(role === 'Administrator' || role === 'Manager-Secondary') ? `<button class="edit-btn" onclick="editStudent(${Number(student.student_id)})">Edit Student</button>` : ''}
+            </div>
+
+            <div class="section-title">Personal Information</div>
+            ${field('Admission Number', student.admission_number)}
+            ${field('First Name', student.first_name)}
+            ${field('Middle Name', student.middle_name)}
+            ${field('Last Name', student.last_name)}
+            ${field('Gender', student.gender)}
+            ${field('Date of Birth', formatDateOnly(student.date_of_birth))}
+            ${field('Nationality', student.nationality)}
+            ${field('Phone', student.phone)}
+            ${field('Address', student.address)}
+
+            <div class="section-title">School Information</div>
+            ${field('Class', student.class_name ? `${student.class_name}${student.arm ? ' — ' + student.arm : ''}` : 'Not assigned')}
+            ${field('School Section', student.school_section)}
+            ${field('Admission Date', formatDateOnly(student.admission_date))}
+            ${field('Registration Date', formatDateOnly(student.registration_date))}
+            ${field('Previous School', student.previous_school)}
+            ${field('Student Status', student.student_status)}
+
+            <div class="section-title">Guardian Information</div>
+            ${field('Guardian Name', student.guardian_name)}
+            ${field('Relationship', student.guardian_relationship)}
+            ${field('Guardian Phone', student.guardian_phone)}
+            ${field('Guardian Email', student.guardian_email)}
+            ${field('Guardian Address', student.guardian_address)}
+
+            <div class="section-title">Emergency Contact</div>
+            ${field('Name', student.emergency_contact_name)}
+            ${field('Phone', student.emergency_contact_phone)}
+            ${field('Relationship', student.emergency_contact_relationship)}
+
+            <div class="section-title">Documents</div>
+            <div class="field" style="grid-column:1/-1;">
+                ${student.result_file_url ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;background:#f9fafb;"><span><strong>Result / Report Card</strong></span><a href="${student.result_file_url}" target="_blank" style="color:#2563eb;font-weight:bold;text-decoration:none;padding:5px 10px;border:1px solid #2563eb;border-radius:4px;">View</a></div>` : ''}
+                ${student.birth_certificate_url ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;background:#f9fafb;"><span><strong>Birth Certificate</strong></span><a href="${student.birth_certificate_url}" target="_blank" style="color:#2563eb;font-weight:bold;text-decoration:none;padding:5px 10px;border:1px solid #2563eb;border-radius:4px;">View</a></div>` : ''}
+                ${student.testimonial_url ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;background:#f9fafb;"><span><strong>Testimonial / Reference Letter</strong></span><a href="${student.testimonial_url}" target="_blank" style="color:#2563eb;font-weight:bold;text-decoration:none;padding:5px 10px;border:1px solid #2563eb;border-radius:4px;">View</a></div>` : ''}
+                ${student.transfer_form_url ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;background:#f9fafb;"><span><strong>Transfer Form</strong></span><a href="${student.transfer_form_url}" target="_blank" style="color:#2563eb;font-weight:bold;text-decoration:none;padding:5px 10px;border:1px solid #2563eb;border-radius:4px;">View</a></div>` : ''}
+                ${!student.result_file_url && !student.birth_certificate_url && !student.testimonial_url && !student.transfer_form_url ? '<em>No documents uploaded for this student.</em>' : ''}
+            </div>
+        `;
+        document.getElementById('studentModal').style.display = 'block';
+    }
+
+    async function reviewStudent(studentId) {
+        if (role !== 'Administrator' && role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+        const student = students.find(item => Number(item.student_id) === Number(studentId));
+        if (!student) { alert('Student record not found.'); return; }
+        await loadEditClasses();
+        document.getElementById('editStudentId').value = student.student_id;
+        document.getElementById('editAdmissionNumber').value = student.admission_number || '';
+        document.getElementById('editFirstName').value = student.first_name || '';
+        document.getElementById('editMiddleName').value = student.middle_name || '';
+        document.getElementById('editLastName').value = student.last_name || '';
+        document.getElementById('editGender').value = student.gender || '';
+        document.getElementById('editDateOfBirth').value = formatDateForInput(student.date_of_birth);
+        document.getElementById('editNationality').value = student.nationality || '';
+        document.getElementById('editPhone').value = student.phone || '';
+        document.getElementById('editAddress').value = student.address || '';
+        document.getElementById('editClassId').value = student.class_id || '';
+        document.getElementById('editAdmissionDate').value = formatDateForInput(student.admission_date);
+        document.getElementById('editPreviousSchool').value = student.previous_school || '';
+        document.getElementById('editStudentStatus').value = 'Pending';
+        document.getElementById('editGuardianName').value = student.guardian_name || '';
+        document.getElementById('editGuardianRelationship').value = student.guardian_relationship || '';
+        document.getElementById('editGuardianPhone').value = student.guardian_phone || '';
+        document.getElementById('editGuardianEmail').value = student.guardian_email || '';
+        document.getElementById('editGuardianAddress').value = student.guardian_address || '';
+        document.getElementById('editEmergencyName').value = student.emergency_contact_name || '';
+        document.getElementById('editEmergencyPhone').value = student.emergency_contact_phone || '';
+        document.getElementById('editEmergencyRelationship').value = student.emergency_contact_relationship || '';
+        
+        const editPhotoImg = document.getElementById('editPhotoImg');
+        if (editPhotoImg && student.photo_url) { editPhotoImg.src = student.photo_url; } else if (editPhotoImg) { editPhotoImg.src = ''; }
+        
+        const editDocsList = document.getElementById('editDocumentsList');
+        if (editDocsList) {
+            let docsHtml = '';
+            if (student.result_file_url) docsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;font-size:12px;"><span><strong>Result:</strong> Uploaded</span><a href="${student.result_file_url}" target="_blank" style="color:#2563eb;">View</a></div>`;
+            if (student.birth_certificate_url) docsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;font-size:12px;"><span><strong>Birth Certificate:</strong> Uploaded</span><a href="${student.birth_certificate_url}" target="_blank" style="color:#2563eb;">View</a></div>`;
+            if (student.testimonial_url) docsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;font-size:12px;"><span><strong>Testimonial:</strong> Uploaded</span><a href="${student.testimonial_url}" target="_blank" style="color:#2563eb;">View</a></div>`;
+            if (student.transfer_form_url) docsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;font-size:12px;"><span><strong>Transfer Form:</strong> Uploaded</span><a href="${student.transfer_form_url}" target="_blank" style="color:#2563eb;">View</a></div>`;
+            if (!docsHtml) docsHtml = '<em>No documents uploaded.</em>';
+            editDocsList.innerHTML = docsHtml;
+        }
+        
+        const submitBtn = document.querySelector('#editStudentForm .save-btn');
+        if (submitBtn) submitBtn.textContent = 'Resubmit for Approval';
+        
+        const form = document.getElementById('editStudentForm');
+        let hiddenInput = document.getElementById('review_flag');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.id = 'review_flag';
+            hiddenInput.value = 'true';
+            form.appendChild(hiddenInput);
+        } else {
+            hiddenInput.value = 'true';
+        }
+        
+        closeModal();
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+    async function editStudent(studentId) {
+        if (role !== 'Administrator' && role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+        const student = students.find(item => Number(item.student_id) === Number(studentId));
+        if (!student) { alert('Student record not found.'); return; }
+        await loadEditClasses();
+        document.getElementById('editStudentId').value = student.student_id;
+        document.getElementById('editAdmissionNumber').value = student.admission_number || '';
+        document.getElementById('editFirstName').value = student.first_name || '';
+        document.getElementById('editMiddleName').value = student.middle_name || '';
+        document.getElementById('editLastName').value = student.last_name || '';
+        document.getElementById('editGender').value = student.gender || '';
+        document.getElementById('editDateOfBirth').value = formatDateForInput(student.date_of_birth);
+        document.getElementById('editNationality').value = student.nationality || '';
+        document.getElementById('editPhone').value = student.phone || '';
+        document.getElementById('editAddress').value = student.address || '';
+        document.getElementById('editClassId').value = student.class_id || '';
+        document.getElementById('editAdmissionDate').value = formatDateForInput(student.admission_date);
+        document.getElementById('editPreviousSchool').value = student.previous_school || '';
+        document.getElementById('editStudentStatus').value = student.student_status || 'Active';
+        document.getElementById('editGuardianName').value = student.guardian_name || '';
+        document.getElementById('editGuardianRelationship').value = student.guardian_relationship || '';
+        document.getElementById('editGuardianPhone').value = student.guardian_phone || '';
+        document.getElementById('editGuardianEmail').value = student.guardian_email || '';
+        document.getElementById('editGuardianAddress').value = student.guardian_address || '';
+        document.getElementById('editEmergencyName').value = student.emergency_contact_name || '';
+        document.getElementById('editEmergencyPhone').value = student.emergency_contact_phone || '';
+        document.getElementById('editEmergencyRelationship').value = student.emergency_contact_relationship || '';
+        const editPhotoImg = document.getElementById('editPhotoImg');
+        if (editPhotoImg && student.photo_url) { editPhotoImg.src = student.photo_url; }
+        
+        const editDocsList = document.getElementById('editDocumentsList');
+        if (editDocsList) {
+            let docsHtml = '';
+            if (student.result_file_url) docsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;font-size:12px;"><span><strong>Result:</strong> Uploaded</span><a href="${student.result_file_url}" target="_blank" style="color:#2563eb;">View</a></div>`;
+            if (student.birth_certificate_url) docsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;font-size:12px;"><span><strong>Birth Certificate:</strong> Uploaded</span><a href="${student.birth_certificate_url}" target="_blank" style="color:#2563eb;">View</a></div>`;
+            if (student.testimonial_url) docsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;font-size:12px;"><span><strong>Testimonial:</strong> Uploaded</span><a href="${student.testimonial_url}" target="_blank" style="color:#2563eb;">View</a></div>`;
+            if (student.transfer_form_url) docsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;font-size:12px;"><span><strong>Transfer Form:</strong> Uploaded</span><a href="${student.transfer_form_url}" target="_blank" style="color:#2563eb;">View</a></div>`;
+            if (!docsHtml) docsHtml = '<em>No documents uploaded.</em>';
+            editDocsList.innerHTML = docsHtml;
+        }
+        
+        const submitBtn = document.querySelector('#editStudentForm .save-btn');
+        if (submitBtn) submitBtn.textContent = 'Save Changes';
+        
+        const hiddenInput = document.getElementById('review_flag');
+        if (hiddenInput) hiddenInput.remove();
+        
+        closeModal();
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+    async function loadEditClasses() {
+        const classSelect = document.getElementById('editClassId');
+        classSelect.innerHTML = '<option value="">Loading classes...</option>';
+        try {
+            const response = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            const data = await response.json();
+            const classes = Array.isArray(data) ? data : [];
+            classSelect.innerHTML = '<option value="">Select class</option>';
+            classes.forEach(item => { const option = document.createElement('option'); option.value = item.class_id; option.textContent = `${item.class_name}${item.arm ? ' — ' + item.arm : ''}`; classSelect.appendChild(option); });
+        } catch (error) { classSelect.innerHTML = '<option value="">Unable to load classes</option>'; }
+    }
+
+    document.getElementById('editStudentForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        if (role !== 'Administrator' && role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+        const studentId = document.getElementById('editStudentId').value;
+        const formData = new FormData();
+        formData.append('admission_number', document.getElementById('editAdmissionNumber').value.trim());
+        formData.append('first_name', document.getElementById('editFirstName').value.trim());
+        formData.append('middle_name', document.getElementById('editMiddleName').value.trim() || '');
+        formData.append('last_name', document.getElementById('editLastName').value.trim());
+        formData.append('gender', document.getElementById('editGender').value || '');
+        formData.append('date_of_birth', document.getElementById('editDateOfBirth').value || '');
+        formData.append('nationality', document.getElementById('editNationality').value.trim() || '');
+        formData.append('phone', document.getElementById('editPhone').value.trim() || '');
+        formData.append('address', document.getElementById('editAddress').value.trim() || '');
+        formData.append('class_id', document.getElementById('editClassId').value || '');
+        formData.append('admission_date', document.getElementById('editAdmissionDate').value || '');
+        formData.append('previous_school', document.getElementById('editPreviousSchool').value.trim() || '');
+        formData.append('student_status', document.getElementById('editStudentStatus').value);
+        formData.append('guardian_name', document.getElementById('editGuardianName').value.trim() || '');
+        formData.append('guardian_relationship', document.getElementById('editGuardianRelationship').value || '');
+        formData.append('guardian_phone', document.getElementById('editGuardianPhone').value.trim() || '');
+        formData.append('guardian_email', document.getElementById('editGuardianEmail').value.trim() || '');
+        formData.append('guardian_address', document.getElementById('editGuardianAddress').value.trim() || '');
+        formData.append('emergency_contact_name', document.getElementById('editEmergencyName').value.trim() || '');
+        formData.append('emergency_contact_phone', document.getElementById('editEmergencyPhone').value.trim() || '');
+        formData.append('emergency_contact_relationship', document.getElementById('editEmergencyRelationship').value.trim() || '');
+        
+        const photoInput = document.getElementById('editStudentPhoto');
+        if (photoInput && photoInput.files && photoInput.files[0]) { formData.append('student_photo', photoInput.files[0]); }
+        
+        const docFields = {
+            'editResultFile': 'result_file',
+            'editBirthCertificate': 'birth_certificate_file',
+            'editTestimonial': 'testimonial_file',
+            'editTransferForm': 'transfer_file'
+        };
+        Object.entries(docFields).forEach(([inputId, backendName]) => {
+            const input = document.getElementById(inputId);
+            if (input && input.files && input.files[0]) { formData.append(backendName, input.files[0]); }
+        });
+        
+        try {
+            const response = await fetch(`/api/students/${studentId}/update-with-photo`, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data?.message || `HTTP ${response.status}`);
+            
+            const reviewFlag = document.getElementById('review_flag')?.value;
+            if (reviewFlag === 'true') {
+                await fetch(`/api/students/${studentId}/reapprove`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+                });
+                alert('Student updated and sent for re-approval!');
+                const hiddenInput = document.getElementById('review_flag');
+                if (hiddenInput) hiddenInput.remove();
+                const submitBtn = document.querySelector('#editStudentForm .save-btn');
+                if (submitBtn) submitBtn.textContent = 'Save Changes';
+            } else {
+                alert('Student record updated successfully.');
+            }
+            closeEditModal();
+            await loadStudents();
+        } catch (error) { alert(error.message || 'Failed to update student.'); }
+    });
+
+    window.addEventListener('click', function(event) {
+        const studentModal = document.getElementById('studentModal');
+        const editModal = document.getElementById('editModal');
+        if (event.target === studentModal) closeModal();
+        if (event.target === editModal) closeEditModal();
+    });
+
+    loadAcademicYears();
+    loadStudents();
+</script>
 
 </body>
 

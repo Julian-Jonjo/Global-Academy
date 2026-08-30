@@ -28,7 +28,6 @@ async function uploadFileToSupabase(file, bucket, folder, fileName) {
     if (!file) return null;
     try {
         const filePath = `${folder}/${fileName}`;
-        console.log('Uploading to bucket:', bucket, 'path:', filePath);
         const { error } = await supabase.storage.from(bucket).upload(filePath, file.buffer, {
             contentType: file.mimetype,
             cacheControl: '3600',
@@ -38,7 +37,6 @@ async function uploadFileToSupabase(file, bucket, folder, fileName) {
             console.error('Upload error:', error.message);
             return null;
         }
-        console.log('Upload successful:', filePath);
         const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
         return urlData.publicUrl;
     } catch (error) {
@@ -51,48 +49,6 @@ const MANAGEMENT_ROLES = ['Proprietor', 'Administrator', 'Manager-Primary', 'Man
 
 // ============================================================
 // GET ALL STUDENTS (Role-filtered)
-// ============================================================
-router.get('/', authenticateToken, async (req, res) => {
-    try {
-        const userRole = req.user.role_name || '';
-        let query = supabase
-    .from('students')
-    .select(`
-        *,
-        classes!students_class_id_fkey (class_name, arm, school_section),
-        guardians!students_guardian_id_fkey (full_name, relationship, phone, email, address)
-    `)
-            .order('student_id', { ascending: false });
-
-        if (isPrimaryManager(userRole)) {
-            query = query.in('school_section', ['Nursery', 'Primary']);
-        } else if (isSecondaryManager(userRole)) {
-            query = query.in('school_section', ['JSS', 'SSS', 'Secondary']);
-        }
-
-        const { data, error } = await query;
-        if (error) throw error;
-
-        const students = (data || []).map(student => ({
-            ...student,
-            class_name: student.classes?.class_name || null,
-            arm: student.classes?.arm || null,
-            guardian_name: student.guardians?.full_name || null,
-            guardian_relationship: student.guardians?.relationship || null,
-            guardian_phone: student.guardians?.phone || null,
-            guardian_email: student.guardians?.email || null,
-            guardian_address: student.guardians?.address || null
-        }));
-
-        res.json(students);
-    } catch (error) {
-        console.error('Error loading students:', error);
-        res.status(500).json({ message: 'Failed to load students' });
-    }
-});
-
-// ============================================================
-// GET SINGLE STUDENT
 // ============================================================
 router.get('/', authenticateToken, async (req, res) => {
     try {
@@ -111,28 +67,20 @@ router.get('/', authenticateToken, async (req, res) => {
         const { data, error } = await query;
         if (error) throw error;
 
-        // Fetch all guardians separately
         const { data: guardians } = await supabase
             .from('guardians')
-            .select('guardian_id, full_name, relationship, phone, email, address');
+            .select('guardian_id, full_name, relationship, phone, email, address, emergency_contact_name, emergency_contact_phone, emergency_contact_relationship');
 
-        // Create guardians map
         const guardiansMap = {};
-        (guardians || []).forEach(g => {
-            guardiansMap[g.guardian_id] = g;
-        });
+        (guardians || []).forEach(g => { guardiansMap[g.guardian_id] = g; });
 
-        // Fetch all classes separately
         const { data: classes } = await supabase
             .from('classes')
             .select('class_id, class_name, arm, school_section');
 
         const classesMap = {};
-        (classes || []).forEach(c => {
-            classesMap[c.class_id] = c;
-        });
+        (classes || []).forEach(c => { classesMap[c.class_id] = c; });
 
-        // Combine data
         const students = (data || []).map(student => ({
             ...student,
             class_name: classesMap[student.class_id]?.class_name || null,
@@ -150,27 +98,51 @@ router.get('/', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Failed to load students' });
     }
 });
+
 // ============================================================
-// GET STUDENT DOCUMENTS
+// GET SINGLE STUDENT
 // ============================================================
-router.get('/:studentId/documents', authenticateToken, async (req, res) => {
+router.get('/:studentId', authenticateToken, async (req, res) => {
     const studentId = parseInt(req.params.studentId);
     if (Number.isNaN(studentId)) return res.status(400).json({ message: 'Invalid student ID' });
 
     try {
-        const { data, error } = await supabase
-            .from('student_documents')
+        const { data: student, error } = await supabase
+            .from('students')
             .select('*')
-            .eq('student_id', studentId);
+            .eq('student_id', studentId)
+            .single();
 
-        if (error) throw error;
+        if (error || !student) return res.status(404).json({ message: 'Student not found' });
 
-        res.json(data || []);
+        const { data: guardian } = await supabase
+            .from('guardians')
+            .select('*')
+            .eq('guardian_id', student.guardian_id)
+            .maybeSingle();
+
+        const { data: classData } = await supabase
+            .from('classes')
+            .select('class_id, class_name, arm, school_section')
+            .eq('class_id', student.class_id)
+            .maybeSingle();
+
+        res.json({
+            ...student,
+            class_name: classData?.class_name || null,
+            arm: classData?.arm || null,
+            guardian_name: guardian?.full_name || null,
+            guardian_relationship: guardian?.relationship || null,
+            guardian_phone: guardian?.phone || null,
+            guardian_email: guardian?.email || null,
+            guardian_address: guardian?.address || null
+        });
     } catch (error) {
-        console.error('Error loading documents:', error);
-        res.status(500).json({ message: 'Failed to load documents' });
+        console.error('Error getting student:', error);
+        res.status(500).json({ message: 'Failed to load student data' });
     }
 });
+
 // ============================================================
 // REGISTER STUDENT
 // ============================================================
@@ -185,9 +157,6 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
     async (req, res) => {
         try {
             const userRole = req.user.role_name || '';
-
-            console.log('BODY RECEIVED:', req.body);
-            console.log('FILES RECEIVED:', req.files ? Object.keys(req.files) : 'None');
 
             const { data: currentYear, error: yearError } = await supabase
                 .from('academic_years')
@@ -213,8 +182,6 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
             const finalGuardianPhone = guardian_phone || parent_phone || null;
             const finalGuardianEmail = guardian_email || parent_email || null;
             const finalGuardianAddress = guardian_address || parent_address || null;
-
-            console.log('Guardian fields:', { finalGuardianName, finalGuardianRelationship });
 
             if (!admission_number || !first_name || !last_name || !class_id) {
                 return res.status(400).json({ message: 'Admission number, first name, last name and class are required' });
@@ -252,7 +219,6 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
                 return res.status(409).json({ message: 'A student with this admission number already exists.' });
             }
 
-            // Create guardian
             const { data: guardian, error: guardianError } = await supabase
                 .from('guardians')
                 .insert({
@@ -266,13 +232,9 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
                 .single();
 
             if (guardianError) {
-                console.error('Guardian creation error:', guardianError);
                 return res.status(500).json({ message: 'Failed to create guardian: ' + guardianError.message });
             }
 
-            console.log('Guardian created with ID:', guardian.guardian_id);
-
-            // Upload photo
             let photoUrl = null;
             if (req.files && req.files.student_photo) {
                 const photoFile = req.files.student_photo[0];
@@ -280,18 +242,37 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
                 photoUrl = await uploadFileToSupabase(photoFile, 'student_photos', 'student-photos', fileName);
             }
 
-            // Create student
+            const documentFiles = {
+                'result_file': { folder: 'results', column: 'result_file_url' },
+                'birth_certificate_file': { folder: 'birth-certificates', column: 'birth_certificate_url' },
+                'testimonial_file': { folder: 'testimonials', column: 'testimonial_url' },
+                'transfer_file': { folder: 'transfer-forms', column: 'transfer_form_url' }
+            };
+
+            const documentUrls = {};
+
+            if (req.files) {
+                for (const [fieldName, config] of Object.entries(documentFiles)) {
+                    if (req.files[fieldName]) {
+                        const file = req.files[fieldName][0];
+                        const fileName = `student_${admission_number}_${fieldName}_${Date.now()}.${file.originalname.split('.').pop()}`;
+                        const fileUrl = await uploadFileToSupabase(file, 'student_files', config.folder, fileName);
+
+                        if (fileUrl) {
+                            documentUrls[config.column] = fileUrl;
+                        }
+                    }
+                }
+            }
+
             const { data: student, error: insertError } = await supabase
                 .from('students')
                 .insert({
-                    admission_number,
-                    first_name,
+                    admission_number, first_name,
                     middle_name: middle_name || null,
-                    last_name,
-                    gender: gender || null,
+                    last_name, gender: gender || null,
                     date_of_birth: date_of_birth || null,
-                    phone: phone || null,
-                    address: address || null,
+                    phone: phone || null, address: address || null,
                     class_id: Number(class_id),
                     guardian_id: guardian.guardian_id,
                     admission_date: admission_date || null,
@@ -304,21 +285,18 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
                     registration_date: new Date().toISOString(),
                     photo_url: photoUrl,
                     academic_year_id: currentYear.academic_year_id,
-                    school_section: section
+                    school_section: section,
+                    ...documentUrls
                 })
                 .select()
                 .single();
 
             if (insertError) {
-                console.error('Student creation error:', insertError);
                 await supabase.from('guardians').delete().eq('guardian_id', guardian.guardian_id);
                 return res.status(500).json({ message: 'Failed to create student: ' + insertError.message });
             }
 
-            console.log('Student created with ID:', student.student_id);
-
-            // UPDATE GUARDIAN with student_id
-            const { error: guardianUpdateError } = await supabase
+            await supabase
                 .from('guardians')
                 .update({
                     student_id: student.student_id,
@@ -328,31 +306,6 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
                 })
                 .eq('guardian_id', guardian.guardian_id);
 
-            if (guardianUpdateError) {
-                console.error('Guardian update error:', guardianUpdateError);
-            } else {
-                console.log('✅ Guardian updated with student_id:', student.student_id);
-            }
-
-            // Upload documents
-            const documentFields = {
-                'result_file': 'results',
-                'birth_certificate_file': 'birth-certificates',
-                'testimonial_file': 'testimonials',
-                'transfer_file': 'transfer-forms'
-            };
-
-            if (req.files) {
-                for (const [fieldName, folder] of Object.entries(documentFields)) {
-                    if (req.files[fieldName]) {
-                        const file = req.files[fieldName][0];
-                        const fileName = `student_${student.student_id}_${fieldName}_${Date.now()}.${file.originalname.split('.').pop()}`;
-                        await uploadFileToSupabase(file, 'student_files', folder, fileName);
-                    }
-                }
-            }
-
-            // Create approval record
             const { error: approvalError } = await supabase
                 .from('record_approvals')
                 .insert({
@@ -365,13 +318,10 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
                 });
 
             if (approvalError) {
-                console.error('Approval creation error:', approvalError);
                 await supabase.from('students').delete().eq('student_id', student.student_id);
                 await supabase.from('guardians').delete().eq('guardian_id', guardian.guardian_id);
                 return res.status(500).json({ message: 'Failed to create approval record' });
             }
-
-            console.log('✅ Registration complete. Student:', student.student_id, 'Guardian:', guardian.guardian_id);
 
             res.status(201).json({
                 message: 'Student registered successfully!',
@@ -391,41 +341,117 @@ router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
 );
 
 // ============================================================
-// UPDATE STUDENT
+// UPDATE STUDENT WITH PHOTO AND DOCUMENTS
+// ============================================================
+router.put('/:studentId/update-with-photo', authenticateToken, 
+    upload.fields([
+        { name: 'student_photo', maxCount: 1 },
+        { name: 'result_file', maxCount: 1 },
+        { name: 'birth_certificate_file', maxCount: 1 },
+        { name: 'testimonial_file', maxCount: 1 },
+        { name: 'transfer_file', maxCount: 1 }
+    ]), 
+    async (req, res) => {
+        const studentId = parseInt(req.params.studentId);
+        if (Number.isNaN(studentId)) return res.status(400).json({ message: 'Invalid student ID' });
+
+        try {
+            // Build student update with ONLY students table columns
+            const studentUpdate = {
+                admission_number: req.body.admission_number,
+                first_name: req.body.first_name,
+                middle_name: req.body.middle_name || null,
+                last_name: req.body.last_name,
+                gender: req.body.gender || null,
+                date_of_birth: req.body.date_of_birth || null,
+                nationality: req.body.nationality || null,
+                phone: req.body.phone || null,
+                address: req.body.address || null,
+                class_id: req.body.class_id ? Number(req.body.class_id) : null,
+                admission_date: req.body.admission_date || null,
+                previous_school: req.body.previous_school || null,
+                student_status: req.body.student_status || 'Active',
+                emergency_contact_name: req.body.emergency_contact_name || null,
+                emergency_contact_phone: req.body.emergency_contact_phone || null,
+                emergency_contact_relationship: req.body.emergency_contact_relationship || null
+            };
+
+            if (req.files && req.files.student_photo) {
+                const photoFile = req.files.student_photo[0];
+                const fileName = `student_${studentId}_${Date.now()}.jpg`;
+                const photoUrl = await uploadFileToSupabase(photoFile, 'student_photos', 'student-photos', fileName);
+                if (photoUrl) studentUpdate.photo_url = photoUrl;
+            }
+
+            const documentFiles = {
+                'result_file': { folder: 'results', column: 'result_file_url' },
+                'birth_certificate_file': { folder: 'birth-certificates', column: 'birth_certificate_url' },
+                'testimonial_file': { folder: 'testimonials', column: 'testimonial_url' },
+                'transfer_file': { folder: 'transfer-forms', column: 'transfer_form_url' }
+            };
+
+            if (req.files) {
+                for (const [fieldName, config] of Object.entries(documentFiles)) {
+                    if (req.files[fieldName]) {
+                        const file = req.files[fieldName][0];
+                        const fileName = `student_${studentId}_${fieldName}_${Date.now()}.${file.originalname.split('.').pop()}`;
+                        const fileUrl = await uploadFileToSupabase(file, 'student_files', config.folder, fileName);
+                        if (fileUrl) studentUpdate[config.column] = fileUrl;
+                    }
+                }
+            }
+
+            const { data, error } = await supabase
+                .from('students')
+                .update(studentUpdate)
+                .eq('student_id', studentId)
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            // Update guardian separately
+            const guardianName = req.body.guardian_name;
+            if (guardianName) {
+                const { data: studentData } = await supabase
+                    .from('students')
+                    .select('guardian_id')
+                    .eq('student_id', studentId)
+                    .single();
+
+                if (studentData?.guardian_id) {
+                    await supabase
+                        .from('guardians')
+                        .update({
+                            full_name: guardianName,
+                            relationship: req.body.guardian_relationship || null,
+                            phone: req.body.guardian_phone || null,
+                            email: req.body.guardian_email || null,
+                            address: req.body.guardian_address || null
+                        })
+                        .eq('guardian_id', studentData.guardian_id);
+                }
+            }
+
+            res.json({ message: 'Student updated successfully', student: data });
+        } catch (error) {
+            console.error('Update with photo error:', error);
+            res.status(500).json({ message: 'Failed to update student: ' + error.message });
+        }
+    }
+);
+
+// ============================================================
+// UPDATE STUDENT (JSON)
 // ============================================================
 router.put('/:studentId', authenticateToken, requireRoles(...MANAGEMENT_ROLES), async (req, res) => {
     const studentId = parseInt(req.params.studentId);
     if (Number.isNaN(studentId)) return res.status(400).json({ message: 'Invalid student ID' });
 
-    const {
-        admission_number, first_name, middle_name, last_name, gender,
-        date_of_birth, phone, address, class_id, admission_date,
-        student_status, nationality, previous_school,
-        emergency_contact_name, emergency_contact_phone, emergency_contact_relationship
-    } = req.body;
-
-    if (!admission_number || !first_name || !last_name) {
-        return res.status(400).json({ message: 'Admission number, first name and last name are required' });
-    }
-
     try {
         const { data: student, error: updateError } = await supabase
             .from('students')
-            .update({
-                admission_number, first_name,
-                middle_name: middle_name || null,
-                last_name, gender: gender || null,
-                date_of_birth: date_of_birth || null,
-                phone: phone || null, address: address || null,
-                class_id: class_id || null,
-                admission_date: admission_date || null,
-                student_status: student_status || 'Active',
-                nationality: nationality || null,
-                previous_school: previous_school || null,
-                emergency_contact_name: emergency_contact_name || null,
-                emergency_contact_phone: emergency_contact_phone || null,
-                emergency_contact_relationship: emergency_contact_relationship || null
-            })
+            .update(req.body)
             .eq('student_id', studentId)
             .select()
             .single();
@@ -441,25 +467,43 @@ router.put('/:studentId', authenticateToken, requireRoles(...MANAGEMENT_ROLES), 
 // ============================================================
 // RE-APPROVE STUDENT
 // ============================================================
-router.put('/:studentId/reapprove', authenticateToken, requireRoles('Administrator', 'Proprietor'), async (req, res) => {
+router.put('/:studentId/reapprove', authenticateToken, requireRoles('Administrator', 'Proprietor', 'Manager-Primary', 'Manager-Secondary'), async (req, res) => {
     const studentId = parseInt(req.params.studentId);
     if (Number.isNaN(studentId)) return res.status(400).json({ message: 'Invalid student ID' });
 
     try {
-        await supabase.from('students').update({ student_status: 'Pending' }).eq('student_id', studentId);
-        await supabase.from('record_approvals').delete().eq('record_id', studentId).eq('record_type', 'Student');
+        // Update student status to Pending
+        await supabase
+            .from('students')
+            .update({ student_status: 'Pending' })
+            .eq('student_id', studentId);
 
-        const { error: approvalError } = await supabase
+        // Update the EXISTING approval to Pending instead of deleting
+        const { error: updateApprovalError } = await supabase
             .from('record_approvals')
-            .insert({
-                record_type: 'Student',
-                record_id: studentId,
+            .update({
                 approval_status: 'Pending',
-                created_by: req.user.user_id,
+                approved_by: null,
+                approved_at: null,
+                rejection_reason: null,
                 created_at: new Date().toISOString()
-            });
+            })
+            .eq('record_id', studentId)
+            .eq('record_type', 'Student');
 
-        if (approvalError) throw approvalError;
+        if (updateApprovalError) {
+            // If no existing approval, create new one
+            const { error: insertError } = await supabase
+                .from('record_approvals')
+                .insert({
+                    record_type: 'Student',
+                    record_id: studentId,
+                    approval_status: 'Pending',
+                    created_by: req.user.user_id,
+                    created_at: new Date().toISOString()
+                });
+            if (insertError) throw insertError;
+        }
 
         res.json({ message: 'Student sent for re-approval successfully', student_id: studentId, status: 'Pending' });
     } catch (error) {

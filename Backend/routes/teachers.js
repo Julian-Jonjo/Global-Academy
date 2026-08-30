@@ -1491,5 +1491,204 @@ router.get('/:teacherId', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Failed to load teacher' });
     }
 });
+// Public teacher application - NO AUTH REQUIRED
+router.post('/apply', upload.fields([
+    { name: 'photo', maxCount: 1 },
+    { name: 'id_card', maxCount: 1 },
+    { name: 'application_letter', maxCount: 1 },
+    { name: 'certificates', maxCount: 5 }
+]), async (req, res) => {
+    try {
+        const { first_name, middle_name, last_name, gender, phone, email, address, school_section, employment_type } = req.body;
+
+        if (!first_name || !last_name || !phone) {
+            return res.status(400).json({ message: 'First name, last name and phone are required' });
+        }
+
+        // Upload photo
+        let photoUrl = null;
+        if (req.files && req.files.photo) {
+            const file = req.files.photo[0];
+            const fileName = `teacher_${Date.now()}.jpg`;
+            photoUrl = await uploadFileToSupabase(file, 'student_photos', 'teacher-photos', fileName);
+        }
+
+        // Upload ID card
+        let idCardUrl = null;
+        if (req.files && req.files.id_card) {
+            const file = req.files.id_card[0];
+            const fileName = `id_${Date.now()}.${file.originalname.split('.').pop()}`;
+            idCardUrl = await uploadFileToSupabase(file, 'student_files', 'teacher-id-cards', fileName);
+        }
+
+        // Upload application letter
+        let applicationLetterUrl = null;
+        if (req.files && req.files.application_letter) {
+            const file = req.files.application_letter[0];
+            const fileName = `letter_${Date.now()}.${file.originalname.split('.').pop()}`;
+            applicationLetterUrl = await uploadFileToSupabase(file, 'student_files', 'teacher-letters', fileName);
+        }
+
+        // Upload certificates
+        let certificatesUrl = null;
+        if (req.files && req.files.certificates && req.files.certificates.length > 0) {
+            const file = req.files.certificates[0];
+            const fileName = `cert_${Date.now()}.${file.originalname.split('.').pop()}`;
+            certificatesUrl = await uploadFileToSupabase(file, 'student_files', 'teacher-certificates', fileName);
+        }
+
+        const { data, error } = await supabase
+            .from('teacher_applications')
+            .insert({
+                first_name,
+                middle_name: middle_name || null,
+                last_name,
+                gender: gender || null,
+                phone,
+                email: email || null,
+                address: address || null,
+                school_section: school_section || 'Primary',
+                employment_type: employment_type || 'Permanent',
+                photo_url: photoUrl,
+                id_card_url: idCardUrl,
+                application_letter_url: applicationLetterUrl,
+                certificates_url: certificatesUrl,
+                status: 'Pending'
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        res.status(201).json({ message: 'Application submitted successfully!', application: data });
+    } catch (error) {
+        console.error('Teacher application error:', error);
+        res.status(500).json({ message: 'Failed to submit application: ' + error.message });
+    }
+});
+// GET ALL APPLICATIONS (Manager/Admin/Proprietor)
+router.get('/applications', authenticateToken, async (req, res) => {
+    try {
+        const userRole = req.user.role_name || '';
+        let query = supabase.from('teacher_applications').select('*').order('created_at', { ascending: false });
+        
+        // Filter by section for managers
+        if (userRole.includes('manager-primary')) {
+            query = query.in('school_section', ['Nursery', 'Primary']);
+        } else if (userRole.includes('manager-secondary')) {
+            query = query.in('school_section', ['JSS', 'SSS']);
+        }
+        
+        const { data, error } = await query;
+        if (error) throw error;
+        res.json(data || []);
+    } catch (error) {
+        console.error('Error loading applications:', error);
+        res.status(500).json({ message: 'Failed to load applications' });
+    }
+});
+
+// MANAGER REVIEWS AND SENDS TO PROPRIETOR
+router.put('/applications/:id/review', authenticateToken, requireRoles('Manager-Primary', 'Manager-Secondary', 'Administrator'), async (req, res) => {
+    try {
+        const applicationId = Number(req.params.id);
+        const { data, error } = await supabase
+            .from('teacher_applications')
+            .update({ status: 'Manager_Reviewed', reviewed_by: req.user.user_id, reviewed_at: new Date().toISOString() })
+            .eq('application_id', applicationId)
+            .select()
+            .single();
+        if (error) throw error;
+        res.json({ message: 'Application sent to Proprietor', application: data });
+    } catch (error) {
+        console.error('Error reviewing application:', error);
+        res.status(500).json({ message: 'Failed to review application' });
+    }
+});
+
+// APPROVE APPLICATION - Move to teachers table
+router.put('/applications/:id/approve', authenticateToken, requireRoles('Proprietor', 'Administrator'), async (req, res) => {
+    try {
+        const applicationId = Number(req.params.id);
+        
+        // Get application
+        const { data: application, error: fetchError } = await supabase
+            .from('teacher_applications')
+            .select('*')
+            .eq('application_id', applicationId)
+            .single();
+        if (fetchError || !application) return res.status(404).json({ message: 'Application not found' });
+        
+        // Create teacher record
+        const { data: teacher, error: teacherError } = await supabase
+            .from('teachers')
+            .insert({
+                staff_number: application.staff_number || `TEA-${Date.now()}`,
+                first_name: application.first_name,
+                middle_name: application.middle_name,
+                last_name: application.last_name,
+                gender: application.gender,
+                phone: application.phone,
+                email: application.email,
+                address: application.address,
+                school_section: application.school_section,
+                employment_type: application.employment_type,
+                teacher_status: 'Active',
+                photo_url: application.photo_url
+            })
+            .select()
+            .single();
+        
+        if (teacherError) throw teacherError;
+        
+        // Update application status
+        await supabase
+            .from('teacher_applications')
+            .update({ status: 'Approved', approved_by: req.user.user_id, approved_at: new Date().toISOString() })
+            .eq('application_id', applicationId);
+        
+        res.json({ message: 'Teacher approved and added to staff', teacher });
+    } catch (error) {
+        console.error('Error approving application:', error);
+        res.status(500).json({ message: 'Failed to approve application' });
+    }
+});
+
+// REJECT APPLICATION
+router.put('/applications/:id/reject', authenticateToken, requireRoles('Proprietor', 'Administrator', 'Manager-Primary', 'Manager-Secondary'), async (req, res) => {
+    try {
+        const applicationId = Number(req.params.id);
+        const { rejection_reason } = req.body;
+        
+        const { data, error } = await supabase
+            .from('teacher_applications')
+            .update({ status: 'Rejected', rejection_reason: rejection_reason || null, approved_by: req.user.user_id, approved_at: new Date().toISOString() })
+            .eq('application_id', applicationId)
+            .select()
+            .single();
+        if (error) throw error;
+        
+        res.json({ message: 'Application rejected', application: data });
+    } catch (error) {
+        console.error('Error rejecting application:', error);
+        res.status(500).json({ message: 'Failed to reject application' });
+    }
+});
+
+// DELETE APPLICATION
+router.delete('/applications/:id', authenticateToken, requireRoles('Proprietor', 'Administrator'), async (req, res) => {
+    try {
+        const applicationId = Number(req.params.id);
+        const { error } = await supabase
+            .from('teacher_applications')
+            .delete()
+            .eq('application_id', applicationId);
+        if (error) throw error;
+        res.json({ message: 'Application deleted' });
+    } catch (error) {
+        console.error('Error deleting application:', error);
+        res.status(500).json({ message: 'Failed to delete application' });
+    }
+});
 
 module.exports = router;

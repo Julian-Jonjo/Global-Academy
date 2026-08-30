@@ -7,868 +7,316 @@
     <title>Global Academy | Approvals</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            color: #222;
-        }
-
-        .header {
-            background: #1f2937;
-            color: white;
-            padding: 18px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 22px;
-        }
-
-        .user-info {
-            font-size: 14px;
-            text-align: right;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 25px auto;
-            padding: 0 20px;
-        }
-
-        .page-title {
-            margin-bottom: 20px;
-        }
-
-        .page-title h2 {
-            margin: 0 0 6px;
-        }
-
-        .page-title p {
-            margin: 0;
-            color: #6b7280;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #1f2937;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
-            border-left: 4px solid #1f2937;
-        }
-
-        .stat-card.pending {
-            border-left-color: #f59e0b;
-        }
-
-        .stat-card.approved {
-            border-left-color: #16a34a;
-        }
-
-        .stat-card.rejected {
-            border-left-color: #dc2626;
-        }
-
-        .stat-number {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 5px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .card-header h3 {
-            margin: 0;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #f9fafb;
-            text-align: left;
-            padding: 12px 10px;
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #6b7280;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 13px;
-            vertical-align: middle;
-        }
-
-        tr:hover td {
-            background: #f9fafb;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-approved {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 6px;
-            padding: 8px 14px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .btn-approve {
-            background: #16a34a;
-            color: white;
-        }
-
-        .btn-approve:hover {
-            background: #15803d;
-        }
-
-        .btn-reject {
-            background: #dc2626;
-            color: white;
-        }
-
-        .btn-reject:hover {
-            background: #b91c1c;
-        }
-
-        .btn-view {
-            background: #1f2937;
-            color: white;
-        }
-
-        .btn-view:hover {
-            background: #111827;
-        }
-
-        .btn-primary {
-            background: #1f2937;
-            color: white;
-            padding: 10px 18px;
-        }
-
-        .btn-primary:hover {
-            background: #111827;
-        }
-
-        .action-group {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            overflow-y: auto;
-        }
-
-        .modal-content {
-            background: white;
-            max-width: 700px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 10px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-        }
-
-        .close {
-            font-size: 28px;
-            cursor: pointer;
-            color: #6b7280;
-        }
-
-        .close:hover {
-            color: #111;
-        }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .detail-item {
-            padding: 10px;
-            background: #f9fafb;
-            border-radius: 6px;
-        }
-
-        .detail-item.full {
-            grid-column: 1 / -1;
-        }
-
-        .detail-label {
-            font-size: 11px;
-            color: #6b7280;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .detail-value {
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
-        .reject-reason {
-            margin-top: 15px;
-        }
-
-        .reject-reason textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            min-height: 80px;
-            font-family: inherit;
-            resize: vertical;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 700px) {
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .detail-item.full {
-                grid-column: auto;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .modal-content {
-                margin: 20px;
-                padding: 20px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; }
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+        .page-title { margin-bottom: 20px; }
+        .page-title h2 { margin: 0 0 6px; color: #1f2937; }
+        .page-title p { margin: 0; color: #6b7280; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; margin-bottom: 20px; }
+        .sector-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 25px; }
+        .sector-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+        .sector-card.primary { border-top: 4px solid #166534; }
+        .sector-card.secondary { border-top: 4px solid #1a3c6e; }
+        .sector-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .sector-header h3 { margin: 0; }
+        .sector-count { font-size: 28px; font-weight: bold; color: #1a3c6e; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f9fafb; text-align: left; padding: 10px; font-size: 11px; text-transform: uppercase; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
+        td { padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+        tr:hover td { background: #f9fafb; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .btn { border: none; border-radius: 5px; padding: 7px 12px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        .btn-approve { background: #16a34a; color: white; }
+        .btn-reject { background: #dc2626; color: white; }
+        .btn-view { background: #1f2937; color: white; }
+        .action-group { display: flex; gap: 5px; flex-wrap: wrap; }
+        .empty { text-align: center; padding: 30px; color: #6b7280; }
+        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        @media (max-width: 900px) { .sector-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 
 <body>
 
     <header class="header">
-        <h1>GLOBAL ACADEMY — Approvals</h1>
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>Approvals Management</p>
+            </div>
+        </div>
         <div id="userInfo" class="user-info"></div>
     </header>
 
     <main class="container">
-
         <div class="page-title">
             <h2>Registration Approvals</h2>
-            <p>Review and approve pending student registrations.</p>
+            <p>Review and approve pending student registrations by school sector.</p>
         </div>
 
-        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
 
-        <!-- Stats -->
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card pending">
-                <div class="stat-number" id="pendingCount">0</div>
-                <div class="stat-label">Pending Approvals</div>
+        <div class="sector-grid">
+            <!-- PRIMARY SECTOR -->
+            <div class="sector-card primary">
+                <div class="sector-header">
+                    <h3>Primary School</h3>
+                    <span class="sector-count" id="primaryCount">0</span>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Admission No.</th>
+                                <th>Student Name</th>
+                                <th>Class</th>
+                                <th>Guardian</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="primaryTable">
+                            <tr><td colspan="5" class="empty">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="stat-card approved">
-                <div class="stat-number" id="approvedCount">0</div>
-                <div class="stat-label">Approved</div>
-            </div>
-            <div class="stat-card rejected">
-                <div class="stat-number" id="rejectedCount">0</div>
-                <div class="stat-label">Rejected</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalCount">0</div>
-                <div class="stat-label">Total Registrations</div>
+
+            <!-- SECONDARY SECTOR -->
+            <div class="sector-card secondary">
+                <div class="sector-header">
+                    <h3>Secondary School</h3>
+                    <span class="sector-count" id="secondaryCount">0</span>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Admission No.</th>
+                                <th>Student Name</th>
+                                <th>Class</th>
+                                <th>Guardian</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="secondaryTable">
+                            <tr><td colspan="5" class="empty">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
-        <!-- Approvals Table -->
-        <div class="card">
-            <div class="card-header">
-                <h3>Pending Registrations</h3>
-                <button class="btn btn-primary" onclick="loadApprovals()">Refresh</button>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Admission No.</th>
-                            <th>Student Name</th>
-                            <th>Class</th>
-                            <th>Guardian</th>
-                            <th>Submitted</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="approvalsTable">
-                        <tr>
-                            <td colspan="7" class="empty">Loading approvals...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </main>
 
-    <!-- =========================================================
-         VIEW DETAILS MODAL
-    ========================================================= -->
-    <div id="detailsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Registration Details</h2>
-                <span class="close" onclick="closeDetailsModal()">&times;</span>
+    <!-- DETAIL VIEW MODAL -->
+    <div id="detailModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.55); overflow-y:auto;">
+        <div style="background:white; max-width:800px; margin:50px auto; padding:30px; border-radius:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="margin:0;">Student Details</h2>
+                <span onclick="closeDetailModal()" style="font-size:28px; cursor:pointer;">&times;</span>
             </div>
-
-            <div id="detailsContent">
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">Admission Number</div>
-                        <div class="detail-value" id="detailAdmission">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Student Name</div>
-                        <div class="detail-value" id="detailName">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Gender</div>
-                        <div class="detail-value" id="detailGender">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Date of Birth</div>
-                        <div class="detail-value" id="detailDOB">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Class</div>
-                        <div class="detail-value" id="detailClass">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Previous School</div>
-                        <div class="detail-value" id="detailPrevious">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Guardian Name</div>
-                        <div class="detail-value" id="detailGuardian">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Guardian Relationship</div>
-                        <div class="detail-value" id="detailRelationship">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Guardian Phone</div>
-                        <div class="detail-value" id="detailGuardianPhone">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Guardian Email</div>
-                        <div class="detail-value" id="detailGuardianEmail">-</div>
-                    </div>
-                    <div class="detail-item full">
-                        <div class="detail-label">Guardian Address</div>
-                        <div class="detail-value" id="detailGuardianAddress">-</div>
-                    </div>
-                    <div class="detail-item full">
-                        <div class="detail-label">Submitted By</div>
-                        <div class="detail-value" id="detailSubmittedBy">-</div>
-                    </div>
-                    <div class="detail-item full">
-                        <div class="detail-label">Submitted At</div>
-                        <div class="detail-value" id="detailSubmittedAt">-</div>
-                    </div>
-                </div>
-
-                <div class="reject-reason" id="rejectReasonContainer" style="display:none;">
-                    <label for="rejectReason"><strong>Rejection Reason *</strong></label>
-                    <textarea id="rejectReason" placeholder="Please provide a reason for rejection..."></textarea>
-                </div>
-
-                <div class="modal-actions" id="modalActions">
-                    <button class="btn btn-approve" onclick="approveRegistration()">✅ Approve</button>
-                    <button class="btn btn-reject" onclick="showRejectReason()">❌ Reject</button>
-                    <button class="btn btn-view" onclick="closeDetailsModal()">Close</button>
-                </div>
-            </div>
+            <div id="detailContent"></div>
         </div>
     </div>
 
-    <script>
-        // =========================================================
-        // AUTHENTICATION
-        // =========================================================
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
-        const token = sessionStorage.getItem('authToken');
-        const userData = sessionStorage.getItem('user');
+<script>
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
 
-        if (!token || !userData) {
-            window.location.href = 'index.html';
+    const user = JSON.parse(userData);
+    const allowedRoles = ['Administrator', 'Proprietor'];
+    if (!allowedRoles.includes(user.role_name)) {
+        alert('You do not have permission to access this page.');
+        window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('userInfo').textContent = `${user.full_name || 'User'} (${user.role_name})`;
+
+    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+    let allApprovals = [];
+
+    async function loadApprovals() {
+        try {
+            const response = await fetch('/api/approvals/pending', {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!response.ok) throw new Error('Failed to load approvals');
+            const data = await response.json();
+            allApprovals = Array.isArray(data) ? data : [];
+            renderSectors();
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('primaryTable').innerHTML = '<tr><td colspan="5" class="empty">Error loading approvals</td></tr>';
+            document.getElementById('secondaryTable').innerHTML = '<tr><td colspan="5" class="empty">Error loading approvals</td></tr>';
         }
+    }
 
-        const user = JSON.parse(userData);
+    function renderSectors() {
+        const primary = allApprovals.filter(a => ['Nursery', 'Primary'].includes(a.school_section));
+        const secondary = allApprovals.filter(a => ['JSS', 'SSS', 'Secondary'].includes(a.school_section));
 
-        // Check if user has permission (Administrator or Proprietor)
-        const allowedRoles = ['Administrator', 'Proprietor'];
-        if (!allowedRoles.includes(user.role_name)) {
-            alert('You do not have permission to access this page.');
-            window.location.href = 'dashboard.html';
+        document.getElementById('primaryCount').textContent = primary.length;
+        document.getElementById('secondaryCount').textContent = secondary.length;
+
+        renderTable('primaryTable', primary);
+        renderTable('secondaryTable', secondary);
+    }
+
+    function renderTable(tableId, approvals) {
+        const table = document.getElementById(tableId);
+        if (!approvals.length) {
+            table.innerHTML = '<tr><td colspan="5" class="empty">No pending approvals 🎉</td></tr>';
+            return;
         }
+        table.innerHTML = approvals.map(a => {
+            const fullName = [a.first_name, a.middle_name, a.last_name].filter(Boolean).join(' ') || 'Unknown';
+            const className = [a.class_name, a.arm].filter(Boolean).join(' ') || 'N/A';
+            return `<tr>
+                <td><strong>${escapeHtml(a.admission_number || 'N/A')}</strong></td>
+                <td>${escapeHtml(fullName)}</td>
+                <td>${escapeHtml(className)}</td>
+                <td>${escapeHtml(a.guardian_name || 'N/A')}</td>
+                <td><div class="action-group">
+                    <button class="btn btn-view" onclick="viewDetails(${a.approval_id})">View</button>
+                    <button class="btn btn-approve" onclick="approveRecord(${a.approval_id})">Approve</button>
+                    <button class="btn btn-reject" onclick="rejectRecord(${a.approval_id})">Reject</button>
+                </div></td>
+            </tr>`;
+        }).join('');
+    }
 
-        document.getElementById('userInfo').textContent =
-            `${user.full_name || 'User'} (${user.role_name})`;
+    async function viewDetails(approvalId) {
+        const approval = allApprovals.find(a => a.approval_id === approvalId);
+        if (!approval) return;
 
-        // =========================================================
-        // GLOBAL VARIABLES
-        // =========================================================
+        try {
+            const response = await fetch(`/api/students/${approval.record_id}`, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!response.ok) throw new Error('Failed to load student details');
+            const student = await response.json();
 
-        let approvals = [];
-        let currentApprovalId = null;
-        let currentStudentId = null;
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ');
+            const className = [student.class_name, student.arm].filter(Boolean).join(' ');
 
-        // =========================================================
-        // LOAD APPROVALS
-        // =========================================================
+            document.getElementById('detailContent').innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
+                    ${student.photo_url ? `<img src="${student.photo_url}" style="width:120px;height:140px;border-radius:6px;border:1px solid #ddd;object-fit:cover;">` : `<div style="width:120px;height:140px;border-radius:6px;border:1px solid #ddd;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:40px;color:#9ca3af;">👤</div>`}
+                </div>
 
-        async function loadApprovals() {
-            const table = document.getElementById('approvalsTable');
-            table.innerHTML = '<tr><td colspan="7" class="empty">Loading approvals...</td></tr>';
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;">
+                    <div style="grid-column:1/-1;border-bottom:1px solid #ddd;font-weight:bold;padding-bottom:5px;">Personal Information</div>
+                    <div><strong>Admission Number:</strong> ${escapeHtml(student.admission_number || '-')}</div>
+                    <div><strong>Full Name:</strong> ${escapeHtml(fullName || '-')}</div>
+                    <div><strong>Gender:</strong> ${escapeHtml(student.gender || '-')}</div>
+                    <div><strong>Date of Birth:</strong> ${student.date_of_birth || '-'}</div>
+                    <div><strong>Nationality:</strong> ${escapeHtml(student.nationality || '-')}</div>
+                    <div><strong>Phone:</strong> ${escapeHtml(student.phone || '-')}</div>
+                    <div style="grid-column:1/-1;"><strong>Address:</strong> ${escapeHtml(student.address || '-')}</div>
 
-            try {
-                const response = await fetch('/api/approvals/pending', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                    <div style="grid-column:1/-1;border-bottom:1px solid #ddd;font-weight:bold;padding-bottom:5px;margin-top:10px;">School Information</div>
+                    <div><strong>Class:</strong> ${escapeHtml(className || '-')}</div>
+                    <div><strong>School Section:</strong> ${escapeHtml(student.school_section || '-')}</div>
+                    <div><strong>Admission Date:</strong> ${student.admission_date || '-'}</div>
+                    <div><strong>Previous School:</strong> ${escapeHtml(student.previous_school || '-')}</div>
+                    <div><strong>Status:</strong> ${escapeHtml(student.student_status || '-')}</div>
 
-                if (!response.ok) {
-                    throw new Error('Failed to load approvals');
-                }
+                    <div style="grid-column:1/-1;border-bottom:1px solid #ddd;font-weight:bold;padding-bottom:5px;margin-top:10px;">Guardian Information</div>
+                    <div><strong>Guardian Name:</strong> ${escapeHtml(student.guardian_name || '-')}</div>
+                    <div><strong>Relationship:</strong> ${escapeHtml(student.guardian_relationship || '-')}</div>
+                    <div><strong>Guardian Phone:</strong> ${escapeHtml(student.guardian_phone || '-')}</div>
+                    <div><strong>Guardian Email:</strong> ${escapeHtml(student.guardian_email || '-')}</div>
+                    <div style="grid-column:1/-1;"><strong>Guardian Address:</strong> ${escapeHtml(student.guardian_address || '-')}</div>
+                                        <div style="grid-column:1/-1;border-bottom:1px solid #ddd;font-weight:bold;padding-bottom:5px;margin-top:10px;">Emergency Contact</div>
+                    <div><strong>Contact Name:</strong> ${escapeHtml(student.emergency_contact_name || '-')}</div>
+                    <div><strong>Contact Phone:</strong> ${escapeHtml(student.emergency_contact_phone || '-')}</div>
+                    <div style="grid-column:1/-1;"><strong>Relationship:</strong> ${escapeHtml(student.emergency_contact_relationship || '-')}</div>
 
-                const data = await response.json();
-                approvals = Array.isArray(data) ? data : [];
+                    <div style="grid-column:1/-1;border-bottom:1px solid #ddd;font-weight:bold;padding-bottom:5px;margin-top:10px;">Documents</div>
+                    <div style="grid-column:1/-1;">
+                        ${student.result_file_url ? `<div style="display:flex;justify-content:space-between;padding:8px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;"><span><strong>Result / Report Card</strong></span><a href="${student.result_file_url}" target="_blank" style="color:#2563eb;">View</a></div>` : ''}
+                        ${student.birth_certificate_url ? `<div style="display:flex;justify-content:space-between;padding:8px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;"><span><strong>Birth Certificate</strong></span><a href="${student.birth_certificate_url}" target="_blank" style="color:#2563eb;">View</a></div>` : ''}
+                        ${student.testimonial_url ? `<div style="display:flex;justify-content:space-between;padding:8px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;"><span><strong>Testimonial</strong></span><a href="${student.testimonial_url}" target="_blank" style="color:#2563eb;">View</a></div>` : ''}
+                        ${student.transfer_form_url ? `<div style="display:flex;justify-content:space-between;padding:8px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:5px;"><span><strong>Transfer Form</strong></span><a href="${student.transfer_form_url}" target="_blank" style="color:#2563eb;">View</a></div>` : ''}
+                        ${!student.result_file_url && !student.birth_certificate_url && !student.testimonial_url && !student.transfer_form_url ? '<em>No documents uploaded.</em>' : ''}
+                    </div>
+                </div>
 
-                // Update stats
-                updateStats();
+                <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+                    <button class="btn btn-approve" onclick="approveRecord(${approval.approval_id})">✅ Approve</button>
+                    <button class="btn btn-reject" onclick="rejectRecord(${approval.approval_id})">❌ Reject</button>
+                    <button class="btn btn-view" onclick="closeDetailModal()">Close</button>
+                </div>
+            `;
 
-                // Render table
-                renderApprovals();
-
-            } catch (error) {
-                console.error('Error loading approvals:', error);
-                table.innerHTML = `<tr><td colspan="7" class="empty">Error loading approvals. Please try again.</td></tr>`;
-            }
+            document.getElementById('detailModal').style.display = 'block';
+        } catch (error) {
+            alert('Error loading details: ' + error.message);
         }
+    }
 
-        // =========================================================
-        // UPDATE STATS
-        // =========================================================
+    function closeDetailModal() {
+        document.getElementById('detailModal').style.display = 'none';
+    }
 
-        function updateStats() {
-            const pending = approvals.filter(a => a.approval_status === 'Pending').length;
-            const approved = approvals.filter(a => a.approval_status === 'Approved').length;
-            const rejected = approvals.filter(a => a.approval_status === 'Rejected').length;
+    async function approveRecord(approvalId) {
+        if (!confirm('Approve this registration?')) return;
+        try {
+            const response = await fetch(`/api/approvals/${approvalId}/approve`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ approval_notes: 'Approved' })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed to approve');
+            alert('✅ Approved!');
+            closeDetailModal();
+            loadApprovals();
+        } catch (error) { alert('Error: ' + error.message); }
+    }
 
-            document.getElementById('pendingCount').textContent = pending;
-            document.getElementById('approvedCount').textContent = approved;
-            document.getElementById('rejectedCount').textContent = rejected;
-            document.getElementById('totalCount').textContent = approvals.length;
-        }
+    async function rejectRecord(approvalId) {
+        const reason = prompt('Rejection reason:');
+        if (!reason || !reason.trim()) { alert('Reason required.'); return; }
+        try {
+            const response = await fetch(`/api/approvals/${approvalId}/reject`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rejection_reason: reason.trim() })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed to reject');
+            alert('❌ Rejected.');
+            closeDetailModal();
+            loadApprovals();
+        } catch (error) { alert('Error: ' + error.message); }
+    }
 
-        // =========================================================
-        // RENDER APPROVALS
-        // =========================================================
+    window.addEventListener('click', function(event) {
+        const detailModal = document.getElementById('detailModal');
+        if (event.target === detailModal) closeDetailModal();
+    });
 
-        function renderApprovals() {
-            const table = document.getElementById('approvalsTable');
-
-            // Filter to show pending only
-            const pendingApprovals = approvals.filter(a => a.approval_status === 'Pending');
-
-            if (pendingApprovals.length === 0) {
-                table.innerHTML = '<tr><td colspan="7" class="empty">No pending approvals. 🎉</td></tr>';
-                return;
-            }
-
-            table.innerHTML = pendingApprovals.map(approval => {
-                const fullName = [approval.first_name, approval.middle_name, approval.last_name]
-                    .filter(Boolean).join(' ');
-
-                const submittedDate = approval.created_at ? new Date(approval.created_at).toLocaleDateString() : '-';
-
-                return `
-                        <tr>
-                            <td><strong>${escapeHtml(approval.admission_number || '-')}</strong></td>
-                            <td>${escapeHtml(fullName || '-')}</td>
-                            <td>${escapeHtml(approval.class_name || '-')} ${escapeHtml(approval.arm || '')}</td>
-                            <td>${escapeHtml(approval.guardian_name || '-')}</td>
-                            <td>${submittedDate}</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
-                            <td>
-                                <div class="action-group">
-                                    <button class="btn btn-view" onclick="viewApproval(${approval.approval_id})">View</button>
-                                    <button class="btn btn-approve" onclick="approveDirect(${approval.approval_id})">Approve</button>
-                                    <button class="btn btn-reject" onclick="rejectDirect(${approval.approval_id})">Reject</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-            }).join('');
-        }
-
-        // =========================================================
-        // VIEW APPROVAL DETAILS
-        // =========================================================
-
-        async function viewApproval(approvalId) {
-            const approval = approvals.find(a => a.approval_id === approvalId);
-            if (!approval) {
-                alert('Approval record not found.');
-                return;
-            }
-
-            currentApprovalId = approvalId;
-            currentStudentId = approval.record_id;
-
-            // Populate details
-            const fullName = [approval.first_name, approval.middle_name, approval.last_name]
-                .filter(Boolean).join(' ');
-
-            document.getElementById('detailAdmission').textContent = approval.admission_number || '-';
-            document.getElementById('detailName').textContent = fullName || '-';
-            document.getElementById('detailGender').textContent = approval.gender || '-';
-            document.getElementById('detailDOB').textContent = approval.date_of_birth || '-';
-            document.getElementById('detailClass').textContent = `${approval.class_name || ''} ${approval.arm || ''}`.trim() ||
-            '-';
-            document.getElementById('detailPrevious').textContent = approval.previous_school || '-';
-            document.getElementById('detailGuardian').textContent = approval.guardian_name || '-';
-            document.getElementById('detailRelationship').textContent = approval.guardian_relationship || '-';
-            document.getElementById('detailGuardianPhone').textContent = approval.guardian_phone || '-';
-            document.getElementById('detailGuardianEmail').textContent = approval.guardian_email || '-';
-            document.getElementById('detailGuardianAddress').textContent = approval.guardian_address || '-';
-            document.getElementById('detailSubmittedBy').textContent = approval.created_by_name || 'Unknown';
-            document.getElementById('detailSubmittedAt').textContent = approval.created_at ?
-                new Date(approval.created_at).toLocaleString() : '-';
-
-            // Hide reject reason
-            document.getElementById('rejectReasonContainer').style.display = 'none';
-            document.getElementById('rejectReason').value = '';
-
-            // Show modal
-            document.getElementById('detailsModal').style.display = 'block';
-        }
-
-        // =========================================================
-        // APPROVE DIRECT
-        // =========================================================
-
-        async function approveDirect(approvalId) {
-            if (!confirm('Are you sure you want to approve this registration?')) return;
-
-            try {
-                const response = await fetch(`/api/approvals/${approvalId}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ notes: 'Approved by administrator.' })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to approve.');
-                }
-
-                alert('✅ Registration approved successfully!');
-                loadApprovals();
-
-            } catch (error) {
-                console.error('Approval error:', error);
-                alert('Error: ' + error.message);
-            }
-        }
-
-        // =========================================================
-        // REJECT DIRECT
-        // =========================================================
-
-        async function rejectDirect(approvalId) {
-            const reason = prompt('Please provide a reason for rejection:');
-            if (reason === null) return; // User cancelled
-            if (!reason.trim()) {
-                alert('A reason is required for rejection.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/approvals/${approvalId}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ reason: reason.trim() })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to reject.');
-                }
-
-                alert('❌ Registration rejected.');
-                loadApprovals();
-
-            } catch (error) {
-                console.error('Rejection error:', error);
-                alert('Error: ' + error.message);
-            }
-        }
-
-        // =========================================================
-        // APPROVE FROM MODAL
-        // =========================================================
-
-        async function approveRegistration() {
-            if (!currentApprovalId) {
-                alert('No approval selected.');
-                return;
-            }
-
-            if (!confirm('Are you sure you want to approve this registration?')) return;
-
-            try {
-                const response = await fetch(`/api/approvals/${currentApprovalId}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ notes: 'Approved by administrator.' })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to approve.');
-                }
-
-                alert('✅ Registration approved successfully!');
-                closeDetailsModal();
-                loadApprovals();
-
-            } catch (error) {
-                console.error('Approval error:', error);
-                alert('Error: ' + error.message);
-            }
-        }
-
-        // =========================================================
-        // SHOW REJECT REASON
-        // =========================================================
-
-        function showRejectReason() {
-            document.getElementById('rejectReasonContainer').style.display = 'block';
-            document.getElementById('rejectReason').focus();
-        }
-
-        // =========================================================
-        // REJECT FROM MODAL
-        // =========================================================
-
-        async function rejectRegistration() {
-            const reason = document.getElementById('rejectReason').value.trim();
-
-            if (!reason) {
-                alert('Please provide a reason for rejection.');
-                return;
-            }
-
-            if (!currentApprovalId) {
-                alert('No approval selected.');
-                return;
-            }
-
-            if (!confirm('Are you sure you want to reject this registration?')) return;
-
-            try {
-                const response = await fetch(`/api/approvals/${currentApprovalId}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ reason: reason })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to reject.');
-                }
-
-                alert('❌ Registration rejected.');
-                closeDetailsModal();
-                loadApprovals();
-
-            } catch (error) {
-                console.error('Rejection error:', error);
-                alert('Error: ' + error.message);
-            }
-        }
-
-        // =========================================================
-        // CLOSE MODAL
-        // =========================================================
-
-        function closeDetailsModal() {
-            document.getElementById('detailsModal').style.display = 'none';
-            document.getElementById('rejectReasonContainer').style.display = 'none';
-            document.getElementById('rejectReason').value = '';
-            currentApprovalId = null;
-            currentStudentId = null;
-        }
-
-        // =========================================================
-        // ESCAPE HTML
-        // =========================================================
-
-        function escapeHtml(value) {
-            if (value === null || value === undefined) return '';
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        // =========================================================
-        // CLOSE MODAL ON OUTSIDE CLICK
-        // =========================================================
-
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('detailsModal');
-            if (event.target === modal) {
-                closeDetailsModal();
-            }
-        });
-
-        // =========================================================
-        // INITIALIZE
-        // =========================================================
-
-        loadApprovals();
-    </script>
+    loadApprovals();
+</script>
 
 </body>
 

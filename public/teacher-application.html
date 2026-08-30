@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Teacher Application</title>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
+        .header { background: #1a3c6e; color: white; padding: 20px 30px; position: sticky; top: 0; z-index: 100; text-align: center; }
+        .header h1 { margin: 0; font-size: 22px; }
+        .header p { margin: 5px 0 0; font-size: 13px; color: #a0c4ff; }
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+        .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 3px 15px rgba(0,0,0,0.08); }
+        .section-title { margin-top: 25px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #1a3c6e; font-weight: bold; font-size: 16px; color: #1a3c6e; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full { grid-column: 1/-1; }
+        .form-group label { font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #374151; }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .file-hint { font-size: 11px; color: #6b7280; margin-top: 4px; }
+        .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+        .submit-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 12px 25px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .submit-btn:hover { background: #153158; }
+        #message { margin-top: 20px; padding: 12px; border-radius: 6px; display: none; }
+        .success { background: #dcfce7; color: #166534; }
+        .error { background: #fee2e2; color: #991b1b; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>GLOBAL EDUCATION ACADEMY</h1>
+        <p>Teacher Application Form</p>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2 style="margin-top:0;">Apply for Teaching Position</h2>
+            <p style="color:#6b7280;">Complete the form below. Your application will be reviewed by the school management.</p>
+
+            <form id="applicationForm" enctype="multipart/form-data">
+                <div class="section-title">Personal Information</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Passport Photo</label>
+                        <input type="file" id="photo" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" id="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name</label>
+                        <input type="text" id="middle_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" id="last_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="gender">
+                            <option value="">Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email">
+                    </div>
+                    <div class="form-group full">
+                        <label>Address</label>
+                        <textarea id="address"></textarea>
+                    </div>
+                </div>
+
+                <div class="section-title">Position Details</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>School Section *</label>
+                        <select id="school_section" required>
+                            <option value="">Select section</option>
+                            <option value="Nursery">Nursery</option>
+                            <option value="Primary">Primary</option>
+                            <option value="JSS">Junior Secondary (JSS)</option>
+                            <option value="SSS">Senior Secondary (SSS)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Employment Type</label>
+                        <select id="employment_type">
+                            <option value="Permanent">Permanent</option>
+                            <option value="Part Time">Part Time</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title">Documents</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>National ID Card / Passport *</label>
+                        <input type="file" id="id_card" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <span class="file-hint">PDF, JPG, or PNG</span>
+                    </div>
+                    <div class="form-group full">
+                        <label>Application Letter *</label>
+                        <input type="file" id="application_letter" accept=".pdf,.doc,.docx" required>
+                        <span class="file-hint">PDF or Word document</span>
+                    </div>
+                    <div class="form-group full">
+                        <label>Certificates / Qualifications</label>
+                        <input type="file" id="certificates" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                        <span class="file-hint">PDF, JPG, or PNG (multiple files allowed)</span>
+                    </div>
+                </div>
+
+                <div id="message"></div>
+
+                <div class="actions">
+                    <button type="submit" class="submit-btn">Submit Application</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+<script>
+    document.getElementById('applicationForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const message = document.getElementById('message');
+        const submitBtn = this.querySelector('.submit-btn');
+        
+        const formData = new FormData();
+        formData.append('first_name', document.getElementById('first_name').value.trim());
+        formData.append('middle_name', document.getElementById('middle_name').value.trim());
+        formData.append('last_name', document.getElementById('last_name').value.trim());
+        formData.append('gender', document.getElementById('gender').value);
+        formData.append('phone', document.getElementById('phone').value.trim());
+        formData.append('email', document.getElementById('email').value.trim());
+        formData.append('address', document.getElementById('address').value.trim());
+        formData.append('school_section', document.getElementById('school_section').value);
+        formData.append('employment_type', document.getElementById('employment_type').value);
+        
+        if (document.getElementById('photo').files[0]) formData.append('photo', document.getElementById('photo').files[0]);
+        if (document.getElementById('id_card').files[0]) formData.append('id_card', document.getElementById('id_card').files[0]);
+        if (document.getElementById('application_letter').files[0]) formData.append('application_letter', document.getElementById('application_letter').files[0]);
+        
+        const certificateFiles = document.getElementById('certificates').files;
+        for (let i = 0; i < certificateFiles.length; i++) {
+            formData.append('certificates', certificateFiles[i]);
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        
+        try {
+            const response = await fetch('/api/teachers/apply', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            
+            if (!response.ok) throw new Error(result.message || 'Failed to submit');
+            
+            message.textContent = 'Application submitted successfully! We will contact you shortly.';
+            message.className = 'success';
+            message.style.display = 'block';
+            this.reset();
+        } catch (error) {
+            message.textContent = error.message;
+            message.className = 'error';
+            message.style.display = 'block';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+        }
+    });
+</script>
+
+</body>
+
+</html>

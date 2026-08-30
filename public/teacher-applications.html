@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Teacher Applications</title>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; }
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-header h2 { margin: 0 0 6px 0; color: #1f2937; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .tabs { display: flex; gap: 5px; background: white; padding: 8px; border-radius: 10px; margin-bottom: 20px; }
+        .tab-btn { border: none; background: transparent; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .tab-btn.active { background: #1a3c6e; color: white; }
+        .card { background: white; border-radius: 10px; padding: 22px; box-shadow: 0 3px 15px rgba(0,0,0,0.07); }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+        th { background: #f9fafb; text-align: left; padding: 12px 10px; font-size: 11px; text-transform: uppercase; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
+        td { padding: 12px 10px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+        tr:hover td { background: #f9fafb; }
+        .status { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-reviewed { background: #dbeafe; color: #1e40af; }
+        .status-approved { background: #dcfce7; color: #166534; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .action-group { display: flex; gap: 5px; flex-wrap: wrap; }
+        .action-btn { border: none; border-radius: 5px; padding: 7px 10px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .view-btn { background: #1f2937; color: white; }
+        .approve-btn { background: #16a34a; color: white; }
+        .reject-btn { background: #dc2626; color: white; }
+        .delete-btn { background: #991b1b; color: white; }
+        .empty { text-align: center; padding: 30px; color: #6b7280; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); padding: 20px; overflow: auto; z-index: 1000; }
+        .modal-content { background: white; max-width: 700px; margin: 40px auto; border-radius: 10px; padding: 25px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-btn { border: none; background: none; font-size: 24px; cursor: pointer; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .detail-item { padding: 10px; background: #f9fafb; border-radius: 6px; }
+        .detail-label { font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: bold; }
+        .detail-value { font-size: 14px; font-weight: bold; margin-top: 4px; }
+        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>Teacher Applications</p>
+            </div>
+        </div>
+        <div id="userInfo" class="user-info"></div>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <h2>Teacher Applications</h2>
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('pending', this)">Pending</button>
+            <button class="tab-btn" onclick="switchTab('reviewed', this)">Sent to Proprietor</button>
+            <button class="tab-btn" onclick="switchTab('approved', this)">Approved</button>
+            <button class="tab-btn" onclick="switchTab('rejected', this)">Rejected</button>
+        </div>
+
+        <div class="card">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Phone</th>
+                            <th>School Section</th>
+                            <th>Employment</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTable">
+                        <tr><td colspan="7" class="empty">Loading applications...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
+
+    <!-- DETAIL MODAL -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Application Details</h3>
+                <button class="close-btn" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div id="detailContent" class="detail-grid"></div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;" id="detailActions"></div>
+        </div>
+    </div>
+
+<script>
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
+
+    const user = JSON.parse(userData);
+    document.getElementById('userInfo').textContent = `${user.full_name || 'User'} (${user.role_name})`;
+
+    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+    let currentTab = 'pending';
+    let allApplications = [];
+
+    async function loadApplications() {
+        try {
+            const response = await fetch('/api/teachers/applications', {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            allApplications = await response.json();
+            renderApplications();
+        } catch (error) {
+            document.getElementById('applicationsTable').innerHTML = `<tr><td colspan="7" class="empty">Error: ${escapeHtml(error.message)}</td></tr>`;
+        }
+    }
+
+    function switchTab(tab, btn) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        renderApplications();
+    }
+
+    function renderApplications() {
+        const table = document.getElementById('applicationsTable');
+        const filtered = allApplications.filter(a => {
+            if (currentTab === 'pending') return a.status === 'Pending';
+            if (currentTab === 'reviewed') return a.status === 'Manager_Reviewed';
+            if (currentTab === 'approved') return a.status === 'Approved';
+            if (currentTab === 'rejected') return a.status === 'Rejected';
+            return true;
+        });
+
+        if (!filtered.length) {
+            table.innerHTML = '<tr><td colspan="7" class="empty">No applications found.</td></tr>';
+            return;
+        }
+
+        table.innerHTML = filtered.map(app => {
+            const name = [app.first_name, app.middle_name, app.last_name].filter(Boolean).join(' ');
+            const statusClass = app.status === 'Pending' ? 'status-pending' : app.status === 'Manager_Reviewed' ? 'status-reviewed' : app.status === 'Approved' ? 'status-approved' : 'status-rejected';
+            const date = app.created_at ? new Date(app.created_at).toLocaleDateString() : '-';
+            
+            let actions = `<button class="action-btn view-btn" onclick="viewApplication(${app.application_id})">View</button>`;
+            
+            if (app.status === 'Pending' && (user.role_name === 'Manager-Primary' || user.role_name === 'Manager-Secondary' || user.role_name === 'Administrator')) {
+                actions += `<button class="action-btn approve-btn" onclick="sendToProprietor(${app.application_id})">Send to Proprietor</button>`;
+                actions += `<button class="action-btn reject-btn" onclick="rejectApplication(${app.application_id})">Reject</button>`;
+            }
+            
+            if (app.status === 'Manager_Reviewed' && (user.role_name === 'Proprietor' || user.role_name === 'Administrator')) {
+                actions += `<button class="action-btn approve-btn" onclick="approveApplication(${app.application_id})">Approve</button>`;
+                actions += `<button class="action-btn reject-btn" onclick="rejectApplication(${app.application_id})">Reject</button>`;
+            }
+            
+            if (app.status === 'Rejected' && (user.role_name === 'Proprietor' || user.role_name === 'Administrator')) {
+                actions += `<button class="action-btn delete-btn" onclick="deleteApplication(${app.application_id})">Delete</button>`;
+            }
+
+            return `<tr>
+                <td><strong>${escapeHtml(name)}</strong></td>
+                <td>${escapeHtml(app.phone || '-')}</td>
+                <td>${escapeHtml(app.school_section || '-')}</td>
+                <td>${escapeHtml(app.employment_type || '-')}</td>
+                <td>${date}</td>
+                <td><span class="status ${statusClass}">${escapeHtml(app.status)}</span></td>
+                <td><div class="action-group">${actions}</div></td>
+            </tr>`;
+        }).join('');
+    }
+
+    function viewApplication(id) {
+        const app = allApplications.find(a => a.application_id === id);
+        if (!app) return;
+        const name = [app.first_name, app.middle_name, app.last_name].filter(Boolean).join(' ');
+        document.getElementById('detailContent').innerHTML = `
+            <div class="detail-item"><div class="detail-label">Name</div><div class="detail-value">${escapeHtml(name)}</div></div>
+            <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${escapeHtml(app.phone || '-')}</div></div>
+            <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${escapeHtml(app.email || '-')}</div></div>
+            <div class="detail-item"><div class="detail-label">Gender</div><div class="detail-value">${escapeHtml(app.gender || '-')}</div></div>
+            <div class="detail-item"><div class="detail-label">School Section</div><div class="detail-value">${escapeHtml(app.school_section || '-')}</div></div>
+            <div class="detail-item"><div class="detail-label">Employment Type</div><div class="detail-value">${escapeHtml(app.employment_type || '-')}</div></div>
+            <div class="detail-item" style="grid-column:1/-1;"><div class="detail-label">Address</div><div class="detail-value">${escapeHtml(app.address || '-')}</div></div>
+            <div class="detail-item" style="grid-column:1/-1;">
+                <div class="detail-label">Documents</div>
+                <div class="detail-value">
+                    ${app.id_card_url ? `<a href="${app.id_card_url}" target="_blank" style="color:#2563eb;display:block;">ID Card</a>` : ''}
+                    ${app.application_letter_url ? `<a href="${app.application_letter_url}" target="_blank" style="color:#2563eb;display:block;">Application Letter</a>` : ''}
+                    ${app.certificates_url ? `<a href="${app.certificates_url}" target="_blank" style="color:#2563eb;display:block;">Certificates</a>` : ''}
+                    ${app.photo_url ? `<a href="${app.photo_url}" target="_blank" style="color:#2563eb;display:block;">Photo</a>` : ''}
+                    ${!app.id_card_url && !app.application_letter_url && !app.certificates_url && !app.photo_url ? 'No documents' : ''}
+                </div>
+            </div>
+        `;
+        document.getElementById('detailModal').style.display = 'block';
+    }
+
+    function closeDetailModal() { document.getElementById('detailModal').style.display = 'none'; }
+
+    async function sendToProprietor(id) {
+        try {
+            const response = await fetch(`/api/teachers/applications/${id}/review`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed');
+            alert('Application sent to Proprietor for approval!');
+            loadApplications();
+        } catch (error) { alert(error.message); }
+    }
+
+    async function approveApplication(id) {
+        try {
+            const response = await fetch(`/api/teachers/applications/${id}/approve`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed');
+            alert('Teacher approved and added to staff!');
+            closeDetailModal();
+            loadApplications();
+        } catch (error) { alert(error.message); }
+    }
+
+    async function rejectApplication(id) {
+        const reason = prompt('Rejection reason:');
+        if (!reason || !reason.trim()) { alert('Reason required.'); return; }
+        try {
+            const response = await fetch(`/api/teachers/applications/${id}/reject`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rejection_reason: reason.trim() })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed');
+            alert('Application rejected.');
+            closeDetailModal();
+            loadApplications();
+        } catch (error) { alert(error.message); }
+    }
+
+    async function deleteApplication(id) {
+        if (!confirm('Delete this application permanently?')) return;
+        try {
+            const response = await fetch(`/api/teachers/applications/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed');
+            alert('Application deleted.');
+            closeDetailModal();
+            loadApplications();
+        } catch (error) { alert(error.message); }
+    }
+
+    loadApplications();
+</script>
+
+</body>
+
+</html>

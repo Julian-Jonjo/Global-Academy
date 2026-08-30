@@ -2,3364 +2,486 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Education Academy | Primary Teachers</title>
 
-
     <style>
-
-        /* =========================================================
-           GLOBAL
-        ========================================================= */
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f6f8;
-            color: #1f2937;
-        }
-
-        button,
-        input,
-        select,
-        textarea {
-            font-family: inherit;
-        }
-
-
-        /* =========================================================
-           HEADER
-        ========================================================= */
-
-        .header {
-            background: #1a3c6e;
-            color: #fff;
-            padding: 17px 30px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .header-logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 8px;
-            background: #fff;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            overflow: hidden;
-        }
-
-        .header-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 4px;
-        }
-
-        .header-title h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .header-title p {
-            margin: 3px 0 0;
-            font-size: 12px;
-            color: #a0c4ff;
-        }
-
-        .user-info {
-            font-size: 13px;
-            text-align: right;
-        }
-
-
-        /* =========================================================
-           CONTAINER
-        ========================================================= */
-
-        .container {
-            max-width: 1450px;
-            margin: auto;
-            padding: 28px 24px 40px;
-        }
-
-
-        /* =========================================================
-           PAGE HEADER
-        ========================================================= */
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .page-header-left h2 {
-            margin: 0 0 7px;
-            font-size: 25px;
-            color: #111827;
-        }
-
-        .page-header-left p {
-            margin: 0;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-
-        /* =========================================================
-           PAGE HEADER ACTIONS
-        ========================================================= */
-
-        .page-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .back-link {
-            text-decoration: none;
-            color: #1a3c6e;
-            font-size: 13px;
-            font-weight: 700;
-
-            padding: 10px 13px;
-
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-
-            background: #fff;
-        }
-
-        .back-link:hover {
-            background: #f3f4f6;
-        }
-
-        .register-top-btn {
-            border: 0;
-            border-radius: 6px;
-
-            padding: 10px 15px;
-
-            background: #1a3c6e;
-            color: #fff;
-
-            font-size: 12px;
-            font-weight: 700;
-
-            cursor: pointer;
-        }
-
-        .register-top-btn:hover {
-            background: #153158;
-        }
-
-
-        /* =========================================================
-           NAVIGATION
-        ========================================================= */
-
-        .nav {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-
-            background: #fff;
-            padding: 7px;
-
-            border: 1px solid #e5e7eb;
-            border-radius: 9px;
-
-            margin-bottom: 25px;
-
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .035);
-        }
-
-        .nav a {
-            text-decoration: none;
-
-            color: #4b5563;
-
-            padding: 10px 15px;
-            border-radius: 6px;
-
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .nav a:hover {
-            background: #f3f4f6;
-        }
-
-        .nav a.active {
-            background: #1a3c6e;
-            color: #fff;
-        }
-
-
-        /* =========================================================
-           KPI GRID
-        ========================================================= */
-
-        .kpi-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
-
-            gap: 15px;
-
-            margin-bottom: 25px;
-        }
-
-        .kpi-card {
-            background: #fff;
-
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-
-            padding: 19px;
-
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .035);
-
-            position: relative;
-            overflow: hidden;
-        }
-
-        .kpi-card::before {
-            content: "";
-
-            position: absolute;
-
-            left: 0;
-            top: 0;
-            bottom: 0;
-
-            width: 4px;
-
-            background: #1a3c6e;
-        }
-
-        .kpi-label {
-            font-size: 11px;
-            color: #6b7280;
-
-            text-transform: uppercase;
-            letter-spacing: .4px;
-
-            margin-bottom: 9px;
-        }
-
-        .kpi-number {
-            font-size: 28px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .kpi-note {
-            margin-top: 6px;
-            font-size: 11px;
-            color: #9ca3af;
-        }
-
-
-        /* =========================================================
-           CARD
-        ========================================================= */
-
-        .card {
-            background: #fff;
-
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-
-            padding: 20px;
-            margin-bottom: 25px;
-
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .035);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            gap: 15px;
-            margin-bottom: 17px;
-        }
-
-        .section-header h3 {
-            margin: 0;
-            font-size: 17px;
-            color: #111827;
-        }
-
-
-        /* =========================================================
-           HEAD OF PRIMARY
-        ========================================================= */
-
-        .head-card {
-            display: grid;
-
-            grid-template-columns:
-                90px 1fr auto;
-
-            align-items: center;
-
-            gap: 20px;
-
-            padding: 5px 0;
-        }
-
-        .head-photo {
-            width: 80px;
-            height: 80px;
-
-            border-radius: 50%;
-
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 32px;
-            color: #6b7280;
-        }
-
-        .head-info h3 {
-            margin: 0 0 7px;
-            font-size: 17px;
-            color: #111827;
-        }
-
-        .head-info p {
-            margin: 4px 0;
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        .head-info strong {
-            color: #374151;
-        }
-
-        .head-status {
-            background: #dbeafe;
-            color: #1a3c6e;
-
-            padding: 6px 11px;
-
-            border-radius: 20px;
-
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-
-        /* =========================================================
-           TOOLBAR
-        ========================================================= */
-
-        .toolbar {
-            background: #fff;
-
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-
-            padding: 15px;
-
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-
-            margin-bottom: 15px;
-        }
-
-        .toolbar input,
-        .toolbar select {
-            padding: 10px 12px;
-
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-
-            font-size: 13px;
-            outline: none;
-
-            background: #fff;
-        }
-
-        .toolbar input {
-            flex: 1;
-            min-width: 230px;
-        }
-
-        .btn {
-            border: 0;
-            border-radius: 6px;
-
-            padding: 10px 15px;
-
-            font-size: 12px;
-            font-weight: 700;
-
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1a3c6e;
-            color: #fff;
-        }
-
-        .btn-secondary {
-            background: #f3f4f6;
-            color: #374151;
-        }
-
-        .btn:hover {
-            opacity: .9;
-        }
-
-
-        /* =========================================================
-           TABLE CARD
-        ========================================================= */
-
-        .table-card {
-            background: #fff;
-
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-
-            overflow: hidden;
-
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .035);
-        }
-
-        .table-header {
-            padding: 17px 20px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .table-header h3 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .record-count {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-
-            min-width: 980px;
-        }
-
-        th {
-            background: #f9fafb;
-
-            text-align: left;
-
-            padding: 12px 15px;
-
-            font-size: 11px;
-            text-transform: uppercase;
-
-            color: #6b7280;
-
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        td {
-            padding: 13px 15px;
-
-            font-size: 13px;
-
-            border-bottom: 1px solid #f0f1f2;
-        }
-
-        tr:hover td {
-            background: #fafafa;
-        }
-
-
-        /* =========================================================
-           BADGES
-        ========================================================= */
-
-        .badge {
-            display: inline-block;
-
-            padding: 4px 8px;
-
-            border-radius: 20px;
-
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .badge-active {
-            background: #dbeafe;
-            color: #1a3c6e;
-        }
-
-        .badge-permanent {
-            background: #dbeafe;
-            color: #1a3c6e;
-        }
-
-        .badge-parttime {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-
-        /* =========================================================
-           TABLE ACTIONS
-        ========================================================= */
-
-        .action-buttons {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .action-btn {
-            border: 0;
-            border-radius: 5px;
-
-            padding: 7px 10px;
-
-            font-size: 11px;
-            font-weight: 700;
-
-            cursor: pointer;
-        }
-
-        .view-btn {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-
-        .view-btn:hover {
-            background: #bfdbfe;
-        }
-
-        .edit-btn {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .edit-btn:hover {
-            background: #fde68a;
-        }
-
-
-        /* =========================================================
-           EMPTY / ERROR
-        ========================================================= */
-
-        .empty,
-        .error {
-            text-align: center;
-            padding: 35px;
-            color: #6b7280;
-        }
-
-        .error {
-            color: #b91c1c;
-        }
-
-
-        /* =========================================================
-           MODAL
-        ========================================================= */
-
-        .modal {
-            display: none;
-
-            position: fixed;
-
-            z-index: 1000;
-
-            inset: 0;
-
-            background: rgba(0, 0, 0, .45);
-
-            padding: 30px;
-
-            overflow: auto;
-        }
-
-        .modal-content {
-            background: #fff;
-
-            max-width: 700px;
-
-            margin: 30px auto;
-
-            border-radius: 10px;
-
-            overflow: hidden;
-
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .2);
-        }
-
-        .modal-header {
-            padding: 18px 20px;
-
-            display: flex;
-
-            justify-content: space-between;
-            align-items: center;
-
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 17px;
-        }
-
-        .close {
-            border: 0;
-            background: none;
-
-            font-size: 22px;
-
-            cursor: pointer;
-
-            color: #6b7280;
-        }
-
-        .form {
-            padding: 20px;
-        }
-
-        .form-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, 1fr);
-
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-
-            gap: 6px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            font-size: 11px;
-            color: #4b5563;
-            font-weight: 700;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 10px 11px;
-
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-
-            font-size: 13px;
-
-            outline: none;
-
-            background: #fff;
-        }
-
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        .form-actions {
-            display: flex;
-
-            justify-content: flex-end;
-
-            gap: 10px;
-
-            margin-top: 20px;
-        }
-
-
-        /* =========================================================
-           VIEW DETAILS
-        ========================================================= */
-
-        .details-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, 1fr);
-
-            gap: 14px;
-        }
-
-        .detail-item {
-            padding: 12px;
-
-            background: #f9fafb;
-
-            border: 1px solid #e5e7eb;
-
-            border-radius: 7px;
-        }
-
-        .detail-item.full {
-            grid-column: 1 / -1;
-        }
-
-        .detail-label {
-            display: block;
-
-            margin-bottom: 5px;
-
-            font-size: 10px;
-
-            color: #6b7280;
-
-            text-transform: uppercase;
-
-            font-weight: 700;
-        }
-
-        .detail-value {
-            font-size: 13px;
-
-            color: #111827;
-
-            font-weight: 600;
-
-            word-break: break-word;
-        }
-
-
-        /* =========================================================
-           RESPONSIVE
-        ========================================================= */
-
-        @media (max-width: 1050px) {
-
-            .kpi-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-
-        }
-
-
-        @media (max-width: 750px) {
-
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .page-header-actions {
-                width: 100%;
-            }
-
-            .head-card {
-                grid-template-columns:
-                    80px 1fr;
-            }
-
-            .head-status {
-                grid-column: 2;
-                width: max-content;
-            }
-
-        }
-
-
-        @media (max-width: 650px) {
-
-            .header {
-                padding: 15px 18px;
-
-                flex-direction: column;
-
-                align-items: flex-start;
-
-                gap: 10px;
-            }
-
-            .user-info {
-                text-align: left;
-            }
-
-            .container {
-                padding: 20px 12px 30px;
-            }
-
-            .page-header-actions {
-                flex-direction: column;
-                align-items: stretch;
-
-                width: 100%;
-            }
-
-            .back-link,
-            .register-top-btn {
-                text-align: center;
-                width: 100%;
-            }
-
-            .nav {
-                flex-direction: column;
-            }
-
-            .nav a {
-                width: 100%;
-            }
-
-            .kpi-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .head-card {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .head-photo {
-                margin: auto;
-            }
-
-            .head-status {
-                grid-column: auto;
-                margin: auto;
-            }
-
-            .toolbar {
-                flex-direction: column;
-            }
-
-            .toolbar input,
-            .toolbar select,
-            .toolbar button {
-                width: 100%;
-            }
-
-            .form-grid,
-            .details-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .detail-item.full {
-                grid-column: auto;
-            }
-
-            .modal {
-                padding: 15px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .action-btn {
-                width: 100%;
-            }
-
-        }
-
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; }
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-header h2 { margin: 0 0 6px 0; color: #1f2937; }
+        .page-header p { margin: 0; color: #6b7280; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .primary-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .nav { display: flex; flex-wrap: wrap; gap: 5px; background: white; padding: 8px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .nav a { text-decoration: none; color: #4b5563; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        .nav a.active { background: #1a3c6e; color: white; }
+        .nav a:hover { background: #f3f4f6; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .summary-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); border-left: 4px solid #1a3c6e; }
+        .summary-label { font-size: 11px; text-transform: uppercase; color: #6b7280; font-weight: bold; margin-bottom: 8px; }
+        .summary-number { font-size: 26px; font-weight: bold; color: #111827; }
+        .card { background: white; border-radius: 10px; padding: 22px; box-shadow: 0 3px 15px rgba(0,0,0,0.07); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .card-header h3 { margin: 0; font-size: 18px; }
+        .filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; margin-bottom: 15px; }
+        .filters input, .filters select { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
+        .reset-btn { background: #e5e7eb; color: #374151; border: none; border-radius: 6px; padding: 10px 14px; cursor: pointer; font-weight: bold; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #f9fafb; text-align: left; padding: 12px 10px; font-size: 11px; text-transform: uppercase; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
+        td { padding: 12px 10px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+        tr:hover td { background: #f9fafb; }
+        .status { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .status-permanent { background: #dcfce7; color: #166534; }
+        .status-part-time { background: #dbeafe; color: #1e40af; }
+        .status-active { background: #dcfce7; color: #166534; }
+        .action-group { display: flex; gap: 5px; flex-wrap: wrap; }
+        .action-btn { border: none; border-radius: 5px; padding: 7px 10px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .view-btn { background: #1f2937; color: white; }
+        .edit-btn { background: #dbeafe; color: #1e40af; }
+        .assign-btn { background: #dcfce7; color: #166534; }
+        .empty { text-align: center; padding: 30px; color: #6b7280; }
+        .error { text-align: center; padding: 30px; color: #b91c1c; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); padding: 20px; overflow: auto; z-index: 1000; }
+        .modal-content { background: white; max-width: 600px; margin: 40px auto; border-radius: 10px; padding: 25px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { margin: 0; }
+        .close-btn { border: none; background: none; font-size: 24px; cursor: pointer; color: #6b7280; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full { grid-column: 1/-1; }
+        .form-group label { font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #374151; }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .cancel-btn { background: #e5e7eb; color: #374151; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .save-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; } .form-grid { grid-template-columns: 1fr; } .filters { grid-template-columns: 1fr; } }
     </style>
-
 </head>
-
 
 <body>
 
-
-    <!-- =========================================================
-         HEADER
-    ========================================================= -->
-
     <header class="header">
-
         <div class="header-left">
-
             <div class="header-logo">
-                <img src="/images/logo.png" alt="School Logo" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
             </div>
-
             <div class="header-title">
-
-                <h1>
-                    GLOBAL EDUCATION ACADEMY
-                </h1>
-
-                <p>
-                    Primary School Teachers Management
-                </p>
-
+                <h1>GLOBAL EDUCATION ACADEMY PRIMARY SCHOOL</h1>
+                <p>Teacher Management</p>
             </div>
-
         </div>
-
-
-        <div
-            id="userInfo"
-            class="user-info">
-        </div>
-
+        <div id="userInfo" class="user-info"></div>
     </header>
 
-
     <main class="container">
-
-
-        <!-- =====================================================
-             PAGE HEADER
-        ===================================================== -->
-
         <div class="page-header">
-
-            <div class="page-header-left">
-
-                <h2>
-                    Primary Teachers
-                </h2>
-
-                <p>
-                    Manage teaching staff assigned to the Primary School.
-                </p>
-
+            <div>
+                <h2>Primary Teachers</h2>
+                <p>Manage Primary School teachers and class assignments.</p>
             </div>
-
-
-            <div class="page-header-actions">
-
-                <a
-                    href="dashboard.html"
-                    class="back-link">
-
-                    ← Back to Dashboard
-
-                </a>
-
-
-                <button
-                    class="register-top-btn"
-                    onclick="openRegistrationModal()">
-
-                    + Register Teacher
-
-                </button>
-
-            </div>
-
+            <button class="primary-btn" onclick="openTeacherModal()">+ Register Teacher</button>
         </div>
-
-
-        <!-- =====================================================
-             NAVIGATION
-        ===================================================== -->
 
         <nav class="nav">
-
-            <a href="dashboard.html">
-                Main Dashboard
-            </a>
-
-            <a
-                href="primary-teachers.html"
-                class="active">
-
-                Primary Teachers
-
-            </a>
-
-            <a href="primary-students.html">
-                Students
-            </a>
-
-            <a href="primary-finance.html">
-                Finance
-            </a>
-
-            <a href="primary-approvals.html">
-                Approvals
-            </a>
-
+            <a href="dashboard.html">Main Dashboard</a>
+            <a href="primary-teachers.html" class="active">Primary Teachers</a>
+            <a href="primary-students.html">Students</a>
+            <a href="primary-classes.html">Classes</a>
+            <a href="teacher-applications.html">Applications</a>
         </nav>
 
-
-        <!-- =====================================================
-             KPI SECTION
-        ===================================================== -->
-
-        <section class="kpi-grid">
-
-
-            <div class="kpi-card">
-
-                <div class="kpi-label">
-                    Primary Teachers
-                </div>
-
-                <div
-                    id="totalTeachers"
-                    class="kpi-number">
-
-                    0
-
-                </div>
-
-                <div class="kpi-note">
-                    Total Primary teaching staff
-                </div>
-
-            </div>
-
-
-            <div class="kpi-card">
-
-                <div class="kpi-label">
-                    Permanent
-                </div>
-
-                <div
-                    id="permanentTeachers"
-                    class="kpi-number">
-
-                    0
-
-                </div>
-
-                <div class="kpi-note">
-                    Permanent Primary staff
-                </div>
-
-            </div>
-
-
-            <div class="kpi-card">
-
-                <div class="kpi-label">
-                    Male
-                </div>
-
-                <div
-                    id="maleTeachers"
-                    class="kpi-number">
-
-                    0
-
-                </div>
-
-                <div class="kpi-note">
-                    Male Primary teachers
-                </div>
-
-            </div>
-
-
-            <div class="kpi-card">
-
-                <div class="kpi-label">
-                    Female
-                </div>
-
-                <div
-                    id="femaleTeachers"
-                    class="kpi-number">
-
-                    0
-
-                </div>
-
-                <div class="kpi-note">
-                    Female Primary teachers
-                </div>
-
-            </div>
-
+        <section class="summary-grid">
+            <div class="summary-card"><div class="summary-label">Total Teachers</div><div id="totalTeachers" class="summary-number">0</div></div>
+            <div class="summary-card"><div class="summary-label">Permanent</div><div id="permanentTeachers" class="summary-number">0</div></div>
+            <div class="summary-card"><div class="summary-label">Male</div><div id="maleTeachers" class="summary-number">0</div></div>
+            <div class="summary-card"><div class="summary-label">Female</div><div id="femaleTeachers" class="summary-number">0</div></div>
         </section>
-
-
-        <!-- =====================================================
-             HEAD OF PRIMARY
-        ===================================================== -->
 
         <section class="card">
-
-            <div class="section-header">
-
-                <h3>
-                    Head of Primary School
-                </h3>
-
+            <div class="card-header">
+                <h3>Primary Teaching Staff</h3>
+                <span id="recordCount" style="font-size:13px;color:#6b7280;">0 Records</span>
             </div>
 
-
-            <div class="head-card">
-
-                <div class="head-photo">
-                    👨‍🏫
-                </div>
-
-
-                <div class="head-info">
-
-                    <h3 id="headName">
-                        Not Assigned
-                    </h3>
-
-                    <p>
-                        <strong>Position:</strong>
-                        Head of Primary
-                    </p>
-
-                    <p id="headContact">
-                        Head of Primary information will appear here.
-                    </p>
-
-                </div>
-
-
-                <div>
-
-                    <span class="head-status">
-                        Head of Primary
-                    </span>
-
-                </div>
-
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="Search by name or staff number..." oninput="filterTeachers()">
+                <select id="classFilter" onchange="filterTeachers()">
+                    <option value="">All Classes</option>
+                </select>
+                <select id="statusFilter" onchange="filterTeachers()">
+                    <option value="">All Employment Types</option>
+                    <option value="Permanent">Permanent</option>
+                    <option value="Part Time">Part Time</option>
+                </select>
+                <button class="reset-btn" onclick="resetFilters()">Reset</button>
             </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             FILTERS
-        ===================================================== -->
-
-        <div class="toolbar">
-
-            <input
-                id="search"
-                type="search"
-                placeholder="Search by name or staff number..."
-                oninput="filterTeachers()"
-            >
-
-
-            <select
-                id="statusFilter"
-                onchange="filterTeachers()">
-
-                <option value="">
-                    All Employment Status
-                </option>
-
-                <option value="Permanent">
-                    Permanent
-                </option>
-
-                <option value="Part Time">
-                    Part Time
-                </option>
-
-            </select>
-
-
-            <select
-                id="genderFilter"
-                onchange="filterTeachers()">
-
-                <option value="">
-                    All Gender
-                </option>
-
-                <option value="Male">
-                    Male
-                </option>
-
-                <option value="Female">
-                    Female
-                </option>
-
-            </select>
-
-
-            <button
-                class="btn btn-secondary"
-                onclick="resetFilters()">
-
-                Reset
-
-            </button>
-
-        </div>
-
-
-        <!-- =====================================================
-             TEACHER TABLE
-        ===================================================== -->
-
-        <div class="table-card">
-
-
-            <div class="table-header">
-
-                <h3>
-                    Primary Teaching Staff
-                </h3>
-
-                <span
-                    id="recordCount"
-                    class="record-count">
-
-                    0 Records
-
-                </span>
-
-            </div>
-
 
             <div class="table-wrapper">
-
                 <table>
-
                     <thead>
-
                         <tr>
-
-                            <th>
-                                Teacher
-                            </th>
-
-                            <th>
-                                Staff Number
-                            </th>
-
-                            <th>
-                                Gender
-                            </th>
-
-                            <th>
-                                Employment Type
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Phone
-                            </th>
-
-                            <th>
-                                Action
-                            </th>
-
+                            <th>Staff ID</th>
+                            <th>Teacher Name</th>
+                            <th>Gender</th>
+                            <th>Assigned Class</th>
+                            <th>Phone</th>
+                            <th>Employment</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
-
                     </thead>
-
-
                     <tbody id="teacherTable">
-
-                        <tr>
-
-                            <td
-                                colspan="7"
-                                class="empty">
-
-                                Loading Primary teachers...
-
-                            </td>
-
-                        </tr>
-
+                        <tr><td colspan="8" class="loading">Loading teachers...</td></tr>
                     </tbody>
-
                 </table>
-
             </div>
-
-        </div>
-
-
+        </section>
     </main>
 
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
-    <!-- =========================================================
-         LOGOUT BUTTON - BOTTOM LEFT
-    ========================================================= -->
-
-    <button 
-        onclick="logout()" 
-        style="
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: #dc2626;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 999;
-        "
-        onmouseover="this.style.background='#b91c1c'"
-        onmouseout="this.style.background='#dc2626'"
-    >
-        Logout
-    </button>
-
-
-    <!-- =========================================================
-         REGISTRATION MODAL
-    ========================================================= -->
-
-    <div
-        id="registrationModal"
-        class="modal">
-
-
+    <!-- REGISTER TEACHER MODAL -->
+    <div id="teacherModal" class="modal">
         <div class="modal-content">
-
-
             <div class="modal-header">
-
-                <h3>
-                    Register Primary Teacher
-                </h3>
-
-
-                <button
-                    class="close"
-                    onclick="closeRegistrationModal()">
-
-                    ×
-
-                </button>
-
+                <h3>Register Primary Teacher</h3>
+                <button class="close-btn" onclick="closeTeacherModal()">&times;</button>
             </div>
-
-
-            <form
-                id="teacherForm"
-                class="form">
-
-
+            <form id="teacherForm">
                 <div class="form-grid">
-
-
                     <div class="form-group">
-
-                        <label>
-                            Staff Number *
-                        </label>
-
-                        <input
-                            id="staff_number"
-                            required
-                        >
-
+                        <label>Staff Number *</label>
+                        <input type="text" id="staff_number" required>
                     </div>
-
-
                     <div class="form-group">
-
-                        <label>
-                            Gender
-                        </label>
-
+                        <label>Gender</label>
                         <select id="gender">
-
-                            <option value="">
-                                Select gender
-                            </option>
-
-                            <option value="Male">
-                                Male
-                            </option>
-
-                            <option value="Female">
-                                Female
-                            </option>
-
+                            <option value="">Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
                         </select>
-
                     </div>
-
-
                     <div class="form-group">
-
-                        <label>
-                            First Name *
-                        </label>
-
-                        <input
-                            id="first_name"
-                            required
-                        >
-
+                        <label>First Name *</label>
+                        <input type="text" id="first_name" required>
                     </div>
-
-
                     <div class="form-group">
-
-                        <label>
-                            Middle Name
-                        </label>
-
-                        <input id="middle_name">
-
+                        <label>Middle Name</label>
+                        <input type="text" id="middle_name">
                     </div>
-
-
                     <div class="form-group">
-
-                        <label>
-                            Last Name *
-                        </label>
-
-                        <input
-                            id="last_name"
-                            required
-                        >
-
+                        <label>Last Name *</label>
+                        <input type="text" id="last_name" required>
                     </div>
-
-
                     <div class="form-group">
-
-                        <label>
-                            Phone
-                        </label>
-
-                        <input
-                            id="phone"
-                            type="tel"
-                        >
-
+                        <label>Phone</label>
+                        <input type="tel" id="phone">
                     </div>
-
-
                     <div class="form-group">
-
-                        <label>
-                            Email
-                        </label>
-
-                        <input
-                            id="email"
-                            type="email"
-                        >
-
+                        <label>Email</label>
+                        <input type="email" id="email">
                     </div>
-
-
                     <div class="form-group">
-
-                        <label>
-                            Employment Date
-                        </label>
-
-                        <input
-                            id="employment_date"
-                            type="date"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Employment Type
-                        </label>
-
+                        <label>Employment Type</label>
                         <select id="employment_type">
-
-                            <option value="">
-                                Select employment type
-                            </option>
-
-                            <option value="Permanent">
-                                Permanent
-                            </option>
-
-                            <option value="Part Time">
-                                Part Time
-                            </option>
-
+                            <option value="Permanent">Permanent</option>
+                            <option value="Part Time">Part Time</option>
                         </select>
-
                     </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Teacher Status
-                        </label>
-
-                        <select id="teacher_status">
-
-                            <option value="Active">
-                                Active
-                            </option>
-
-                            <option value="Inactive">
-                                Inactive
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
                     <div class="form-group full">
-
-                        <label>
-                            Address
-                        </label>
-
-                        <textarea id="address"></textarea>
-
+                        <label>Address</label>
+                        <textarea id="address" rows="2"></textarea>
                     </div>
-
-
                 </div>
-
-
                 <div class="form-actions">
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onclick="closeRegistrationModal()">
-
-                        Cancel
-
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary">
-
-                        Register Teacher
-
-                    </button>
-
+                    <button type="button" class="cancel-btn" onclick="closeTeacherModal()">Cancel</button>
+                    <button type="submit" class="save-btn">Save Teacher</button>
                 </div>
-
-
             </form>
-
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         VIEW TEACHER MODAL
-    ========================================================= -->
-
-    <div
-        id="viewModal"
-        class="modal">
-
-
+    <!-- ASSIGN CLASS MODAL -->
+    <div id="assignModal" class="modal">
         <div class="modal-content">
-
-
             <div class="modal-header">
-
-                <h3>
-                    Teacher Information
-                </h3>
-
-
-                <button
-                    class="close"
-                    onclick="closeViewModal()">
-
-                    ×
-
-                </button>
-
+                <h3>Assign Class to Teacher</h3>
+                <button class="close-btn" onclick="closeAssignModal()">&times;</button>
             </div>
-
-
-            <div class="form">
-
-
-                <div
-                    id="teacherDetails"
-                    class="details-grid">
-
-                </div>
-
-
-                <div class="form-actions">
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onclick="closeViewModal()">
-
-                        Close
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =========================================================
-         EDIT TEACHER MODAL
-    ========================================================= -->
-
-    <div
-        id="editModal"
-        class="modal">
-
-
-        <div class="modal-content">
-
-
-            <div class="modal-header">
-
-                <h3>
-                    Edit Primary Teacher
-                </h3>
-
-
-                <button
-                    class="close"
-                    onclick="closeEditModal()">
-
-                    ×
-
-                </button>
-
-            </div>
-
-
-            <form
-                id="editTeacherForm"
-                class="form">
-
-
-                <input
-                    type="hidden"
-                    id="edit_teacher_id"
-                >
-
-
+            <form id="assignForm">
+                <input type="hidden" id="assign_teacher_id">
                 <div class="form-grid">
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Staff Number *
-                        </label>
-
-                        <input
-                            id="edit_staff_number"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Gender
-                        </label>
-
-                        <select id="edit_gender">
-
-                            <option value="">
-                                Select gender
-                            </option>
-
-                            <option value="Male">
-                                Male
-                            </option>
-
-                            <option value="Female">
-                                Female
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            First Name *
-                        </label>
-
-                        <input
-                            id="edit_first_name"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Middle Name
-                        </label>
-
-                        <input
-                            id="edit_middle_name"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Last Name *
-                        </label>
-
-                        <input
-                            id="edit_last_name"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Phone
-                        </label>
-
-                        <input
-                            id="edit_phone"
-                            type="tel"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Email
-                        </label>
-
-                        <input
-                            id="edit_email"
-                            type="email"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Employment Date
-                        </label>
-
-                        <input
-                            id="edit_employment_date"
-                            type="date"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Employment Type
-                        </label>
-
-                        <select id="edit_employment_type">
-
-                            <option value="">
-                                Select employment type
-                            </option>
-
-                            <option value="Permanent">
-                                Permanent
-                            </option>
-
-                            <option value="Part Time">
-                                Part Time
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Teacher Status
-                        </label>
-
-                        <select id="edit_teacher_status">
-
-                            <option value="Active">
-                                Active
-                            </option>
-
-                            <option value="Inactive">
-                                Inactive
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
                     <div class="form-group full">
-
-                        <label>
-                            Address
-                        </label>
-
-                        <textarea
-                            id="edit_address"
-                        ></textarea>
-
+                        <label>Teacher</label>
+                        <input type="text" id="assign_teacher_name" disabled>
                     </div>
-
-
+                    <div class="form-group full">
+                        <label>Class *</label>
+                        <select id="assign_class_id" required>
+                            <option value="">Loading classes...</option>
+                        </select>
+                    </div>
                 </div>
-
-
                 <div class="form-actions">
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onclick="closeEditModal()">
-
-                        Cancel
-
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary">
-
-                        Save Changes
-
-                    </button>
-
+                    <button type="button" class="cancel-btn" onclick="closeAssignModal()">Cancel</button>
+                    <button type="submit" class="save-btn">Assign Class</button>
                 </div>
-
             </form>
-
         </div>
-
     </div>
 
-
-    <script>
-
-        /* =========================================================
-           API CONFIGURATION
-        ========================================================= */
-
-        const API_BASE = '/api';
-
-
-        /* =========================================================
-           GLOBAL VARIABLES
-        ========================================================= */
-
-        let user = null;
-        let token = null;
-
-        let allTeachers = [];
-        let primaryTeachers = [];
-
-
-        /* =========================================================
-           AUTHENTICATION
-        ========================================================= */
-
-        function getAuthData() {
-
-            token =
-                sessionStorage.getItem('token') ||
-                localStorage.getItem('token') ||
-                sessionStorage.getItem('authToken') ||
-                localStorage.getItem('authToken');
-
-
-            const raw =
-                sessionStorage.getItem('user') ||
-                localStorage.getItem('user');
-
-
-            try {
-
-                user =
-                    raw
-                        ? JSON.parse(raw)
-                        : null;
-
-            } catch (error) {
-
-                user = null;
-
-            }
-
-        }
-
-
-        getAuthData();
-
-
-        if (!token) {
-
-            alert(
-                'Authentication required. Please log in.'
-            );
-
-            location.href = 'index.html';
-
-        }
-
-
-        // =========================================================
-        // ACCESS CONTROL - PRIMARY TEACHERS ONLY
-        // =========================================================
-
-        const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
-
-        // Block Secondary Manager
-        if (userRoleForAccess.includes('manager-secondary')) {
-            alert('Access denied. You do not have permission to view Primary School teachers.');
-            window.location.href = 'dashboard.html';
-        }
-
-        // Block Secondary Finance Officer
-        if (userRoleForAccess.includes('finance officer (secondary)')) {
-            alert('Access denied. You do not have permission to view Primary School teachers.');
-            window.location.href = 'dashboard.html';
-        }
-
-        // Block Secondary Teacher
-        if (userRoleForAccess.includes('teacher - secondary')) {
-            alert('Access denied. You do not have permission to view Primary School teachers.');
-            window.location.href = 'dashboard.html';
-        }
-
-        // Allowed roles: Manager-Primary, Administrator, Proprietor
-        const allowedRoles = ['manager-primary', 'admin', 'proprietor'];
-        const hasAccess = allowedRoles.some(role => userRoleForAccess.includes(role));
-
-        if (!hasAccess) {
-            alert('Access denied. Insufficient permissions.');
-            window.location.href = 'dashboard.html';
-        }
-
-
-        /* =========================================================
-           USER INFORMATION
-        ========================================================= */
-
-        const userInfo =
-            document.getElementById('userInfo');
-
-
-        if (userInfo) {
-
-            userInfo.textContent =
-                `${user?.full_name || user?.name || 'Administrator'} (${user?.role_name || user?.role || 'School Management'})`;
-
-        }
-
-
-        /* =========================================================
-           LOGOUT
-        ========================================================= */
-
-        function logout() {
-            sessionStorage.removeItem('authToken');
-            sessionStorage.removeItem('user');
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('user');
-            window.location.href = '/login.html';
-        }
-
-
-        /* =========================================================
-           API REQUEST
-        ========================================================= */
-
-        async function apiRequest(
-            url,
-            options = {}
-        ) {
-
-            getAuthData();
-
-
-            if (!token) {
-
-                throw new Error(
-                    'Authentication required.'
-                );
-
-            }
-
-
-            const response =
-                await fetch(
-                    `${API_BASE}${url}`,
-                    {
-                        ...options,
-
-                        headers: {
-
-                            'Content-Type':
-                                'application/json',
-
-                            ...(options.headers || {}),
-
-                            Authorization:
-                                `Bearer ${token}`
-
-                        }
-
-                    }
-                );
-
-
-            let data = null;
-
-
-            try {
-
-                data =
-                    await response.json();
-
-            } catch (error) {
-
-                data = null;
-
-            }
-
-
-            if (response.status === 401) {
-
-                [
-                    'token',
-                    'user',
-                    'authToken'
-                ].forEach(key => {
-
-                    sessionStorage.removeItem(key);
-                    localStorage.removeItem(key);
-
-                });
-
-
-                alert(
-                    'Your session has expired. Please log in again.'
-                );
-
-
-                location.href = 'index.html';
-
-                return null;
-
-            }
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data?.message ||
-                    `Request failed with status ${response.status}`
-                );
-
-            }
-
-
-            return data;
-
-        }
-
-
-        /* =========================================================
-           ESCAPE HTML
-        ========================================================= */
-
-        function escapeHtml(value) {
-
-            return String(value ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-
-        }
-
-
-        /* =========================================================
-           FORMAT DATE
-        ========================================================= */
-
-        function formatDate(value) {
-
-            if (!value) {
-                return '-';
-            }
-
-
-            const date =
-                new Date(value);
-
-
-            if (Number.isNaN(date.getTime())) {
-                return value;
-            }
-
-
-            return date.toLocaleDateString(
-                'en-GB',
-                {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                }
-            );
-
-        }
-
-
-        /* =========================================================
-           LOAD TEACHERS
-        ========================================================= */
-
-        async function loadTeachers() {
-
-            try {
-
-                const data =
-                    await apiRequest(
-                        '/teachers'
-                    );
-
-
-                allTeachers =
-                    Array.isArray(data)
-                        ? data
-                        : [];
-
-
-                primaryTeachers =
-                    allTeachers.filter(
-                        teacher => {
-
-                            const section =
-                                String(
-                                    teacher.school_section || ''
-                                )
-                                    .trim()
-                                    .toLowerCase();
-
-
-                            return (
-                                section === 'primary' ||
-                                section === 'primary school'
-                            );
-
-                        }
-                    );
-
-
-                updateDashboard();
-
-                renderTeachers();
-
-
-            } catch (error) {
-
-                console.error(
-                    'Error loading Primary teachers:',
-                    error
-                );
-
-
-                document.getElementById(
-                    'teacherTable'
-                ).innerHTML =
-                    `
-                    <tr>
-
-                        <td
-                            colspan="7"
-                            class="error">
-
-                            ${escapeHtml(error.message)}
-
-                        </td>
-
-                    </tr>
-                    `;
-
-            }
-
-        }
-
-
-        /* =========================================================
-           UPDATE DASHBOARD
-        ========================================================= */
-
-        function updateDashboard() {
-
-            const total =
-                primaryTeachers.length;
-
-
-            const permanent =
-                primaryTeachers.filter(
-                    teacher =>
-                        String(
-                            teacher.employment_type || ''
-                        )
-                            .trim()
-                            .toLowerCase() ===
-                        'permanent'
-                ).length;
-
-
-            const male =
-                primaryTeachers.filter(
-                    teacher =>
-                        String(
-                            teacher.gender || ''
-                        )
-                            .trim()
-                            .toLowerCase() ===
-                        'male'
-                ).length;
-
-
-            const female =
-                primaryTeachers.filter(
-                    teacher =>
-                        String(
-                            teacher.gender || ''
-                        )
-                            .trim()
-                            .toLowerCase() ===
-                        'female'
-                ).length;
-
-
-            document.getElementById(
-                'totalTeachers'
-            ).textContent = total;
-
-
-            document.getElementById(
-                'permanentTeachers'
-            ).textContent = permanent;
-
-
-            document.getElementById(
-                'maleTeachers'
-            ).textContent = male;
-
-
-            document.getElementById(
-                'femaleTeachers'
-            ).textContent = female;
-
-        }
-
-
-        /* =========================================================
-           RENDER TEACHERS
-        ========================================================= */
-
-        function renderTeachers() {
-
-            const table =
-                document.getElementById(
-                    'teacherTable'
-                );
-
-
-            const list =
-                getFilteredTeachers();
-
-
-            document.getElementById(
-                'recordCount'
-            ).textContent =
-                `${list.length} Record${list.length === 1 ? '' : 's'}`;
-
-
-            if (!list.length) {
-
-                table.innerHTML =
-                    `
-                    <tr>
-
-                        <td
-                            colspan="7"
-                            class="empty">
-
-                            No Primary teachers found.
-
-                        </td>
-
-                    </tr>
-                    `;
-
-                return;
-
-            }
-
-
-            table.innerHTML =
-                list.map(
-                    teacher => {
-
-                        const name =
-                            [
-                                teacher.first_name,
-                                teacher.middle_name,
-                                teacher.last_name
-                            ]
-                                .filter(Boolean)
-                                .join(' ');
-
-
-                        const employment =
-                            String(
-                                teacher.employment_type || '-'
-                            );
-
-
-                        const status =
-                            String(
-                                teacher.teacher_status || '-'
-                            );
-
-
-                        const employmentClass =
-                            employment
-                                .toLowerCase()
-                                .includes('permanent')
-                                    ? 'badge-permanent'
-                                    : 'badge-parttime';
-
-
-                        const statusClass =
-                            status
-                                .toLowerCase() === 'active'
-                                    ? 'badge-active'
-                                    : '';
-
-
-                        const teacherId =
-                            teacher.teacher_id ||
-                            teacher.id;
-
-
-                        return `
-                            <tr>
-
-                                <td>
-                                    <strong>
-                                        ${escapeHtml(name || '-')}
-                                    </strong>
-                                </td>
-
-
-                                <td>
-                                    ${escapeHtml(
-                                        teacher.staff_number || '-'
-                                    )}
-                                </td>
-
-
-                                <td>
-                                    ${escapeHtml(
-                                        teacher.gender || '-'
-                                    )}
-                                </td>
-
-
-                                <td>
-
-                                    <span
-                                        class="badge ${employmentClass}">
-
-                                        ${escapeHtml(employment)}
-
-                                    </span>
-
-                                </td>
-
-
-                                <td>
-
-                                    <span
-                                        class="badge ${statusClass}">
-
-                                        ${escapeHtml(status)}
-
-                                    </span>
-
-                                </td>
-
-
-                                <td>
-                                    ${escapeHtml(
-                                        teacher.phone || '-'
-                                    )}
-                                </td>
-
-
-                                <td>
-
-                                    <div
-                                        class="action-buttons">
-
-                                        <button
-                                            type="button"
-                                            class="action-btn view-btn"
-                                            onclick="viewTeacher('${escapeHtml(teacherId)}')">
-
-                                            View
-
-                                        </button>
-
-
-                                        <button
-                                            type="button"
-                                            class="action-btn edit-btn"
-                                            onclick="editTeacher('${escapeHtml(teacherId)}')">
-
-                                            Edit
-
-                                        </button>
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-                        `;
-
-                    }
-                ).join('');
-
-        }
-
-
-        /* =========================================================
-           FILTER TEACHERS
-        ========================================================= */
-
-        function getFilteredTeachers() {
-
-            const search =
-                document.getElementById(
-                    'search'
-                )
-                    .value
-                    .toLowerCase()
-                    .trim();
-
-
-            const status =
-                document.getElementById(
-                    'statusFilter'
-                )
-                    .value
-                    .toLowerCase();
-
-
-            const gender =
-                document.getElementById(
-                    'genderFilter'
-                )
-                    .value
-                    .toLowerCase();
-
-
-            return primaryTeachers.filter(
-                teacher => {
-
-                    const name =
-                        [
-                            teacher.first_name,
-                            teacher.middle_name,
-                            teacher.last_name
-                        ]
-                            .filter(Boolean)
-                            .join(' ')
-                            .toLowerCase();
-
-
-                    const staffNumber =
-                        String(
-                            teacher.staff_number || ''
-                        )
-                            .toLowerCase();
-
-
-                    const employmentType =
-                        String(
-                            teacher.employment_type || ''
-                        )
-                            .toLowerCase();
-
-
-                    const teacherGender =
-                        String(
-                            teacher.gender || ''
-                        )
-                            .toLowerCase();
-
-
-                    const searchOK =
-                        !search ||
-                        name.includes(search) ||
-                        staffNumber.includes(search);
-
-
-                    const statusOK =
-                        !status ||
-                        employmentType === status;
-
-
-                    const genderOK =
-                        !gender ||
-                        teacherGender === gender;
-
-
-                    return (
-                        searchOK &&
-                        statusOK &&
-                        genderOK
-                    );
-
-                }
-            );
-
-        }
-
-
-        /* =========================================================
-           FILTER HANDLER
-        ========================================================= */
-
-        function filterTeachers() {
-
+<script>
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
+
+    let user;
+    try { user = JSON.parse(userData); } catch (error) { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+
+    const role = user?.role_name || '';
+    const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
+
+    if (userRoleForAccess.includes('manager-secondary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+    if (userRoleForAccess.includes('finance officer (secondary)')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+    if (userRoleForAccess.includes('teacher - secondary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+
+    const allowedRoles = ['manager-primary', 'admin', 'proprietor'];
+    const hasAccess = allowedRoles.some(r => userRoleForAccess.includes(r));
+    if (!hasAccess) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+
+    document.getElementById('userInfo').textContent = `${user?.full_name || 'User'} (${role})`;
+
+    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+    let teachers = [];
+    let classes = [];
+    let classAssignments = [];
+
+    async function loadTeachers() {
+        const table = document.getElementById('teacherTable');
+        try {
+            const response = await fetch('/api/teachers', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            teachers = (Array.isArray(data) ? data : []).filter(t => {
+                const section = String(t.school_section || '').toLowerCase();
+                return section.includes('primary') || section.includes('nursery');
+            });
+            updateSummary();
             renderTeachers();
-
+        } catch (error) {
+            table.innerHTML = `<tr><td colspan="8" class="error">Error: ${escapeHtml(error.message)}</td></tr>`;
         }
+    }
 
+    async function loadClasses() {
+        try {
+            const response = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            classes = (Array.isArray(data) ? data : []).filter(c => ['Nursery', 'Primary'].includes(c.school_section));
+            populateClassFilters();
+        } catch (error) { console.error('Classes error:', error); }
+    }
 
-        /* =========================================================
-           RESET FILTERS
-        ========================================================= */
+    async function loadClassAssignments() {
+        try {
+            const response = await fetch('/api/teachers/secondary/class-masters?academic_year_id=1', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            // Try primary class teachers
+            const primaryResponse = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            // We'll use a simple approach - fetch from primary_class_teachers table via a custom endpoint
+            classAssignments = [];
+        } catch (error) { console.error('Assignments error:', error); }
+    }
 
-        function resetFilters() {
+    function populateClassFilters() {
+        const filterSelect = document.getElementById('classFilter');
+        const assignSelect = document.getElementById('assign_class_id');
+        
+        filterSelect.innerHTML = '<option value="">All Classes</option>';
+        assignSelect.innerHTML = '<option value="">Select class</option>';
+        
+        classes.forEach(cls => {
+            const label = `${cls.class_name}${cls.arm ? ' - ' + cls.arm : ''}`;
+            filterSelect.add(new Option(label, cls.class_id));
+            assignSelect.add(new Option(label, cls.class_id));
+        });
+    }
 
-            document.getElementById(
-                'search'
-            ).value = '';
+    function updateSummary() {
+        document.getElementById('totalTeachers').textContent = teachers.length;
+        document.getElementById('permanentTeachers').textContent = teachers.filter(t => String(t.employment_type || '').toLowerCase() === 'permanent').length;
+        document.getElementById('maleTeachers').textContent = teachers.filter(t => String(t.gender || '').toLowerCase() === 'male').length;
+        document.getElementById('femaleTeachers').textContent = teachers.filter(t => String(t.gender || '').toLowerCase() === 'female').length;
+    }
 
+    function getAssignedClass(teacherId) {
+        const assignment = classAssignments.find(a => String(a.teacher_id) === String(teacherId));
+        if (!assignment) return '-';
+        return assignment.class_name || '-';
+    }
 
-            document.getElementById(
-                'statusFilter'
-            ).value = '';
-
-
-            document.getElementById(
-                'genderFilter'
-            ).value = '';
-
-
-            renderTeachers();
-
+    function renderTeachers(list = teachers) {
+        const table = document.getElementById('teacherTable');
+        document.getElementById('recordCount').textContent = `${list.length} Record${list.length === 1 ? '' : 's'}`;
+        if (!list.length) {
+            table.innerHTML = '<tr><td colspan="8" class="empty">No Primary teachers found.</td></tr>';
+            return;
         }
-
-
-        /* =========================================================
-           REGISTRATION MODAL
-        ========================================================= */
-
-        function openRegistrationModal() {
-
-            document.getElementById(
-                'registrationModal'
-            ).style.display = 'block';
-
-        }
-
-
-        function closeRegistrationModal() {
-
-            document.getElementById(
-                'registrationModal'
-            ).style.display = 'none';
-
-
-            document.getElementById(
-                'teacherForm'
-            ).reset();
-
-        }
-
-
-        /* =========================================================
-           REGISTER PRIMARY TEACHER
-        ========================================================= */
-
-        document.getElementById(
-            'teacherForm'
-        ).addEventListener(
-            'submit',
-            async function (event) {
-
-                event.preventDefault();
-
-
-                try {
-
-                    const payload = {
-
-                        staff_number:
-                            document.getElementById(
-                                'staff_number'
-                            ).value.trim(),
-
-                        first_name:
-                            document.getElementById(
-                                'first_name'
-                            ).value.trim(),
-
-                        middle_name:
-                            document.getElementById(
-                                'middle_name'
-                            ).value.trim(),
-
-                        last_name:
-                            document.getElementById(
-                                'last_name'
-                            ).value.trim(),
-
-                        gender:
-                            document.getElementById(
-                                'gender'
-                            ).value,
-
-                        phone:
-                            document.getElementById(
-                                'phone'
-                            ).value.trim(),
-
-                        email:
-                            document.getElementById(
-                                'email'
-                            ).value.trim(),
-
-                        address:
-                            document.getElementById(
-                                'address'
-                            ).value.trim(),
-
-                        employment_date:
-                            document.getElementById(
-                                'employment_date'
-                            ).value || null,
-
-                        teacher_status:
-                            document.getElementById(
-                                'teacher_status'
-                            ).value,
-
-                        school_section:
-                            'Primary',
-
-                        employment_type:
-                            document.getElementById(
-                                'employment_type'
-                            ).value
-
-                    };
-
-
-                    const result =
-                        await apiRequest(
-                            '/teachers',
-                            {
-                                method: 'POST',
-
-                                body:
-                                    JSON.stringify(
-                                        payload
-                                    )
-                            }
-                        );
-
-
-                    alert(
-                        result?.message ||
-                        'Primary teacher registered successfully.'
-                    );
-
-
-                    closeRegistrationModal();
-
-
-                    await loadTeachers();
-
-
-                } catch (error) {
-
-                    console.error(
-                        'Error registering Primary teacher:',
-                        error
-                    );
-
-
-                    alert(
-                        error.message
-                    );
-
-                }
-
-            }
-        );
-
-
-        /* =========================================================
-           FIND TEACHER
-        ========================================================= */
-
-        function findTeacher(teacherId) {
-
-            return primaryTeachers.find(
-                teacher =>
-                    String(
-                        teacher.teacher_id ||
-                        teacher.id
-                    ) === String(teacherId)
-            );
-
-        }
-
-
-        /* =========================================================
-           VIEW TEACHER
-        ========================================================= */
-
-        function viewTeacher(teacherId) {
-
-            const teacher =
-                findTeacher(teacherId);
-
-
-            if (!teacher) {
-
-                alert(
-                    'Teacher record could not be found.'
-                );
-
-                return;
-
-            }
-
-
-            const name =
-                [
-                    teacher.first_name,
-                    teacher.middle_name,
-                    teacher.last_name
-                ]
-                    .filter(Boolean)
-                    .join(' ');
-
-
-            const details =
-                document.getElementById(
-                    'teacherDetails'
-                );
-
-
-            details.innerHTML =
-                `
-
-                <div class="detail-item">
-
-                    <span class="detail-label">
-                        Full Name
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(name || '-')}
-                    </span>
-
-                </div>
-
-
-                <div class="detail-item">
-
-                    <span class="detail-label">
-                        Staff Number
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(
-                            teacher.staff_number || '-'
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="detail-item">
-
-                    <span class="detail-label">
-                        Gender
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(
-                            teacher.gender || '-'
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="detail-item">
-
-                    <span class="detail-label">
-                        Phone
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(
-                            teacher.phone || '-'
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="detail-item">
-
-                    <span class="detail-label">
-                        Email
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(
-                            teacher.email || '-'
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="detail-item">
-
-                    <span class="detail-label">
-                        Employment Type
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(
-                            teacher.employment_type || '-'
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="detail-item">
-
-                    <span class="detail-label">
-                        Employment Date
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(
-                            formatDate(
-                                teacher.employment_date
-                            )
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="detail-item">
-
-                    <span class="detail-label">
-                        Teacher Status
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(
-                            teacher.teacher_status || '-'
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="detail-item full">
-
-                    <span class="detail-label">
-                        Address
-                    </span>
-
-                    <span class="detail-value">
-                        ${escapeHtml(
-                            teacher.address || '-'
-                        )}
-                    </span>
-
-                </div>
-
-                `;
-
-
-            document.getElementById(
-                'viewModal'
-            ).style.display = 'block';
-
-        }
-
-
-        /* =========================================================
-           CLOSE VIEW MODAL
-        ========================================================= */
-
-        function closeViewModal() {
-
-            document.getElementById(
-                'viewModal'
-            ).style.display = 'none';
-
-        }
-
-
-        /* =========================================================
-           EDIT TEACHER
-        ========================================================= */
-
-        function editTeacher(teacherId) {
-
-            const teacher =
-                findTeacher(teacherId);
-
-
-            if (!teacher) {
-
-                alert(
-                    'Teacher record could not be found.'
-                );
-
-                return;
-
-            }
-
-
-            document.getElementById(
-                'edit_teacher_id'
-            ).value =
-                teacher.teacher_id ||
-                teacher.id ||
-                '';
-
-
-            document.getElementById(
-                'edit_staff_number'
-            ).value =
-                teacher.staff_number || '';
-
-
-            document.getElementById(
-                'edit_first_name'
-            ).value =
-                teacher.first_name || '';
-
-
-            document.getElementById(
-                'edit_middle_name'
-            ).value =
-                teacher.middle_name || '';
-
-
-            document.getElementById(
-                'edit_last_name'
-            ).value =
-                teacher.last_name || '';
-
-
-            document.getElementById(
-                'edit_gender'
-            ).value =
-                teacher.gender || '';
-
-
-            document.getElementById(
-                'edit_phone'
-            ).value =
-                teacher.phone || '';
-
-
-            document.getElementById(
-                'edit_email'
-            ).value =
-                teacher.email || '';
-
-
-            document.getElementById(
-                'edit_employment_date'
-            ).value =
-                teacher.employment_date
-                    ? String(
-                        teacher.employment_date
-                    ).substring(0, 10)
-                    : '';
-
-
-            document.getElementById(
-                'edit_employment_type'
-            ).value =
-                teacher.employment_type || '';
-
-
-            document.getElementById(
-                'edit_teacher_status'
-            ).value =
-                teacher.teacher_status || 'Active';
-
-
-            document.getElementById(
-                'edit_address'
-            ).value =
-                teacher.address || '';
-
-
-            document.getElementById(
-                'editModal'
-            ).style.display = 'block';
-
-        }
-
-
-        /* =========================================================
-           CLOSE EDIT MODAL
-        ========================================================= */
-
-        function closeEditModal() {
-
-            document.getElementById(
-                'editModal'
-            ).style.display = 'none';
-
-
-            document.getElementById(
-                'editTeacherForm'
-            ).reset();
-
-        }
-
-
-        /* =========================================================
-           SAVE TEACHER EDIT
-        ========================================================= */
-
-        document.getElementById(
-            'editTeacherForm'
-        ).addEventListener(
-            'submit',
-            async function (event) {
-
-                event.preventDefault();
-
-
-                const teacherId =
-                    document.getElementById(
-                        'edit_teacher_id'
-                    ).value;
-
-
-                if (!teacherId) {
-
-                    alert(
-                        'Teacher ID is missing.'
-                    );
-
-                    return;
-
-                }
-
-
-                try {
-
-                    const payload = {
-
-                        staff_number:
-                            document.getElementById(
-                                'edit_staff_number'
-                            ).value.trim(),
-
-                        first_name:
-                            document.getElementById(
-                                'edit_first_name'
-                            ).value.trim(),
-
-                        middle_name:
-                            document.getElementById(
-                                'edit_middle_name'
-                            ).value.trim(),
-
-                        last_name:
-                            document.getElementById(
-                                'edit_last_name'
-                            ).value.trim(),
-
-                        gender:
-                            document.getElementById(
-                                'edit_gender'
-                            ).value,
-
-                        phone:
-                            document.getElementById(
-                                'edit_phone'
-                            ).value.trim(),
-
-                        email:
-                            document.getElementById(
-                                'edit_email'
-                            ).value.trim(),
-
-                        address:
-                            document.getElementById(
-                                'edit_address'
-                            ).value.trim(),
-
-                        employment_date:
-                            document.getElementById(
-                                'edit_employment_date'
-                            ).value || null,
-
-                        employment_type:
-                            document.getElementById(
-                                'edit_employment_type'
-                            ).value,
-
-                        teacher_status:
-                            document.getElementById(
-                                'edit_teacher_status'
-                            ).value,
-
-                        school_section:
-                            'Primary'
-
-                    };
-
-
-                    const result =
-                        await apiRequest(
-                            `/teachers/${encodeURIComponent(teacherId)}`,
-                            {
-                                method: 'PUT',
-
-                                body:
-                                    JSON.stringify(
-                                        payload
-                                    )
-                            }
-                        );
-
-
-                    alert(
-                        result?.message ||
-                        'Teacher information updated successfully.'
-                    );
-
-
-                    closeEditModal();
-
-
-                    await loadTeachers();
-
-
-                } catch (error) {
-
-                    console.error(
-                        'Error updating teacher:',
-                        error
-                    );
-
-
-                    alert(
-                        error.message ||
-                        'Failed to update teacher information.'
-                    );
-
-                }
-
-            }
-        );
-
-
-        /* =========================================================
-           CLOSE MODALS WHEN CLICKING OUTSIDE
-        ========================================================= */
-
-        window.addEventListener(
-            'click',
-            function (event) {
-
-                const registrationModal =
-                    document.getElementById(
-                        'registrationModal'
-                    );
-
-
-                const viewModal =
-                    document.getElementById(
-                        'viewModal'
-                    );
-
-
-                const editModal =
-                    document.getElementById(
-                        'editModal'
-                    );
-
-
-                if (
-                    event.target ===
-                    registrationModal
-                ) {
-
-                    closeRegistrationModal();
-
-                }
-
-
-                if (
-                    event.target ===
-                    viewModal
-                ) {
-
-                    closeViewModal();
-
-                }
-
-
-                if (
-                    event.target ===
-                    editModal
-                ) {
-
-                    closeEditModal();
-
-                }
-
-            }
-        );
-
-
-        /* =========================================================
-           INITIALIZE PAGE
-        ========================================================= */
-
-        loadTeachers();
-
-    </script>
-
+        table.innerHTML = list.map(teacher => {
+            const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ');
+            const employment = String(teacher.employment_type || '-');
+            const status = String(teacher.teacher_status || 'Active');
+            const assignedClass = getAssignedClass(teacher.teacher_id || teacher.id);
+            return `<tr>
+                <td><strong>${escapeHtml(teacher.staff_number || '-')}</strong></td>
+                <td>${escapeHtml(name || '-')}</td>
+                <td>${escapeHtml(teacher.gender || '-')}</td>
+                <td>${escapeHtml(assignedClass)}</td>
+                <td>${escapeHtml(teacher.phone || '-')}</td>
+                <td><span class="status ${employment.toLowerCase().includes('permanent') ? 'status-permanent' : 'status-part-time'}">${escapeHtml(employment)}</span></td>
+                <td><span class="status status-active">${escapeHtml(status)}</span></td>
+                <td>
+                    <div class="action-group">
+                        <button class="action-btn view-btn" onclick="viewTeacher(${teacher.teacher_id || teacher.id})">View</button>
+                        <button class="action-btn edit-btn" onclick="editTeacher(${teacher.teacher_id || teacher.id})">Edit</button>
+                        <button class="action-btn assign-btn" onclick="openAssignModal(${teacher.teacher_id || teacher.id}, '${escapeHtml(name)}')">Assign Class</button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function filterTeachers() {
+        const search = document.getElementById('searchInput').value.toLowerCase().trim();
+        const classFilter = document.getElementById('classFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const filtered = teachers.filter(teacher => {
+            const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ').toLowerCase();
+            const staffNumber = String(teacher.staff_number || '').toLowerCase();
+            const employmentType = String(teacher.employment_type || '');
+            const matchesSearch = !search || name.includes(search) || staffNumber.includes(search);
+            const matchesStatus = !statusFilter || employmentType === statusFilter;
+            return matchesSearch && matchesStatus;
+        });
+        renderTeachers(filtered);
+    }
+
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('classFilter').value = '';
+        document.getElementById('statusFilter').value = '';
+        renderTeachers();
+    }
+
+    function openTeacherModal() { document.getElementById('teacherModal').style.display = 'block'; }
+    function closeTeacherModal() { document.getElementById('teacherModal').style.display = 'none'; document.getElementById('teacherForm').reset(); }
+
+    function viewTeacher(id) {
+        const teacher = teachers.find(t => String(t.teacher_id || t.id) === String(id));
+        if (!teacher) { alert('Teacher not found.'); return; }
+        const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ');
+        alert(`Teacher: ${name}\nStaff Number: ${teacher.staff_number}\nGender: ${teacher.gender}\nPhone: ${teacher.phone}\nEmail: ${teacher.email}\nEmployment: ${teacher.employment_type}\nStatus: ${teacher.teacher_status}\nAddress: ${teacher.address || '-'}`);
+    }
+
+    function editTeacher(id) {
+        const teacher = teachers.find(t => String(t.teacher_id || t.id) === String(id));
+        if (!teacher) { alert('Teacher not found.'); return; }
+        document.getElementById('staff_number').value = teacher.staff_number || '';
+        document.getElementById('first_name').value = teacher.first_name || '';
+        document.getElementById('middle_name').value = teacher.middle_name || '';
+        document.getElementById('last_name').value = teacher.last_name || '';
+        document.getElementById('gender').value = teacher.gender || '';
+        document.getElementById('phone').value = teacher.phone || '';
+        document.getElementById('email').value = teacher.email || '';
+        document.getElementById('employment_type').value = teacher.employment_type || 'Permanent';
+        document.getElementById('address').value = teacher.address || '';
+        document.getElementById('teacherForm').dataset.editId = id;
+        openTeacherModal();
+    }
+
+    function openAssignModal(teacherId, teacherName) {
+        document.getElementById('assign_teacher_id').value = teacherId;
+        document.getElementById('assign_teacher_name').value = teacherName;
+        document.getElementById('assignModal').style.display = 'block';
+    }
+
+    function closeAssignModal() { document.getElementById('assignModal').style.display = 'none'; document.getElementById('assignForm').reset(); }
+
+    document.getElementById('teacherForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const editId = this.dataset.editId;
+        const payload = {
+            staff_number: document.getElementById('staff_number').value.trim(),
+            first_name: document.getElementById('first_name').value.trim(),
+            middle_name: document.getElementById('middle_name').value.trim(),
+            last_name: document.getElementById('last_name').value.trim(),
+            gender: document.getElementById('gender').value,
+            phone: document.getElementById('phone').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            address: document.getElementById('address').value.trim(),
+            employment_type: document.getElementById('employment_type').value,
+            teacher_status: 'Active',
+            school_section: 'Primary'
+        };
+        try {
+            const url = editId ? `/api/teachers/${editId}` : '/api/teachers';
+            const method = editId ? 'PUT' : 'POST';
+            const response = await fetch(url, {
+                method,
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed');
+            alert(editId ? 'Teacher updated!' : 'Teacher registered!');
+            closeTeacherModal();
+            this.dataset.editId = '';
+            await loadTeachers();
+        } catch (error) { alert(error.message); }
+    });
+
+    document.getElementById('assignForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const teacherId = document.getElementById('assign_teacher_id').value;
+        const classId = document.getElementById('assign_class_id').value;
+        if (!classId) { alert('Please select a class.'); return; }
+        try {
+            const response = await fetch('/api/teachers/assign-class', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ teacher_id: Number(teacherId), class_id: Number(classId), academic_year_id: 1 })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed to assign');
+            alert('Class assigned successfully!');
+            closeAssignModal();
+            await loadTeachers();
+        } catch (error) { alert(error.message); }
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target === document.getElementById('teacherModal')) closeTeacherModal();
+        if (event.target === document.getElementById('assignModal')) closeAssignModal();
+    });
+
+    loadTeachers();
+    loadClasses();
+</script>
 
 </body>
 
