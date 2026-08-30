@@ -28,7 +28,7 @@ button,input,select,textarea{
 ========================================================= */
 
 .header{
-    background:#1f2937;
+    background:#1a3c6e;
     color:#fff;
     padding:18px 30px;
     display:flex;
@@ -36,15 +36,40 @@ button,input,select,textarea{
     align-items:center;
 }
 
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.header-logo{
+    width:40px;
+    height:40px;
+    border-radius:8px;
+    overflow:hidden;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.header-logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    padding:4px;
+}
+
 .header-left h1{
     margin:0;
-    font-size:22px;
+    font-size:20px;
 }
 
 .header-left p{
     margin:5px 0 0;
-    color:#d1d5db;
-    font-size:13px;
+    color:#a0c4ff;
+    font-size:12px;
 }
 
 .user-info{
@@ -64,7 +89,7 @@ button,input,select,textarea{
 .container{
     max-width:1500px;
     margin:25px auto;
-    padding:0 20px;
+    padding:0 20px 100px;
 }
 
 /* =========================================================
@@ -91,7 +116,7 @@ button,input,select,textarea{
 }
 
 .primary-btn{
-    background:#166534;
+    background:#1a3c6e;
     color:#fff;
     border:0;
     padding:11px 18px;
@@ -101,7 +126,7 @@ button,input,select,textarea{
 }
 
 .primary-btn:hover{
-    background:#14532d;
+    background:#153158;
 }
 
 /* =========================================================
@@ -133,7 +158,7 @@ button,input,select,textarea{
 }
 
 .teacher-nav a.active{
-    background:#1f2937;
+    background:#1a3c6e;
     color:#fff;
 }
 
@@ -153,7 +178,7 @@ button,input,select,textarea{
     border-radius:10px;
     padding:20px;
     box-shadow:0 3px 12px rgba(0,0,0,.06);
-    border-left:4px solid #374151;
+    border-left:4px solid #1a3c6e;
 }
 
 .summary-card.green{
@@ -244,8 +269,8 @@ button,input,select,textarea{
 }
 
 .manager-badge{
-    background:#e5e7eb;
-    color:#1f2937;
+    background:#dbeafe;
+    color:#1a3c6e;
     padding:7px 12px;
     border-radius:20px;
     font-size:11px;
@@ -301,7 +326,7 @@ button,input,select,textarea{
 
 .filters input:focus,
 .filters select:focus{
-    border-color:#166534;
+    border-color:#1a3c6e;
 }
 
 .reset-btn{
@@ -547,7 +572,7 @@ tbody tr:hover{
 
 .form-group input:focus,
 .form-group select:focus{
-    border-color:#166534;
+    border-color:#1a3c6e;
 }
 
 .form-actions{
@@ -568,7 +593,7 @@ tbody tr:hover{
 }
 
 .save-btn{
-    background:#166534;
+    background:#1a3c6e;
     color:#fff;
     border:0;
     border-radius:6px;
@@ -582,7 +607,7 @@ tbody tr:hover{
 }
 
 .save-btn:hover{
-    background:#14532d;
+    background:#153158;
 }
 
 /* =========================================================
@@ -749,11 +774,19 @@ tbody tr:hover{
 
 <div class="header-left">
 
+<div class="header-logo">
+    <img src="/images/logo.png" alt="GEA Logo" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+</div>
+
+<div>
+
 <h1>GLOBAL EDUCATION ACADEMY</h1>
 
 <p>
 Secondary School • Teacher Management
 </p>
+
+</div>
 
 </div>
 
@@ -809,20 +842,24 @@ onclick="openTeacherModal()"
 
 <nav class="teacher-nav">
 
-<a href="teachers.html">
-Teachers Dashboard
-</a>
-
-<a href="primary-teachers.html">
-Primary Teachers
+<a href="dashboard.html">
+Main Dashboard
 </a>
 
 <a href="secondary-teachers.html" class="active">
 Secondary Teachers
 </a>
 
-<a href="secondary-teacher-assignments.html">
-Teacher Assignments
+<a href="secondary-students.html">
+Students
+</a>
+
+<a href="secondary-finance.html">
+Finance
+</a>
+
+<a href="secondary-approvals.html">
+Approvals
 </a>
 
 </nav>
@@ -1101,6 +1138,20 @@ Loading teachers...
 </section>
 
 </main>
+
+
+<!-- =========================================================
+     LOGOUT BUTTON - BOTTOM LEFT
+========================================================= -->
+
+<button
+onclick="logout()"
+style="position:fixed;bottom:20px;left:20px;background:#dc2626;color:#fff;border:none;border-radius:8px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:999;"
+onmouseover="this.style.background='#b91c1c'"
+onmouseout="this.style.background='#dc2626'"
+>
+🚪 Logout
+</button>
 
 
 <!-- =========================================================
@@ -1628,6 +1679,62 @@ function getAuthData(){
 getAuthData();
 
 
+if(!token){
+
+    alert('Authentication required. Please log in.');
+
+    location.href='index.html';
+
+}
+
+
+// =========================================================
+// ACCESS CONTROL - SECONDARY TEACHERS ONLY
+// =========================================================
+
+const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
+
+// Block Primary Manager
+if (userRoleForAccess.includes('manager-primary')) {
+    alert('Access denied. You do not have permission to view Secondary School teachers.');
+    window.location.href = 'dashboard.html';
+}
+
+// Block Primary Finance Officer
+if (userRoleForAccess.includes('finance officer (primary)')) {
+    alert('Access denied. You do not have permission to view Secondary School teachers.');
+    window.location.href = 'dashboard.html';
+}
+
+// Block Primary Teacher
+if (userRoleForAccess.includes('teacher - primary')) {
+    alert('Access denied. You do not have permission to view Secondary School teachers.');
+    window.location.href = 'dashboard.html';
+}
+
+// Allowed roles: Manager-Secondary, Administrator, Proprietor
+const allowedRoles = ['manager-secondary', 'admin', 'proprietor'];
+const hasAccess = allowedRoles.some(role => userRoleForAccess.includes(role));
+
+if (!hasAccess) {
+    alert('Access denied. Insufficient permissions.');
+    window.location.href = 'dashboard.html';
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout() {
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    window.location.href = '/login.html';
+}
+
+
 /* =========================================================
    DISPLAY USER
 ========================================================= */
@@ -1986,7 +2093,6 @@ async function loadAdditionalTeacherData() {
     }
 
     try {
-        // ONE request for ALL assignments
         const allAssignments = await apiRequest(
             `/teachers/secondary-assignments/bulk?academic_year_id=${academicYear.academic_year_id}`
         );
@@ -1995,7 +2101,6 @@ async function loadAdditionalTeacherData() {
             return;
         }
 
-        // Process each teacher
         teachers.forEach(teacher => {
             const teacherAssignments = allAssignments.filter(
                 a => a.teacher_id === teacher.teacher_id

@@ -30,7 +30,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1050px;
             margin: 30px auto;
             padding: 0 20px;
         }
@@ -44,6 +44,11 @@
 
         h2 {
             margin-top: 0;
+        }
+
+        .intro {
+            color: #555;
+            margin-bottom: 25px;
         }
 
         .section-title {
@@ -81,6 +86,25 @@
             border-radius: 6px;
             font-size: 15px;
             width: 100%;
+            background: white;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        select:disabled {
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
         }
 
         input[type="file"] {
@@ -88,9 +112,8 @@
             background: #f9fafb;
         }
 
-        textarea {
-            min-height: 90px;
-            resize: vertical;
+        .required {
+            color: #dc2626;
         }
 
         .photo-preview {
@@ -99,10 +122,12 @@
         }
 
         .photo-preview img {
-            max-width: 150px;
+            width: 150px;
+            height: 170px;
+            object-fit: cover;
             border-radius: 8px;
             border: 1px solid #ddd;
-            padding: 5px;
+            padding: 4px;
         }
 
         .file-upload-group {
@@ -112,21 +137,27 @@
             padding: 15px;
         }
 
-        .file-upload-group label {
-            font-weight: bold;
-            color: #1f2937;
-        }
-
-        .file-upload-group .file-hint {
+        .file-hint {
             font-size: 12px;
             color: #6b7280;
-            margin-top: 4px;
+            margin-top: 5px;
         }
 
         .file-name-display {
             font-size: 13px;
             color: #166534;
-            margin-top: 5px;
+            margin-top: 6px;
+        }
+
+        .section-info {
+            display: none;
+            margin-top: 8px;
+            padding: 10px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            border-radius: 6px;
+            font-size: 13px;
         }
 
         .actions {
@@ -150,6 +181,11 @@
 
         .submit-btn:hover {
             background: #111827;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .back-btn {
@@ -185,6 +221,24 @@
             border: 1px solid #93c5fd;
         }
 
+        .loading {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .debug-box {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+
         @media (max-width: 700px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -197,6 +251,11 @@
             .card {
                 padding: 20px;
             }
+            select:disabled {
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+}
         }
     </style>
 </head>
@@ -208,91 +267,46 @@
     </header>
 
     <main class="container">
-
         <div class="card">
-
             <h2>Register New Student</h2>
-
-            <p>
+            <p class="intro">
                 Complete the student's information below.
                 The registration will be submitted for approval.
             </p>
 
-            <form id="studentForm" enctype="multipart/form-data">
-
-                <!-- ============================================ -->
-                <!-- PERSONAL INFORMATION -->
-                <!-- ============================================ -->
-
-                <h3 class="section-title">
-                    Personal Information
-                </h3>
-
+            <form id="studentForm">
+                <h3 class="section-title">Personal Information</h3>
                 <div class="form-grid">
-
-                    <!-- Photo Upload -->
                     <div class="form-group full-width">
-                        <label for="student_photo">
-                            Student Photo
-                        </label>
-                        <input
-                            type="file"
-                            id="student_photo"
-                            accept="image/*"
-                            onchange="previewPhoto(event)"
-                        >
+                        <label for="student_photo">Student Photo</label>
+                        <input type="file" id="student_photo" accept="image/*">
                         <div id="photoPreview" class="photo-preview">
                             <img id="photoPreviewImg" src="" alt="Student photo preview">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="admission_number">
-                            Admission Number *
-                        </label>
-                        <input
-                            type="text"
-                            id="admission_number"
-                            required
-                        >
+                        <label for="admission_number">Admission Number <span class="required">*</span></label>
+                        <input type="text" id="admission_number" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="first_name">
-                            First Name *
-                        </label>
-                        <input
-                            type="text"
-                            id="first_name"
-                            required
-                        >
+                        <label for="first_name">First Name <span class="required">*</span></label>
+                        <input type="text" id="first_name" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="middle_name">
-                            Middle Name
-                        </label>
-                        <input
-                            type="text"
-                            id="middle_name"
-                        >
+                        <label for="middle_name">Middle Name</label>
+                        <input type="text" id="middle_name">
                     </div>
 
                     <div class="form-group">
-                        <label for="last_name">
-                            Last Name *
-                        </label>
-                        <input
-                            type="text"
-                            id="last_name"
-                            required
-                        >
+                        <label for="last_name">Last Name <span class="required">*</span></label>
+                        <input type="text" id="last_name" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="gender">
-                            Gender
-                        </label>
+                        <label for="gender">Gender</label>
                         <select id="gender">
                             <option value="">Select gender</option>
                             <option value="Male">Male</option>
@@ -301,112 +315,70 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="date_of_birth">
-                            Date of Birth
-                        </label>
-                        <input
-                            type="date"
-                            id="date_of_birth"
-                        >
+                        <label for="date_of_birth">Date of Birth</label>
+                        <input type="date" id="date_of_birth">
                     </div>
 
                     <div class="form-group">
-                        <label for="nationality">
-                            Nationality
-                        </label>
-                        <input
-                            type="text"
-                            id="nationality"
-                            value="Sierra Leonean"
-                        >
+                        <label for="nationality">Nationality</label>
+                        <input type="text" id="nationality" value="Sierra Leonean">
                     </div>
 
                     <div class="form-group">
-                        <label for="phone">
-                            Phone
-                        </label>
-                        <input
-                            type="tel"
-                            id="phone"
-                        >
+                        <label for="phone">Student Phone</label>
+                        <input type="tel" id="phone">
                     </div>
 
                     <div class="form-group full-width">
-                        <label for="address">
-                            Address
-                        </label>
+                        <label for="address">Student Address</label>
                         <textarea id="address"></textarea>
                     </div>
-
                 </div>
 
-                <!-- ============================================ -->
-                <!-- SCHOOL INFORMATION -->
-                <!-- ============================================ -->
-
-                <h3 class="section-title">
-                    School Information
-                </h3>
-
+                <h3 class="section-title">School Information</h3>
                 <div class="form-grid">
 
                     <div class="form-group">
-                        <label for="class_id">
-                            Class *
-                        </label>
+                        <label for="class_id">Class <span class="required">*</span></label>
                         <select id="class_id" required>
-                            <option value="">Loading classes...</option>
+                            <option value="">Select sector first</option>
+                        </select>
+                        <div id="classLoading" class="loading"></div>
+                        <div id="classDebug" class="debug-box"></div>
+                    </div>
+
+                    <div class="form-group" id="armGroup" style="display:none;">
+                        <label for="arm">Arm / Programme</label>
+                        <select id="arm">
+                            <option value="">Select</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="admission_date">
-                            Admission Date
-                        </label>
-                        <input
-                            type="date"
-                            id="admission_date"
-                        >
+                        <label for="admission_date">Admission Date</label>
+                        <input type="date" id="admission_date">
                     </div>
 
-                    <div class="form-group">
-                        <label for="previous_school">
-                            Previous School
-                        </label>
-                        <input
-                            type="text"
-                            id="previous_school"
-                        >
+                    <div class="form-group full-width">
+                        <div id="sectionInfo" class="section-info"></div>
                     </div>
 
+                    <div class="form-group full-width">
+                        <label for="previous_school">Previous School</label>
+                        <input type="text" id="previous_school">
+                    </div>
                 </div>
 
-                <!-- ============================================ -->
-                <!-- PARENT / GUARDIAN INFORMATION -->
-                <!-- ============================================ -->
-
-                <h3 class="section-title">
-                    Parent / Guardian Information
-                </h3>
-
+                <h3 class="section-title">Parent / Guardian Information</h3>
                 <div class="form-grid">
-
                     <div class="form-group">
-                        <label for="parent_name">
-                            Full Name *
-                        </label>
-                        <input
-                            type="text"
-                            id="parent_name"
-                            required
-                        >
+                        <label for="guardian_name">Full Name <span class="required">*</span></label>
+                        <input type="text" id="guardian_name" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="parent_relationship">
-                            Relationship *
-                        </label>
-                        <select id="parent_relationship" required>
+                        <label for="guardian_relationship">Relationship <span class="required">*</span></label>
+                        <select id="guardian_relationship" required>
                             <option value="">Select relationship</option>
                             <option value="Father">Father</option>
                             <option value="Mother">Mother</option>
@@ -419,266 +391,257 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="parent_phone">
-                            Phone Number
-                        </label>
-                        <input
-                            type="tel"
-                            id="parent_phone"
-                        >
+                        <label for="guardian_phone">Phone Number</label>
+                        <input type="tel" id="guardian_phone">
                     </div>
 
                     <div class="form-group">
-                        <label for="parent_email">
-                            Email Address
-                        </label>
-                        <input
-                            type="email"
-                            id="parent_email"
-                        >
+                        <label for="guardian_email">Email Address</label>
+                        <input type="email" id="guardian_email">
                     </div>
 
                     <div class="form-group full-width">
-                        <label for="parent_address">
-                            Address
-                        </label>
-                        <textarea id="parent_address"></textarea>
+                        <label for="guardian_address">Address</label>
+                        <textarea id="guardian_address"></textarea>
                     </div>
-
                 </div>
 
-                <!-- ============================================ -->
-                <!-- EMERGENCY CONTACT -->
-                <!-- ============================================ -->
-
-                <h3 class="section-title">
-                    Emergency Contact
-                </h3>
-
+                <h3 class="section-title">Emergency Contact</h3>
                 <div class="form-grid">
-
                     <div class="form-group">
-                        <label for="emergency_contact_name">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            id="emergency_contact_name"
-                        >
+                        <label for="emergency_contact_name">Name</label>
+                        <input type="text" id="emergency_contact_name">
                     </div>
 
                     <div class="form-group">
-                        <label for="emergency_contact_phone">
-                            Phone
-                        </label>
-                        <input
-                            type="tel"
-                            id="emergency_contact_phone"
-                        >
+                        <label for="emergency_contact_phone">Phone</label>
+                        <input type="tel" id="emergency_contact_phone">
                     </div>
 
                     <div class="form-group">
-                        <label for="emergency_contact_relationship">
-                            Relationship
-                        </label>
-                        <input
-                            type="text"
-                            id="emergency_contact_relationship"
-                        >
+                        <label for="emergency_contact_relationship">Relationship</label>
+                        <input type="text" id="emergency_contact_relationship">
                     </div>
-
                 </div>
 
-                <!-- ============================================ -->
-                <!-- STUDENT DOCUMENTS -->
-                <!-- ============================================ -->
-
-                <h3 class="section-title">
-                    Student Documents
-                </h3>
-
+                <h3 class="section-title">Student Documents</h3>
                 <div class="form-grid">
-
                     <div class="form-group full-width file-upload-group">
-                        <label for="result_file">
-                            Result / Report Card
-                        </label>
-                        <input
-                            type="file"
-                            id="result_file"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                            onchange="showFileName(this, 'resultFileName')"
-                        >
-                        <div class="file-hint">Upload result or report card (PDF, DOC, JPG, PNG)</div>
+                        <label for="result_file">Result / Report Card</label>
+                        <input type="file" id="result_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <div class="file-hint">PDF, DOC, DOCX, JPG or PNG</div>
                         <div id="resultFileName" class="file-name-display"></div>
                     </div>
 
                     <div class="form-group full-width file-upload-group">
-                        <label for="birth_certificate_file">
-                            Birth Certificate
-                        </label>
-                        <input
-                            type="file"
-                            id="birth_certificate_file"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                            onchange="showFileName(this, 'birthFileName')"
-                        >
-                        <div class="file-hint">Upload birth certificate (PDF, DOC, JPG, PNG)</div>
+                        <label for="birth_certificate_file">Birth Certificate</label>
+                        <input type="file" id="birth_certificate_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <div class="file-hint">PDF, DOC, DOCX, JPG or PNG</div>
                         <div id="birthFileName" class="file-name-display"></div>
                     </div>
 
                     <div class="form-group full-width file-upload-group">
-                        <label for="testimonial_file">
-                            Testimonial / Reference Letter
-                        </label>
-                        <input
-                            type="file"
-                            id="testimonial_file"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                            onchange="showFileName(this, 'testimonialFileName')"
-                        >
-                        <div class="file-hint">Upload testimonial or reference letter (PDF, DOC, JPG, PNG)</div>
+                        <label for="testimonial_file">Testimonial / Reference Letter</label>
+                        <input type="file" id="testimonial_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <div class="file-hint">PDF, DOC, DOCX, JPG or PNG</div>
                         <div id="testimonialFileName" class="file-name-display"></div>
                     </div>
 
                     <div class="form-group full-width file-upload-group">
-                        <label for="transfer_file">
-                            Transfer Form
-                        </label>
-                        <input
-                            type="file"
-                            id="transfer_file"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                            onchange="showFileName(this, 'transferFileName')"
-                        >
-                        <div class="file-hint">Upload transfer form (PDF, DOC, JPG, PNG)</div>
+                        <label for="transfer_file">Transfer Form</label>
+                        <input type="file" id="transfer_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <div class="file-hint">PDF, DOC, DOCX, JPG or PNG</div>
                         <div id="transferFileName" class="file-name-display"></div>
                     </div>
-
                 </div>
-
-                <!-- ============================================ -->
-                <!-- MESSAGE -->
-                <!-- ============================================ -->
 
                 <div id="message"></div>
 
-                <!-- ============================================ -->
-                <!-- BUTTONS -->
-                <!-- ============================================ -->
-
                 <div class="actions">
-                    <button type="submit" class="submit-btn">
-                        Submit Registration
-                    </button>
-
-                    <button type="button" class="back-btn" onclick="history.back()">
-                        Cancel
-                    </button>
+                    <button type="submit" id="submitBtn" class="submit-btn">Submit Registration</button>
+                    <button type="button" class="back-btn" onclick="history.back()">Cancel</button>
                 </div>
-
             </form>
-
         </div>
-
     </main>
 
     <script>
-        // =========================================================
-        // AUTHENTICATION
-        // =========================================================
+    const token = sessionStorage.getItem('authToken');
+    if (!token) {
+        alert('Please login first.');
+        window.location.href = 'index.html';
+    }
 
-        const token = sessionStorage.getItem('authToken');
+    const form = document.getElementById('studentForm');
+    const classSelect = document.getElementById('class_id');
+    const message = document.getElementById('message');
+    const submitBtn = document.getElementById('submitBtn');
+    const classLoading = document.getElementById('classLoading');
 
-        if (!token) {
-            alert('Please login first.');
-            window.location.href = 'index.html';
+    let allClasses = [];
+
+    function showMessage(text, type) {
+        message.textContent = text;
+        message.className = type;
+        message.style.display = 'block';
+    }
+
+    function hideMessage() {
+        message.style.display = 'none';
+    }
+
+    // Photo preview
+    document.getElementById('student_photo').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) {
+            document.getElementById('photoPreview').style.display = 'none';
+            return;
         }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('photoPreviewImg').src = e.target.result;
+            document.getElementById('photoPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    });
 
-        // =========================================================
-        // PHOTO PREVIEW
-        // =========================================================
-
-        function previewPhoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById('photoPreview');
-                const img = document.getElementById('photoPreviewImg');
-                img.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // =========================================================
-        // SHOW FILE NAME
-        // =========================================================
-
-        function showFileName(input, displayId) {
+    // File name display
+    function bindFileName(inputId, displayId) {
+        document.getElementById(inputId).addEventListener('change', function() {
             const display = document.getElementById(displayId);
-            if (input.files && input.files[0]) {
-                display.textContent = '📎 ' + input.files[0].name;
+            if (this.files && this.files[0]) {
+                display.textContent = '📎 ' + this.files[0].name;
             } else {
                 display.textContent = '';
             }
-        }
+        });
+    }
 
-        // =========================================================
-        // LOAD CLASSES
-        // =========================================================
+    bindFileName('result_file', 'resultFileName');
+    bindFileName('birth_certificate_file', 'birthFileName');
+    bindFileName('testimonial_file', 'testimonialFileName');
+    bindFileName('transfer_file', 'transferFileName');
 
-        async function loadClasses() {
-            const classSelect = document.getElementById('class_id');
-            classSelect.innerHTML = '<option value="">Loading classes...</option>';
+    // Load classes - simple version
+    async function loadClasses() {
+        classSelect.innerHTML = '<option value="">Loading classes...</option>';
+        classLoading.textContent = 'Loading classes...';
 
-            try {
-                const response = await fetch('/api/classes', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to load classes');
+        try {
+            const response = await fetch('/api/classes', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
                 }
+            });
 
-                const data = await response.json();
-                const classes = Array.isArray(data) ? data : [];
+            const data = await response.json();
 
-                classSelect.innerHTML = '<option value="">Select class</option>';
-
-                if (classes.length === 0) {
-                    classSelect.innerHTML = '<option value="">No classes available</option>';
-                    return;
-                }
-
-                classes.forEach(cls => {
-                    const option = document.createElement('option');
-                    option.value = cls.class_id;
-                    let className = cls.class_name || 'Unnamed Class';
-                    if (cls.arm) {
-                        className += ' - ' + cls.arm;
-                    }
-                    option.textContent = className;
-                    classSelect.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error('Error loading classes:', error);
-                classSelect.innerHTML = '<option value="">Failed to load classes</option>';
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to load classes');
             }
+
+            allClasses = Array.isArray(data) ? data : (data.classes || []);
+
+            classSelect.innerHTML = '<option value="">Select class</option>';
+
+            allClasses.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.class_id;
+                let label = cls.class_name || 'Class ' + cls.class_id;
+                if (cls.arm) label += ' - ' + cls.arm;
+                option.textContent = label;
+                classSelect.appendChild(option);
+            });
+
+            classSelect.disabled = false;
+            classLoading.textContent = allClasses.length + ' classes available';
+
+        } catch (error) {
+            console.error('Error loading classes:', error);
+            classSelect.innerHTML = '<option value="">Unable to load classes</option>';
+            classLoading.textContent = error.message;
+        }
+    }
+
+    // Submit form
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        hideMessage();
+
+        const classId = classSelect.value;
+
+        if (!classId) {
+            showMessage('Please select a class.', 'error');
+            return;
         }
 
-        // =========================================================
-        // INITIALIZE
-        // =========================================================
+        const formData = new FormData();
+        formData.append('admission_number', document.getElementById('admission_number').value.trim());
+        formData.append('first_name', document.getElementById('first_name').value.trim());
+        formData.append('middle_name', document.getElementById('middle_name').value.trim());
+        formData.append('last_name', document.getElementById('last_name').value.trim());
+        formData.append('gender', document.getElementById('gender').value);
+        formData.append('date_of_birth', document.getElementById('date_of_birth').value);
+        formData.append('nationality', document.getElementById('nationality').value.trim());
+        formData.append('phone', document.getElementById('phone').value.trim());
+        formData.append('address', document.getElementById('address').value.trim());
+        formData.append('class_id', classId);
+        formData.append('admission_date', document.getElementById('admission_date').value);
+        formData.append('previous_school', document.getElementById('previous_school').value.trim());
+        formData.append('guardian_name', document.getElementById('guardian_name').value.trim());
+        formData.append('guardian_relationship', document.getElementById('guardian_relationship').value);
+        formData.append('guardian_phone', document.getElementById('guardian_phone').value.trim());
+        formData.append('guardian_email', document.getElementById('guardian_email').value.trim());
+        formData.append('guardian_address', document.getElementById('guardian_address').value.trim());
+        formData.append('emergency_contact_name', document.getElementById('emergency_contact_name').value.trim());
+        formData.append('emergency_contact_phone', document.getElementById('emergency_contact_phone').value.trim());
+        formData.append('emergency_contact_relationship', document.getElementById('emergency_contact_relationship').value.trim());
 
-        loadClasses();
-    </script>
+        const fileFields = ['student_photo', 'result_file', 'birth_certificate_file', 'testimonial_file', 'transfer_file'];
+        fileFields.forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            if (input && input.files && input.files[0]) {
+                formData.append(fieldId, input.files[0]);
+            }
+        });
 
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        try {
+            const response = await fetch('/api/students/register', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showMessage(result.message || 'Student registered successfully!', 'success');
+                form.reset();
+                document.getElementById('photoPreview').style.display = 'none';
+                document.getElementById('resultFileName').textContent = '';
+                document.getElementById('birthFileName').textContent = '';
+                document.getElementById('testimonialFileName').textContent = '';
+                document.getElementById('transferFileName').textContent = '';
+            } else {
+                showMessage(result.message || 'Registration failed.', 'error');
+            }
+
+        } catch (error) {
+            console.error('Registration error:', error);
+            showMessage('An error occurred: ' + error.message, 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Registration';
+        }
+    });
+
+    // Initialize
+    loadClasses();
+</script>
 </body>
 
 </html>

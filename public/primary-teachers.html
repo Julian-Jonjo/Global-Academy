@@ -43,7 +43,7 @@
         ========================================================= */
 
         .header {
-            background: #166534;
+            background: #1a3c6e;
             color: #fff;
             padding: 17px 30px;
 
@@ -62,13 +62,20 @@
             width: 42px;
             height: 42px;
             border-radius: 8px;
-            background: #14532d;
+            background: #fff;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            font-size: 21px;
+            overflow: hidden;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
         }
 
         .header-title h1 {
@@ -80,7 +87,7 @@
         .header-title p {
             margin: 3px 0 0;
             font-size: 12px;
-            color: #dcfce7;
+            color: #a0c4ff;
         }
 
         .user-info {
@@ -139,7 +146,7 @@
 
         .back-link {
             text-decoration: none;
-            color: #166534;
+            color: #1a3c6e;
             font-size: 13px;
             font-weight: 700;
 
@@ -161,7 +168,7 @@
 
             padding: 10px 15px;
 
-            background: #166534;
+            background: #1a3c6e;
             color: #fff;
 
             font-size: 12px;
@@ -171,7 +178,7 @@
         }
 
         .register-top-btn:hover {
-            background: #14532d;
+            background: #153158;
         }
 
 
@@ -212,7 +219,7 @@
         }
 
         .nav a.active {
-            background: #166534;
+            background: #1a3c6e;
             color: #fff;
         }
 
@@ -257,7 +264,7 @@
 
             width: 4px;
 
-            background: #166534;
+            background: #1a3c6e;
         }
 
         .kpi-label {
@@ -366,8 +373,8 @@
         }
 
         .head-status {
-            background: #dcfce7;
-            color: #166534;
+            background: #dbeafe;
+            color: #1a3c6e;
 
             padding: 6px 11px;
 
@@ -428,7 +435,7 @@
         }
 
         .btn-primary {
-            background: #166534;
+            background: #1a3c6e;
             color: #fff;
         }
 
@@ -532,13 +539,13 @@
         }
 
         .badge-active {
-            background: #dcfce7;
-            color: #166534;
+            background: #dbeafe;
+            color: #1a3c6e;
         }
 
         .badge-permanent {
-            background: #dcfce7;
-            color: #166534;
+            background: #dbeafe;
+            color: #1a3c6e;
         }
 
         .badge-parttime {
@@ -926,7 +933,7 @@
         <div class="header-left">
 
             <div class="header-logo">
-                🏫
+                <img src="/images/logo.png" alt="School Logo" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
             </div>
 
             <div class="header-title">
@@ -977,10 +984,10 @@
             <div class="page-header-actions">
 
                 <a
-                    href="teachers.html"
+                    href="dashboard.html"
                     class="back-link">
 
-                    ← Teachers Overview
+                    ← Back to Dashboard
 
                 </a>
 
@@ -1008,24 +1015,24 @@
                 Main Dashboard
             </a>
 
-            <a href="teachers.html">
-                Teachers
-            </a>
-
             <a
                 href="primary-teachers.html"
                 class="active">
 
-                Primary School
+                Primary Teachers
 
             </a>
 
-            <a href="secondary-teachers.html">
-                Secondary School
-            </a>
-
-            <a href="students-registration.html">
+            <a href="primary-students.html">
                 Students
+            </a>
+
+            <a href="primary-finance.html">
+                Finance
+            </a>
+
+            <a href="primary-approvals.html">
+                Approvals
             </a>
 
         </nav>
@@ -1329,6 +1336,34 @@
 
 
     </main>
+
+
+    <!-- =========================================================
+         LOGOUT BUTTON - BOTTOM LEFT
+    ========================================================= -->
+
+    <button 
+        onclick="logout()" 
+        style="
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 999;
+        "
+        onmouseover="this.style.background='#b91c1c'"
+        onmouseout="this.style.background='#dc2626'"
+    >
+        Logout
+    </button>
 
 
     <!-- =========================================================
@@ -1964,6 +1999,40 @@
         }
 
 
+        // =========================================================
+        // ACCESS CONTROL - PRIMARY TEACHERS ONLY
+        // =========================================================
+
+        const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
+
+        // Block Secondary Manager
+        if (userRoleForAccess.includes('manager-secondary')) {
+            alert('Access denied. You do not have permission to view Primary School teachers.');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Block Secondary Finance Officer
+        if (userRoleForAccess.includes('finance officer (secondary)')) {
+            alert('Access denied. You do not have permission to view Primary School teachers.');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Block Secondary Teacher
+        if (userRoleForAccess.includes('teacher - secondary')) {
+            alert('Access denied. You do not have permission to view Primary School teachers.');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Allowed roles: Manager-Primary, Administrator, Proprietor
+        const allowedRoles = ['manager-primary', 'admin', 'proprietor'];
+        const hasAccess = allowedRoles.some(role => userRoleForAccess.includes(role));
+
+        if (!hasAccess) {
+            alert('Access denied. Insufficient permissions.');
+            window.location.href = 'dashboard.html';
+        }
+
+
         /* =========================================================
            USER INFORMATION
         ========================================================= */
@@ -1977,6 +2046,19 @@
             userInfo.textContent =
                 `${user?.full_name || user?.name || 'Administrator'} (${user?.role_name || user?.role || 'School Management'})`;
 
+        }
+
+
+        /* =========================================================
+           LOGOUT
+        ========================================================= */
+
+        function logout() {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
         }
 
 

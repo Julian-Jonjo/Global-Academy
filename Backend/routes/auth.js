@@ -2,8 +2,13 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const supabase = require('../Config/db');
+const { authenticateToken } = require('../middleware/authMiddleware');
 
 const router = express.Router();
+
+// ============================================================
+// LOGIN
+// ============================================================
 
 router.post('/login', async (req, res) => {
     try {
@@ -62,29 +67,35 @@ router.post('/login', async (req, res) => {
         // Get role_name from the nested object
         const roleName = user.user_roles?.role_name || null;
 
+        if (!roleName) {
+            return res.status(500).json({
+                message: 'User role is not properly configured'
+            });
+        }
+
         const token = jwt.sign(
-    {
-        user_id: user.user_id,
-        username: user.username,
-        teacher_id: user.teacher_id || null,
-        student_id: user.student_id || null,
-        role_id: user.role_id,
-        role_name: roleName
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: '8h' }
-);
+            {
+                user_id: user.user_id,
+                username: user.username,
+                teacher_id: user.teacher_id || null,
+                student_id: user.student_id || null,
+                role_id: user.role_id,
+                role_name: roleName
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '8h' }
+        );
 
         res.json({
             message: 'Login successful',
             token,
             user: {
                 user_id: user.user_id,
-    username: user.username,
-    full_name: user.full_name,
-    teacher_id: user.teacher_id,
-    role_id: user.role_id,
-    role_name: roleName
+                username: user.username,
+                full_name: user.full_name,
+                teacher_id: user.teacher_id,
+                role_id: user.role_id,
+                role_name: roleName
             }
         });
 
@@ -94,6 +105,62 @@ router.post('/login', async (req, res) => {
             message: 'Server error during login: ' + error.message
         });
     }
+});
+
+// ============================================================
+// GET CURRENT USER PROFILE
+// ============================================================
+
+router.get('/me', authenticateToken, async (req, res) => {
+    try {
+        const { data: user, error } = await supabase
+            .from('users')
+            .select(`
+                user_id,
+                username,
+                full_name,
+                is_active,
+                role_id,
+                teacher_id,
+                user_roles (
+                    role_name
+                )
+            `)
+            .eq('user_id', req.user.user_id)
+            .single();
+
+        if (error || !user) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+        res.json({
+            user: {
+                user_id: user.user_id,
+                username: user.username,
+                full_name: user.full_name,
+                teacher_id: user.teacher_id,
+                role_id: user.role_id,
+                role_name: user.user_roles?.role_name || req.user.role_name
+            }
+        });
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        res.status(500).json({
+            message: 'Failed to load profile'
+        });
+    }
+});
+
+// ============================================================
+// LOGOUT
+// ============================================================
+
+router.post('/logout', authenticateToken, (req, res) => {
+    res.json({
+        message: 'Logged out successfully'
+    });
 });
 
 module.exports = router;

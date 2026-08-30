@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>GLOBAL EDUCATION ACADEMY SECONDARY SCHOOL | Teachers Management</title>
+    <title>GLOBAL EDUCATION ACADEMY | Students Management</title>
 
     <style>
         /* =========================================================
@@ -150,11 +150,6 @@
             font-size: 14px;
         }
 
-        .page-header-right {
-            color: #6b7280;
-            font-size: 13px;
-        }
-
         .back-btn {
             background: #6b7280;
             color: white;
@@ -176,7 +171,7 @@
         /* =========================================================
            NAVIGATION
         ========================================================= */
-        .teacher-nav {
+        .student-nav {
             display: flex;
             gap: 4px;
             flex-wrap: wrap;
@@ -188,7 +183,7 @@
             margin-bottom: 25px;
         }
 
-        .teacher-nav a {
+        .student-nav a {
             text-decoration: none;
             color: #4b5563;
             padding: 10px 15px;
@@ -198,11 +193,11 @@
             transition: all 0.3s;
         }
 
-        .teacher-nav a:hover {
+        .student-nav a:hover {
             background: #f3f4f6;
         }
 
-        .teacher-nav a.active {
+        .student-nav a.active {
             background: #1a3c6e;
             color: #fff;
         }
@@ -269,12 +264,12 @@
             background: #1a3c6e;
         }
 
-        .kpi-card.permanent::before {
-            background: #15803d;
+        .kpi-card.male::before {
+            background: #2563eb;
         }
 
-        .kpi-card.parttime::before {
-            background: #b91c1c;
+        .kpi-card.female::before {
+            background: #db2777;
         }
 
         .kpi-label {
@@ -518,12 +513,12 @@
             background: #1a3c6e;
         }
 
-        .progress-permanent {
-            background: #15803d;
+        .progress-male {
+            background: #2563eb;
         }
 
-        .progress-parttime {
-            background: #b91c1c;
+        .progress-female {
+            background: #db2777;
         }
 
         /* =========================================================
@@ -678,10 +673,10 @@
             .container {
                 padding: 20px 12px 80px;
             }
-            .teacher-nav {
+            .student-nav {
                 flex-direction: column;
             }
-            .teacher-nav a {
+            .student-nav a {
                 width: 100%;
             }
             .kpi-grid {
@@ -719,11 +714,11 @@
     <header class="header">
         <div class="header-left">
             <div class="header-logo">
-                <img src="/images/logo.png" alt="GLOBAL EDUCATION ACADEMY SECONDARY SCHOOL" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+                <img src="/images/logo.png" alt="GLOBAL EDUCATION ACADEMY" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
             </div>
             <div class="header-title">
-                <h1>GLOBAL EDUCATION ACADEMY SECONDARY SCHOOL</h1>
-                <p>Teachers Management</p>
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>Students Management</p>
             </div>
         </div>
         <div class="user-info">
@@ -739,8 +734,8 @@
         ========================================================= -->
         <div class="page-header">
             <div>
-                <h2>Teachers Management Dashboard</h2>
-                <p>Institutional overview of teaching staff across Primary and Secondary School.</p>
+                <h2>Students Management Dashboard</h2>
+                <p>Institutional overview of students across Primary and Secondary School.</p>
             </div>
             <div class="page-header-right">
                 <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
@@ -750,10 +745,10 @@
         <!-- =========================================================
              NAVIGATION
         ========================================================= -->
-        <nav class="teacher-nav">
+        <nav class="student-nav">
             <a href="dashboard.html">Main Dashboard</a>
-            <a href="teachers.html" class="active">Teachers</a>
-            <a href="students.html">Students</a>
+            <a href="teachers.html">Teachers</a>
+            <a href="students.html" class="active">Students</a>
             <a href="classes.html">Classes</a>
             <a href="subjects.html">Subjects</a>
         </nav>
@@ -763,33 +758,33 @@
         ========================================================= -->
         <section class="section">
             <div class="section-title">
-                <h3>Staff Overview</h3>
-                <span>All teaching staff</span>
+                <h3>Student Overview</h3>
+                <span>All registered students</span>
             </div>
 
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-label">Total Teachers</div>
-                    <div id="totalTeachers" class="kpi-number">0</div>
-                    <div class="kpi-note">Registered teaching staff</div>
+                    <div class="kpi-label">Total Students</div>
+                    <div id="totalStudents" class="kpi-number">0</div>
+                    <div class="kpi-note">Registered students</div>
                 </div>
 
                 <div class="kpi-card primary">
                     <div class="kpi-label">Primary School</div>
-                    <div id="primaryTeachers" class="kpi-number">0</div>
-                    <div class="kpi-note">Primary teaching staff</div>
+                    <div id="primaryStudents" class="kpi-number">0</div>
+                    <div class="kpi-note">Primary students</div>
                 </div>
 
                 <div class="kpi-card secondary">
                     <div class="kpi-label">Secondary School</div>
-                    <div id="secondaryTeachers" class="kpi-number">0</div>
-                    <div class="kpi-note">Secondary teaching staff</div>
+                    <div id="secondaryStudents" class="kpi-number">0</div>
+                    <div class="kpi-note">Secondary students</div>
                 </div>
 
-                <div class="kpi-card permanent">
-                    <div class="kpi-label">Permanent Teachers</div>
-                    <div id="permanentTeachers" class="kpi-number">0</div>
-                    <div class="kpi-note">Currently permanent staff</div>
+                <div class="kpi-card male">
+                    <div class="kpi-label">Male Students</div>
+                    <div id="maleStudents" class="kpi-number">0</div>
+                    <div class="kpi-note">Total male students</div>
                 </div>
             </div>
         </section>
@@ -800,7 +795,7 @@
         <section class="section">
             <div class="section-title">
                 <h3>School-Level Management</h3>
-                <span>Select a school sector to manage staff</span>
+                <span>Select a school sector to manage students</span>
             </div>
 
             <div class="school-grid">
@@ -812,20 +807,16 @@
                             <div class="school-icon">🏫</div>
                             <div>
                                 <h4>Primary School</h4>
-                                <p>Primary teaching staff</p>
+                                <p>Primary students</p>
                             </div>
                         </div>
                         <div class="school-total">
                             <strong id="primaryTotal">0</strong>
-                            <span>Teachers</span>
+                            <span>Students</span>
                         </div>
                     </div>
                     <div class="school-card-body">
                         <div class="school-stat-row">
-                            <div class="school-stat">
-                                <span>Permanent</span>
-                                <strong id="primaryPermanent">0</strong>
-                            </div>
                             <div class="school-stat">
                                 <span>Male</span>
                                 <strong id="primaryMale">0</strong>
@@ -834,10 +825,14 @@
                                 <span>Female</span>
                                 <strong id="primaryFemale">0</strong>
                             </div>
+                            <div class="school-stat">
+                                <span>Active</span>
+                                <strong id="primaryActive">0</strong>
+                            </div>
                         </div>
                         <div class="school-actions">
-                            <a href="primary-teachers.html" class="school-button primary-button">Open Dashboard</a>
-                            <a href="primary-teachers.html" class="school-button secondary-action">Manage Staff</a>
+                            <a href="primary-students.html" class="school-button primary-button">Open Dashboard</a>
+                            <a href="primary-students.html" class="school-button secondary-action">Manage Students</a>
                         </div>
                     </div>
                 </div>
@@ -849,20 +844,16 @@
                             <div class="school-icon">🎓</div>
                             <div>
                                 <h4>Secondary School</h4>
-                                <p>Secondary teaching staff</p>
+                                <p>Secondary students</p>
                             </div>
                         </div>
                         <div class="school-total">
                             <strong id="secondaryTotal">0</strong>
-                            <span>Teachers</span>
+                            <span>Students</span>
                         </div>
                     </div>
                     <div class="school-card-body">
                         <div class="school-stat-row">
-                            <div class="school-stat">
-                                <span>Permanent</span>
-                                <strong id="secondaryPermanent">0</strong>
-                            </div>
                             <div class="school-stat">
                                 <span>Male</span>
                                 <strong id="secondaryMale">0</strong>
@@ -871,10 +862,14 @@
                                 <span>Female</span>
                                 <strong id="secondaryFemale">0</strong>
                             </div>
+                            <div class="school-stat">
+                                <span>Active</span>
+                                <strong id="secondaryActive">0</strong>
+                            </div>
                         </div>
                         <div class="school-actions">
-                            <a href="secondary-teachers.html" class="school-button secondary-button">Open Dashboard</a>
-                            <a href="secondary-teachers.html" class="school-button secondary-action">Manage Staff</a>
+                            <a href="secondary-students.html" class="school-button secondary-button">Open Dashboard</a>
+                            <a href="secondary-students.html" class="school-button secondary-action">Manage Students</a>
                         </div>
                     </div>
                 </div>
@@ -887,8 +882,8 @@
         ========================================================= -->
         <section class="section">
             <div class="section-title">
-                <h3>Staff Distribution</h3>
-                <span>Current teacher composition</span>
+                <h3>Student Distribution</h3>
+                <span>Current student composition</span>
             </div>
 
             <div class="analytics-grid">
@@ -924,11 +919,11 @@
 
                     <div class="gender-grid">
                         <div class="gender-box">
-                            <strong id="maleTeachers">0</strong>
+                            <strong id="totalMale">0</strong>
                             <span>Male</span>
                         </div>
                         <div class="gender-box">
-                            <strong id="femaleTeachers">0</strong>
+                            <strong id="totalFemale">0</strong>
                             <span>Female</span>
                         </div>
                     </div>
@@ -936,25 +931,25 @@
 
                 <!-- STATUS -->
                 <div class="analytics-card">
-                    <h4>Employment Status</h4>
+                    <h4>Student Status</h4>
 
                     <div class="distribution-row">
                         <div class="distribution-label">
-                            <span>Permanent</span>
-                            <strong id="permanentPercent">0%</strong>
+                            <span>Active</span>
+                            <strong id="activePercent">0%</strong>
                         </div>
                         <div class="progress">
-                            <div id="permanentProgress" class="progress-bar progress-permanent"></div>
+                            <div id="activeProgress" class="progress-bar progress-primary"></div>
                         </div>
                     </div>
 
                     <div class="distribution-row">
                         <div class="distribution-label">
-                            <span>Part Time</span>
-                            <strong id="parttimePercent">0%</strong>
+                            <span>Inactive</span>
+                            <strong id="inactivePercent">0%</strong>
                         </div>
                         <div class="progress">
-                            <div id="parttimeProgress" class="progress-bar progress-parttime"></div>
+                            <div id="inactiveProgress" class="progress-bar progress-female"></div>
                         </div>
                     </div>
                 </div>
@@ -972,24 +967,24 @@
 
             <div class="action-grid">
 
-                <a href="primary-teachers.html" class="action-card">
-                    <strong>Register Primary Teacher</strong>
-                    <span>Add and manage Primary School teaching staff.</span>
+                <a href="primary-students.html" class="action-card">
+                    <strong>Register Primary Student</strong>
+                    <span>Add and manage Primary School students.</span>
                 </a>
 
-                <a href="secondary-teachers.html" class="action-card">
-                    <strong>Register Secondary Teacher</strong>
-                    <span>Add and manage Secondary School teaching staff.</span>
+                <a href="secondary-students.html" class="action-card">
+                    <strong>Register Secondary Student</strong>
+                    <span>Add and manage Secondary School students.</span>
                 </a>
 
-                <a href="primary-teachers.html" class="action-card">
-                    <strong>Primary Staff Records</strong>
-                    <span>View and manage Primary teacher records.</span>
+                <a href="primary-students.html" class="action-card">
+                    <strong>Primary Student Records</strong>
+                    <span>View and manage Primary student records.</span>
                 </a>
 
-                <a href="secondary-teachers.html" class="action-card">
-                    <strong>Secondary Staff Records</strong>
-                    <span>View and manage Secondary teacher records.</span>
+                <a href="secondary-students.html" class="action-card">
+                    <strong>Secondary Student Records</strong>
+                    <span>View and manage Secondary student records.</span>
                 </a>
 
             </div>
@@ -999,10 +994,10 @@
              ADMINISTRATIVE NOTE
         ========================================================= -->
         <div class="dashboard-note">
-            <strong>Teachers Administration:</strong>
-            The Teachers Management Dashboard provides an overall
-            institutional view of teaching staff. Primary and Secondary
-            School teacher records are managed independently through
+            <strong>Students Administration:</strong>
+            The Students Management Dashboard provides an overall
+            institutional view of students. Primary and Secondary
+            School student records are managed independently through
             their respective dashboards and access controls.
         </div>
 
@@ -1018,7 +1013,7 @@
 
         let user = null;
         let token = null;
-        let teachers = [];
+        let students = [];
 
         /* ============================================================
            AUTHENTICATION
@@ -1046,7 +1041,6 @@
            USER INFORMATION
         ============================================================ */
 
-        // Show only role in header
         document.getElementById('userRole').textContent = user?.role_name || 'School Management';
         document.getElementById('userRoleLabel').textContent = '';
 
@@ -1107,92 +1101,84 @@
         }
 
         /* ============================================================
-           TEACHER SUMMARY
+           STUDENT SUMMARY
         ============================================================ */
 
-        const teacherSummary = {
+        const studentSummary = {
             total: 0,
             primary: 0,
             secondary: 0,
-            permanent: 0,
-            partTime: 0,
             male: 0,
             female: 0,
-            primaryPermanent: 0,
-            secondaryPermanent: 0,
+            active: 0,
+            inactive: 0,
             primaryMale: 0,
             primaryFemale: 0,
+            primaryActive: 0,
             secondaryMale: 0,
-            secondaryFemale: 0
+            secondaryFemale: 0,
+            secondaryActive: 0
         };
 
         /* ============================================================
-           LOAD TEACHERS
+           LOAD STUDENTS
         ============================================================ */
 
-        async function loadTeachers() {
-            const data = await apiRequest('/teachers');
-            teachers = Array.isArray(data) ? data : [];
-            calculateTeacherSummary();
+        async function loadStudents() {
+            const data = await apiRequest('/students');
+            students = Array.isArray(data) ? data : [];
+            calculateStudentSummary();
         }
 
         /* ============================================================
            CALCULATE SUMMARY
         ============================================================ */
 
-        function calculateTeacherSummary() {
-            // Reset
-            teacherSummary.total = 0;
-            teacherSummary.primary = 0;
-            teacherSummary.secondary = 0;
-            teacherSummary.permanent = 0;
-            teacherSummary.partTime = 0;
-            teacherSummary.male = 0;
-            teacherSummary.female = 0;
-            teacherSummary.primaryPermanent = 0;
-            teacherSummary.secondaryPermanent = 0;
-            teacherSummary.primaryMale = 0;
-            teacherSummary.primaryFemale = 0;
-            teacherSummary.secondaryMale = 0;
-            teacherSummary.secondaryFemale = 0;
+        function calculateStudentSummary() {
+            studentSummary.total = 0;
+            studentSummary.primary = 0;
+            studentSummary.secondary = 0;
+            studentSummary.male = 0;
+            studentSummary.female = 0;
+            studentSummary.active = 0;
+            studentSummary.inactive = 0;
+            studentSummary.primaryMale = 0;
+            studentSummary.primaryFemale = 0;
+            studentSummary.primaryActive = 0;
+            studentSummary.secondaryMale = 0;
+            studentSummary.secondaryFemale = 0;
+            studentSummary.secondaryActive = 0;
 
-            teacherSummary.total = teachers.length;
+            studentSummary.total = students.length;
 
-            teachers.forEach(teacher => {
-                const schoolSection = String(teacher.school_section || '').trim().toLowerCase();
-                const employmentType = String(teacher.employment_type || '').trim().toLowerCase();
-                const gender = String(teacher.gender || '').trim().toLowerCase();
+            students.forEach(student => {
+                const schoolSection = String(student.school_section || '').trim().toLowerCase();
+                const gender = String(student.gender || '').trim().toLowerCase();
+                const status = String(student.status || student.student_status || 'active').trim().toLowerCase();
 
-                const isPrimary = schoolSection === 'primary' || schoolSection === 'primary school';
-                const isSecondary = schoolSection === 'secondary' || schoolSection === 'secondary school';
+                const isPrimary = schoolSection.includes('primary');
+                const isSecondary = schoolSection.includes('secondary');
+                const isActive = status === 'active';
 
-                if (isPrimary) teacherSummary.primary++;
-                if (isSecondary) teacherSummary.secondary++;
-
-                const isPermanent = employmentType === 'permanent';
-                const isPartTime = employmentType === 'part time' || employmentType === 'part-time' || employmentType ===
-                    'parttime';
-
-                if (isPermanent) teacherSummary.permanent++;
-                if (isPartTime) teacherSummary.partTime++;
-
-                if (gender === 'male') teacherSummary.male++;
-                if (gender === 'female') teacherSummary.female++;
+                if (isPrimary) studentSummary.primary++;
+                if (isSecondary) studentSummary.secondary++;
+                if (gender === 'male') studentSummary.male++;
+                if (gender === 'female') studentSummary.female++;
+                if (isActive) studentSummary.active++;
+                else studentSummary.inactive++;
 
                 if (isPrimary) {
-                    if (isPermanent) teacherSummary.primaryPermanent++;
-                    if (gender === 'male') teacherSummary.primaryMale++;
-                    if (gender === 'female') teacherSummary.primaryFemale++;
+                    if (gender === 'male') studentSummary.primaryMale++;
+                    if (gender === 'female') studentSummary.primaryFemale++;
+                    if (isActive) studentSummary.primaryActive++;
                 }
 
                 if (isSecondary) {
-                    if (isPermanent) teacherSummary.secondaryPermanent++;
-                    if (gender === 'male') teacherSummary.secondaryMale++;
-                    if (gender === 'female') teacherSummary.secondaryFemale++;
+                    if (gender === 'male') studentSummary.secondaryMale++;
+                    if (gender === 'female') studentSummary.secondaryFemale++;
+                    if (isActive) studentSummary.secondaryActive++;
                 }
             });
-
-            console.log('TEACHER SUMMARY:', teacherSummary);
         }
 
         /* ============================================================
@@ -1220,44 +1206,44 @@
             }
 
             // Main KPIs
-            setText('totalTeachers', teacherSummary.total);
-            setText('primaryTeachers', teacherSummary.primary);
-            setText('secondaryTeachers', teacherSummary.secondary);
-            setText('permanentTeachers', teacherSummary.permanent);
+            setText('totalStudents', studentSummary.total);
+            setText('primaryStudents', studentSummary.primary);
+            setText('secondaryStudents', studentSummary.secondary);
+            setText('maleStudents', studentSummary.male);
 
             // Primary
-            setText('primaryTotal', teacherSummary.primary);
-            setText('primaryPermanent', teacherSummary.primaryPermanent);
-            setText('primaryMale', teacherSummary.primaryMale);
-            setText('primaryFemale', teacherSummary.primaryFemale);
+            setText('primaryTotal', studentSummary.primary);
+            setText('primaryMale', studentSummary.primaryMale);
+            setText('primaryFemale', studentSummary.primaryFemale);
+            setText('primaryActive', studentSummary.primaryActive);
 
             // Secondary
-            setText('secondaryTotal', teacherSummary.secondary);
-            setText('secondaryPermanent', teacherSummary.secondaryPermanent);
-            setText('secondaryMale', teacherSummary.secondaryMale);
-            setText('secondaryFemale', teacherSummary.secondaryFemale);
+            setText('secondaryTotal', studentSummary.secondary);
+            setText('secondaryMale', studentSummary.secondaryMale);
+            setText('secondaryFemale', studentSummary.secondaryFemale);
+            setText('secondaryActive', studentSummary.secondaryActive);
 
             // Gender
-            setText('maleTeachers', teacherSummary.male);
-            setText('femaleTeachers', teacherSummary.female);
+            setText('totalMale', studentSummary.male);
+            setText('totalFemale', studentSummary.female);
 
             // School Level Percentages
-            const primaryPercent = percentage(teacherSummary.primary, teacherSummary.total);
-            const secondaryPercent = percentage(teacherSummary.secondary, teacherSummary.total);
+            const primaryPercent = percentage(studentSummary.primary, studentSummary.total);
+            const secondaryPercent = percentage(studentSummary.secondary, studentSummary.total);
 
             setText('primaryPercent', `${primaryPercent}%`);
             setText('secondaryPercent', `${secondaryPercent}%`);
             setWidth('primaryProgress', primaryPercent);
             setWidth('secondaryProgress', secondaryPercent);
 
-            // Employment Status
-            const permanentPercent = percentage(teacherSummary.permanent, teacherSummary.total);
-            const parttimePercent = percentage(teacherSummary.partTime, teacherSummary.total);
+            // Status Percentages
+            const activePercent = percentage(studentSummary.active, studentSummary.total);
+            const inactivePercent = percentage(studentSummary.inactive, studentSummary.total);
 
-            setText('permanentPercent', `${permanentPercent}%`);
-            setText('parttimePercent', `${parttimePercent}%`);
-            setWidth('permanentProgress', permanentPercent);
-            setWidth('parttimeProgress', parttimePercent);
+            setText('activePercent', `${activePercent}%`);
+            setText('inactivePercent', `${inactivePercent}%`);
+            setWidth('activeProgress', activePercent);
+            setWidth('inactiveProgress', inactivePercent);
         }
 
         /* ============================================================
@@ -1274,7 +1260,7 @@
                     return;
                 }
 
-                await loadTeachers();
+                await loadStudents();
                 displayDashboard();
 
             } catch (error) {

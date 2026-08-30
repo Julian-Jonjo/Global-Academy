@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Education Academy | Student Management</title>
+    <title>Global Education Academy Secondary School | Student Management</title>
 
     <style>
         * {
@@ -33,9 +33,6 @@
             z-index: 0;
         }
 
-        /* =========================================================
-           HEADER - SCHOOL COLORS
-        ========================================================= */
         .header {
             background: #1a3c6e;
             color: white;
@@ -104,9 +101,6 @@
             color: #a0c4ff;
         }
 
-        /* =========================================================
-           CONTAINER
-        ========================================================= */
         .container {
             max-width: 1400px;
             margin: 25px auto;
@@ -537,9 +531,6 @@
             margin-top: 15px;
         }
 
-        /* =========================================================
-           LOGOUT BUTTON - BOTTOM LEFT
-        ========================================================= */
         .logout-bottom {
             position: fixed;
             bottom: 20px;
@@ -637,16 +628,13 @@
 
 <body>
 
-    <!-- =========================================================
-         HEADER - SCHOOL COLORS
-    ========================================================= -->
     <header class="header">
         <div class="header-left">
             <div class="header-logo">
                 <img src="/images/logo.png" alt="Global Education Academy" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
             </div>
             <div class="header-title">
-                <h1>Global Education Academy</h1>
+                <h1>GLOBAL EDUCATION ACADEMY SECONDARY SCHOOL</h1>
                 <p>Student Management</p>
             </div>
         </div>
@@ -810,9 +798,6 @@
 
     </main>
 
-    <!-- =========================================================
-         STUDENT PROFILE MODAL
-    ========================================================= -->
     <div id="studentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -823,9 +808,6 @@
         </div>
     </div>
 
-    <!-- =========================================================
-         EDIT STUDENT MODAL
-    ========================================================= -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -920,16 +902,9 @@
         </div>
     </div>
 
-    <!-- =========================================================
-         LOGOUT BUTTON - BOTTOM LEFT
-    ========================================================= -->
     <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
     <script>
-        // =========================================================
-        // AUTHENTICATION
-        // =========================================================
-
         const token = sessionStorage.getItem('authToken');
         const userData = sessionStorage.getItem('user');
 
@@ -948,17 +923,37 @@
         }
 
         const role = user.role_name;
+        const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
 
         // =========================================================
-        // USER INFORMATION - Show only role
+        // ACCESS CONTROL - SECONDARY STUDENTS ONLY
         // =========================================================
+
+        if (userRoleForAccess.includes('manager-primary')) {
+            alert('Access denied. You do not have permission to view Secondary School students.');
+            window.location.href = 'dashboard.html';
+        }
+
+        if (userRoleForAccess.includes('finance officer (primary)')) {
+            alert('Access denied. You do not have permission to view Secondary School students.');
+            window.location.href = 'dashboard.html';
+        }
+
+        if (userRoleForAccess.includes('teacher - primary')) {
+            alert('Access denied. You do not have permission to view Secondary School students.');
+            window.location.href = 'dashboard.html';
+        }
+
+        const allowedRoles = ['manager-secondary', 'admin', 'proprietor'];
+        const hasAccess = allowedRoles.some(r => userRoleForAccess.includes(r));
+
+        if (!hasAccess) {
+            alert('Access denied. Insufficient permissions.');
+            window.location.href = 'dashboard.html';
+        }
 
         document.getElementById('userRole').textContent = role;
         document.getElementById('userRoleLabel').textContent = '';
-
-        // =========================================================
-        // LOGOUT
-        // =========================================================
 
         function logout() {
             sessionStorage.removeItem('authToken');
@@ -966,20 +961,13 @@
             window.location.href = '/login.html';
         }
 
-        // =========================================================
-        // ROLE PERMISSIONS
-        // =========================================================
-
+        // Hide register tab from Proprietor
         if (role === 'Proprietor') {
             const registerTab = document.getElementById('registerTab');
             if (registerTab) {
                 registerTab.style.display = 'none';
             }
         }
-
-        // =========================================================
-        // LOAD ACADEMIC YEARS
-        // =========================================================
 
         async function loadAcademicYears() {
             try {
@@ -1014,10 +1002,6 @@
             }
         }
 
-        // =========================================================
-        // TAB SYSTEM
-        // =========================================================
-
         function openTab(tabId, button) {
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
@@ -1026,12 +1010,8 @@
             if (button) button.classList.add('active');
         }
 
-        // =========================================================
-        // REGISTER STUDENT
-        // =========================================================
-
         async function openRegistrationTab(button) {
-            if (role !== 'Manager' && role !== 'Administrator') {
+            if (role !== 'Manager-Secondary' && role !== 'Administrator') {
                 alert('You do not have permission to register students.');
                 return;
             }
@@ -1077,10 +1057,6 @@
             }
         }
 
-        // =========================================================
-        // ATTACH FORM LISTENER
-        // =========================================================
-
         function attachFormListener() {
             const form = document.getElementById('studentForm');
             if (!form) {
@@ -1093,7 +1069,6 @@
 
             newForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
-                console.log('✅ Form submitted!');
 
                 const message = document.getElementById('message');
                 if (message) {
@@ -1129,8 +1104,6 @@
                     });
 
                     if (reviewStudentId) {
-                        console.log('🔄 Re-submitting student for review:', reviewStudentId);
-
                         const updateResponse = await fetch(`/api/students/${reviewStudentId}`, {
                             method: 'PUT',
                             headers: {
@@ -1198,7 +1171,6 @@
                         return;
                     }
 
-                    // New Registration
                     const formData = new FormData();
                     fields.forEach(field => {
                         const el = document.getElementById(field);
@@ -1248,7 +1220,7 @@
                     }
 
                 } catch (error) {
-                    console.error('❌ Registration error:', error);
+                    console.error('Registration error:', error);
                     const message = document.getElementById('message');
                     if (message) {
                         message.textContent = 'An error occurred. Please try again.';
@@ -1264,12 +1236,8 @@
                 }
             });
 
-            console.log('✅ Form listener attached');
+            console.log('Form listener attached');
         }
-
-        // =========================================================
-        // LOAD CLASSES
-        // =========================================================
 
         async function loadClasses() {
             try {
@@ -1311,8 +1279,6 @@
                     select.appendChild(option);
                 });
 
-                console.log('✅ Classes loaded successfully:', classes.length);
-
             } catch (error) {
                 console.error('Error loading classes:', error);
                 const select = document.getElementById('class_id');
@@ -1321,10 +1287,6 @@
                 }
             }
         }
-
-        // =========================================================
-        // LOAD STUDENTS
-        // =========================================================
 
         let students = [];
         let filteredStudents = [];
@@ -1400,10 +1362,6 @@
             }
         }
 
-        // =========================================================
-        // UPDATE OVERVIEW
-        // =========================================================
-
         function updateOverview() {
             const total = students.length;
             const active = students.filter(s => String(s.student_status || '').toLowerCase() === 'active').length;
@@ -1415,10 +1373,6 @@
             document.getElementById('pendingStudents').textContent = pending;
             document.getElementById('rejectedStudents').textContent = rejected;
         }
-
-        // =========================================================
-        // POPULATE CLASS FILTER
-        // =========================================================
 
         function populateClassFilter() {
             const select = document.getElementById('classFilter');
@@ -1443,10 +1397,6 @@
             });
         }
 
-        // =========================================================
-        // APPLY FILTERS
-        // =========================================================
-
         function applyFilters() {
             const search = document.getElementById('search').value.trim().toLowerCase();
             const classFilter = document.getElementById('classFilter').value;
@@ -1467,10 +1417,6 @@
 
             renderStudents();
         }
-
-        // =========================================================
-        // RENDER STUDENTS
-        // =========================================================
 
         function renderStudents() {
             const table = document.getElementById('studentTable');
@@ -1518,10 +1464,6 @@
             }).join('');
         }
 
-        // =========================================================
-        // VIEW STUDENT
-        // =========================================================
-
         function viewStudent(studentId) {
             const student = students.find(item => Number(item.student_id) === Number(studentId));
             if (!student) {
@@ -1530,7 +1472,7 @@
             }
 
             document.getElementById('profile').innerHTML = `
-                ${role === 'Administrator' ? `
+                ${(role === 'Administrator' || role === 'Manager-Secondary') ? `
                     <div class="edit-action">
                         <button class="edit-btn" onclick="editStudent(${Number(student.student_id)})">Edit Student</button>
                     </div>
@@ -1569,10 +1511,6 @@
 
             document.getElementById('studentModal').style.display = 'block';
         }
-
-        // =========================================================
-        // REVIEW STUDENT
-        // =========================================================
 
         async function reviewStudent(studentId) {
             try {
@@ -1644,11 +1582,8 @@
                     if (message) {
                         message.style.display = 'block';
                         message.className = 'info';
-                        message.textContent = `📝 Reviewing ${student.first_name} ${student.last_name}. Update information and resubmit for approval.`;
+                        message.textContent = `Reviewing ${student.first_name} ${student.last_name}. Update information and resubmit for approval.`;
                     }
-
-                    console.log('✅ Form populated for review');
-
                 }, 500);
 
             } catch (error) {
@@ -1657,13 +1592,9 @@
             }
         }
 
-        // =========================================================
-        // EDIT STUDENT
-        // =========================================================
-
         async function editStudent(studentId) {
-            if (role !== 'Administrator') {
-                alert('Only an Administrator can edit student records.');
+            if (role !== 'Administrator' && role !== 'Manager-Secondary') {
+                alert('Only an Administrator or Manager-Secondary can edit student records.');
                 return;
             }
 
@@ -1697,10 +1628,6 @@
             document.getElementById('editModal').style.display = 'block';
         }
 
-        // =========================================================
-        // LOAD CLASSES FOR EDIT
-        // =========================================================
-
         async function loadEditClasses() {
             const classSelect = document.getElementById('editClassId');
             classSelect.innerHTML = '<option value="">Loading classes...</option>';
@@ -1731,15 +1658,11 @@
             }
         }
 
-        // =========================================================
-        // SAVE EDITED STUDENT
-        // =========================================================
-
         document.getElementById('editStudentForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
-            if (role !== 'Administrator') {
-                alert('Only an Administrator can edit student records.');
+            if (role !== 'Administrator' && role !== 'Manager-Secondary') {
+                alert('Only an Administrator or Manager-Secondary can edit student records.');
                 return;
             }
 
@@ -1796,10 +1719,6 @@
             }
         });
 
-        // =========================================================
-        // HELPER FUNCTIONS
-        // =========================================================
-
         function field(label, value) {
             return `
                 <div class="field">
@@ -1850,6 +1769,27 @@
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }
+        function previewPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('photoPreview');
+        const img = document.getElementById('photoPreviewImg');
+        if (img && preview) {
+            img.src = e.target.result;
+            preview.style.display = 'block';
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function showFileName(input, displayId) {
+    const display = document.getElementById(displayId);
+    if (display && input.files && input.files[0]) {
+        display.textContent = '📎 ' + input.files[0].name;
+    }
+}
 
         window.addEventListener('click', function(event) {
             const studentModal = document.getElementById('studentModal');
@@ -1857,10 +1797,6 @@
             if (event.target === studentModal) closeModal();
             if (event.target === editModal) closeEditModal();
         });
-
-        // =========================================================
-        // INITIALIZE
-        // =========================================================
 
         loadAcademicYears();
         loadStudents();

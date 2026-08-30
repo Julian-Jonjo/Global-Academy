@@ -18,7 +18,6 @@
             background: #f0f2f5;
             color: #222;
             min-height: 100vh;
-            /* Background Image */
             background-image: url('/images/school-bg.jpg');
             background-size: cover;
             background-position: center;
@@ -27,7 +26,6 @@
             position: relative;
         }
 
-        /* Light overlay */
         body::before {
             content: '';
             position: fixed;
@@ -36,12 +34,8 @@
             z-index: 0;
         }
 
-        /* =========================================================
-           HEADER - SCHOOL COLORS
-        ========================================================= */
         .header {
             background: #1a3c6e;
-            /* Dark blue - match your logo */
             color: white;
             padding: 12px 30px;
             display: flex;
@@ -95,6 +89,9 @@
             text-align: right;
             font-size: 13px;
             color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .user-info .role {
@@ -107,21 +104,23 @@
             font-size: 11px;
             color: #a0c4ff;
         }
-        .logout-btn {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 4px 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: bold;
-    transition: all 0.3s;
-}
 
-        /* =========================================================
-           CONTAINER
-        ========================================================= */
+        .logout-btn-header {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn-header:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
         .container {
             max-width: 1400px;
             margin: 25px auto;
@@ -201,9 +200,6 @@
             transform: translateY(-2px);
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================= */
         @media (max-width: 700px) {
             .header {
                 flex-direction: column;
@@ -215,6 +211,8 @@
             .user-info {
                 text-align: left;
                 width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .cards {
@@ -245,9 +243,6 @@
 
 <body>
 
-    <!-- =========================================================
-         HEADER - SCHOOL COLORS
-    ========================================================= -->
     <header class="header">
         <div class="header-left">
             <div class="header-logo">
@@ -259,69 +254,23 @@
             </div>
         </div>
         <div class="user-info">
-            <span class="role" id="userRole"></span>
-            <span class="role-label" id="userRoleLabel"></span>
+            <div>
+                <span class="role" id="userRole"></span>
+                <span class="role-label" id="userRoleLabel"></span>
+            </div>
+            <button class="logout-btn-header" onclick="logout()">🚪 Logout</button>
         </div>
     </header>
 
-    <!-- =========================================================
-         MAIN CONTENT
-    ========================================================= -->
     <main class="container">
 
         <div class="welcome">
-            <h1>Dashboard</h1>
-            <p>Welcome to the Global Education Academy Management System.</p>
+            <h1 id="dashboardTitle">Dashboard</h1>
+            <p id="dashboardSubtitle">Welcome to the Global Education Academy Management System.</p>
         </div>
 
-        <div class="cards">
-            <div class="card" onclick="window.location.href='students-dashboard.html'">
-                <span class="icon">👨‍🎓</span>
-                <h3>Students</h3>
-                <p>Manage student records.</p>
-            </div>
-
-            <div class="card" onclick="window.location.href='teachers.html'">
-                <span class="icon">👨‍🏫</span>
-                <h3>Teachers</h3>
-                <p>Manage teachers and assignments.</p>
-            </div>
-
-            <div class="card" onclick="window.location.href='finance.html'">
-                <span class="icon">💰</span>
-                <h3>Finance</h3>
-                <p>Manage fees and payments.</p>
-            </div>
-
-            <div class="card" onclick="window.location.href='approvals.html'">
-                <span class="icon">✅</span>
-                <h3>Approvals</h3>
-                <p>Review records requiring approval.</p>
-            </div>
-
-            <div class="card">
-                <span class="icon">📚</span>
-                <h3>Classes</h3>
-                <p>Manage classes and sections.</p>
-            </div>
-
-            <div class="card">
-                <span class="icon">📋</span>
-                <h3>Attendance</h3>
-                <p>Manage student attendance.</p>
-            </div>
-
-            <div class="card">
-                <span class="icon">📊</span>
-                <h3>Academic Records</h3>
-                <p>Manage academic results.</p>
-            </div>
-
-            <div class="card">
-                <span class="icon">👤</span>
-                <h3>Users & Roles</h3>
-                <p>Manage system users and permissions.</p>
-            </div>
+        <div class="cards" id="cardsContainer">
+            <!-- Cards will be dynamically generated based on role -->
         </div>
 
         <button class="logout-btn" onclick="logout()">🚪 Logout</button>
@@ -333,31 +282,123 @@
         // AUTHENTICATION
         // =========================================================
 
-        const userData = sessionStorage.getItem('user');
+        const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+        const userData = sessionStorage.getItem('user') || localStorage.getItem('user');
 
-        // Redirect teachers to their dashboard
-        if (userData) {
-            const user = JSON.parse(userData);
-            if (user.role_name === 'Teacher') {
-                window.location.href = '/teachers-dashboard.html';
-            }
-        }
-
-        const token = sessionStorage.getItem('authToken');
-
-        // Prevent access without login
         if (!token || !userData) {
             window.location.href = '/login.html';
         }
 
-        const user = JSON.parse(userData);
+        let user;
+        try {
+            user = JSON.parse(userData);
+        } catch (error) {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
 
         // =========================================================
-        // USER INFORMATION - Show only role
+        // USER INFORMATION
         // =========================================================
 
-        document.getElementById('userRole').textContent = user.role_name;
-        document.getElementById('userRoleLabel').textContent = '';
+        document.getElementById('userRole').textContent = user.full_name || user.name || 'User';
+        document.getElementById('userRoleLabel').textContent = user.role_name || user.role || '';
+
+        // =========================================================
+        // ROLE-BASED DASHBOARD CONFIGURATION
+        // =========================================================
+
+        const userRole = (user.role_name || user.role || '').toLowerCase();
+
+        function getModuleLinks() {
+            if (userRole.includes('manager-primary') || userRole.includes('primary manager')) {
+                return {
+                    title: 'Primary School Dashboard',
+                    subtitle: 'Welcome to the Primary School Management System.',
+                    cards: [
+                        { icon: '👨‍🎓', title: 'Students', desc: 'Manage student records.', link: 'primary-students.html' },
+                        { icon: '👨‍🏫', title: 'Teachers', desc: 'Manage teachers and assignments.', link: 'primary-teachers.html' },
+                        { icon: '💰', title: 'Finance', desc: 'View fees and payments.', link: 'primary-finance.html' },
+                        { icon: '✅', title: 'Approvals', desc: 'Review records requiring approval.', link: 'primary-approvals.html' },
+                        { icon: '📚', title: 'Classes', desc: 'Manage classes and sections.', link: 'primary-classes.html' },
+                        { icon: '📋', title: 'Attendance', desc: 'Manage student attendance.', link: 'primary-attendance.html' },
+                        { icon: '📊', title: 'Academic Records', desc: 'Manage academic results.', link: 'primary-academic.html' },
+                        { icon: '👤', title: 'Users & Roles', desc: 'Manage system users and permissions.', link: 'users.html' }
+                    ]
+                };
+            } else if (userRole.includes('manager-secondary') || userRole.includes('secondary manager')) {
+                return {
+                    title: 'Secondary School Dashboard',
+                    subtitle: 'Welcome to the Secondary School Management System.',
+                    cards: [
+                        { icon: '👨‍🎓', title: 'Students', desc: 'Manage student records.', link: 'secondary-students.html' },
+                        { icon: '👨‍🏫', title: 'Teachers', desc: 'Manage teachers and assignments.', link: 'secondary-teachers.html' },
+                        { icon: '💰', title: 'Finance', desc: 'View fees and payments.', link: 'secondary-finance.html' },
+                        { icon: '✅', title: 'Approvals', desc: 'Review records requiring approval.', link: 'secondary-approvals.html' },
+                        { icon: '📚', title: 'Classes', desc: 'Manage classes and sections.', link: 'secondary-classes.html' },
+                        { icon: '📋', title: 'Attendance', desc: 'Manage student attendance.', link: 'secondary-attendance.html' },
+                        { icon: '📊', title: 'Academic Records', desc: 'Manage academic results.', link: 'secondary-academic.html' },
+                        { icon: '👤', title: 'Users & Roles', desc: 'Manage system users and permissions.', link: 'users.html' }
+                    ]
+                };
+            } else if (userRole.includes('primary finance')) {
+                return {
+                    title: 'Primary School Finance',
+                    subtitle: 'Manage Primary School financial records.',
+                    cards: [
+                        { icon: '💰', title: 'Finance', desc: 'Manage fees and payments.', link: 'primary-finance.html' }
+                    ]
+                };
+            } else if (userRole.includes('secondary finance')) {
+                return {
+                    title: 'Secondary School Finance',
+                    subtitle: 'Manage Secondary School financial records.',
+                    cards: [
+                        { icon: '💰', title: 'Finance', desc: 'Manage fees and payments.', link: 'secondary-finance.html' }
+                    ]
+                };
+            } else {
+                // Admin, Proprietor, or other
+                return {
+                    title: 'Global Education Academy Dashboard',
+                    subtitle: 'Welcome to the Global Education Academy Management System.',
+                    cards: [
+                        { icon: '👨‍🎓', title: 'Students', desc: 'Manage student records.', link: 'students.html' },
+                        { icon: '👨‍🏫', title: 'Teachers', desc: 'Manage teachers and assignments.', link: 'teachers.html' },
+                        { icon: '💰', title: 'Finance', desc: 'View fees and payments.', link: 'finance.html' },
+                        { icon: '✅', title: 'Approvals', desc: 'Review records requiring approval.', link: 'approvals.html' },
+                        { icon: '📚', title: 'Classes', desc: 'Manage classes and sections.', link: 'classes.html' },
+                        { icon: '📋', title: 'Attendance', desc: 'Manage student attendance.', link: 'attendance.html' },
+                        { icon: '📊', title: 'Academic Records', desc: 'Manage academic results.', link: 'academic.html' },
+                        { icon: '👤', title: 'Users & Roles', desc: 'Manage system users and permissions.', link: 'users.html' }
+                    ]
+                };
+            }
+        }
+
+        // =========================================================
+        // RENDER DASHBOARD
+        // =========================================================
+
+        function renderDashboard() {
+            const config = getModuleLinks();
+            
+            document.getElementById('dashboardTitle').textContent = config.title;
+            document.getElementById('dashboardSubtitle').textContent = config.subtitle;
+
+            const cardsContainer = document.getElementById('cardsContainer');
+            
+            cardsContainer.innerHTML = config.cards.map(card => `
+                <div class="card" onclick="window.location.href='${card.link}'">
+                    <span class="icon">${card.icon}</span>
+                    <h3>${card.title}</h3>
+                    <p>${card.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        renderDashboard();
 
         // =========================================================
         // LOGOUT
@@ -366,6 +407,8 @@
         function logout() {
             sessionStorage.removeItem('authToken');
             sessionStorage.removeItem('user');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
             window.location.href = '/login.html';
         }
     </script>
