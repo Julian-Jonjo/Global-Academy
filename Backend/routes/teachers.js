@@ -1,5 +1,41 @@
 const express = require('express');
 const supabase = require('../Config/db');
+const multer = require('multer');
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type. Only JPEG, PNG, PDF, DOC, DOCX are allowed.'));
+        }
+    }
+});
+
+async function uploadFileToSupabase(file, bucket, folder, fileName) {
+    if (!file) return null;
+    try {
+        const filePath = `${folder}/${fileName}`;
+        const { error } = await supabase.storage.from(bucket).upload(filePath, file.buffer, {
+            contentType: file.mimetype,
+            cacheControl: '3600',
+            upsert: true
+        });
+        if (error) {
+            console.error('Upload error:', error.message);
+            return null;
+        }
+        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+        return urlData.publicUrl;
+    } catch (error) {
+        console.error('File upload exception:', error.message);
+        return null;
+    }
+}
+
 const {
     authenticateToken,
     requireTeacher,
