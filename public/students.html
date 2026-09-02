@@ -41,9 +41,6 @@
             font-family: inherit;
         }
 
-        /* =========================================================
-           HEADER - SCHOOL COLORS
-        ========================================================= */
         .header {
             background: #1a3c6e;
             color: #fff;
@@ -116,9 +113,6 @@
             color: #a0c4ff;
         }
 
-        /* =========================================================
-           CONTAINER
-        ========================================================= */
         .container {
             max-width: 1450px;
             margin: 0 auto;
@@ -127,9 +121,6 @@
             z-index: 1;
         }
 
-        /* =========================================================
-           PAGE HEADER
-        ========================================================= */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -168,9 +159,6 @@
             transform: translateY(-2px);
         }
 
-        /* =========================================================
-           NAVIGATION
-        ========================================================= */
         .student-nav {
             display: flex;
             gap: 4px;
@@ -202,9 +190,6 @@
             color: #fff;
         }
 
-        /* =========================================================
-           SECTION
-        ========================================================= */
         .section {
             margin-bottom: 25px;
         }
@@ -227,9 +212,6 @@
             color: #6b7280;
         }
 
-        /* =========================================================
-           KPI GRID
-        ========================================================= */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -268,10 +250,6 @@
             background: #2563eb;
         }
 
-        .kpi-card.female::before {
-            background: #db2777;
-        }
-
         .kpi-label {
             font-size: 11px;
             color: #6b7280;
@@ -292,9 +270,6 @@
             color: #9ca3af;
         }
 
-        /* =========================================================
-           SCHOOL LEVEL
-        ========================================================= */
         .school-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -444,9 +419,6 @@
             transform: translateY(-2px);
         }
 
-        /* =========================================================
-           ANALYTICS
-        ========================================================= */
         .analytics-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -467,9 +439,6 @@
             color: #1f2937;
         }
 
-        /* =========================================================
-           DISTRIBUTION
-        ========================================================= */
         .distribution-row {
             margin-bottom: 15px;
         }
@@ -513,17 +482,10 @@
             background: #1a3c6e;
         }
 
-        .progress-male {
-            background: #2563eb;
-        }
-
         .progress-female {
             background: #db2777;
         }
 
-        /* =========================================================
-           GENDER STAT
-        ========================================================= */
         .gender-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -551,47 +513,6 @@
             text-transform: uppercase;
         }
 
-        /* =========================================================
-           QUICK ACTIONS
-        ========================================================= */
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .action-card {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 16px;
-            text-decoration: none;
-            color: #1f2937;
-            transition: .15s;
-        }
-
-        .action-card:hover {
-            border-color: #1a3c6e;
-            background: #f9fafb;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .action-card strong {
-            display: block;
-            font-size: 13px;
-            margin-bottom: 5px;
-        }
-
-        .action-card span {
-            color: #6b7280;
-            font-size: 11px;
-            line-height: 1.4;
-        }
-
-        /* =========================================================
-           FOOTER NOTE
-        ========================================================= */
         .dashboard-note {
             background: #fff;
             border: 1px solid #e5e7eb;
@@ -602,9 +523,6 @@
             line-height: 1.5;
         }
 
-        /* =========================================================
-           LOGOUT BUTTON - BOTTOM LEFT
-        ========================================================= */
         .logout-bottom {
             position: fixed;
             bottom: 20px;
@@ -631,17 +549,11 @@
             box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5);
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================= */
         @media (max-width: 1050px) {
             .kpi-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
             .analytics-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-            .action-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
@@ -682,9 +594,6 @@
             .kpi-grid {
                 grid-template-columns: 1fr;
             }
-            .action-grid {
-                grid-template-columns: 1fr;
-            }
             .school-stat-row {
                 grid-template-columns: 1fr 1fr 1fr;
             }
@@ -708,9 +617,6 @@
 
 <body>
 
-    <!-- =========================================================
-         HEADER - SCHOOL COLORS
-    ========================================================= -->
     <header class="header">
         <div class="header-left">
             <div class="header-logo">
@@ -729,9 +635,6 @@
 
     <main class="container">
 
-        <!-- =========================================================
-             PAGE HEADER
-        ========================================================= -->
         <div class="page-header">
             <div>
                 <h2>Students Management Dashboard</h2>
@@ -742,9 +645,6 @@
             </div>
         </div>
 
-        <!-- =========================================================
-             NAVIGATION
-        ========================================================= -->
         <nav class="student-nav">
             <a href="dashboard.html">Main Dashboard</a>
             <a href="teachers.html">Teachers</a>
@@ -753,9 +653,7 @@
             <a href="subjects.html">Subjects</a>
         </nav>
 
-        <!-- =========================================================
-             OVERALL KPIs
-        ========================================================= -->
+        <!-- OVERALL KPIs -->
         <section class="section">
             <div class="section-title">
                 <h3>Student Overview</h3>
@@ -789,9 +687,7 @@
             </div>
         </section>
 
-        <!-- =========================================================
-             SCHOOL LEVEL MANAGEMENT
-        ========================================================= -->
+        <!-- SCHOOL LEVEL MANAGEMENT -->
         <section class="section">
             <div class="section-title">
                 <h3>School-Level Management</h3>
@@ -800,7 +696,6 @@
 
             <div class="school-grid">
 
-                <!-- PRIMARY -->
                 <div class="school-card primary">
                     <div class="school-card-top">
                         <div class="school-heading">
@@ -837,7 +732,6 @@
                     </div>
                 </div>
 
-                <!-- SECONDARY -->
                 <div class="school-card secondary">
                     <div class="school-card-top">
                         <div class="school-heading">
@@ -877,9 +771,7 @@
             </div>
         </section>
 
-        <!-- =========================================================
-             ANALYTICS
-        ========================================================= -->
+        <!-- ANALYTICS -->
         <section class="section">
             <div class="section-title">
                 <h3>Student Distribution</h3>
@@ -888,7 +780,6 @@
 
             <div class="analytics-grid">
 
-                <!-- SCHOOL LEVEL -->
                 <div class="analytics-card">
                     <h4>By School Level</h4>
 
@@ -913,7 +804,6 @@
                     </div>
                 </div>
 
-                <!-- GENDER -->
                 <div class="analytics-card">
                     <h4>Gender Distribution</h4>
 
@@ -929,7 +819,6 @@
                     </div>
                 </div>
 
-                <!-- STATUS -->
                 <div class="analytics-card">
                     <h4>Student Status</h4>
 
@@ -957,42 +846,6 @@
             </div>
         </section>
 
-        <!-- =========================================================
-             QUICK ACTIONS
-        ========================================================= -->
-        <section class="section">
-            <div class="section-title">
-                <h3>Quick Actions</h3>
-            </div>
-
-            <div class="action-grid">
-
-                <a href="primary-students.html" class="action-card">
-                    <strong>Register Primary Student</strong>
-                    <span>Add and manage Primary School students.</span>
-                </a>
-
-                <a href="secondary-students.html" class="action-card">
-                    <strong>Register Secondary Student</strong>
-                    <span>Add and manage Secondary School students.</span>
-                </a>
-
-                <a href="primary-students.html" class="action-card">
-                    <strong>Primary Student Records</strong>
-                    <span>View and manage Primary student records.</span>
-                </a>
-
-                <a href="secondary-students.html" class="action-card">
-                    <strong>Secondary Student Records</strong>
-                    <span>View and manage Secondary student records.</span>
-                </a>
-
-            </div>
-        </section>
-
-        <!-- =========================================================
-             ADMINISTRATIVE NOTE
-        ========================================================= -->
         <div class="dashboard-note">
             <strong>Students Administration:</strong>
             The Students Management Dashboard provides an overall
@@ -1003,9 +856,6 @@
 
     </main>
 
-    <!-- =========================================================
-         LOGOUT BUTTON - BOTTOM LEFT
-    ========================================================= -->
     <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
     <script>
@@ -1014,10 +864,6 @@
         let user = null;
         let token = null;
         let students = [];
-
-        /* ============================================================
-           AUTHENTICATION
-        ============================================================ */
 
         function getAuthData() {
             token = sessionStorage.getItem('token') ||
@@ -1037,26 +883,14 @@
 
         getAuthData();
 
-        /* ============================================================
-           USER INFORMATION
-        ============================================================ */
-
         document.getElementById('userRole').textContent = user?.role_name || 'School Management';
         document.getElementById('userRoleLabel').textContent = '';
-
-        /* ============================================================
-           LOGOUT
-        ============================================================ */
 
         function logout() {
             sessionStorage.removeItem('authToken');
             sessionStorage.removeItem('user');
             window.location.href = '/login.html';
         }
-
-        /* ============================================================
-           API REQUEST
-        ============================================================ */
 
         async function apiRequest(url, options = {}) {
             getAuthData();
@@ -1100,10 +934,6 @@
             return data;
         }
 
-        /* ============================================================
-           STUDENT SUMMARY
-        ============================================================ */
-
         const studentSummary = {
             total: 0,
             primary: 0,
@@ -1120,19 +950,11 @@
             secondaryActive: 0
         };
 
-        /* ============================================================
-           LOAD STUDENTS
-        ============================================================ */
-
         async function loadStudents() {
             const data = await apiRequest('/students');
             students = Array.isArray(data) ? data : [];
             calculateStudentSummary();
         }
-
-        /* ============================================================
-           CALCULATE SUMMARY
-        ============================================================ */
 
         function calculateStudentSummary() {
             studentSummary.total = 0;
@@ -1156,8 +978,8 @@
                 const gender = String(student.gender || '').trim().toLowerCase();
                 const status = String(student.status || student.student_status || 'active').trim().toLowerCase();
 
-                const isPrimary = schoolSection.includes('primary');
-                const isSecondary = schoolSection.includes('secondary');
+                const isPrimary = schoolSection === 'primary' || schoolSection === 'nursery';
+                const isSecondary = schoolSection === 'secondary' || schoolSection === 'jss' || schoolSection === 'sss';
                 const isActive = status === 'active';
 
                 if (isPrimary) studentSummary.primary++;
@@ -1181,18 +1003,10 @@
             });
         }
 
-        /* ============================================================
-           PERCENTAGE
-        ============================================================ */
-
         function percentage(value, total) {
             if (!total) return 0;
             return Math.round((Number(value) / Number(total)) * 100);
         }
-
-        /* ============================================================
-           DISPLAY DASHBOARD
-        ============================================================ */
 
         function displayDashboard() {
             function setText(id, value) {
@@ -1205,29 +1019,24 @@
                 if (element) element.style.width = `${value}%`;
             }
 
-            // Main KPIs
             setText('totalStudents', studentSummary.total);
             setText('primaryStudents', studentSummary.primary);
             setText('secondaryStudents', studentSummary.secondary);
             setText('maleStudents', studentSummary.male);
 
-            // Primary
             setText('primaryTotal', studentSummary.primary);
             setText('primaryMale', studentSummary.primaryMale);
             setText('primaryFemale', studentSummary.primaryFemale);
             setText('primaryActive', studentSummary.primaryActive);
 
-            // Secondary
             setText('secondaryTotal', studentSummary.secondary);
             setText('secondaryMale', studentSummary.secondaryMale);
             setText('secondaryFemale', studentSummary.secondaryFemale);
             setText('secondaryActive', studentSummary.secondaryActive);
 
-            // Gender
             setText('totalMale', studentSummary.male);
             setText('totalFemale', studentSummary.female);
 
-            // School Level Percentages
             const primaryPercent = percentage(studentSummary.primary, studentSummary.total);
             const secondaryPercent = percentage(studentSummary.secondary, studentSummary.total);
 
@@ -1236,7 +1045,6 @@
             setWidth('primaryProgress', primaryPercent);
             setWidth('secondaryProgress', secondaryPercent);
 
-            // Status Percentages
             const activePercent = percentage(studentSummary.active, studentSummary.total);
             const inactivePercent = percentage(studentSummary.inactive, studentSummary.total);
 
@@ -1245,10 +1053,6 @@
             setWidth('activeProgress', activePercent);
             setWidth('inactiveProgress', inactivePercent);
         }
-
-        /* ============================================================
-           INITIALIZE DASHBOARD
-        ============================================================ */
 
         async function loadPage() {
             try {
@@ -1267,10 +1071,6 @@
                 console.error('PAGE LOAD ERROR:', error);
             }
         }
-
-        /* ============================================================
-           START
-        ============================================================ */
 
         loadPage();
     </script>

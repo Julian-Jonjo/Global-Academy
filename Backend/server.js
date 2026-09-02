@@ -33,6 +33,9 @@ const teacherRoutes = require('./routes/teachers');
 // const teacherPortalRoutes = require('./routes/teacherPortal');
 
 const academicYearRoutes = require('./routes/academic-years');
+const userRoutes = require('./routes/users');
+const roleRoutes = require('./routes/roles');
+const permissionRoutes = require('./routes/permissions');
 
 
 // ============================================================
@@ -122,6 +125,9 @@ app.use(
     '/api/academic-years',
     academicYearRoutes
 );
+app.use('/api/users', userRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/permissions', permissionRoutes);
 
 // ============================================================
 // ROOT API

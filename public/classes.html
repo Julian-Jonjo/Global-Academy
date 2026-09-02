@@ -44,6 +44,8 @@
         .section-sss { background: #ede9fe; color: #6d28d9; }
         .class-students { font-size: 24px; font-weight: bold; color: #1a3c6e; }
         .class-students-label { font-size: 11px; color: #6b7280; text-transform: uppercase; }
+        .class-master { font-size: 13px; color: #4b5563; margin-top: 5px; }
+        .class-master strong { color: #1a3c6e; }
         .empty { text-align: center; padding: 30px; color: #6b7280; }
         .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; } .user-info { text-align: left; } .classes-grid { grid-template-columns: 1fr; } }
@@ -111,9 +113,30 @@
     function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
     let studentCounts = {};
+    let teacherMap = {};
+
+    async function loadTeachers() {
+        try {
+            const response = await fetch('/api/teachers', {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (response.ok) {
+                const teachers = await response.json();
+                // Map teacher_id to full name
+                (teachers || []).forEach(t => {
+                    teacherMap[t.teacher_id || t.id] = `${t.first_name || ''} ${t.last_name || ''}`.trim() || t.full_name || t.name || 'Teacher';
+                });
+            }
+        } catch (e) {
+            console.log('Could not load teachers');
+        }
+    }
 
     async function loadClasses() {
         try {
+            // Load teachers first to get class masters
+            await loadTeachers();
+
             // Fetch classes
             const classesResponse = await fetch('/api/classes', {
                 headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
@@ -164,6 +187,14 @@
             const sectionClass = section === 'nursery' ? 'section-nursery' : section === 'primary' ? 'section-primary' : section === 'jss' ? 'section-jss' : 'section-sss';
             const cardClass = section === 'nursery' ? 'nursery' : section === 'primary' ? 'primary' : section === 'jss' ? 'jss' : 'sss';
 
+            // Get class master name
+            let masterName = 'Not assigned';
+            if (cls.class_master_id) {
+                masterName = teacherMap[cls.class_master_id] || 'Not assigned';
+            } else if (cls.class_master) {
+                masterName = cls.class_master;
+            }
+
             return `
                 <div class="class-card ${cardClass}" onclick="viewStudents(${cls.class_id}, '${escapeHtml(cls.class_name || '')}${cls.arm ? ' ' + escapeHtml(cls.arm) : ''}')">
                     <div class="class-name">${escapeHtml(cls.class_name || 'Unnamed Class')}</div>
@@ -172,6 +203,9 @@
                     <div>
                         <span class="class-students">${count}</span>
                         <span class="class-students-label"> Students</span>
+                    </div>
+                    <div class="class-master">
+                        <strong>Class Master:</strong> ${escapeHtml(masterName)}
                     </div>
                 </div>
             `;

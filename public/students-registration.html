@@ -252,10 +252,10 @@
                 padding: 20px;
             }
             select:disabled {
-    background: #f3f4f6;
-    color: #6b7280;
-    cursor: not-allowed;
-}
+                background: #f3f4f6;
+                color: #6b7280;
+                cursor: not-allowed;
+            }
         }
     </style>
 </head>
@@ -459,7 +459,7 @@
 
                 <div class="actions">
                     <button type="submit" id="submitBtn" class="submit-btn">Submit Registration</button>
-                    <button type="button" class="back-btn" onclick="history.back()">Cancel</button>
+                    <button type="button" class="back-btn" onclick="goBack()">Cancel</button>
                 </div>
             </form>
         </div>
@@ -467,9 +467,56 @@
 
     <script>
     const token = sessionStorage.getItem('authToken');
-    if (!token) {
+    const userData = sessionStorage.getItem('user');
+
+    if (!token || !userData) {
         alert('Please login first.');
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
+    }
+
+    let user;
+    try {
+        user = JSON.parse(userData);
+    } catch (error) {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+
+    const role = user.role_name || user.role || '';
+    const userRole = (user.role_name || user.role || '').toLowerCase();
+
+    // =========================================================
+    // BACK BUTTON - Go to appropriate sector
+    // =========================================================
+    function goBack() {
+        // Determine which sector the user belongs to
+        const isPrimaryManager = userRole.includes('manager-primary') || role === 'Manager-Primary';
+        const isSecondaryManager = userRole.includes('manager-secondary') || role === 'Manager-Secondary';
+        const isPrimaryFinance = userRole.includes('finance officer (primary)') || role === 'Finance Officer (Primary)';
+        const isSecondaryFinance = userRole.includes('finance officer (secondary)') || role === 'Finance Officer (Secondary)';
+        const isAdmin = userRole.includes('admin') || userRole.includes('administrator') || role === 'Administrator' || role === 'Admin';
+        const isProprietor = userRole.includes('proprietor') || role === 'Proprietor';
+
+        // Check where the user came from using referrer
+        const referrer = document.referrer || '';
+
+        // If referrer contains primary, go to primary
+        if (referrer.includes('primary-students') || isPrimaryManager || isPrimaryFinance) {
+            window.location.href = 'primary-students.html';
+        } 
+        // If referrer contains secondary, go to secondary
+        else if (referrer.includes('secondary-students') || isSecondaryManager || isSecondaryFinance) {
+            window.location.href = 'secondary-students.html';
+        } 
+        // If Admin or Proprietor, go to students management dashboard
+        else if (isAdmin || isProprietor) {
+            window.location.href = 'students.html';
+        } 
+        // Default fallback
+        else {
+            window.location.href = 'dashboard.html';
+        }
     }
 
     const form = document.getElementById('studentForm');
@@ -522,7 +569,9 @@
     bindFileName('testimonial_file', 'testimonialFileName');
     bindFileName('transfer_file', 'transferFileName');
 
-    // Load classes - simple version
+    // =========================================================
+    // LOAD CLASSES - Filter by user role
+    // =========================================================
     async function loadClasses() {
         classSelect.innerHTML = '<option value="">Loading classes...</option>';
         classLoading.textContent = 'Loading classes...';
@@ -543,9 +592,27 @@
 
             allClasses = Array.isArray(data) ? data : (data.classes || []);
 
+            // Filter classes based on user role
+            let filteredClasses = allClasses;
+
+            const isPrimaryManager = userRole.includes('manager-primary') || role === 'Manager-Primary';
+            const isSecondaryManager = userRole.includes('manager-secondary') || role === 'Manager-Secondary';
+            const isPrimaryFinance = userRole.includes('finance officer (primary)') || role === 'Finance Officer (Primary)';
+            const isSecondaryFinance = userRole.includes('finance officer (secondary)') || role === 'Finance Officer (Secondary)';
+
+            if (isPrimaryManager || isPrimaryFinance) {
+                filteredClasses = allClasses.filter(cls =>
+                    ['Nursery', 'Primary'].includes(cls.school_section)
+                );
+            } else if (isSecondaryManager || isSecondaryFinance) {
+                filteredClasses = allClasses.filter(cls =>
+                    ['JSS', 'SSS', 'Secondary'].includes(cls.school_section)
+                );
+            }
+
             classSelect.innerHTML = '<option value="">Select class</option>';
 
-            allClasses.forEach(cls => {
+            filteredClasses.forEach(cls => {
                 const option = document.createElement('option');
                 option.value = cls.class_id;
                 let label = cls.class_name || 'Class ' + cls.class_id;
@@ -555,7 +622,7 @@
             });
 
             classSelect.disabled = false;
-            classLoading.textContent = allClasses.length + ' classes available';
+            classLoading.textContent = filteredClasses.length + ' classes available';
 
         } catch (error) {
             console.error('Error loading classes:', error);
@@ -564,7 +631,9 @@
         }
     }
 
-    // Submit form
+    // =========================================================
+    // SUBMIT FORM
+    // =========================================================
     form.addEventListener('submit', async function(event) {
         event.preventDefault();
         hideMessage();
@@ -639,9 +708,11 @@
         }
     });
 
-    // Initialize
+    // =========================================================
+    // INITIALIZE
+    // =========================================================
     loadClasses();
-</script>
+    </script>
 </body>
 
 </html>

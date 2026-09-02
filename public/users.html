@@ -1,0 +1,3306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Users & Roles</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #222;
+            min-height: 100vh;
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.82);
+            z-index: 0;
+        }
+
+        .header {
+            background: #1a3c6e;
+            color: white;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-title p {
+            margin: 0;
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        .user-info {
+            text-align: right;
+            font-size: 13px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info .role {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info .role-label {
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        .logout-btn-header {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn-header:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-header h2 {
+            margin: 0 0 6px 0;
+            color: #1f2937;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            background: white;
+            padding: 8px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .tab-button {
+            border: none;
+            background: transparent;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #4b5563;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover {
+            background: #f3f4f6;
+        }
+
+        .tab-button.active {
+            background: #1a3c6e;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .refresh-btn {
+            background: #1a3c6e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #0f2a4a;
+            transform: translateY(-2px);
+        }
+
+        .add-btn {
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .add-btn:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filters input,
+        .filters select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .filters input:focus,
+        .filters select:focus {
+            outline: none;
+            border-color: #1a3c6e;
+            box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f3f4f6;
+            text-align: left;
+            padding: 13px;
+            font-size: 13px;
+            border-bottom: 2px solid #ddd;
+            color: #374151;
+        }
+
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        tr:hover td {
+            background: #f9fafb;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .active-status {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .inactive-status {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .edit-btn {
+            background: #d97706;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #b45309;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .toggle-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        .toggle-btn:hover {
+            background: #4b5563;
+        }
+
+        .toggle-btn.active-toggle {
+            background: #16a34a;
+        }
+
+        .toggle-btn.active-toggle:hover {
+            background: #15803d;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-secondary {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-purple {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .badge-gray {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 50px;
+            color: #6b7280;
+        }
+
+        .error-message {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .success-message {
+            color: #166534;
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close {
+            font-size: 30px;
+            cursor: pointer;
+            color: #666;
+            background: none;
+            border: none;
+        }
+
+        .close:hover {
+            color: #111;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-field label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        .form-field input,
+        .form-field select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus {
+            outline: none;
+            border-color: #1a3c6e;
+            box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .logout-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-bottom:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5);
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 20px;
+            }
+
+            .user-info {
+                text-align: left;
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                width: 100%;
+                text-align: left;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .logout-bottom {
+                bottom: 10px;
+                left: 10px;
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="header-left">
+
+            <div class="header-logo">
+
+                <img
+                    src="/images/logo.png"
+                    alt="Global Education Academy"
+                    onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+
+            </div>
+
+            <div class="header-title">
+
+                <h1>Global Education Academy</h1>
+
+                <p>Users & Roles Management</p>
+
+            </div>
+
+        </div>
+
+        <div class="user-info">
+
+            <div>
+
+                <span
+                    class="role"
+                    id="userRole">
+                </span>
+
+                <span
+                    class="role-label"
+                    id="userRoleLabel">
+                </span>
+
+            </div>
+
+            <button
+                class="logout-btn-header"
+                onclick="logout()">
+
+                🚪 Logout
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>👤 Users & Roles</h2>
+
+                <p>
+                    Manage system users, roles, and permissions.
+                </p>
+
+            </div>
+
+            <button
+                class="back-btn"
+                onclick="window.location.href='dashboard.html'">
+
+                ← Back to Dashboard
+
+            </button>
+
+        </div>
+
+
+        <!-- TABS -->
+
+        <div class="tabs">
+
+            <button
+                class="tab-button active"
+                onclick="openTab('users', this)">
+
+                👤 Users
+
+            </button>
+
+            <button
+                class="tab-button"
+                onclick="openTab('roles', this)">
+
+                🔑 Roles
+
+            </button>
+
+        </div>
+
+
+        <!-- USERS TAB -->
+
+        <section
+            id="users"
+            class="tab-content active">
+
+            <div class="section-header">
+
+                <h3>System Users</h3>
+
+                <div>
+
+                    <button
+                        class="btn add-btn"
+                        onclick="openAddUserModal()">
+
+                        ➕ Add New User
+
+                    </button>
+
+                    <button
+                        class="refresh-btn"
+                        onclick="loadUsers()">
+
+                        🔄 Refresh
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div id="userMessage"></div>
+
+
+            <div class="filters">
+
+                <input
+                    type="text"
+                    id="userSearch"
+                    placeholder="Search by username, name, or email..."
+                    oninput="applyUserFilters()">
+
+                <select
+                    id="userRoleFilter"
+                    onchange="applyUserFilters()">
+
+                    <option value="">
+                        All Roles
+                    </option>
+
+                </select>
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadUsers()">
+
+                    Refresh
+
+                </button>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Sector</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="userTable">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="empty">
+
+                                Loading users...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ROLES TAB -->
+
+        <section
+            id="roles"
+            class="tab-content">
+
+            <div class="section-header">
+
+                <h3>System Roles</h3>
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadRoles()">
+
+                    🔄 Refresh
+
+                </button>
+
+            </div>
+
+
+            <div id="roleMessage"></div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Role Name</th>
+                            <th>Description</th>
+                            <th>Users Count</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="roleTable">
+
+                        <tr>
+
+                            <td
+                                colspan="3"
+                                class="empty">
+
+                                Loading roles...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- BOTTOM LOGOUT -->
+
+    <button
+        class="logout-bottom"
+        onclick="logout()">
+
+        🚪 Logout
+
+    </button>
+
+
+    <!-- ADD / EDIT USER MODAL -->
+
+    <div
+        id="userModal"
+        class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 id="userModalTitle">
+                    Add New User
+                </h2>
+
+                <button
+                    class="close"
+                    onclick="closeModal('userModal')">
+
+                    &times;
+
+                </button>
+
+            </div>
+
+
+            <form
+                id="userForm"
+                onsubmit="submitUser(event)">
+
+                <input
+                    type="hidden"
+                    id="editUserId"
+                    value="">
+
+
+                <div class="form-grid">
+
+                    <div class="form-field">
+
+                        <label>
+                            Username *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="userUsername"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>
+                            Full Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="userFullName"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="userEmail">
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>
+                            Role *
+                        </label>
+
+                        <select
+                            id="userRoleSelect"
+                            required
+                            onchange="updateSectorOptions()">
+
+                            <option value="">
+                                Select Role
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="userPassword"
+                            placeholder="Min 6 characters">
+
+                        <span
+                            style="font-size:11px;color:#6b7280;">
+
+                            For editing, leave blank to keep
+                            the current password.
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select id="userStatus">
+
+                            <option value="true">
+                                Active
+                            </option>
+
+                            <option value="false">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>
+                            Sector
+                        </label>
+
+                        <select id="userSector">
+
+                            <option value="primary">
+                                Primary
+                            </option>
+
+                            <option value="secondary">
+                                Secondary
+                            </option>
+
+                            <option value="both">
+                                Both
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="btn"
+                        style="background:#6b7280;color:white;"
+                        onclick="closeModal('userModal')">
+
+                        Cancel
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn"
+                        style="background:#1a3c6e;color:white;">
+
+                        Save User
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONFIRM DELETE MODAL -->
+
+    <div
+        id="confirmModal"
+        class="modal">
+
+        <div
+            class="modal-content"
+            style="max-width:400px;">
+
+            <div class="modal-header">
+
+                <h2>
+                    ⚠️ Confirm Delete
+                </h2>
+
+                <button
+                    class="close"
+                    onclick="closeModal('confirmModal')">
+
+                    &times;
+
+                </button>
+
+            </div>
+
+
+            <p id="confirmMessage">
+
+                Are you sure you want to delete this user?
+
+            </p>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="btn"
+                    style="background:#6b7280;color:white;"
+                    onclick="closeModal('confirmModal')">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn"
+                    style="background:#dc2626;color:white;"
+                    onclick="confirmDelete()">
+
+                    Delete
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // =========================================================
+        // AUTHENTICATION
+        // =========================================================
+
+        const token =
+            sessionStorage.getItem('authToken') ||
+            localStorage.getItem('authToken');
+
+        const userData =
+            sessionStorage.getItem('user') ||
+            localStorage.getItem('user');
+
+
+        if (!token || !userData) {
+
+            window.location.href = '/login.html';
+
+        }
+
+
+        let user = null;
+
+        try {
+
+            user = JSON.parse(userData);
+
+        } catch (error) {
+
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+
+            window.location.href = '/login.html';
+
+        }
+
+
+        const role =
+            user?.role_name ||
+            user?.role ||
+            '';
+
+
+        const userRole =
+            String(role).toLowerCase();
+
+
+        // =========================================================
+        // PAGE ACCESS
+        // =========================================================
+
+        const isProprietor =
+            userRole === 'proprietor';
+
+
+        const isAdmin =
+            userRole === 'administrator' ||
+            userRole === 'admin';
+
+
+        if (!isProprietor && !isAdmin) {
+
+            alert(
+                'You do not have permission to access Users & Roles management.'
+            );
+
+            window.location.href =
+                'dashboard.html';
+
+        }
+
+
+        document.getElementById(
+            'userRole'
+        ).textContent =
+            user?.full_name ||
+            user?.name ||
+            'User';
+
+
+        document.getElementById(
+            'userRoleLabel'
+        ).textContent =
+            role;
+
+
+        // =========================================================
+        // GLOBAL VARIABLES
+        // =========================================================
+
+        let users = [];
+        let filteredUsers = [];
+        let roles = [];
+
+        let deleteId = null;
+        let deleteType = null;
+
+
+        // =========================================================
+        // TAB SYSTEM
+        // =========================================================
+
+        function openTab(tabId, button) {
+
+            document
+                .querySelectorAll('.tab-content')
+                .forEach(content => {
+
+                    content.classList.remove('active');
+
+                });
+
+
+            document
+                .querySelectorAll('.tab-button')
+                .forEach(tab => {
+
+                    tab.classList.remove('active');
+
+                });
+
+
+            document
+                .getElementById(tabId)
+                .classList.add('active');
+
+
+            if (button) {
+
+                button.classList.add('active');
+
+            }
+
+
+            if (tabId === 'users') {
+
+                loadUsers();
+
+            }
+
+
+            if (tabId === 'roles') {
+
+                loadRoles();
+
+            }
+
+        }
+
+
+        // =========================================================
+        // MODALS
+        // =========================================================
+
+        function openModal(id) {
+
+            document.getElementById(id).style.display =
+                'block';
+
+        }
+
+
+        function closeModal(id) {
+
+            document.getElementById(id).style.display =
+                'none';
+
+        }
+
+
+        window.addEventListener(
+            'click',
+            function (event) {
+
+                document
+                    .querySelectorAll('.modal')
+                    .forEach(modal => {
+
+                        if (event.target === modal) {
+
+                            modal.style.display =
+                                'none';
+
+                        }
+
+                    });
+
+            }
+        );
+
+
+        // =========================================================
+        // API HELPER
+        // IMPORTANT:
+        // Uses authToken to match the existing login system.
+        // =========================================================
+
+        async function apiRequest(url, options = {}) {
+
+            const response =
+                await fetch(
+                    url,
+                    {
+
+                        ...options,
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json',
+
+                            ...(options.headers || {}),
+
+                            'Authorization':
+                                `Bearer ${token}`
+
+                        }
+
+                    }
+                );
+
+
+            let data = null;
+
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (e) {
+
+                data = null;
+
+            }
+
+
+            if (response.status === 401) {
+
+                sessionStorage.removeItem(
+                    'authToken'
+                );
+
+                sessionStorage.removeItem(
+                    'user'
+                );
+
+                localStorage.removeItem(
+                    'authToken'
+                );
+
+                localStorage.removeItem(
+                    'user'
+                );
+
+
+                window.location.href =
+                    '/login.html';
+
+                return null;
+
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data?.message ||
+                    `Request failed with status ${response.status}`
+                );
+
+            }
+
+
+            return data;
+
+        }
+
+
+        // =========================================================
+        // FORMATTING
+        // =========================================================
+
+        function escapeHtml(value) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+
+                return '';
+
+            }
+
+
+            return String(value)
+
+                .replace(
+                    /&/g,
+                    '&amp;'
+                )
+
+                .replace(
+                    /</g,
+                    '&lt;'
+                )
+
+                .replace(
+                    />/g,
+                    '&gt;'
+                )
+
+                .replace(
+                    /"/g,
+                    '&quot;'
+                )
+
+                .replace(
+                    /'/g,
+                    '&#039;'
+                );
+
+        }
+
+
+        function display(value) {
+
+            if (
+                value === null ||
+                value === undefined ||
+                value === ''
+            ) {
+
+                return '—';
+
+            }
+
+
+            return escapeHtml(
+                String(value)
+            );
+
+        }
+
+
+        function formatDate(value) {
+
+            if (!value) {
+
+                return '—';
+
+            }
+
+
+            try {
+
+                const date =
+                    new Date(value);
+
+
+                if (
+                    isNaN(
+                        date.getTime()
+                    )
+                ) {
+
+                    return '—';
+
+                }
+
+
+                return (
+                    date.toLocaleDateString() +
+                    ' ' +
+                    date.toLocaleTimeString()
+                );
+
+            } catch {
+
+                return '—';
+
+            }
+
+        }
+
+
+        // =========================================================
+        // ROLE BADGES
+        // =========================================================
+
+        function getRoleBadgeClass(roleName) {
+
+            const r =
+                String(roleName || '')
+                    .toLowerCase();
+
+
+            if (r === 'proprietor') {
+
+                return 'badge-purple';
+
+            }
+
+
+            if (r === 'administrator') {
+
+                return 'badge-primary';
+
+            }
+
+
+            if (r === 'manager') {
+
+                return 'badge-secondary';
+
+            }
+
+
+            if (r === 'finance officer') {
+
+                return 'badge-success';
+
+            }
+
+
+            if (r === 'teacher') {
+
+                return 'badge-gray';
+
+            }
+
+
+            if (r === 'student') {
+
+                return 'badge-primary';
+
+            }
+
+
+            return 'badge-gray';
+
+        }
+
+
+        // =========================================================
+        // SECTOR
+        // =========================================================
+
+        function formatSector(sector) {
+
+            if (!sector) {
+
+                return '—';
+
+            }
+
+
+            const value =
+                String(sector)
+                    .toLowerCase();
+
+
+            if (value === 'primary') {
+
+                return `
+                    <span class="badge badge-primary">
+                        Primary
+                    </span>
+                `;
+
+            }
+
+
+            if (value === 'secondary') {
+
+                return `
+                    <span class="badge badge-secondary">
+                        Secondary
+                    </span>
+                `;
+
+            }
+
+
+            if (value === 'both') {
+
+                return `
+                    <span class="badge badge-purple">
+                        Both
+                    </span>
+                `;
+
+            }
+
+
+            return display(sector);
+
+        }
+
+
+        // =========================================================
+        // LOAD USERS
+        // =========================================================
+
+        async function loadUsers() {
+
+            const table =
+                document.getElementById(
+                    'userTable'
+                );
+
+
+            table.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="8"
+                        class="empty">
+
+                        Loading users...
+
+                    </td>
+                </tr>
+                `;
+
+
+            document.getElementById(
+                'userMessage'
+            ).innerHTML = '';
+
+
+            try {
+
+                const data =
+                    await apiRequest(
+                        '/api/users'
+                    );
+
+
+                if (!data) {
+
+                    return;
+
+                }
+
+
+                users =
+                    Array.isArray(data)
+                        ? data
+                        : [];
+
+
+                filteredUsers =
+                    [...users];
+
+
+                populateRoleFilter();
+
+                renderUsers();
+
+
+                /*
+                 * Keep the Roles tab counts synchronized
+                 * with the latest user list.
+                 */
+
+                if (roles.length) {
+
+                    renderRoles();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    'USERS ERROR:',
+                    error
+                );
+
+
+                document.getElementById(
+                    'userMessage'
+                ).innerHTML =
+
+                    `
+                    <div class="error-message">
+
+                        ${escapeHtml(
+                            error.message
+                        )}
+
+                    </div>
+                    `;
+
+
+                table.innerHTML =
+
+                    `
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="empty">
+
+                            Error loading users:
+                            ${escapeHtml(
+                                error.message
+                            )}
+
+                        </td>
+
+                    </tr>
+                    `;
+
+            }
+
+        }
+
+
+        // =========================================================
+        // ROLE FILTER
+        // =========================================================
+
+        function populateRoleFilter() {
+
+            const select =
+                document.getElementById(
+                    'userRoleFilter'
+                );
+
+
+            const roleNames =
+                new Set();
+
+
+            users.forEach(u => {
+
+                if (u.role_name) {
+
+                    roleNames.add(
+                        u.role_name
+                    );
+
+                }
+
+            });
+
+
+            const currentValue =
+                select.value;
+
+
+            select.innerHTML =
+                `
+                <option value="">
+                    All Roles
+                </option>
+                `;
+
+
+            [...roleNames]
+                .sort()
+                .forEach(roleName => {
+
+                    const option =
+                        document.createElement(
+                            'option'
+                        );
+
+
+                    option.value =
+                        roleName;
+
+
+                    option.textContent =
+                        roleName;
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                });
+
+
+            if (currentValue) {
+
+                select.value =
+                    currentValue;
+
+            }
+
+        }
+
+
+        // =========================================================
+        // FILTER USERS
+        // =========================================================
+
+        function applyUserFilters() {
+
+            const search =
+                document.getElementById(
+                    'userSearch'
+                )
+                .value
+                .trim()
+                .toLowerCase();
+
+
+            const roleFilter =
+                document.getElementById(
+                    'userRoleFilter'
+                ).value;
+
+
+            filteredUsers =
+                users.filter(u => {
+
+                    const username =
+                        String(
+                            u.username || ''
+                        )
+                        .toLowerCase();
+
+
+                    const fullName =
+                        String(
+                            u.full_name ||
+                            u.name ||
+                            ''
+                        )
+                        .toLowerCase();
+
+
+                    const email =
+                        String(
+                            u.email || ''
+                        )
+                        .toLowerCase();
+
+
+                    const matchesSearch =
+                        !search ||
+                        username.includes(search) ||
+                        fullName.includes(search) ||
+                        email.includes(search);
+
+
+                    const matchesRole =
+                        !roleFilter ||
+                        u.role_name === roleFilter;
+
+
+                    return (
+                        matchesSearch &&
+                        matchesRole
+                    );
+
+                });
+
+
+            renderUsers();
+
+        }
+
+
+        // =========================================================
+        // RENDER USERS
+        // =========================================================
+
+        function renderUsers() {
+
+            const table =
+                document.getElementById(
+                    'userTable'
+                );
+
+
+            if (!filteredUsers.length) {
+
+                table.innerHTML =
+                    `
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="empty">
+
+                            No users found.
+
+                        </td>
+
+                    </tr>
+                    `;
+
+                return;
+
+            }
+
+
+            table.innerHTML =
+                filteredUsers
+                    .map(u => {
+
+                        const isActive =
+                            u.is_active !== false;
+
+
+                        const statusClass =
+                            isActive
+                                ? 'active-status'
+                                : 'inactive-status';
+
+
+                        const statusText =
+                            isActive
+                                ? 'Active'
+                                : 'Inactive';
+
+
+                        const badgeClass =
+                            getRoleBadgeClass(
+                                u.role_name
+                            );
+
+
+                        const userId =
+                            u.user_id ||
+                            u.id;
+
+
+                        return `
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        ${display(
+                                            u.username
+                                        )}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    ${display(
+                                        u.full_name ||
+                                        u.name
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${display(
+                                        u.email
+                                    )}
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="badge ${badgeClass}">
+
+                                        ${display(
+                                            u.role_name ||
+                                            'No Role'
+                                        )}
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    ${formatSector(
+                                        u.sector
+                                    )}
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="status ${statusClass}">
+
+                                        ${statusText}
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    ${formatDate(
+                                        u.last_login
+                                    )}
+                                </td>
+
+                                <td>
+
+                                    <button
+                                        class="btn edit-btn"
+                                        onclick="editUser(${userId})">
+
+                                        ✏️ Edit
+
+                                    </button>
+
+                                    <button
+                                        class="btn delete-btn"
+                                        onclick="confirmDeleteUser(${userId})">
+
+                                        🗑️ Delete
+
+                                    </button>
+
+                                    <button
+                                        class="btn toggle-btn ${isActive ? 'active-toggle' : ''}"
+                                        onclick="toggleUserStatus(${userId})">
+
+                                        ${
+                                            isActive
+                                                ? '🔵 Active'
+                                                : '⚪ Inactive'
+                                        }
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    })
+                    .join('');
+
+        }
+
+
+        // =========================================================
+        // LOAD ASSIGNABLE ROLES
+        // =========================================================
+
+        async function loadUserRolesDropdown(
+            currentRoleId = null
+        ) {
+
+            const select =
+                document.getElementById(
+                    'userRoleSelect'
+                );
+
+
+            if (!select) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const data =
+                    await apiRequest(
+                        '/api/roles'
+                    );
+
+
+                if (!data) {
+
+                    return;
+
+                }
+
+
+                select.innerHTML =
+                    `
+                    <option value="">
+                        Select Role
+                    </option>
+                    `;
+
+
+                /*
+                 * Normal users can only be assigned:
+                 *
+                 * 3 = Finance Officer
+                 * 4 = Teacher
+                 * 5 = Student
+                 * 6 = Manager
+                 *
+                 * Proprietor and Administrator are
+                 * deliberately excluded from normal creation.
+                 */
+
+                const normalRoleIds =
+                    [6, 3, 4, 5];
+
+
+                let allowedRoleIds =
+                    [...normalRoleIds];
+
+
+                /*
+                 * When editing an existing Proprietor
+                 * or Administrator, display their current
+                 * role but disable it.
+                 */
+
+                if (
+                    Number(currentRoleId) === 1 ||
+                    Number(currentRoleId) === 2
+                ) {
+
+                    allowedRoleIds.unshift(
+                        Number(currentRoleId)
+                    );
+
+                }
+
+
+                /*
+                 * Desired display order.
+                 */
+
+                const roleOrder =
+                    [6, 3, 4, 5, 1, 2];
+
+
+                data
+
+                    .filter(role =>
+                        allowedRoleIds.includes(
+                            Number(role.role_id)
+                        )
+                    )
+
+                    .sort((a, b) => {
+
+                        return (
+                            roleOrder.indexOf(
+                                Number(a.role_id)
+                            ) -
+                            roleOrder.indexOf(
+                                Number(b.role_id)
+                            )
+                        );
+
+                    })
+
+                    .forEach(role => {
+
+                        const option =
+                            document.createElement(
+                                'option'
+                            );
+
+
+                        option.value =
+                            role.role_id;
+
+
+                        option.textContent =
+                            role.role_name;
+
+
+                        /*
+                         * Proprietor and Administrator
+                         * cannot be selected as a new role.
+                         */
+
+                        if (
+                            Number(role.role_id) === 1 ||
+                            Number(role.role_id) === 2
+                        ) {
+
+                            option.disabled =
+                                true;
+
+                        }
+
+
+                        select.appendChild(
+                            option
+                        );
+
+                    });
+
+            } catch (error) {
+
+                console.error(
+                    'Error loading roles:',
+                    error
+                );
+
+
+                /*
+                 * Safe fallback.
+                 */
+
+                select.innerHTML = `
+
+                    <option value="">
+                        Select Role
+                    </option>
+
+                    <option value="6">
+                        Manager
+                    </option>
+
+                    <option value="3">
+                        Finance Officer
+                    </option>
+
+                    <option value="4">
+                        Teacher
+                    </option>
+
+                    <option value="5">
+                        Student
+                    </option>
+
+                `;
+
+
+                if (
+                    Number(currentRoleId) === 1
+                ) {
+
+                    const option =
+                        document.createElement(
+                            'option'
+                        );
+
+
+                    option.value =
+                        '1';
+
+                    option.textContent =
+                        'Proprietor';
+
+                    option.disabled =
+                        true;
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+
+
+                if (
+                    Number(currentRoleId) === 2
+                ) {
+
+                    const option =
+                        document.createElement(
+                            'option'
+                        );
+
+
+                    option.value =
+                        '2';
+
+                    option.textContent =
+                        'Administrator';
+
+                    option.disabled =
+                        true;
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        // =========================================================
+        // SECTOR CONTROL
+        // =========================================================
+
+        function updateSectorOptions() {
+
+            const roleId =
+                Number(
+                    document.getElementById(
+                        'userRoleSelect'
+                    ).value
+                );
+
+
+            const sectorSelect =
+                document.getElementById(
+                    'userSector'
+                );
+
+
+            const bothOption =
+                sectorSelect.querySelector(
+                    'option[value="both"]'
+                );
+
+
+            /*
+             * Proprietor and Administrator have
+             * system-wide access.
+             */
+
+            if (
+                roleId === 1 ||
+                roleId === 2
+            ) {
+
+                sectorSelect.value =
+                    'both';
+
+                sectorSelect.disabled =
+                    true;
+
+
+                return;
+
+            }
+
+
+            sectorSelect.disabled =
+                false;
+
+
+            /*
+             * Normal users operate within one sector.
+             */
+
+            if (bothOption) {
+
+                bothOption.disabled =
+                    true;
+
+            }
+
+
+            if (
+                sectorSelect.value ===
+                'both'
+            ) {
+
+                sectorSelect.value =
+                    'primary';
+
+            }
+
+        }
+
+
+        // =========================================================
+        // ADD USER
+        // =========================================================
+
+        async function openAddUserModal() {
+
+            document.getElementById(
+                'userModalTitle'
+            ).textContent =
+                'Add New User';
+
+
+            document.getElementById(
+                'editUserId'
+            ).value =
+                '';
+
+
+            document.getElementById(
+                'userForm'
+            ).reset();
+
+
+            document.getElementById(
+                'userPassword'
+            ).required =
+                true;
+
+
+            document.getElementById(
+                'userPassword'
+            ).placeholder =
+                'Min 6 characters';
+
+
+            const roleSelect =
+                document.getElementById(
+                    'userRoleSelect'
+                );
+
+
+            roleSelect.disabled =
+                false;
+
+
+            const sectorSelect =
+                document.getElementById(
+                    'userSector'
+                );
+
+
+            sectorSelect.disabled =
+                false;
+
+
+            sectorSelect.value =
+                'primary';
+
+
+            await loadUserRolesDropdown();
+
+
+            const bothOption =
+                document.querySelector(
+                    '#userSector option[value="both"]'
+                );
+
+
+            if (bothOption) {
+
+                bothOption.disabled =
+                    true;
+
+            }
+
+
+            updateSectorOptions();
+
+
+            openModal(
+                'userModal'
+            );
+
+        }
+
+
+        // =========================================================
+        // EDIT USER
+        // =========================================================
+
+        async function editUser(userId) {
+
+            try {
+
+                const userData =
+                    await apiRequest(
+                        `/api/users/${userId}`
+                    );
+
+
+                if (!userData) {
+
+                    return;
+
+                }
+
+
+                const currentRoleId =
+                    Number(
+                        userData.role_id
+                    );
+
+
+                document.getElementById(
+                    'userModalTitle'
+                ).textContent =
+                    'Edit User';
+
+
+                document.getElementById(
+                    'editUserId'
+                ).value =
+                    userId;
+
+
+                document.getElementById(
+                    'userUsername'
+                ).value =
+                    userData.username || '';
+
+
+                document.getElementById(
+                    'userFullName'
+                ).value =
+                    userData.full_name ||
+                    userData.name ||
+                    '';
+
+
+                document.getElementById(
+                    'userEmail'
+                ).value =
+                    userData.email || '';
+
+
+                document.getElementById(
+                    'userStatus'
+                ).value =
+                    userData.is_active !== false
+                        ? 'true'
+                        : 'false';
+
+
+                document.getElementById(
+                    'userSector'
+                ).value =
+                    userData.sector ||
+                    'primary';
+
+
+                document.getElementById(
+                    'userPassword'
+                ).required =
+                    false;
+
+
+                document.getElementById(
+                    'userPassword'
+                ).placeholder =
+                    'Leave blank to keep current';
+
+
+                await loadUserRolesDropdown(
+                    currentRoleId
+                );
+
+
+                const roleSelect =
+                    document.getElementById(
+                        'userRoleSelect'
+                    );
+
+
+                roleSelect.value =
+                    String(currentRoleId);
+
+
+                /*
+                 * Protected roles cannot be changed.
+                 */
+
+                if (
+                    currentRoleId === 1 ||
+                    currentRoleId === 2
+                ) {
+
+                    roleSelect.disabled =
+                        true;
+
+                } else {
+
+                    roleSelect.disabled =
+                        false;
+
+                }
+
+
+                /*
+                 * Global roles have BOTH sector access.
+                 */
+
+                if (
+                    currentRoleId === 1 ||
+                    currentRoleId === 2
+                ) {
+
+                    document.getElementById(
+                        'userSector'
+                    ).value =
+                        'both';
+
+
+                    document.getElementById(
+                        'userSector'
+                    ).disabled =
+                        true;
+
+                } else {
+
+                    document.getElementById(
+                        'userSector'
+                    ).disabled =
+                        false;
+
+
+                    const bothOption =
+                        document.querySelector(
+                            '#userSector option[value="both"]'
+                        );
+
+
+                    if (bothOption) {
+
+                        bothOption.disabled =
+                            true;
+
+                    }
+
+                }
+
+
+                openModal(
+                    'userModal'
+                );
+
+            } catch (error) {
+
+                alert(
+                    'Error loading user: ' +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        // =========================================================
+        // SUBMIT USER
+        // =========================================================
+
+        async function submitUser(event) {
+
+            event.preventDefault();
+
+
+            const userId =
+                document.getElementById(
+                    'editUserId'
+                ).value;
+
+
+            const isEdit =
+                Boolean(userId);
+
+
+            const roleSelect =
+                document.getElementById(
+                    'userRoleSelect'
+                );
+
+
+            const sectorSelect =
+                document.getElementById(
+                    'userSector'
+                );
+
+
+            const roleId =
+                Number(
+                    roleSelect.value
+                );
+
+
+            if (!roleId) {
+
+                alert(
+                    'Please select a role.'
+                );
+
+                return;
+
+            }
+
+
+            const data = {
+
+                username:
+                    document.getElementById(
+                        'userUsername'
+                    )
+                    .value
+                    .trim(),
+
+                full_name:
+                    document.getElementById(
+                        'userFullName'
+                    )
+                    .value
+                    .trim(),
+
+                email:
+                    document.getElementById(
+                        'userEmail'
+                    )
+                    .value
+                    .trim(),
+
+                role_id:
+                    roleId,
+
+                is_active:
+                    document.getElementById(
+                        'userStatus'
+                    ).value === 'true',
+
+                sector:
+                    sectorSelect.value
+
+            };
+
+
+            /*
+             * Password.
+             */
+
+            const password =
+                document.getElementById(
+                    'userPassword'
+                ).value;
+
+
+            if (
+                !isEdit &&
+                !password
+            ) {
+
+                alert(
+                    'Password is required for new users.'
+                );
+
+                return;
+
+            }
+
+
+            if (password) {
+
+                if (
+                    password.length < 6
+                ) {
+
+                    alert(
+                        'Password must be at least 6 characters.'
+                    );
+
+                    return;
+
+                }
+
+
+                data.password =
+                    password;
+
+            }
+
+
+            /*
+             * Protected global roles.
+             */
+
+            if (
+                roleId === 1 ||
+                roleId === 2
+            ) {
+
+                data.sector =
+                    'both';
+
+            }
+
+
+            /*
+             * Frontend protection against
+             * creating privileged accounts.
+             */
+
+            if (
+                !isEdit &&
+                (
+                    roleId === 1 ||
+                    roleId === 2
+                )
+            ) {
+
+                alert(
+                    'Proprietor and Administrator accounts cannot be created from this form.'
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                let result;
+
+
+                if (isEdit) {
+
+                    result =
+                        await apiRequest(
+                            `/api/users/${userId}`,
+                            {
+
+                                method:
+                                    'PUT',
+
+                                body:
+                                    JSON.stringify(
+                                        data
+                                    )
+
+                            }
+                        );
+
+                } else {
+
+                    result =
+                        await apiRequest(
+                            '/api/users',
+                            {
+
+                                method:
+                                    'POST',
+
+                                body:
+                                    JSON.stringify(
+                                        data
+                                    )
+
+                            }
+                        );
+
+                }
+
+
+                if (!result) {
+
+                    return;
+
+                }
+
+
+                alert(
+                    isEdit
+                        ? 'User updated successfully!'
+                        : 'User created successfully!'
+                );
+
+
+                closeModal(
+                    'userModal'
+                );
+
+
+                document.getElementById(
+                    'userForm'
+                ).reset();
+
+
+                await loadUsers();
+
+            } catch (error) {
+
+                alert(
+                    'Error: ' +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        // =========================================================
+        // DELETE USER
+        // =========================================================
+
+        function confirmDeleteUser(userId) {
+
+            deleteId =
+                userId;
+
+            deleteType =
+                'user';
+
+
+            document.getElementById(
+                'confirmMessage'
+            ).textContent =
+                'Are you sure you want to delete this user? This action cannot be undone.';
+
+
+            openModal(
+                'confirmModal'
+            );
+
+        }
+
+
+        async function confirmDelete() {
+
+            if (!deleteId) {
+
+                return;
+
+            }
+
+
+            try {
+
+                if (
+                    deleteType ===
+                    'user'
+                ) {
+
+                    await apiRequest(
+                        `/api/users/${deleteId}`,
+                        {
+
+                            method:
+                                'DELETE'
+
+                        }
+                    );
+
+
+                    alert(
+                        'User deleted successfully!'
+                    );
+
+                }
+
+
+                closeModal(
+                    'confirmModal'
+                );
+
+
+                deleteId =
+                    null;
+
+                deleteType =
+                    null;
+
+
+                await loadUsers();
+
+            } catch (error) {
+
+                alert(
+                    'Error: ' +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        // =========================================================
+        // TOGGLE USER STATUS
+        // =========================================================
+
+        async function toggleUserStatus(userId) {
+
+            try {
+
+                const userData =
+                    await apiRequest(
+                        `/api/users/${userId}`
+                    );
+
+
+                if (!userData) {
+
+                    return;
+
+                }
+
+
+                const newStatus =
+                    userData.is_active !== false
+                        ? false
+                        : true;
+
+
+                await apiRequest(
+                    `/api/users/${userId}`,
+                    {
+
+                        method:
+                            'PUT',
+
+                        body:
+                            JSON.stringify({
+
+                                is_active:
+                                    newStatus
+
+                            })
+
+                    }
+                );
+
+
+                await loadUsers();
+
+            } catch (error) {
+
+                alert(
+                    'Error: ' +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        // =========================================================
+        // LOAD ROLES
+        // =========================================================
+
+        async function loadRoles() {
+
+            const table =
+                document.getElementById(
+                    'roleTable'
+                );
+
+
+            table.innerHTML =
+                `
+                <tr>
+
+                    <td
+                        colspan="3"
+                        class="empty">
+
+                        Loading roles...
+
+                    </td>
+
+                </tr>
+                `;
+
+
+            document.getElementById(
+                'roleMessage'
+            ).innerHTML =
+                '';
+
+
+            try {
+
+                const data =
+                    await apiRequest(
+                        '/api/roles'
+                    );
+
+
+                if (!data) {
+
+                    return;
+
+                }
+
+
+                roles =
+                    Array.isArray(data)
+                        ? data
+                        : [];
+
+
+                renderRoles();
+
+            } catch (error) {
+
+                console.error(
+                    'ROLES ERROR:',
+                    error
+                );
+
+
+                document.getElementById(
+                    'roleMessage'
+                ).innerHTML =
+
+                    `
+                    <div class="error-message">
+
+                        ${escapeHtml(
+                            error.message
+                        )}
+
+                    </div>
+                    `;
+
+
+                table.innerHTML =
+
+                    `
+                    <tr>
+
+                        <td
+                            colspan="3"
+                            class="empty">
+
+                            Error loading roles:
+                            ${escapeHtml(
+                                error.message
+                            )}
+
+                        </td>
+
+                    </tr>
+                    `;
+
+            }
+
+        }
+
+
+        // =========================================================
+        // RENDER ROLES
+        // =========================================================
+
+        function renderRoles() {
+
+            const table =
+                document.getElementById(
+                    'roleTable'
+                );
+
+
+            if (!roles.length) {
+
+                table.innerHTML =
+                    `
+                    <tr>
+
+                        <td
+                            colspan="3"
+                            class="empty">
+
+                            No roles found.
+
+                        </td>
+
+                    </tr>
+                    `;
+
+                return;
+
+            }
+
+
+            table.innerHTML =
+                roles
+                    .map(role => {
+
+                        const userCount =
+                            users.filter(u =>
+
+                                Number(
+                                    u.role_id
+                                ) ===
+                                Number(
+                                    role.role_id
+                                )
+
+                            ).length;
+
+
+                        const badgeClass =
+                            getRoleBadgeClass(
+                                role.role_name
+                            );
+
+
+                        return `
+
+                            <tr>
+
+                                <td>
+
+                                    <span
+                                        class="badge ${badgeClass}">
+
+                                        ${display(
+                                            role.role_name
+                                        )}
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    ${display(
+                                        role.description
+                                    )}
+
+                                </td>
+
+                                <td>
+
+                                    ${userCount}
+                                    user${userCount !== 1 ? 's' : ''}
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    })
+                    .join('');
+
+        }
+
+
+        // =========================================================
+        // LOGOUT
+        // =========================================================
+
+        function logout() {
+
+            sessionStorage.removeItem(
+                'authToken'
+            );
+
+            sessionStorage.removeItem(
+                'user'
+            );
+
+            localStorage.removeItem(
+                'authToken'
+            );
+
+            localStorage.removeItem(
+                'user'
+            );
+
+
+            window.location.href =
+                '/login.html';
+
+        }
+
+
+        // =========================================================
+        // INITIALIZE
+        // =========================================================
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+
+                loadUsers();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

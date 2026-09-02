@@ -166,38 +166,101 @@
 <script>
     const token = sessionStorage.getItem('authToken');
     const userData = sessionStorage.getItem('user');
-    if (!token || !userData) { window.location.href = '/login.html'; }
+
+    if (!token || !userData) {
+        window.location.href = '/login.html';
+    }
 
     let user;
-    try { user = JSON.parse(userData); } catch (error) { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
 
+    try {
+        user = JSON.parse(userData);
+    } catch (error) {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    // =========================================================
+    // UPDATED ROLE SYSTEM
+    // =========================================================
+
+    const roleId = Number(user?.role_id);
     const role = user?.role_name || '';
-    const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
+    const sector = String(user?.sector || '').toLowerCase().trim();
 
-    if (userRoleForAccess.includes('manager-primary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
-    if (userRoleForAccess.includes('finance officer (primary)')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
-    if (userRoleForAccess.includes('teacher - primary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+    // Role IDs:
+    // 1 = Proprietor
+    // 2 = Administrator
+    // 3 = Finance Officer
+    // 4 = Teacher
+    // 5 = Student
+    // 6 = Manager
 
-    const allowedRoles = ['manager-secondary', 'admin', 'proprietor'];
-    const hasAccess = allowedRoles.some(r => userRoleForAccess.includes(r));
-    if (!hasAccess) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+    // =========================================================
+    // ACCESS CONTROL
+    // =========================================================
 
-    document.getElementById('userInfo').textContent = `${user?.full_name || 'User'} (${role})`;
+    const isProprietor = roleId === 1;
+    const isAdministrator = roleId === 2;
+    const isManager = roleId === 6;
 
-    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
-    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+    // Proprietor and Administrator have system-wide access.
+    const hasGlobalAccess = isProprietor || isAdministrator;
+
+    // Manager can access this page only when assigned to Secondary.
+    const hasSecondaryManagerAccess =
+        isManager && sector === 'secondary';
+
+    // Everyone else is denied.
+    const hasAccess =
+        hasGlobalAccess || hasSecondaryManagerAccess;
+
+    if (!hasAccess) {
+        alert('Access denied.');
+        window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('userInfo').textContent =
+        `${user?.full_name || 'User'} (${role})`;
+
+    function logout() {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) return '';
+
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
 
     let teachers = [];
     let assignments = [];
 
     async function loadAssignments() {
         try {
-            const response = await fetch('/api/teachers/secondary-assignments/bulk?academic_year_id=1', {
-                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-            });
+            const response = await fetch(
+                '/api/teachers/secondary-assignments/bulk?academic_year_id=1',
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                }
+            );
+
             if (!response.ok) return;
+
             const data = await response.json();
             assignments = Array.isArray(data) ? data : [];
+
         } catch (error) {
             console.error('Assignments error:', error);
             assignments = [];
@@ -206,60 +269,135 @@
 
     async function loadTeachers() {
         const table = document.getElementById('teacherTable');
+
         try {
-            const response = await fetch('/api/teachers', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            teachers = (Array.isArray(data) ? data : []).filter(t => {
-                const section = String(t.school_section || '').toLowerCase();
-                return section.includes('secondary') || section.includes('jss') || section.includes('sss');
+            const response = await fetch('/api/teachers', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            teachers = (Array.isArray(data) ? data : []).filter(t => {
+                const section =
+                    String(t.school_section || '').toLowerCase();
+
+                return section.includes('secondary') ||
+                    section.includes('jss') ||
+                    section.includes('sss');
+            });
+
             await loadAssignments();
             updateSummary();
             renderTeachers();
+
         } catch (error) {
-            table.innerHTML = `<tr><td colspan="9" class="error">Error: ${escapeHtml(error.message)}</td></tr>`;
+            table.innerHTML =
+                `<tr><td colspan="9" class="error">Error: ${escapeHtml(error.message)}</td></tr>`;
         }
     }
 
     function getTeacherSubjects(teacherId) {
-        const teacherAssignments = assignments.filter(a => String(a.teacher_id) === String(teacherId));
+        const teacherAssignments =
+            assignments.filter(
+                a => String(a.teacher_id) === String(teacherId)
+            );
+
         const subjects = new Set();
+
         teacherAssignments.forEach(a => {
-            if (a.subjects?.subject_name) subjects.add(a.subjects.subject_name);
+            if (a.subjects?.subject_name) {
+                subjects.add(a.subjects.subject_name);
+            }
         });
+
         return subjects.size ? [...subjects].join(', ') : '-';
     }
 
     function getTeacherClasses(teacherId) {
-        const teacherAssignments = assignments.filter(a => String(a.teacher_id) === String(teacherId));
+        const teacherAssignments =
+            assignments.filter(
+                a => String(a.teacher_id) === String(teacherId)
+            );
+
         const classes = new Set();
+
         teacherAssignments.forEach(a => {
-            if (a.classes?.class_name) classes.add(`${a.classes.class_name}${a.classes.arm ? ' ' + a.classes.arm : ''}`);
+            if (a.classes?.class_name) {
+                classes.add(
+                    `${a.classes.class_name}${a.classes.arm ? ' ' + a.classes.arm : ''}`
+                );
+            }
         });
+
         return classes.size ? [...classes].join(', ') : '-';
     }
 
     function updateSummary() {
-        document.getElementById('totalTeachers').textContent = teachers.length;
-        document.getElementById('permanentTeachers').textContent = teachers.filter(t => String(t.employment_type || '').toLowerCase() === 'permanent').length;
-        document.getElementById('maleTeachers').textContent = teachers.filter(t => String(t.gender || '').toLowerCase() === 'male').length;
-        document.getElementById('femaleTeachers').textContent = teachers.filter(t => String(t.gender || '').toLowerCase() === 'female').length;
+        document.getElementById('totalTeachers').textContent =
+            teachers.length;
+
+        document.getElementById('permanentTeachers').textContent =
+            teachers.filter(
+                t => String(t.employment_type || '').toLowerCase() === 'permanent'
+            ).length;
+
+        document.getElementById('maleTeachers').textContent =
+            teachers.filter(
+                t => String(t.gender || '').toLowerCase() === 'male'
+            ).length;
+
+        document.getElementById('femaleTeachers').textContent =
+            teachers.filter(
+                t => String(t.gender || '').toLowerCase() === 'female'
+            ).length;
     }
 
     function renderTeachers(list = teachers) {
         const table = document.getElementById('teacherTable');
-        document.getElementById('recordCount').textContent = `${list.length} Record${list.length === 1 ? '' : 's'}`;
+
+        document.getElementById('recordCount').textContent =
+            `${list.length} Record${list.length === 1 ? '' : 's'}`;
+
         if (!list.length) {
-            table.innerHTML = '<tr><td colspan="9" class="empty">No Secondary teachers found.</td></tr>';
+            table.innerHTML =
+                '<tr><td colspan="9" class="empty">No Secondary teachers found.</td></tr>';
             return;
         }
+
         table.innerHTML = list.map(teacher => {
-            const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ');
-            const employment = String(teacher.employment_type || '-');
-            const status = String(teacher.teacher_status || 'Active');
-            const subjects = getTeacherSubjects(teacher.teacher_id || teacher.id);
-            const classes = getTeacherClasses(teacher.teacher_id || teacher.id);
+
+            const name =
+                [
+                    teacher.first_name,
+                    teacher.middle_name,
+                    teacher.last_name
+                ]
+                .filter(Boolean)
+                .join(' ');
+
+            const employment =
+                String(teacher.employment_type || '-');
+
+            const status =
+                String(teacher.teacher_status || 'Active');
+
+            const subjects =
+                getTeacherSubjects(
+                    teacher.teacher_id || teacher.id
+                );
+
+            const classes =
+                getTeacherClasses(
+                    teacher.teacher_id || teacher.id
+                );
+
             return `<tr>
                 <td><strong>${escapeHtml(teacher.staff_number || '-')}</strong></td>
                 <td>${escapeHtml(name || '-')}</td>
@@ -267,13 +405,36 @@
                 <td>${escapeHtml(subjects)}</td>
                 <td>${escapeHtml(classes)}</td>
                 <td>${escapeHtml(teacher.phone || '-')}</td>
-                <td><span class="status ${employment.toLowerCase().includes('permanent') ? 'status-permanent' : 'status-part-time'}">${escapeHtml(employment)}</span></td>
-                <td><span class="status status-active">${escapeHtml(status)}</span></td>
+                <td>
+                    <span class="status ${
+                        employment.toLowerCase().includes('permanent')
+                            ? 'status-permanent'
+                            : 'status-part-time'
+                    }">
+                        ${escapeHtml(employment)}
+                    </span>
+                </td>
+                <td>
+                    <span class="status status-active">
+                        ${escapeHtml(status)}
+                    </span>
+                </td>
                 <td>
                     <div class="action-group">
-                        <button class="action-btn view-btn" onclick="viewTeacher(${teacher.teacher_id || teacher.id})">View</button>
-                        <button class="action-btn edit-btn" onclick="editTeacher(${teacher.teacher_id || teacher.id})">Edit</button>
-                        <button class="action-btn assign-btn" onclick="window.location.href='secondary-teacher-assignments.html?teacher_id=${teacher.teacher_id || teacher.id}'">Assign</button>
+                        <button class="action-btn view-btn"
+                            onclick="viewTeacher(${teacher.teacher_id || teacher.id})">
+                            View
+                        </button>
+
+                        <button class="action-btn edit-btn"
+                            onclick="editTeacher(${teacher.teacher_id || teacher.id})">
+                            Edit
+                        </button>
+
+                        <button class="action-btn assign-btn"
+                            onclick="window.location.href='secondary-teacher-assignments.html?teacher_id=${teacher.teacher_id || teacher.id}'">
+                            Assign
+                        </button>
                     </div>
                 </td>
             </tr>`;
@@ -281,16 +442,45 @@
     }
 
     function filterTeachers() {
-        const search = document.getElementById('searchInput').value.toLowerCase().trim();
-        const statusFilter = document.getElementById('statusFilter').value;
+        const search =
+            document.getElementById('searchInput')
+                .value
+                .toLowerCase()
+                .trim();
+
+        const statusFilter =
+            document.getElementById('statusFilter').value;
+
         const filtered = teachers.filter(teacher => {
-            const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ').toLowerCase();
-            const staffNumber = String(teacher.staff_number || '').toLowerCase();
-            const employmentType = String(teacher.employment_type || '');
-            const matchesSearch = !search || name.includes(search) || staffNumber.includes(search);
-            const matchesStatus = !statusFilter || employmentType === statusFilter;
+
+            const name =
+                [
+                    teacher.first_name,
+                    teacher.middle_name,
+                    teacher.last_name
+                ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            const staffNumber =
+                String(teacher.staff_number || '').toLowerCase();
+
+            const employmentType =
+                String(teacher.employment_type || '');
+
+            const matchesSearch =
+                !search ||
+                name.includes(search) ||
+                staffNumber.includes(search);
+
+            const matchesStatus =
+                !statusFilter ||
+                employmentType === statusFilter;
+
             return matchesSearch && matchesStatus;
         });
+
         renderTeachers(filtered);
     }
 
@@ -300,73 +490,195 @@
         renderTeachers();
     }
 
-    function openTeacherModal() { document.getElementById('teacherModal').style.display = 'block'; }
-    function closeTeacherModal() { document.getElementById('teacherModal').style.display = 'none'; document.getElementById('teacherForm').reset(); }
+    function openTeacherModal() {
+        document.getElementById('teacherModal').style.display = 'block';
+    }
+
+    function closeTeacherModal() {
+        document.getElementById('teacherModal').style.display = 'none';
+        document.getElementById('teacherForm').reset();
+    }
 
     function viewTeacher(id) {
-        const teacher = teachers.find(t => String(t.teacher_id || t.id) === String(id));
-        if (!teacher) { alert('Teacher not found.'); return; }
-        const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ');
+        const teacher =
+            teachers.find(
+                t => String(t.teacher_id || t.id) === String(id)
+            );
+
+        if (!teacher) {
+            alert('Teacher not found.');
+            return;
+        }
+
+        const name =
+            [
+                teacher.first_name,
+                teacher.middle_name,
+                teacher.last_name
+            ]
+            .filter(Boolean)
+            .join(' ');
+
         const subjects = getTeacherSubjects(id);
         const classes = getTeacherClasses(id);
-        alert(`Teacher: ${name}\nStaff Number: ${teacher.staff_number}\nGender: ${teacher.gender}\nPhone: ${teacher.phone}\nEmail: ${teacher.email}\nEmployment: ${teacher.employment_type}\nStatus: ${teacher.teacher_status}\nSubjects: ${subjects}\nClasses: ${classes}\nAddress: ${teacher.address || '-'}`);
+
+        alert(
+            `Teacher: ${name}\n` +
+            `Staff Number: ${teacher.staff_number}\n` +
+            `Gender: ${teacher.gender}\n` +
+            `Phone: ${teacher.phone}\n` +
+            `Email: ${teacher.email}\n` +
+            `Employment: ${teacher.employment_type}\n` +
+            `Status: ${teacher.teacher_status}\n` +
+            `Subjects: ${subjects}\n` +
+            `Classes: ${classes}\n` +
+            `Address: ${teacher.address || '-'}`
+        );
     }
 
     function editTeacher(id) {
-        const teacher = teachers.find(t => String(t.teacher_id || t.id) === String(id));
-        if (!teacher) { alert('Teacher not found.'); return; }
-        document.getElementById('staff_number').value = teacher.staff_number || '';
-        document.getElementById('first_name').value = teacher.first_name || '';
-        document.getElementById('middle_name').value = teacher.middle_name || '';
-        document.getElementById('last_name').value = teacher.last_name || '';
-        document.getElementById('gender').value = teacher.gender || '';
-        document.getElementById('phone').value = teacher.phone || '';
-        document.getElementById('email').value = teacher.email || '';
-        document.getElementById('employment_type').value = teacher.employment_type || 'Permanent';
-        document.getElementById('address').value = teacher.address || '';
+        const teacher =
+            teachers.find(
+                t => String(t.teacher_id || t.id) === String(id)
+            );
+
+        if (!teacher) {
+            alert('Teacher not found.');
+            return;
+        }
+
+        document.getElementById('staff_number').value =
+            teacher.staff_number || '';
+
+        document.getElementById('first_name').value =
+            teacher.first_name || '';
+
+        document.getElementById('middle_name').value =
+            teacher.middle_name || '';
+
+        document.getElementById('last_name').value =
+            teacher.last_name || '';
+
+        document.getElementById('gender').value =
+            teacher.gender || '';
+
+        document.getElementById('phone').value =
+            teacher.phone || '';
+
+        document.getElementById('email').value =
+            teacher.email || '';
+
+        document.getElementById('employment_type').value =
+            teacher.employment_type || 'Permanent';
+
+        document.getElementById('address').value =
+            teacher.address || '';
+
         document.getElementById('teacherForm').dataset.editId = id;
+
         openTeacherModal();
     }
 
-    document.getElementById('teacherForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const editId = this.dataset.editId;
-        const payload = {
-            staff_number: document.getElementById('staff_number').value.trim(),
-            first_name: document.getElementById('first_name').value.trim(),
-            middle_name: document.getElementById('middle_name').value.trim(),
-            last_name: document.getElementById('last_name').value.trim(),
-            gender: document.getElementById('gender').value,
-            phone: document.getElementById('phone').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            address: document.getElementById('address').value.trim(),
-            employment_type: document.getElementById('employment_type').value,
-            teacher_status: 'Active',
-            school_section: 'Secondary'
-        };
-        try {
-            const url = editId ? `/api/teachers/${editId}` : '/api/teachers';
-            const method = editId ? 'PUT' : 'POST';
-            const response = await fetch(url, {
-                method,
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'Failed');
-            alert(editId ? 'Teacher updated!' : 'Teacher registered!');
-            closeTeacherModal();
-            this.dataset.editId = '';
-            await loadTeachers();
-        } catch (error) { alert(error.message); }
-    });
+    document.getElementById('teacherForm').addEventListener(
+        'submit',
+        async function(event) {
+
+            event.preventDefault();
+
+            const editId = this.dataset.editId;
+
+            const payload = {
+                staff_number:
+                    document.getElementById('staff_number').value.trim(),
+
+                first_name:
+                    document.getElementById('first_name').value.trim(),
+
+                middle_name:
+                    document.getElementById('middle_name').value.trim(),
+
+                last_name:
+                    document.getElementById('last_name').value.trim(),
+
+                gender:
+                    document.getElementById('gender').value,
+
+                phone:
+                    document.getElementById('phone').value.trim(),
+
+                email:
+                    document.getElementById('email').value.trim(),
+
+                address:
+                    document.getElementById('address').value.trim(),
+
+                employment_type:
+                    document.getElementById('employment_type').value,
+
+                teacher_status: 'Active',
+
+                school_section: 'Secondary'
+            };
+
+            try {
+
+                const url =
+                    editId
+                        ? `/api/teachers/${editId}`
+                        : '/api/teachers';
+
+                const method =
+                    editId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || 'Failed'
+                    );
+                }
+
+                alert(
+                    editId
+                        ? 'Teacher updated!'
+                        : 'Teacher registered!'
+                );
+
+                closeTeacherModal();
+
+                this.dataset.editId = '';
+
+                await loadTeachers();
+
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+    );
 
     window.addEventListener('click', function(event) {
-        if (event.target === document.getElementById('teacherModal')) closeTeacherModal();
+        if (
+            event.target ===
+            document.getElementById('teacherModal')
+        ) {
+            closeTeacherModal();
+        }
     });
 
     loadTeachers();
 </script>
+
 
 </body>
 

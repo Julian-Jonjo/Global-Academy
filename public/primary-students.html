@@ -10,15 +10,15 @@
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; position: relative; min-height: 100vh; }
         body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
-        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+        .header { background: #166534; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
         .header-title h1 { margin: 0; font-size: 18px; font-weight: 700; color: white; }
-        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .header-title p { margin: 0; font-size: 11px; color: #a7d7a7; }
         .user-info { text-align: right; font-size: 13px; color: white; }
         .user-info .role { display: block; font-weight: 600; font-size: 14px; }
-        .user-info .role-label { font-size: 11px; color: #a0c4ff; }
+        .user-info .role-label { font-size: 11px; color: #a7d7a7; }
         .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
         .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .page-title h2 { margin: 0 0 6px 0; color: #1f2937; }
@@ -28,21 +28,37 @@
         .tabs { display: flex; flex-wrap: wrap; gap: 5px; background: white; padding: 8px; border-radius: 10px 10px 0 0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06); }
         .tab-button { border: none; background: transparent; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #4b5563; transition: all 0.3s; }
         .tab-button:hover { background: #f3f4f6; }
-        .tab-button.active { background: #1a3c6e; color: white; }
+        .tab-button.active { background: #166534; color: white; }
         .tab-content { display: none; background: white; padding: 25px; border-radius: 0 0 10px 10px; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); }
         .tab-content.active { display: block; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         .section-header h3 { margin: 0; color: #1f2937; }
         .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
         .overview-card { padding: 22px; border-radius: 10px; background: #f9fafb; border: 1px solid #e5e7eb; transition: all 0.3s; }
         .overview-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
         .overview-card h4 { margin: 0 0 10px 0; color: #6b7280; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .overview-card .number { font-size: 28px; font-weight: bold; color: #1a3c6e; }
+        .overview-card .number { font-size: 28px; font-weight: bold; color: #166534; }
         .filters { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 12px; margin-bottom: 20px; }
         .filters input, .filters select { padding: 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: white; }
-        .filters input:focus, .filters select:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1); }
-        .refresh-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 11px 18px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
-        .refresh-btn:hover { background: #0f2a4a; transform: translateY(-2px); }
+        .filters input:focus, .filters select:focus { outline: none; border-color: #166534; box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.1); }
+        .refresh-btn { background: #166534; color: white; border: none; border-radius: 6px; padding: 11px 18px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .refresh-btn:hover { background: #14532d; transform: translateY(-2px); }
+        .btn { border: none; padding: 9px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 13px; }
+        .btn:hover { transform: translateY(-2px); }
+        .view-btn { background: #1f2937; color: white; }
+        .view-btn:hover { background: #111827; }
+        .review-btn { background: #d97706; color: white; }
+        .review-btn:hover { background: #b45309; }
+        .edit-btn { background: #166534; color: white; }
+        .edit-btn:hover { background: #14532d; }
+        .save-btn { background: #16a34a; color: white; }
+        .save-btn:hover { background: #15803d; }
+        .cancel-btn { background: #6b7280; color: white; }
+        .cancel-btn:hover { background: #4b5563; }
+        .doc-btn { background: #1a3c6e; color: white; }
+        .doc-btn:hover { background: #0f2a4a; }
+        .discipline-btn { background: #92400e; color: white; }
+        .discipline-btn:hover { background: #78350f; }
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th { background: #f3f4f6; text-align: left; padding: 13px; font-size: 13px; border-bottom: 2px solid #ddd; color: #374151; }
@@ -53,27 +69,20 @@
         .pending { background: #fef3c7; color: #92400e; }
         .inactive { background: #e5e7eb; color: #374151; }
         .rejected { background: #fee2e2; color: #991b1b; }
-        .btn { border: none; padding: 9px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
-        .view-btn { background: #1f2937; color: white; }
-        .view-btn:hover { background: #111827; }
-        .review-btn { background: #d97706; color: white; }
-        .review-btn:hover { background: #b45309; }
-        .edit-btn { background: #1a3c6e; color: white; padding: 8px 16px; font-size: 12px; border-radius: 4px; }
-        .edit-btn:hover { background: #153158; }
-        .save-btn { background: #16a34a; color: white; }
-        .save-btn:hover { background: #15803d; }
-        .cancel-btn { background: #6b7280; color: white; }
-        .cancel-btn:hover { background: #4b5563; }
-        .edit-action { grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .warning { background: #fef3c7; color: #92400e; }
+        .suspension { background: #f97316; color: white; }
+        .expulsion { background: #dc2626; color: white; }
+        .clean { background: #dcfce7; color: #166534; }
         .empty { text-align: center; padding: 50px; color: #6b7280; }
         .error-message { color: #991b1b; background: #fee2e2; border: 1px solid #fca5a5; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .success-message { color: #166534; background: #dcfce7; border: 1px solid #86efac; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
         .module-placeholder { text-align: center; padding: 70px 20px; color: #6b7280; }
         .module-placeholder h3 { color: #374151; margin-bottom: 10px; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.55); overflow-y: auto; }
         .modal-content { background: white; max-width: 900px; margin: 50px auto; padding: 30px; border-radius: 10px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-header h2 { margin: 0; }
-        .close { font-size: 30px; cursor: pointer; color: #666; }
+        .close { font-size: 30px; cursor: pointer; color: #666; background: none; border: none; }
         .close:hover { color: #111; }
         .section-title { grid-column: 1 / -1; margin-top: 10px; padding-bottom: 5px; border-bottom: 1px solid #ddd; font-weight: bold; }
         .profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -86,11 +95,44 @@
         .form-field label { font-size: 12px; font-weight: bold; color: #4b5563; }
         .form-field input, .form-field select, .form-field textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
         .form-field textarea { min-height: 80px; resize: vertical; }
+        .form-field select { background: white; }
         .edit-form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        .documents-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
+        .doc-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; text-align: center; background: #f9fafb; transition: all 0.3s; }
+        .doc-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .doc-card .doc-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+        .doc-card .doc-name { font-weight: bold; font-size: 13px; }
+        .doc-card .doc-action { margin-top: 10px; }
+        .doc-card .doc-action a { color: #166534; text-decoration: none; font-weight: bold; padding: 5px 12px; border: 1px solid #166534; border-radius: 4px; font-size: 12px; transition: all 0.3s; }
+        .doc-card .doc-action a:hover { background: #166534; color: white; }
+        .student-profile-header { display: flex; align-items: center; gap: 20px; padding: 15px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 15px; }
+        .student-profile-header .avatar { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #166534; flex-shrink: 0; }
+        .student-profile-header .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .student-profile-header .avatar .no-photo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #e5e7eb; font-size: 35px; color: #9ca3af; }
+        .student-profile-header .info h3 { margin: 0 0 5px 0; color: #1f2937; }
+        .student-profile-header .info p { margin: 0; color: #6b7280; font-size: 13px; }
+        .discipline-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .discipline-summary .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; text-align: center; }
+        .discipline-summary .stat .num { font-size: 28px; font-weight: bold; color: #166534; }
+        .discipline-summary .stat .label { font-size: 12px; color: #6b7280; }
+        .discipline-student-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .discipline-student-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; transition: all 0.3s; }
+        .discipline-student-item:hover { background: #f3f4f6; border-color: #166534; }
+        .discipline-student-item .student-info { display: flex; flex-direction: column; }
+        .discipline-student-item .student-name { font-weight: bold; color: #1f2937; }
+        .discipline-student-item .student-details { font-size: 12px; color: #6b7280; }
+        .discipline-student-item .record-count { font-size: 12px; background: #e5e7eb; padding: 2px 10px; border-radius: 12px; color: #4b5563; }
+        .discipline-student-item .actions { display: flex; gap: 8px; }
+        .search-container { position: relative; }
+        .search-results { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-radius: 6px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .search-results .result-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #f1f1f1; display: flex; justify-content: space-between; align-items: center; }
+        .search-results .result-item:hover { background: #f3f4f6; }
+        .search-results .result-item .result-name { font-weight: 500; }
+        .search-results .result-item .result-detail { font-size: 12px; color: #6b7280; }
         .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); display: flex; align-items: center; gap: 8px; }
         .logout-bottom:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5); }
-        @media (max-width: 900px) { .filters { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 20px; } .user-info { text-align: left; width: 100%; } .tabs { flex-direction: column; } .tab-button { width: 100%; text-align: left; } .profile-grid, .edit-form { grid-template-columns: 1fr; } .page-title { flex-direction: column; align-items: flex-start; gap: 10px; } .logout-bottom { bottom: 10px; left: 10px; padding: 8px 16px; font-size: 12px; } }
+        @media (max-width: 900px) { .filters { grid-template-columns: 1fr 1fr; } .discipline-summary { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 20px; } .user-info { text-align: left; width: 100%; } .tabs { flex-direction: column; } .tab-button { width: 100%; text-align: left; } .profile-grid, .edit-form { grid-template-columns: 1fr; } .page-title { flex-direction: column; align-items: flex-start; gap: 10px; } .student-profile-header { flex-direction: column; text-align: center; } .discipline-summary { grid-template-columns: 1fr; } .discipline-student-item { flex-direction: column; gap: 8px; text-align: center; } .logout-bottom { bottom: 10px; left: 10px; padding: 8px 16px; font-size: 12px; } }
         @media (max-width: 600px) { .filters { grid-template-columns: 1fr; } .modal-content { margin: 20px; padding: 20px; } .overview-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 450px) { .overview-grid { grid-template-columns: 1fr; } .header-title h1 { font-size: 15px; } .header-logo { width: 32px; height: 32px; } }
     </style>
@@ -118,24 +160,23 @@
         <div class="page-title">
             <div>
                 <h2>Student Management</h2>
-                <p>Manage student records, academic information, attendance, finance and related records.</p>
+                <p>Manage student records, academic information, attendance, documents, and discipline.</p>
             </div>
             <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
         </div>
 
         <div class="tabs">
-            <button class="tab-button active" onclick="openTab('overview', this)">Overview</button>
-            <button class="tab-button" onclick="openTab('students', this)">Student List</button>
-            <button id="registerTab" class="tab-button" onclick="openRegistrationTab(this)">Register Student</button>
-            <button class="tab-button" onclick="openTab('academic', this)">Academic Records</button>
-            <button class="tab-button" onclick="openTab('attendance', this)">Attendance</button>
-            <button class="tab-button" onclick="openTab('finance', this)">Finance</button>
-            <button class="tab-button" onclick="openTab('documents', this)">Documents</button>
-            <button class="tab-button" onclick="openTab('discipline', this)">Discipline</button>
-            <button class="tab-button" onclick="openTab('transfer', this)">Transfer / Withdrawal</button>
-            <button class="tab-button" onclick="openTab('audit', this)">Activity / Audit</button>
+            <button class="tab-button active" onclick="openTab('overview', this)">📊 Overview</button>
+            <button class="tab-button" onclick="openTab('students', this)">👨‍🎓 Student List</button>
+            <button id="registerTab" class="tab-button" onclick="openRegistrationTab(this)">📝 Register Student</button>
+            <button class="tab-button" onclick="openTab('academic', this)">📚 Academic</button>
+            <button class="tab-button" onclick="openTab('attendance', this)">📋 Attendance</button>
+            <button class="tab-button" onclick="openTab('documents', this)">📄 Documents</button>
+            <button class="tab-button" onclick="openTab('discipline', this)">⚖️ Discipline</button>
+            <button class="tab-button" onclick="openTab('transfer', this)">🔄 Transfer</button>
         </div>
 
+        <!-- OVERVIEW -->
         <section id="overview" class="tab-content active">
             <div class="section-header"><h3>Student Overview</h3></div>
             <div class="overview-grid">
@@ -143,15 +184,19 @@
                 <div class="overview-card"><h4>Active Students</h4><div id="activeStudents" class="number">0</div></div>
                 <div class="overview-card"><h4>Pending Registrations</h4><div id="pendingStudents" class="number">0</div></div>
                 <div class="overview-card"><h4>Rejected Students</h4><div id="rejectedStudents" class="number">0</div></div>
+                <div class="overview-card"><h4>Discipline Records</h4><div id="disciplineCount" class="number">0</div></div>
+                <div class="overview-card"><h4>Students with Records</h4><div id="studentsWithRecords" class="number">0</div></div>
             </div>
         </section>
 
+        <!-- REGISTRATION -->
         <section id="registration" class="tab-content">
             <div id="registrationContainer">
                 <div class="module-placeholder"><h3>Student Registration</h3><p>Loading student registration form...</p></div>
             </div>
         </section>
 
+        <!-- STUDENT LIST -->
         <section id="students" class="tab-content">
             <div class="section-header"><h3>Student List</h3><span id="studentCount">0 Students</span></div>
             <div class="filters">
@@ -164,21 +209,80 @@
             <div id="loadError"></div>
             <div class="table-container">
                 <table>
-                    <thead><tr><th>Admission No.</th><th>Student Name</th><th>Gender</th><th>Class</th><th>Guardian</th><th>Status</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Admission</th><th>Student Name</th><th>Gender</th><th>Class</th><th>Guardian</th><th>Status</th><th>Action</th></tr></thead>
                     <tbody id="studentTable"><tr><td colspan="7" class="empty">Loading students...</td></tr></tbody>
                 </table>
             </div>
         </section>
 
+        <!-- ACADEMIC -->
         <section id="academic" class="tab-content"><div class="module-placeholder"><h3>Academic Records</h3><p>Student subjects, results, grades, promotion history and academic performance will be managed here.</p></div></section>
+
+        <!-- ATTENDANCE -->
         <section id="attendance" class="tab-content"><div class="module-placeholder"><h3>Attendance</h3><p>Student attendance records will be managed here.</p></div></section>
-        <section id="finance" class="tab-content"><div class="module-placeholder"><h3>Student Finance</h3><p>Fees, payments, balances, payment slips and payment history will be managed here.</p></div></section>
-        <section id="documents" class="tab-content"><div class="module-placeholder"><h3>Student Documents</h3><p>Student documents and uploaded records will be managed here.</p></div></section>
-        <section id="discipline" class="tab-content"><div class="module-placeholder"><h3>Discipline</h3><p>Disciplinary incidents, warnings, actions and history will be managed here.</p></div></section>
+
+        <!-- DOCUMENTS -->
+        <section id="documents" class="tab-content">
+            <div class="section-header">
+                <h3>Student Documents</h3>
+                <button class="refresh-btn" onclick="loadDocumentStudents()">🔄 Refresh</button>
+            </div>
+            <div id="docMessage"></div>
+            <div class="filters" style="grid-template-columns: 2fr 1fr auto;">
+                <input type="text" id="docSearch" placeholder="Search student name or admission number..." oninput="applyDocFilters()">
+                <select id="docStatusFilter" onchange="applyDocFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="Active">Active</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                <button class="refresh-btn" onclick="loadDocumentStudents()">Refresh</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Admission</th><th>Student Name</th><th>Class</th><th>Status</th><th>Documents</th><th>Action</th></tr></thead>
+                    <tbody id="docTable"><tr><td colspan="6" class="empty">Loading students...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- DISCIPLINE -->
+<section id="discipline" class="tab-content">
+    <div class="section-header">
+        <h3>⚖️ Disciplinary Hearing</h3>
+        <div>
+            <button class="btn discipline-btn" onclick="openDisciplineForm()">➕ New Hearing Record</button>
+            <button class="refresh-btn" onclick="loadDisciplineRecords()">🔄 Refresh</button>
+        </div>
+    </div>
+    <div id="disciplineMessage"></div>
+
+    <!-- Discipline Summary -->
+    <div class="discipline-summary">
+        <div class="stat">
+            <div class="num" id="disTotal">0</div>
+            <div class="label">Total Hearings</div>
+        </div>
+        <div class="stat">
+            <div class="num" id="disStudents">0</div>
+            <div class="label">Students with Hearings</div>
+        </div>
+        <div class="stat">
+            <div class="num" id="disPending">0</div>
+            <div class="label">Pending Review</div>
+        </div>
+    </div>
+
+    <!-- Student List with Discipline Records -->
+    <div id="disciplineStudentsList">
+        <div class="empty">Loading disciplinary records...</div>
+    </div>
+</section>
+        <!-- TRANSFER -->
         <section id="transfer" class="tab-content"><div class="module-placeholder"><h3>Transfer / Withdrawal</h3><p>Student transfers, withdrawals and related records will be managed here.</p></div></section>
-        <section id="audit" class="tab-content"><div class="module-placeholder"><h3>Activity / Audit</h3><p>Registration, approval, editing and other student record activities will be recorded here.</p></div></section>
     </main>
 
+    <!-- STUDENT PROFILE MODAL -->
     <div id="studentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h2>Student Profile</h2><span class="close" onclick="closeModal()">&times;</span></div>
@@ -186,6 +290,7 @@
         </div>
     </div>
 
+    <!-- EDIT STUDENT MODAL -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h2>Edit Student</h2><span class="close" onclick="closeEditModal()">&times;</span></div>
@@ -246,6 +351,117 @@
         </div>
     </div>
 
+    <!-- DOCUMENT VIEW MODAL -->
+    <div id="docModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📄 Student Documents</h2>
+                <span class="close" onclick="closeDocModal()">&times;</span>
+            </div>
+            <div id="docModalContent">
+                <div class="module-placeholder"><h3>Loading...</h3><p>Please wait while documents load.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DISCIPLINE FORM MODAL -->
+    <div id="disciplineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚖️ New Discipline Record</h2>
+                <span class="close" onclick="closeDisciplineModal()">&times;</span>
+            </div>
+            <form id="disciplineForm" onsubmit="submitDiscipline(event)">
+                <div class="edit-form">
+                    <!-- Student Search -->
+                    <div class="form-field full">
+                        <label>Search Student *</label>
+                        <div class="search-container">
+                            <input type="text" id="disStudentSearch" placeholder="Type student name or admission number..." required autocomplete="off" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:14px;">
+                            <div id="disStudentResults" class="search-results"></div>
+                            <input type="hidden" id="disSelectedStudentId" value="">
+                            <span id="disSelectedStudentName" style="font-size:13px;color:#166534;font-weight:bold;display:block;margin-top:5px;"></span>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label>Date of Incident *</label>
+                        <input type="date" id="disIncidentDate" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Offense / Crime *</label>
+                        <select id="disCrime" required>
+                            <option value="">Select Offense</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Bullying">Bullying</option>
+                            <option value="Theft">Theft</option>
+                            <option value="Vandalism">Vandalism</option>
+                            <option value="Truancy">Truancy</option>
+                            <option value="Disrespect">Disrespect</option>
+                            <option value="Cheating">Cheating</option>
+                            <option value="Lying">Lying</option>
+                            <option value="Insubordination">Insubordination</option>
+                            <option value="Drugs/Alcohol">Drugs/Alcohol</option>
+                            <option value="Weapons">Weapons</option>
+                            <option value="Cyberbullying">Cyberbullying</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-field full">
+                        <label>Description of Incident *</label>
+                        <textarea id="disDescription" required placeholder="Provide a detailed description of what happened..."></textarea>
+                    </div>
+                    <div class="form-field">
+                        <label>Punishment *</label>
+                        <select id="disPunishment" required>
+                            <option value="">Select Punishment</option>
+                            <option value="Warning">Warning</option>
+                            <option value="Detention">Detention</option>
+                            <option value="Suspension">Suspension</option>
+                            <option value="Expulsion">Expulsion</option>
+                            <option value="Community Service">Community Service</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Punishment Duration</label>
+                        <input type="text" id="disDuration" placeholder="e.g., 3 days, 1 week, etc.">
+                    </div>
+                    <div class="form-field full">
+                        <label>Hearing Officer *</label>
+                        <input type="text" id="disHearingOfficer" required placeholder="Name of person who conducted the hearing">
+                    </div>
+                    <div class="form-field full">
+                        <label>Additional Notes</label>
+                        <textarea id="disNotes" placeholder="Any additional information about the case..."></textarea>
+                    </div>
+                    <div class="form-field full">
+                        <label>Resolution Status</label>
+                        <select id="disStatus">
+                            <option value="Active">Active</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="edit-form-actions">
+                        <button type="button" class="btn cancel-btn" onclick="closeDisciplineModal()">Cancel</button>
+                        <button type="submit" class="btn save-btn">Save Discipline Record</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- VIEW DISCIPLINE RECORD MODAL -->
+    <div id="viewDisciplineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚖️ Discipline Records</h2>
+                <span class="close" onclick="closeViewDisciplineModal()">&times;</span>
+            </div>
+            <div id="viewDisciplineContent"></div>
+        </div>
+    </div>
+
     <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
 <script>
@@ -270,6 +486,9 @@
     document.getElementById('userRole').textContent = role;
     document.getElementById('userRoleLabel').textContent = '';
 
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
     function previewPhoto(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const preview = document.getElementById('photoPreview'); const img = document.getElementById('photoPreviewImg'); if (img && preview) { img.src = e.target.result; preview.style.display = 'block'; } }; reader.readAsDataURL(file); }
     function showFileName(input, displayId) { const display = document.getElementById(displayId); if (display && input.files && input.files[0]) { display.textContent = '📎 ' + input.files[0].name; } }
     function previewEditPhoto(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const img = document.getElementById('editPhotoImg'); if (img) img.src = e.target.result; }; reader.readAsDataURL(file); }
@@ -281,6 +500,9 @@
     function field(label, value) { return `<div class="field"><span class="field-label">${escapeHtml(label)}</span><span class="field-value">${display(value)}</span></div>`; }
     function closeModal() { document.getElementById('studentModal').style.display = 'none'; }
     function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+    function closeDocModal() { document.getElementById('docModal').style.display = 'none'; }
+    function closeDisciplineModal() { document.getElementById('disciplineModal').style.display = 'none'; }
+    function closeViewDisciplineModal() { document.getElementById('viewDisciplineModal').style.display = 'none'; }
 
     if (role === 'Proprietor') { const registerTab = document.getElementById('registerTab'); if (registerTab) registerTab.style.display = 'none'; }
 
@@ -313,20 +535,28 @@
     }
 
     async function openRegistrationTab(button) {
-        if (role !== 'Manager-Primary' && role !== 'Administrator') { alert('You do not have permission to register students.'); return; }
-        openTab('registration', button);
-        const container = document.getElementById('registrationContainer');
-        if (container.dataset.loaded === 'true') { attachFormListener(); return; }
-        container.innerHTML = '<div class="module-placeholder"><h3>Loading Student Registration</h3><p>Please wait...</p></div>';
-        try {
-            const response = await fetch('./students-registration.html');
-            if (!response.ok) throw new Error(`Unable to load registration form. HTTP ${response.status}`);
-            const html = await response.text();
-            container.innerHTML = html;
-            container.dataset.loaded = 'true';
-            setTimeout(() => { loadClasses(); attachFormListener(); }, 200);
-        } catch (error) { container.innerHTML = `<div class="error-message"><strong>Unable to load registration form</strong><br><br>${escapeHtml(error.message)}</div>`; }
+    if (role !== 'Manager-Primary' && role !== 'Administrator') { 
+        alert('You do not have permission to register students.'); 
+        return; 
     }
+    openTab('registration', button);
+    const container = document.getElementById('registrationContainer');
+    if (container.dataset.loaded === 'true') { 
+        attachFormListener(); 
+        return; 
+    }
+    container.innerHTML = '<div class="module-placeholder"><h3>Loading Student Registration</h3><p>Please wait...</p></div>';
+    try {
+        const response = await fetch('./students-registration.html');
+        if (!response.ok) throw new Error(`Unable to load registration form. HTTP ${response.status}`);
+        const html = await response.text();
+        container.innerHTML = html;
+        container.dataset.loaded = 'true';
+        setTimeout(() => { loadClasses(); attachFormListener(); }, 200);
+    } catch (error) {
+        container.innerHTML = `<div class="error-message"><strong>Unable to load registration form</strong><br><br>${escapeHtml(error.message)}</div>`;
+    }
+}
 
     function attachFormListener() {
         const form = document.getElementById('studentForm');
@@ -425,21 +655,39 @@
         });
     }
 
+    // ============================================================
+    // MAIN STUDENT LIST
+    // ============================================================
     let students = [];
     let filteredStudents = [];
+    let docStudents = [];
+    let filteredDocStudents = [];
+    let disciplineRecordsList = [];
+    let disciplineStudents = [];
 
-        async function loadStudents() {
+    async function loadStudents() {
         const table = document.getElementById('studentTable');
         table.innerHTML = '<tr><td colspan="7" class="empty">Loading students...</td></tr>';
         try {
             const response = await fetch('/api/students', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
-            students = Array.isArray(data) ? data : [];
+            const allStudents = Array.isArray(data) ? data : [];
+            
+            students = allStudents.filter(student => {
+                const sector = String(
+                    student.sector || 
+                    student.school_section || 
+                    student.schoolSector || 
+                    student.school_section_name || 
+                    ''
+                ).trim().toLowerCase();
+                return sector === 'primary' || sector === 'primary school' || sector === 'nursery';
+            });
+            
             filteredStudents = [...students];
             populateClassFilter();
             
-            // Check URL for class_id parameter
             const urlParams = new URLSearchParams(window.location.search);
             const classIdParam = urlParams.get('class_id');
             if (classIdParam) {
@@ -448,6 +696,8 @@
             
             renderStudents();
             updateOverview();
+            loadDocumentStudents();
+            loadDisciplineRecords();
         } catch (error) {
             students = []; filteredStudents = [];
             document.getElementById('totalStudents').textContent = '0';
@@ -467,6 +717,9 @@
         document.getElementById('activeStudents').textContent = active;
         document.getElementById('pendingStudents').textContent = pending;
         document.getElementById('rejectedStudents').textContent = rejected;
+        
+        // Update discipline counts from loaded records
+        updateDisciplineSummary();
     }
 
     function populateClassFilter() {
@@ -514,6 +767,9 @@
         }).join('');
     }
 
+    // ============================================================
+    // STUDENT PROFILE VIEW
+    // ============================================================
     function viewStudent(studentId) {
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
@@ -525,7 +781,11 @@
         document.getElementById('profile').innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:flex-start;grid-column:1/-1;margin-bottom:5px;">
                 ${photoHtml}
-                ${(role === 'Administrator' || role === 'Manager-Primary') ? `<button class="edit-btn" onclick="editStudent(${Number(student.student_id)})">Edit Student</button>` : ''}
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    ${(role === 'Administrator' || role === 'Manager-Primary') ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
+                    <button class="btn doc-btn" onclick="viewDocuments(${Number(student.student_id)})">📂 Documents</button>
+                    <button class="btn discipline-btn" onclick="viewStudentDisciplineRecords(${Number(student.student_id)})">⚖️ Discipline</button>
+                </div>
             </div>
 
             <div class="section-title">Personal Information</div>
@@ -558,15 +818,6 @@
             ${field('Name', student.emergency_contact_name)}
             ${field('Phone', student.emergency_contact_phone)}
             ${field('Relationship', student.emergency_contact_relationship)}
-
-            <div class="section-title">Documents</div>
-            <div class="field" style="grid-column:1/-1;">
-                ${student.result_file_url ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;background:#f9fafb;"><span><strong>Result / Report Card</strong></span><a href="${student.result_file_url}" target="_blank" style="color:#2563eb;font-weight:bold;text-decoration:none;padding:5px 10px;border:1px solid #2563eb;border-radius:4px;">View</a></div>` : ''}
-                ${student.birth_certificate_url ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;background:#f9fafb;"><span><strong>Birth Certificate</strong></span><a href="${student.birth_certificate_url}" target="_blank" style="color:#2563eb;font-weight:bold;text-decoration:none;padding:5px 10px;border:1px solid #2563eb;border-radius:4px;">View</a></div>` : ''}
-                ${student.testimonial_url ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;background:#f9fafb;"><span><strong>Testimonial / Reference Letter</strong></span><a href="${student.testimonial_url}" target="_blank" style="color:#2563eb;font-weight:bold;text-decoration:none;padding:5px 10px;border:1px solid #2563eb;border-radius:4px;">View</a></div>` : ''}
-                ${student.transfer_form_url ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;background:#f9fafb;"><span><strong>Transfer Form</strong></span><a href="${student.transfer_form_url}" target="_blank" style="color:#2563eb;font-weight:bold;text-decoration:none;padding:5px 10px;border:1px solid #2563eb;border-radius:4px;">View</a></div>` : ''}
-                ${!student.result_file_url && !student.birth_certificate_url && !student.testimonial_url && !student.transfer_form_url ? '<em>No documents uploaded for this student.</em>' : ''}
-            </div>
         `;
         document.getElementById('studentModal').style.display = 'block';
     }
@@ -760,17 +1011,554 @@
         } catch (error) { alert(error.message || 'Failed to update student.'); }
     });
 
+    // ============================================================
+    // DOCUMENTS TAB
+    // ============================================================
+    async function loadDocumentStudents() {
+        const table = document.getElementById('docTable');
+        table.innerHTML = '<tr><td colspan="6" class="empty">Loading students...</td></tr>';
+        document.getElementById('docMessage').innerHTML = '';
+        
+        try {
+            const response = await fetch('/api/students', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            const allStudents = Array.isArray(data) ? data : [];
+            
+            docStudents = allStudents.filter(student => {
+                const sector = String(
+                    student.sector || 
+                    student.school_section || 
+                    student.schoolSector || 
+                    student.school_section_name || 
+                    ''
+                ).trim().toLowerCase();
+                return sector === 'primary' || sector === 'primary school' || sector === 'nursery';
+            });
+            
+            filteredDocStudents = [...docStudents];
+            renderDocStudents();
+        } catch (error) {
+            console.error('DOC STUDENTS ERROR:', error);
+            document.getElementById('docMessage').innerHTML = `<div class="error-message">${display(error.message)}</div>`;
+            table.innerHTML = `<tr><td colspan="6" class="empty">Error loading students: ${display(error.message)}</td></tr>`;
+        }
+    }
+
+    function applyDocFilters() {
+        const search = document.getElementById('docSearch').value.trim().toLowerCase();
+        const status = document.getElementById('docStatusFilter').value;
+        
+        filteredDocStudents = docStudents.filter(student => {
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ').toLowerCase();
+            const admissionNumber = String(student.admission_number || '').toLowerCase();
+            const matchesSearch = !search || fullName.includes(search) || admissionNumber.includes(search);
+            const matchesStatus = !status || student.student_status === status;
+            return matchesSearch && matchesStatus;
+        });
+        
+        renderDocStudents();
+    }
+
+    function renderDocStudents() {
+        const table = document.getElementById('docTable');
+        
+        if (!filteredDocStudents.length) {
+            table.innerHTML = '<tr><td colspan="6" class="empty">No students found.</td></tr>';
+            return;
+        }
+        
+        table.innerHTML = filteredDocStudents.map(student => {
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).map(escapeHtml).join(' ');
+            const className = student.class_name ? escapeHtml(student.class_name) + (student.arm ? ` — ${escapeHtml(student.arm)}` : '') : 'Not assigned';
+            const status = student.student_status || 'Not provided';
+            const statusClass = String(status).toLowerCase();
+            
+            const hasDocs = student.result_file_url || student.birth_certificate_url || 
+                           student.testimonial_url || student.transfer_form_url || student.photo_url;
+            
+            const docCount = (student.result_file_url ? 1 : 0) + 
+                           (student.birth_certificate_url ? 1 : 0) + 
+                           (student.testimonial_url ? 1 : 0) + 
+                           (student.transfer_form_url ? 1 : 0) +
+                           (student.photo_url ? 1 : 0);
+            
+            const docIcon = hasDocs ? '📄' : '❌';
+            const docText = hasDocs ? `${docCount} document(s)` : 'No documents';
+            
+            return `<tr>
+                <td>${display(student.admission_number)}</td>
+                <td><strong>${fullName}</strong></td>
+                <td>${className}</td>
+                <td><span class="status ${escapeHtml(statusClass)}">${escapeHtml(status)}</span></td>
+                <td>${docIcon} ${docText}</td>
+                <td>
+                    <button class="btn doc-btn" onclick="viewDocuments(${Number(student.student_id)})">📂 View</button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    async function viewDocuments(studentId) {
+        const modalContent = document.getElementById('docModalContent');
+        modalContent.innerHTML = '<div class="module-placeholder"><h3>Loading...</h3><p>Please wait while documents load.</p></div>';
+        document.getElementById('docModal').style.display = 'block';
+
+        try {
+            const response = await fetch(`/api/students/${studentId}`, { 
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } 
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const student = await response.json();
+
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ');
+            
+            let docsHtml = '';
+            const documents = [
+                { name: 'Student Photo', url: student.photo_url, icon: '🖼️', type: 'photo' },
+                { name: 'Result / Report Card', url: student.result_file_url, icon: '📊', type: 'result' },
+                { name: 'Birth Certificate', url: student.birth_certificate_url, icon: '📜', type: 'birth' },
+                { name: 'Testimonial / Reference Letter', url: student.testimonial_url, icon: '📝', type: 'testimonial' },
+                { name: 'Transfer Form', url: student.transfer_form_url, icon: '📋', type: 'transfer' }
+            ];
+
+            const hasDocuments = documents.some(d => d.url);
+
+            if (hasDocuments) {
+                docsHtml = `<div class="documents-grid">`;
+                documents.forEach(doc => {
+                    if (doc.url) {
+                        docsHtml += `
+                            <div class="doc-card">
+                                <span class="doc-icon">${doc.icon}</span>
+                                <div class="doc-name">${doc.name}</div>
+                                <div class="doc-action">
+                                    <a href="${doc.url}" target="_blank">📥 View</a>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                docsHtml += `</div>`;
+            } else {
+                docsHtml = `<div class="empty">No documents uploaded for this student.</div>`;
+            }
+
+            const photoHtml = student.photo_url 
+                ? `<img src="${student.photo_url}" alt="${fullName}" style="width:100%;height:100%;object-fit:cover;">`
+                : `<div class="no-photo">👤</div>`;
+
+            modalContent.innerHTML = `
+                <div class="student-profile-header">
+                    <div class="avatar">
+                        ${photoHtml}
+                    </div>
+                    <div class="info">
+                        <h3>${escapeHtml(fullName)}</h3>
+                        <p><strong>Admission:</strong> ${display(student.admission_number)}</p>
+                        <p><strong>Class:</strong> ${display(student.class_name)}${student.arm ? ` — ${display(student.arm)}` : ''}</p>
+                        <p><strong>Status:</strong> ${display(student.student_status)}</p>
+                    </div>
+                </div>
+                <div style="margin-top:15px;">
+                    <h4 style="margin-bottom:10px;">📂 Uploaded Documents</h4>
+                    ${docsHtml}
+                </div>
+            `;
+
+        } catch (error) {
+            console.error('DOC VIEW ERROR:', error);
+            modalContent.innerHTML = `<div class="error-message">Error loading documents: ${display(error.message)}</div>`;
+        }
+    }
+
+    // ============================================================
+    // DISCIPLINE MODULE
+    // ============================================================
+    
+    let disSearchTimeout = null;
+
+    function updateDisciplineSummary() {
+        const total = disciplineRecordsList.length;
+        const pending = disciplineRecordsList.filter(r => r.status === 'Pending').length;
+        
+        // Get unique students with discipline records
+        const studentIds = new Set();
+        disciplineRecordsList.forEach(r => studentIds.add(r.studentId));
+        const uniqueStudents = studentIds.size;
+        
+        // Update overview counts
+        document.getElementById('disTotal').textContent = total;
+        document.getElementById('disPending').textContent = pending;
+        document.getElementById('disStudents').textContent = uniqueStudents;
+        document.getElementById('disciplineCount').textContent = total;
+        document.getElementById('studentsWithRecords').textContent = uniqueStudents;
+    }
+
+    async function loadDisciplineRecords() {
+        const container = document.getElementById('disciplineStudentsList');
+        container.innerHTML = '<div class="empty">Loading discipline records...</div>';
+        document.getElementById('disciplineMessage').innerHTML = '';
+
+        try {
+            const stored = localStorage.getItem('discipline_records');
+            if (stored) {
+                disciplineRecordsList = JSON.parse(stored);
+            } else {
+                disciplineRecordsList = [];
+            }
+
+            renderDisciplineStudentList();
+            updateDisciplineSummary();
+
+        } catch (error) {
+            console.error('DISCIPLINE ERROR:', error);
+            document.getElementById('disciplineMessage').innerHTML = `<div class="error-message">${display(error.message)}</div>`;
+            container.innerHTML = `<div class="empty">Error loading discipline records.</div>`;
+        }
+    }
+
+    function renderDisciplineStudentList() {
+        const container = document.getElementById('disciplineStudentsList');
+
+        // Group records by student
+        const studentRecords = {};
+        disciplineRecordsList.forEach(record => {
+            if (!studentRecords[record.studentId]) {
+                studentRecords[record.studentId] = [];
+            }
+            studentRecords[record.studentId].push(record);
+        });
+
+        const studentIds = Object.keys(studentRecords);
+        const studentsWithRecords = students.filter(s => studentIds.includes(String(s.student_id)));
+
+        if (!studentsWithRecords.length) {
+            container.innerHTML = '<div class="empty">No discipline records found.</div>';
+            return;
+        }
+
+        // Sort by student name
+        studentsWithRecords.sort((a, b) => {
+            const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
+            const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+
+        container.innerHTML = `
+            <div class="discipline-student-list">
+                ${studentsWithRecords.map(student => {
+                    const records = studentRecords[student.student_id] || [];
+                    const totalRecords = records.length;
+                    const pendingRecords = records.filter(r => r.status === 'Pending').length;
+                    const latestRecord = records.sort((a, b) => new Date(b.incidentDate) - new Date(a.incidentDate))[0];
+                    
+                    return `
+                        <div class="discipline-student-item">
+                            <div class="student-info">
+                                <span class="student-name">${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</span>
+                                <span class="student-details">
+                                    ${display(student.admission_number)} • ${display(student.class_name)}
+                                    <span class="record-count">${totalRecords} record${totalRecords > 1 ? 's' : ''}</span>
+                                    ${pendingRecords > 0 ? `• <span style="color:#92400e;">${pendingRecords} pending</span>` : ''}
+                                    ${latestRecord ? `• Latest: ${escapeHtml(latestRecord.crime)} (${formatDateOnly(latestRecord.incidentDate)})` : ''}
+                                </span>
+                            </div>
+                            <div class="actions">
+                                <button class="btn view-btn" onclick="viewStudentDisciplineRecords(${student.student_id})">👁️ View</button>
+                                <button class="btn discipline-btn" onclick="openDisciplineFormForStudent(${student.student_id}, '${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}', '${escapeHtml(student.admission_number)}')">➕ Add</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    // ============================================================
+    // DISCIPLINE FORM - STUDENT SEARCH
+    // ============================================================
+
+    function openDisciplineForm() {
+        document.getElementById('disciplineForm').reset();
+        document.getElementById('disIncidentDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('disSelectedStudentId').value = '';
+        document.getElementById('disSelectedStudentName').textContent = '';
+        document.getElementById('disStudentSearch').value = '';
+        document.getElementById('disStudentResults').style.display = 'none';
+        document.getElementById('disciplineModal').style.display = 'block';
+        
+        document.getElementById('disciplineForm').dataset.editIndex = '';
+        const submitBtn = document.querySelector('#disciplineForm .save-btn');
+        submitBtn.textContent = 'Save Discipline Record';
+    }
+
+    function openDisciplineFormForStudent(studentId, studentName, admissionNumber) {
+        openDisciplineForm();
+        // Pre-select the student
+        document.getElementById('disSelectedStudentId').value = studentId;
+        document.getElementById('disSelectedStudentName').textContent = `✅ Selected: ${studentName} (${admissionNumber})`;
+        document.getElementById('disStudentSearch').value = studentName;
+    }
+
+    function setupDisciplineStudentSearch() {
+        const searchInput = document.getElementById('disStudentSearch');
+        const resultsContainer = document.getElementById('disStudentResults');
+        
+        if (!searchInput) return;
+        
+        const newSearch = searchInput.cloneNode(true);
+        searchInput.parentNode.replaceChild(newSearch, searchInput);
+        
+        newSearch.addEventListener('input', function() {
+            const term = this.value.trim();
+            
+            if (!term) {
+                resultsContainer.style.display = 'none';
+                document.getElementById('disSelectedStudentId').value = '';
+                document.getElementById('disSelectedStudentName').textContent = '';
+                return;
+            }
+            
+            if (disSearchTimeout) {
+                clearTimeout(disSearchTimeout);
+            }
+            
+            disSearchTimeout = setTimeout(() => {
+                performDisStudentSearch(term);
+            }, 300);
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    }
+
+    function performDisStudentSearch(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        const resultsContainer = document.getElementById('disStudentResults');
+        
+        if (term.length < 2) {
+            resultsContainer.style.display = 'none';
+            return;
+        }
+        
+        const results = students.filter(student => {
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ');
+            const nameMatch = fullName.toLowerCase().includes(term);
+            const admissionMatch = (student.admission_number || '').toLowerCase().includes(term);
+            return nameMatch || admissionMatch;
+        });
+        
+        const displayResults = results.slice(0, 20);
+        
+        if (displayResults.length === 0) {
+            resultsContainer.innerHTML = '<div class="result-item" style="color:#6b7280;cursor:default;">No students found.</div>';
+            resultsContainer.style.display = 'block';
+            return;
+        }
+        
+        let html = '';
+        displayResults.forEach(student => {
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ');
+            html += `
+                <div class="result-item" onclick="selectDisStudent(${student.student_id}, '${fullName.replace(/'/g, "\\'")}', '${student.admission_number || ''}')">
+                    <div>
+                        <div class="result-name">${fullName}</div>
+                        <div class="result-detail">${student.admission_number || 'No admission number'} - ${student.class_name || 'No class'}</div>
+                    </div>
+                    <div style="font-size:12px;color:#166534;">Select →</div>
+                </div>
+            `;
+        });
+        
+        if (results.length > 20) {
+            html += `<div class="result-item" style="color:#6b7280;cursor:default;justify-content:center;">+ ${results.length - 20} more results</div>`;
+        }
+        
+        resultsContainer.innerHTML = html;
+        resultsContainer.style.display = 'block';
+    }
+
+    function selectDisStudent(studentId, studentName, admissionNumber) {
+        document.getElementById('disSelectedStudentId').value = studentId;
+        document.getElementById('disSelectedStudentName').textContent = `✅ Selected: ${studentName} (${admissionNumber})`;
+        document.getElementById('disStudentSearch').value = studentName;
+        document.getElementById('disStudentResults').style.display = 'none';
+    }
+
+    // ============================================================
+    // SUBMIT DISCIPLINE RECORD
+    // ============================================================
+
+    async function submitDiscipline(event) {
+        event.preventDefault();
+
+        const studentId = document.getElementById('disSelectedStudentId').value;
+        
+        if (!studentId) {
+            alert('Please search and select a student.');
+            return;
+        }
+
+        const data = {
+            studentId: parseInt(studentId),
+            incidentDate: document.getElementById('disIncidentDate').value,
+            crime: document.getElementById('disCrime').value,
+            description: document.getElementById('disDescription').value,
+            punishment: document.getElementById('disPunishment').value,
+            duration: document.getElementById('disDuration').value || '',
+            hearingOfficer: document.getElementById('disHearingOfficer').value,
+            notes: document.getElementById('disNotes').value || '',
+            status: document.getElementById('disStatus').value || 'Active',
+            createdAt: new Date().toISOString()
+        };
+
+        if (!data.crime || !data.description || !data.punishment || !data.hearingOfficer) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        const stored = localStorage.getItem('discipline_records');
+        const records = stored ? JSON.parse(stored) : [];
+        records.push(data);
+        localStorage.setItem('discipline_records', JSON.stringify(records));
+
+        alert('✅ Discipline record saved successfully!');
+
+        closeDisciplineModal();
+        loadDisciplineRecords();
+        updateOverview();
+    }
+
+    // ============================================================
+    // VIEW STUDENT'S DISCIPLINE RECORDS
+    // ============================================================
+
+    function viewStudentDisciplineRecords(studentId) {
+        const student = students.find(s => s.student_id == studentId);
+        if (!student) {
+            alert('Student not found.');
+            return;
+        }
+        
+        const studentRecords = disciplineRecordsList.filter(r => r.studentId == studentId);
+        
+        const content = document.getElementById('viewDisciplineContent');
+        
+        if (studentRecords.length === 0) {
+            content.innerHTML = `
+                <div class="student-profile-header">
+                    <div class="avatar">
+                        ${student.photo_url ? 
+                            `<img src="${student.photo_url}" alt="${student.first_name}">` : 
+                            `<div class="no-photo">👤</div>`}
+                    </div>
+                    <div class="info">
+                        <h3>${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</h3>
+                        <p><strong>Admission:</strong> ${display(student.admission_number)}</p>
+                        <p><strong>Class:</strong> ${display(student.class_name)}</p>
+                    </div>
+                </div>
+                <div class="empty">No discipline records found for this student.</div>
+            `;
+            document.getElementById('viewDisciplineModal').style.display = 'block';
+            return;
+        }
+
+        studentRecords.sort((a, b) => new Date(b.incidentDate) - new Date(a.incidentDate));
+
+        let recordsHtml = studentRecords.map((record, index) => {
+            const statusClass = record.status === 'Resolved' ? 'clean' : 
+                              record.status === 'Pending' ? 'pending' : 'active';
+            
+            return `
+                <div class="discipline-record-card" style="margin-bottom:10px;">
+                    <div class="header">
+                        <div>
+                            <span class="crime">${escapeHtml(record.crime)}</span>
+                            <span class="status-badge status ${statusClass}">${record.status || 'Active'}</span>
+                        </div>
+                        <div class="date">${formatDateOnly(record.incidentDate)}</div>
+                    </div>
+                    <div class="punishment">
+                        <strong>Punishment:</strong> ${escapeHtml(record.punishment)} 
+                        ${record.duration ? `- ${escapeHtml(record.duration)}` : ''}
+                    </div>
+                    <div style="margin:4px 0;">
+                        <strong>Description:</strong> ${escapeHtml(record.description)}
+                    </div>
+                    <div class="hearing-officer">
+                        <strong>Hearing Officer:</strong> ${escapeHtml(record.hearingOfficer)}
+                    </div>
+                    ${record.notes ? `<div style="font-size:13px;color:#6b7280;margin-top:4px;"><strong>Notes:</strong> ${escapeHtml(record.notes)}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+
+        const photoHtml = student.photo_url 
+            ? `<img src="${student.photo_url}" alt="${student.first_name}" style="width:100%;height:100%;object-fit:cover;">`
+            : `<div class="no-photo">👤</div>`;
+
+        content.innerHTML = `
+            <div class="student-profile-header">
+                <div class="avatar">
+                    ${photoHtml}
+                </div>
+                <div class="info">
+                    <h3>${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</h3>
+                    <p><strong>Admission:</strong> ${display(student.admission_number)}</p>
+                    <p><strong>Class:</strong> ${display(student.class_name)}${student.arm ? ` — ${display(student.arm)}` : ''}</p>
+                    <p><strong>Total Records:</strong> ${studentRecords.length}</p>
+                </div>
+            </div>
+            <h4 style="margin:15px 0 10px 0;">📋 Discipline Records</h4>
+            <div style="max-height:400px;overflow-y:auto;">
+                ${recordsHtml}
+            </div>
+        `;
+
+        document.getElementById('viewDisciplineModal').style.display = 'block';
+    }
+
+    // ============================================================
+    // INITIALIZE DISCIPLINE STUDENT SEARCH
+    // ============================================================
+
+    function initDisciplineSearch() {
+        setupDisciplineStudentSearch();
+    }
+
+    // Call init when document is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(initDisciplineSearch, 1000);
+    });
+
+    // ============================================================
+    // CLICK OUTSIDE MODALS TO CLOSE
+    // ============================================================
     window.addEventListener('click', function(event) {
         const studentModal = document.getElementById('studentModal');
         const editModal = document.getElementById('editModal');
+        const docModal = document.getElementById('docModal');
+        const disciplineModal = document.getElementById('disciplineModal');
+        const viewDisciplineModal = document.getElementById('viewDisciplineModal');
+        
         if (event.target === studentModal) closeModal();
         if (event.target === editModal) closeEditModal();
+        if (event.target === docModal) closeDocModal();
+        if (event.target === disciplineModal) closeDisciplineModal();
+        if (event.target === viewDisciplineModal) closeViewDisciplineModal();
     });
 
+    // ============================================================
+    // INITIALIZE
+    // ============================================================
     loadAcademicYears();
     loadStudents();
 </script>
 
 </body>
-
 </html>
