@@ -7,20 +7,6 @@ const path = require('path');
 // ============================================================
 
 const supabase = require('./Config/db');
-const multer = require('multer');
-
-const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-        if (allowedTypes.includes(file.mimetype)) {
-            cb(null, true);
-        } else {
-            cb(new Error('Invalid file type. Only JPEG, PNG, PDF, DOC, DOCX are allowed.'));
-        }
-    }
-});
 
 
 // ============================================================
@@ -38,6 +24,8 @@ const guardianRoutes = require('./routes/guardians');
 const approvalRoutes = require('./routes/approvals');
 
 const paymentRoutes = require('./routes/payments');
+
+const expenditureRoutes = require('./routes/expenditure');
 
 const teacherRoutes = require('./routes/teachers');
 
@@ -116,6 +104,11 @@ app.use(
     '/api/payments',
     paymentRoutes
 );
+app.use(
+    '/api/expenditure',
+    expenditureRoutes
+);
+
 
 app.use(
     '/api/teachers',
@@ -129,7 +122,6 @@ app.use(
     '/api/academic-years',
     academicYearRoutes
 );
-
 
 // ============================================================
 // ROOT API

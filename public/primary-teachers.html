@@ -21,7 +21,6 @@
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .page-header h2 { margin: 0 0 6px 0; color: #1f2937; }
         .page-header p { margin: 0; color: #6b7280; }
-        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
         .primary-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
         .nav { display: flex; flex-wrap: wrap; gap: 5px; background: white; padding: 8px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); margin-bottom: 20px; }
         .nav a { text-decoration: none; color: #4b5563; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; }
@@ -153,7 +152,6 @@
 
     <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
-    <!-- REGISTER TEACHER MODAL -->
     <div id="teacherModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -162,49 +160,15 @@
             </div>
             <form id="teacherForm">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Staff Number *</label>
-                        <input type="text" id="staff_number" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select id="gender">
-                            <option value="">Select gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>First Name *</label>
-                        <input type="text" id="first_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Middle Name</label>
-                        <input type="text" id="middle_name">
-                    </div>
-                    <div class="form-group">
-                        <label>Last Name *</label>
-                        <input type="text" id="last_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Phone</label>
-                        <input type="tel" id="phone">
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="email">
-                    </div>
-                    <div class="form-group">
-                        <label>Employment Type</label>
-                        <select id="employment_type">
-                            <option value="Permanent">Permanent</option>
-                            <option value="Part Time">Part Time</option>
-                        </select>
-                    </div>
-                    <div class="form-group full">
-                        <label>Address</label>
-                        <textarea id="address" rows="2"></textarea>
-                    </div>
+                    <div class="form-group"><label>Staff Number *</label><input type="text" id="staff_number" required></div>
+                    <div class="form-group"><label>Gender</label><select id="gender"><option value="">Select gender</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                    <div class="form-group"><label>First Name *</label><input type="text" id="first_name" required></div>
+                    <div class="form-group"><label>Middle Name</label><input type="text" id="middle_name"></div>
+                    <div class="form-group"><label>Last Name *</label><input type="text" id="last_name" required></div>
+                    <div class="form-group"><label>Phone</label><input type="tel" id="phone"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="email"></div>
+                    <div class="form-group"><label>Employment Type</label><select id="employment_type"><option value="Permanent">Permanent</option><option value="Part Time">Part Time</option></select></div>
+                    <div class="form-group full"><label>Address</label><textarea id="address" rows="2"></textarea></div>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="cancel-btn" onclick="closeTeacherModal()">Cancel</button>
@@ -214,7 +178,6 @@
         </div>
     </div>
 
-    <!-- ASSIGN CLASS MODAL -->
     <div id="assignModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -224,16 +187,8 @@
             <form id="assignForm">
                 <input type="hidden" id="assign_teacher_id">
                 <div class="form-grid">
-                    <div class="form-group full">
-                        <label>Teacher</label>
-                        <input type="text" id="assign_teacher_name" disabled>
-                    </div>
-                    <div class="form-group full">
-                        <label>Class *</label>
-                        <select id="assign_class_id" required>
-                            <option value="">Loading classes...</option>
-                        </select>
-                    </div>
+                    <div class="form-group full"><label>Teacher</label><input type="text" id="assign_teacher_name" disabled></div>
+                    <div class="form-group full"><label>Class *</label><select id="assign_class_id" required><option value="">Loading classes...</option></select></div>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="cancel-btn" onclick="closeAssignModal()">Cancel</button>
@@ -271,6 +226,18 @@
     let classes = [];
     let classAssignments = [];
 
+    async function loadClassAssignments() {
+        try {
+            const response = await fetch('/api/teachers/primary-class-assignments', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) return;
+            const data = await response.json();
+            classAssignments = Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error('Assignments error:', error);
+            classAssignments = [];
+        }
+    }
+
     async function loadTeachers() {
         const table = document.getElementById('teacherTable');
         try {
@@ -281,6 +248,7 @@
                 const section = String(t.school_section || '').toLowerCase();
                 return section.includes('primary') || section.includes('nursery');
             });
+            await loadClassAssignments();
             updateSummary();
             renderTeachers();
         } catch (error) {
@@ -298,23 +266,11 @@
         } catch (error) { console.error('Classes error:', error); }
     }
 
-    async function loadClassAssignments() {
-        try {
-            const response = await fetch('/api/teachers/secondary/class-masters?academic_year_id=1', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-            // Try primary class teachers
-            const primaryResponse = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-            // We'll use a simple approach - fetch from primary_class_teachers table via a custom endpoint
-            classAssignments = [];
-        } catch (error) { console.error('Assignments error:', error); }
-    }
-
     function populateClassFilters() {
         const filterSelect = document.getElementById('classFilter');
         const assignSelect = document.getElementById('assign_class_id');
-        
         filterSelect.innerHTML = '<option value="">All Classes</option>';
         assignSelect.innerHTML = '<option value="">Select class</option>';
-        
         classes.forEach(cls => {
             const label = `${cls.class_name}${cls.arm ? ' - ' + cls.arm : ''}`;
             filterSelect.add(new Option(label, cls.class_id));
@@ -332,7 +288,7 @@
     function getAssignedClass(teacherId) {
         const assignment = classAssignments.find(a => String(a.teacher_id) === String(teacherId));
         if (!assignment) return '-';
-        return assignment.class_name || '-';
+        return assignment.classes?.class_name || assignment.class_name || '-';
     }
 
     function renderTeachers(list = teachers) {

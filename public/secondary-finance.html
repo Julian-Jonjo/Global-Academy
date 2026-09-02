@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Education Academy | Finance</title>
+    <title>Global Education Academy | Secondary School Finance</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        /* =========================================================
+           GLOBAL STYLES
+        ========================================================= */
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,7 +23,6 @@
             position: relative;
             min-height: 100vh;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -33,9 +31,6 @@
             z-index: 0;
         }
 
-        /* =========================================================
-           HEADER - SCHOOL COLORS
-        ========================================================= */
         .header {
             background: #1a3c6e;
             color: white;
@@ -48,571 +43,125 @@
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            overflow: hidden;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .header-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 4px;
-        }
-
-        .header-title h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-        }
-
-        .header-title p {
-            margin: 0;
-            font-size: 11px;
-            color: #a0c4ff;
-        }
-
-        .user-info {
-            text-align: right;
-            font-size: 13px;
-            color: white;
-        }
-
-        .user-info .role {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .user-info .role-label {
-            font-size: 11px;
-            color: #a0c4ff;
-        }
-
-        /* =========================================================
-           CONTAINER
-        ========================================================= */
-        .container {
-            max-width: 1450px;
-            margin: 25px auto;
-            padding: 0 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-title {
-            margin-bottom: 20px;
-        }
-
-        .page-title h2 {
-            margin: 0 0 6px;
-            color: #1f2937;
-        }
-
-        .page-title p {
-            margin: 0;
-            color: #6b7280;
-        }
-
-        .back-btn {
-            background: #6b7280;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 18px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s;
-            margin-bottom: 20px;
-        }
-
-        .back-btn:hover {
-            background: #4b5563;
-            transform: translateY(-2px);
-        }
-
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            background: white;
-            padding: 8px;
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-        }
-
-        .tab-button {
-            border: none;
-            background: transparent;
-            padding: 12px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            color: #4b5563;
-            transition: all 0.3s;
-        }
-
-        .tab-button:hover {
-            background: #f3f4f6;
-        }
-
-        .tab-button.active {
-            background: #1a3c6e;
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-            background: white;
-            padding: 25px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
-
-        .section-header h3 {
-            margin: 0;
-            color: #1f2937;
-        }
-
-        .refresh-btn {
-            background: #1a3c6e;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 11px 18px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .refresh-btn:hover {
-            background: #0f2a4a;
-            transform: translateY(-2px);
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-            gap: 18px;
-            margin-bottom: 30px;
-        }
-
-        .summary-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 20px;
-            transition: all 0.3s;
-        }
-
-        .summary-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .summary-card h4 {
-            margin: 0 0 10px;
-            color: #6b7280;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        .summary-number {
-            font-size: 25px;
-            font-weight: bold;
-            color: #1a3c6e;
-        }
-
-        .summary-card p {
-            margin: 8px 0 0;
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        .filters {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .filters input,
-        .filters select {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-        }
-
-        .filters input:focus,
-        .filters select:focus {
-            outline: none;
-            border-color: #1a3c6e;
-            box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1);
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #f3f4f6;
-            text-align: left;
-            padding: 13px;
-            font-size: 13px;
-            border-bottom: 2px solid #ddd;
-            color: #374151;
-        }
-
-        td {
-            padding: 13px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-
-        tr:hover {
-            background: #f9fafb;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .paid {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .partially-paid {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .unpaid {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .btn {
-            border: none;
-            padding: 9px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .payment-btn {
-            background: #16a34a;
-            color: white;
-        }
-
-        .payment-btn:hover {
-            background: #15803d;
-        }
-
-        .view-btn {
-            background: #1f2937;
-            color: white;
-        }
-
-        .view-btn:hover {
-            background: #111827;
-        }
-
-        .close-btn {
-            background: #6b7280;
-            color: white;
-        }
-
-        .save-btn {
-            background: #16a34a;
-            color: white;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 18px;
-            margin-bottom: 30px;
-        }
-
-        .category-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 18px;
-            background: white;
-        }
-
-        .category-card h4 {
-            margin: 0 0 15px;
-            font-size: 16px;
-            color: #1f2937;
-        }
-
-        .category-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 7px 0;
-            border-bottom: 1px solid #f1f1f1;
-            font-size: 13px;
-        }
-
-        .category-row:last-child {
-            border-bottom: none;
-        }
-
-        .category-label {
-            color: #6b7280;
-        }
-
-        .category-value {
-            font-weight: bold;
-            color: #1a3c6e;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 50px;
-            color: #6b7280;
-        }
-
-        .error-message {
-            color: #991b1b;
-            background: #fee2e2;
-            border: 1px solid #fca5a5;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            overflow-y: auto;
-        }
-
-        .modal-content {
-            background: white;
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 30px;
-            border-radius: 10px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-        }
-
-        .close {
-            font-size: 30px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .close:hover {
-            color: #111;
-        }
-
-        .balance-box {
-            background: #f3f4f6;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 18px;
-            margin-bottom: 20px;
-        }
-
-        .balance-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .balance-label {
-            color: #6b7280;
-            font-size: 12px;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .balance-value {
-            font-size: 19px;
-            font-weight: bold;
-            color: #1a3c6e;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-        }
-
-        .form-field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-field.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-field label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #4b5563;
-        }
-
-        .form-field input,
-        .form-field select,
-        .form-field textarea {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .form-field textarea {
-            min-height: 90px;
-            resize: vertical;
-        }
-
-        .form-actions {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        @media (max-width: 900px) {
-            .filters {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-                padding: 12px 20px;
-            }
-            .user-info {
-                text-align: left;
-                width: 100%;
-            }
-            .tabs {
-                flex-direction: column;
-            }
-            .tab-button {
-                width: 100%;
-                text-align: left;
-            }
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .form-field.full {
-                grid-column: auto;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-                padding: 12px 20px;
-            }
-            .filters {
-                grid-template-columns: 1fr;
-            }
-            .modal-content {
-                margin: 20px;
-                padding: 20px;
-            }
-            .balance-grid {
-                grid-template-columns: 1fr;
-            }
-            .header-title h1 {
-                font-size: 15px;
-            }
-            .header-logo {
-                width: 32px;
-                height: 32px;
-            }
-        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; font-weight: 700; color: white; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; }
+        .user-info .role { display: block; font-weight: 600; font-size: 14px; }
+        .user-info .role-label { font-size: 11px; color: #a0c4ff; }
+
+        .container { max-width: 1450px; margin: 25px auto; padding: 0 20px; position: relative; z-index: 1; }
+        .page-title { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .page-title h2 { margin: 0 0 6px; color: #1f2937; }
+        .page-title p { margin: 0; color: #6b7280; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; transition: all 0.3s; margin-bottom: 20px; }
+        .back-btn:hover { background: #4b5563; transform: translateY(-2px); }
+
+        .role-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        .role-badge.proprietor { background: #1a3c6e; color: white; }
+        .role-badge.admin { background: #7c3aed; color: white; }
+        .role-badge.manager { background: #d97706; color: white; }
+        .role-badge.finance { background: #1a3c6e; color: white; }
+        .role-badge.viewer { background: #6b7280; color: white; }
+
+        .tabs { display: flex; flex-wrap: wrap; gap: 5px; background: white; padding: 8px; border-radius: 10px 10px 0 0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06); }
+        .tab-button { border: none; background: transparent; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #4b5563; transition: all 0.3s; }
+        .tab-button:hover { background: #f3f4f6; }
+        .tab-button.active { background: #1a3c6e; color: white; }
+        .tab-content { display: none; background: white; padding: 25px; border-radius: 0 0 10px 10px; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); }
+        .tab-content.active { display: block; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap; }
+        .section-header h3 { margin: 0; color: #1f2937; }
+        .refresh-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 11px 18px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .refresh-btn:hover { background: #0f2a4a; transform: translateY(-2px); }
+
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 18px; margin-bottom: 30px; }
+        .summary-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; transition: all 0.3s; position: relative; }
+        .summary-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .summary-card.pending-approval { border-left: 4px solid #d97706; background: #fffbeb; }
+        .summary-card h4 { margin: 0 0 10px; color: #6b7280; font-size: 12px; text-transform: uppercase; }
+        .summary-number { font-size: 25px; font-weight: bold; color: #1a3c6e; }
+        .summary-card p { margin: 8px 0 0; color: #6b7280; font-size: 13px; }
+        .approval-count { position: absolute; top: 10px; right: 10px; background: #d97706; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+
+        .filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; margin-bottom: 20px; }
+        .filters input, .filters select { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: white; }
+        .filters input:focus, .filters select:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1); }
+
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f3f4f6; text-align: left; padding: 13px; font-size: 13px; border-bottom: 2px solid #ddd; color: #374151; }
+        td { padding: 13px; border-bottom: 1px solid #eee; font-size: 14px; }
+        tr:hover td { background: #f9fafb; }
+
+        .status { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
+        .paid { background: #dcfce7; color: #166534; }
+        .partially-paid { background: #fef3c7; color: #92400e; }
+        .unpaid { background: #fee2e2; color: #991b1b; }
+        .pending { background: #fef3c7; color: #92400e; border: 1px solid #d97706; }
+        .approved { background: #dcfce7; color: #166534; }
+        .rejected { background: #fee2e2; color: #991b1b; }
+
+        .btn { border: none; padding: 9px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 12px; }
+        .btn:hover { transform: translateY(-2px); }
+        .payment-btn { background: #16a34a; color: white; }
+        .payment-btn:hover { background: #15803d; }
+        .view-btn { background: #1f2937; color: white; }
+        .view-btn:hover { background: #111827; }
+        .approve-btn { background: #16a34a; color: white; }
+        .approve-btn:hover { background: #15803d; }
+        .reject-btn { background: #dc2626; color: white; }
+        .reject-btn:hover { background: #b91c1c; }
+        .edit-btn { background: #d97706; color: white; }
+        .edit-btn:hover { background: #b45309; }
+        .close-btn { background: #6b7280; color: white; }
+        .close-btn:hover { background: #4b5563; }
+
+        .approval-banner { background: #fef3c7; border: 1px solid #d97706; border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .approval-banner .count { font-weight: bold; color: #92400e; }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.55); overflow-y: auto; }
+        .modal-content { background: white; max-width: 900px; margin: 40px auto; padding: 30px; border-radius: 10px; position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-header h2 { margin: 0; }
+        .close { font-size: 30px; cursor: pointer; color: #666; background: none; border: none; }
+        .close:hover { color: #111; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field.full { grid-column: 1 / -1; }
+        .form-field label { font-size: 12px; font-weight: bold; color: #4b5563; }
+        .form-field input, .form-field select, .form-field textarea { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .form-field textarea { min-height: 90px; resize: vertical; }
+        .form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+
+        .balance-box { background: #f3f4f6; border: 1px solid #ddd; border-radius: 8px; padding: 18px; margin-bottom: 20px; }
+        .empty { text-align: center; padding: 50px; color: #6b7280; }
+        .error-message { color: #991b1b; background: #fee2e2; border: 1px solid #fca5a5; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+
+        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); }
+        .logout-bottom:hover { background: #b91c1c; transform: translateY(-2px); }
+
+        @media (max-width: 900px) { .filters { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 20px; } .user-info { text-align: left; width: 100%; } .tabs { flex-direction: column; } .tab-button { width: 100%; text-align: left; } .form-grid { grid-template-columns: 1fr; } .form-field.full { grid-column: auto; } .page-title { flex-direction: column; align-items: flex-start; gap: 10px; } }
+        @media (max-width: 600px) { .filters { grid-template-columns: 1fr; } .modal-content { margin: 20px; padding: 20px; } .summary-grid { grid-template-columns: 1fr 1fr; } .header-title h1 { font-size: 15px; } .header-logo { width: 32px; height: 32px; } }
+        @media (max-width: 450px) { .summary-grid { grid-template-columns: 1fr; } }
     </style>
-
 </head>
-
 <body>
 
-    <!-- =========================================================
-         HEADER - SCHOOL COLORS
-    ========================================================= -->
+    <!-- HEADER -->
     <header class="header">
         <div class="header-left">
             <div class="header-logo">
                 <img src="/images/logo.png" alt="Global Education Academy" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
             </div>
             <div class="header-title">
-                <h1>GLOBAL EDUCATION ACADEMY SECONDARY SCHOOL</h1>
-                <p>Finance Management</p>
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>Secondary School Finance Management</p>
             </div>
         </div>
         <div class="user-info">
@@ -622,688 +171,771 @@
     </header>
 
     <main class="container">
-
         <div class="page-title">
-            <h2>Finance Dashboard</h2>
-            <p>Manage fees, student balances, payments and financial records.</p>
+            <div>
+                <h2>🎓 Secondary School Finance Dashboard</h2>
+                <p>Manage fees, student balances, payments and financial records for Secondary School.</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
         </div>
 
-        <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+        <div id="roleBadgeContainer"></div>
 
-        <!-- =====================================================
-             TABS
-        ===================================================== -->
+        <div id="approvalBanner" style="display:none;" class="approval-banner">
+            <span>⏳ <span class="count" id="pendingCount">0</span> items pending approval</span>
+            <button class="btn view-btn" onclick="switchToApprovals()">Review Pending</button>
+        </div>
 
+        <!-- TABS -->
         <div class="tabs">
-            <button class="tab-button active" onclick="openTab('overview', this)">Overview</button>
-            <button class="tab-button" onclick="openTab('categories', this)">Fee Categories</button>
-            <button class="tab-button" onclick="openTab('students', this)">All Students</button>
-            <button class="tab-button" onclick="openTab('balances', this)">Fee Balances</button>
-            <button class="tab-button" onclick="openTab('payments', this)">Payment History</button>
+            <button class="tab-button active" onclick="openTab('overview', this)">📊 Overview</button>
+            <button class="tab-button" onclick="openTab('students', this)">👨‍🎓 Students</button>
+            <button class="tab-button" onclick="openTab('payments', this)">💳 Payments</button>
+            <button class="tab-button" onclick="openTab('approvals', this)">✅ Approvals</button>
         </div>
 
-        <!-- =====================================================
-             OVERVIEW TAB
-        ===================================================== -->
-
+        <!-- OVERVIEW TAB -->
         <section id="overview" class="tab-content active">
             <div class="section-header">
-                <h3>Overall Finance Summary</h3>
-                <button class="refresh-btn" onclick="loadFinanceData()">Refresh</button>
+                <h3>Secondary School Financial Summary</h3>
+                <button class="refresh-btn" onclick="loadAllData()">🔄 Refresh</button>
             </div>
             <div id="overviewMessage"></div>
             <div class="summary-grid">
-                <div class="summary-card">
-                    <h4>Total Expected</h4>
-                    <div id="totalExpected" class="summary-number">Le0.00</div>
-                    <p>Total fees assigned</p>
-                </div>
-                <div class="summary-card">
-                    <h4>Total Collected</h4>
-                    <div id="totalCollected" class="summary-number">Le0.00</div>
-                    <p>Total payments received</p>
-                </div>
-                <div class="summary-card">
-                    <h4>Outstanding</h4>
-                    <div id="totalOutstanding" class="summary-number">Le0.00</div>
-                    <p>Money still owed</p>
-                </div>
-                <div class="summary-card">
-                    <h4>Active Students</h4>
-                    <div id="totalStudents" class="summary-number">0</div>
-                    <p>Currently active students</p>
-                </div>
-                <div class="summary-card">
-                    <h4>Paid Records</h4>
-                    <div id="paidRecords" class="summary-number">0</div>
-                    <p>Fully paid fee records</p>
-                </div>
-                <div class="summary-card">
-                    <h4>Partially Paid</h4>
-                    <div id="partiallyPaidRecords" class="summary-number">0</div>
-                    <p>Fee records with balances</p>
-                </div>
-                <div class="summary-card">
-                    <h4>Unpaid</h4>
-                    <div id="unpaidRecords" class="summary-number">0</div>
-                    <p>No payment received</p>
-                </div>
+                <div class="summary-card"><h4>Total Expected Fees</h4><div id="totalExpected" class="summary-number">Le0.00</div><p>All fees assigned to students</p></div>
+                <div class="summary-card"><h4>Total Collected</h4><div id="totalCollected" class="summary-number">Le0.00</div><p>Approved payments received</p></div>
+                <div class="summary-card"><h4>Outstanding Balance</h4><div id="totalOutstanding" class="summary-number">Le0.00</div><p>Money still owed</p></div>
+                <div class="summary-card"><h4>Active Students</h4><div id="totalStudents" class="summary-number">0</div><p>Currently enrolled</p></div>
+                <div class="summary-card pending-approval"><h4>Pending Approvals</h4><div id="pendingChanges" class="summary-number">0</div><p>Awaiting review</p><div class="approval-count" id="pendingCountBadge">0</div></div>
+            </div>
+            <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
+                <button class="btn payment-btn" onclick="openRecordPayment()">💳 Record Payment</button>
+                <button class="btn view-btn" onclick="openTab('students', document.querySelector('.tabs').children[1])">👨‍🎓 View All Students</button>
             </div>
         </section>
 
-        <!-- =====================================================
-             FEE CATEGORIES TAB
-        ===================================================== -->
-
-        <section id="categories" class="tab-content">
-            <div class="section-header">
-                <h3>Fee Category Summary</h3>
-                <button class="refresh-btn" onclick="loadFeeCategories()">Refresh</button>
-            </div>
-            <div id="categoryMessage"></div>
-            <div id="categoryGrid" class="category-grid">
-                <div class="empty">Loading fee categories...</div>
-            </div>
-        </section>
-
-        <!-- =====================================================
-             ALL STUDENTS TAB
-        ===================================================== -->
-
+        <!-- STUDENTS TAB -->
         <section id="students" class="tab-content">
             <div class="section-header">
-                <h3>All Active Students</h3>
+                <h3>Secondary School Students</h3>
                 <span id="studentCount">0 Students</span>
             </div>
             <div class="filters">
                 <input type="text" id="studentSearch" placeholder="Search student or admission number..." oninput="applyStudentFilters()">
-                <select id="studentClass" onchange="applyStudentFilters()">
-                    <option value="">All Classes</option>
-                </select>
-                <select id="studentFinanceStatus" onchange="applyStudentFilters()">
-                    <option value="">All Finance Status</option>
-                    <option value="Paid">Fully Paid</option>
-                    <option value="Partially Paid">Partially Paid</option>
-                    <option value="Unpaid">Unpaid</option>
-                </select>
+                <select id="studentClass" onchange="applyStudentFilters()"><option value="">All Classes</option></select>
+                <select id="studentFinanceStatus" onchange="applyStudentFilters()"><option value="">All Status</option><option value="Paid">Fully Paid</option><option value="Partially Paid">Partially Paid</option><option value="Unpaid">Unpaid</option></select>
                 <button class="refresh-btn" onclick="loadStudents()">Refresh</button>
             </div>
             <div id="studentMessage"></div>
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Admission No.</th>
-                            <th>Student</th>
-                            <th>Class</th>
-                            <th>Expected</th>
-                            <th>Paid</th>
-                            <th>Balance</th>
-                            <th>Paid Fees</th>
-                            <th>Partial</th>
-                            <th>Unpaid</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTable">
-                        <tr>
-                            <td colspan="10" class="empty">Loading students...</td>
-                        </tr>
-                    </tbody>
+                    <thead><tr><th>Admission</th><th>Student</th><th>Class</th><th>Expected</th><th>Paid</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="studentTable"><tr><td colspan="8" class="empty">Loading students...</td></tr></tbody>
                 </table>
             </div>
         </section>
 
-        <!-- =====================================================
-             FEE BALANCES TAB
-        ===================================================== -->
-
-        <section id="balances" class="tab-content">
-            <div class="section-header">
-                <h3>Student Fee Balances</h3>
-                <span id="balanceCount">0 Records</span>
-            </div>
-            <div class="filters">
-                <input type="text" id="balanceSearch" placeholder="Search student or admission number..." oninput="applyBalanceFilters()">
-                <select id="balanceStatus" onchange="applyBalanceFilters()">
-                    <option value="">All Statuses</option>
-                    <option value="Paid">Paid</option>
-                    <option value="Partially Paid">Partially Paid</option>
-                    <option value="Unpaid">Unpaid</option>
-                </select>
-                <select id="balanceFee" onchange="applyBalanceFilters()">
-                    <option value="">All Fees</option>
-                </select>
-                <button class="refresh-btn" onclick="loadBalances()">Refresh</button>
-            </div>
-            <div id="balanceMessage"></div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Admission No.</th>
-                            <th>Student</th>
-                            <th>Class</th>
-                            <th>Fee</th>
-                            <th>Academic Year</th>
-                            <th>Term</th>
-                            <th>Amount Due</th>
-                            <th>Paid</th>
-                            <th>Balance</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="balanceTable">
-                        <tr>
-                            <td colspan="11" class="empty">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- =====================================================
-             PAYMENT HISTORY TAB
-        ===================================================== -->
-
+        <!-- PAYMENTS TAB -->
         <section id="payments" class="tab-content">
             <div class="section-header">
                 <h3>Payment History</h3>
                 <span id="paymentCount">0 Payments</span>
+                <button class="btn payment-btn" onclick="openRecordPayment()">+ Record Payment</button>
             </div>
             <div class="filters">
-                <input type="text" id="paymentSearch" placeholder="Search student, admission or slip number..." oninput="applyPaymentFilters()">
-                <select id="paymentMethodFilter" onchange="applyPaymentFilters()">
-                    <option value="">All Methods</option>
-                    <option value="Bank">Bank</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Mobile Money">Mobile Money</option>
-                    <option value="Cheque">Cheque</option>
-                    <option value="Other">Other</option>
-                </select>
+                <input type="text" id="paymentSearch" placeholder="Search student, admission or slip..." oninput="applyPaymentFilters()">
+                <select id="paymentMethodFilter" onchange="applyPaymentFilters()"><option value="">All Methods</option><option value="Bank">Bank</option><option value="Cash">Cash</option><option value="Mobile Money">Mobile Money</option><option value="Cheque">Cheque</option></select>
+                <select id="paymentStatusFilter" onchange="applyPaymentFilters()"><option value="">All Statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>
                 <input type="date" id="paymentDateFilter" onchange="applyPaymentFilters()">
                 <button class="refresh-btn" onclick="loadPaymentHistory()">Refresh</button>
             </div>
             <div id="paymentMessage"></div>
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Admission No.</th>
-                            <th>Student</th>
-                            <th>Class</th>
-                            <th>Fee</th>
-                            <th>Amount Paid</th>
-                            <th>Method</th>
-                            <th>Slip No.</th>
-                            <th>Bank Reference</th>
-                            <th>Purpose</th>
-                        </tr>
-                    </thead>
-                    <tbody id="paymentTable">
-                        <tr>
-                            <td colspan="10" class="empty">Loading...</td>
-                        </tr>
-                    </tbody>
+                    <thead><tr><th>Date</th><th>Admission</th><th>Student</th><th>Fee</th><th>Amount</th><th>Method</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="paymentTable"><tr><td colspan="8" class="empty">Loading payments...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- APPROVALS TAB -->
+        <section id="approvals" class="tab-content">
+            <div class="section-header">
+                <h3>Approvals</h3>
+                <span id="approvalCount">0 Items</span>
+                <button class="refresh-btn" onclick="loadApprovals()">Refresh</button>
+            </div>
+            <div id="approvalMessage"></div>
+            <div class="filters">
+                <select id="approvalStatusFilter" onchange="applyApprovalFilters()"><option value="">All Statuses</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Type</th><th>Details</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+                    <tbody id="approvalTable"><tr><td colspan="6" class="empty">Loading approvals...</td></tr></tbody>
                 </table>
             </div>
         </section>
 
     </main>
 
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
+
+    <!-- MODAL: RECORD PAYMENT -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>💰 Record Payment</h2><button class="close" onclick="closeModal('paymentModal')">&times;</button></div>
+            <form id="paymentForm" onsubmit="submitPayment(event)">
+                <div class="form-grid">
+                    <div class="form-field"><label>Student *</label><select id="paymentStudent" required><option value="">Select Student</option></select></div>
+                    <div class="form-field"><label>Fee Category *</label><select id="paymentFee" required><option value="">Select Fee</option></select></div>
+                    <div class="form-field"><label>Amount Paid *</label><input type="number" id="paymentAmount" step="0.01" required placeholder="Enter amount"></div>
+                    <div class="form-field"><label>Payment Method *</label><select id="paymentMethod" required><option value="">Select Method</option><option value="Bank">Bank</option><option value="Cash">Cash</option><option value="Mobile Money">Mobile Money</option><option value="Cheque">Cheque</option></select></div>
+                    <div class="form-field"><label>Slip Number</label><input type="text" id="paymentSlip" placeholder="Receipt/slip number"></div>
+                    <div class="form-field"><label>Bank Reference</label><input type="text" id="paymentRef" placeholder="Bank reference (if applicable)"></div>
+                    <div class="form-field"><label>Academic Year *</label><input type="text" id="paymentYear" value="2026/2027" required></div>
+                    <div class="form-field"><label>Term *</label><select id="paymentTerm" required><option value="">Select Term</option><option value="First Term">First Term</option><option value="Second Term">Second Term</option><option value="Third Term">Third Term</option></select></div>
+                    <div class="form-field full"><label>Purpose / Notes</label><textarea id="paymentNotes" placeholder="Additional notes"></textarea></div>
+                    <div class="form-actions"><button type="button" class="btn close-btn" onclick="closeModal('paymentModal')">Cancel</button><button type="submit" class="btn payment-btn">Record Payment</button></div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: APPROVAL ACTION -->
+    <div id="approvalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>✅ Review & Approve</h2><button class="close" onclick="closeModal('approvalModal')">&times;</button></div>
+            <div id="approvalDetails"></div>
+            <div class="form-grid">
+                <div class="form-field full"><label>Review Notes / Rejection Reason</label><textarea id="approvalNotes" placeholder="Add review notes..."></textarea></div>
+                <div class="form-actions"><button type="button" class="btn reject-btn" onclick="submitApprovalDecision('reject')">❌ Reject</button><button type="button" class="btn approve-btn" onclick="submitApprovalDecision('approve')">✅ Approve</button></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // =========================================================
-        // AUTHENTICATION
-        // =========================================================
+    // =========================================================
+    // AUTHENTICATION & ROLE
+    // =========================================================
 
-        const token = sessionStorage.getItem('authToken');
-        const userData = sessionStorage.getItem('user');
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
 
-        if (!token || !userData) {
-            window.location.href = '/login.html';
+    if (!token || !userData) {
+        window.location.href = '/login.html';
+    }
+
+    let user;
+    try {
+        user = JSON.parse(userData);
+    } catch (error) {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    const role = user.role_name || user.role || '';
+    const userRole = (user.role_name || user.role || '').toLowerCase();
+
+    const isFinanceOfficer = 
+        role === 'Finance Officer (Secondary)' ||
+        role === 'Finance Officer' ||
+        role.toLowerCase().includes('finance');
+
+    const isManager = 
+        role === 'Manager-Secondary' ||
+        role === 'Manager' ||
+        userRole === 'manager-secondary' ||
+        userRole === 'manager';
+
+    const isProprietor = role === 'Proprietor' || userRole === 'proprietor';
+    const isAdmin = role === 'Administrator' || userRole === 'administrator' || userRole === 'admin';
+
+    const canEdit = isFinanceOfficer || isManager || isProprietor || isAdmin;
+    const canApprove = isManager || isProprietor || isAdmin;
+
+    const isAllowed = isFinanceOfficer || isManager || isProprietor || isAdmin;
+
+    if (!isAllowed) {
+        alert('You do not have permission to access Secondary School Finance.');
+        window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('userRole').textContent = role || 'Finance Officer';
+    document.getElementById('userRoleLabel').textContent = 'Secondary School Finance';
+
+    const badgeContainer = document.getElementById('roleBadgeContainer');
+    let badgeClass = 'viewer';
+    let badgeText = 'View-Only Access';
+    if (isProprietor) { badgeClass = 'proprietor'; badgeText = '👑 Proprietor'; }
+    else if (isAdmin) { badgeClass = 'admin'; badgeText = '⚙️ Admin'; }
+    else if (isManager) { badgeClass = 'manager'; badgeText = '📋 Manager'; }
+    else if (isFinanceOfficer) { badgeClass = 'finance'; badgeText = '💰 Finance Officer'; }
+    badgeContainer.innerHTML = `<span class="role-badge ${badgeClass}">${badgeText}</span>`;
+
+    // =========================================================
+    // GLOBAL DATA
+    // =========================================================
+
+    let students = [];
+    let filteredStudents = [];
+    let payments = [];
+    let filteredPayments = [];
+    let approvals = [];
+    let filteredApprovals = [];
+
+    // =========================================================
+    // TAB SYSTEM
+    // =========================================================
+
+    function openTab(tabId, button) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        if (button) button.classList.add('active');
+    }
+
+    function switchToApprovals() {
+        const buttons = document.querySelectorAll('.tab-button');
+        openTab('approvals', buttons[3]);
+        loadApprovals();
+    }
+
+    // =========================================================
+    // MODAL HELPERS
+    // =========================================================
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    function openRecordPayment() {
+        if (!isFinanceOfficer && !isManager) {
+            alert('Only Finance Officers and Managers can record payments.');
+            return;
         }
+        populatePaymentDropdowns();
+        document.getElementById('paymentModal').style.display = 'block';
+    }
 
-        let user;
+    // =========================================================
+    // API HELPERS
+    // =========================================================
+
+    async function apiRequest(url, options = {}) {
         try {
-            user = JSON.parse(userData);
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {}),
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (e) { data = null; }
+
+            if (response.status === 401) {
+                sessionStorage.removeItem('authToken');
+                sessionStorage.removeItem('user');
+                window.location.href = '/login.html';
+                return null;
+            }
+
+            if (!response.ok) {
+                throw new Error(data?.message || `Request failed with status ${response.status}`);
+            }
+
+            return data;
         } catch (error) {
-            sessionStorage.removeItem('authToken');
-            sessionStorage.removeItem('user');
-            window.location.href = '/login.html';
+            throw error;
         }
+    }
 
-        const role = user.role_name;
+    // =========================================================
+    // FORMATTING HELPERS
+    // =========================================================
 
-        document.getElementById('userRole').textContent = role;
-        document.getElementById('userRoleLabel').textContent = '';
+    function formatCurrency(value) {
+        const num = Number(value || 0);
+        return 'Le' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
-        const canRecordPayment = role === 'Manager' || role === 'Administrator';
+    function display(value) {
+        if (value === null || value === undefined || value === '') return '—';
+        return String(value);
+    }
 
-        // =========================================================
-        // GLOBAL DATA
-        // =========================================================
+    function formatDate(value) {
+        if (!value) return '—';
+        try {
+            const d = new Date(value);
+            if (isNaN(d.getTime())) return '—';
+            return d.toLocaleDateString();
+        } catch { return '—'; }
+    }
 
-        let balances = [];
-        let filteredBalances = [];
-        let payments = [];
-        let filteredPayments = [];
-        let students = [];
-        let filteredStudents = [];
-        let categories = [];
+    // =========================================================
+    // LOAD STUDENTS
+    // =========================================================
 
-        // =========================================================
-        // TAB SYSTEM
-        // =========================================================
+    async function loadStudents() {
+        const table = document.getElementById('studentTable');
+        table.innerHTML = '<tr><td colspan="8" class="empty">Loading students...</td></tr>';
+        document.getElementById('studentMessage').innerHTML = '';
 
-        function openTab(tabId, button) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if (button) button.classList.add('active');
-        }
-
-        // =========================================================
-        // LOAD SUMMARY
-        // =========================================================
-
-        async function loadSummary() {
-            try {
-                const response = await fetch('/api/payments/summary', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to load finance summary.');
-                }
-
-                const summary = data.summary || {};
-
-                document.getElementById('totalExpected').textContent = formatCurrency(summary.total_expected);
-                document.getElementById('totalCollected').textContent = formatCurrency(summary.total_collected);
-                document.getElementById('totalOutstanding').textContent = formatCurrency(summary.total_outstanding);
-                document.getElementById('totalStudents').textContent = summary.total_students || 0;
-                document.getElementById('paidRecords').textContent = summary.paid_records || 0;
-                document.getElementById('partiallyPaidRecords').textContent = summary.partially_paid_records || 0;
-                document.getElementById('unpaidRecords').textContent = summary.unpaid_records || 0;
-
-            } catch (error) {
-                console.error('SUMMARY ERROR:', error);
-                document.getElementById('overviewMessage').innerHTML =
-                    `<div class="error-message">${escapeHtml(error.message)}</div>`;
-            }
-        }
-
-        // =========================================================
-        // LOAD FEE CATEGORIES
-        // =========================================================
-
-        async function loadFeeCategories() {
-            const container = document.getElementById('categoryGrid');
-            container.innerHTML = '<div class="empty">Loading fee categories...</div>';
-
-            try {
-                const response = await fetch('/api/payments/summary-by-fee', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to load fee categories.');
-                }
-
-                categories = data.categories || [];
-
-                if (!categories.length) {
-                    container.innerHTML = '<div class="empty">No fee categories found.</div>';
-                    return;
-                }
-
-                container.innerHTML = categories.map(item =>
-                    `<div class="category-card">
-                        <h4>${display(item.fee_name)}</h4>
-                        <div class="category-row"><span class="category-label">Expected</span><span class="category-value">${formatCurrency(item.total_expected)}</span></div>
-                        <div class="category-row"><span class="category-label">Collected</span><span class="category-value">${formatCurrency(item.total_collected)}</span></div>
-                        <div class="category-row"><span class="category-label">Outstanding</span><span class="category-value">${formatCurrency(item.total_outstanding)}</span></div>
-                        <div class="category-row"><span class="category-label">Paid</span><span class="category-value">${item.paid_records || 0}</span></div>
-                        <div class="category-row"><span class="category-label">Partially Paid</span><span class="category-value">${item.partially_paid_records || 0}</span></div>
-                        <div class="category-row"><span class="category-label">Unpaid</span><span class="category-value">${item.unpaid_records || 0}</span></div>
-                    </div>`
-                ).join('');
-
-            } catch (error) {
-                console.error('CATEGORY ERROR:', error);
-                container.innerHTML = `<div class="error-message">${escapeHtml(error.message)}</div>`;
-            }
-        }
-
-        // =========================================================
-        // LOAD STUDENTS (Finance)
-        // =========================================================
-
-        async function loadStudents() {
-            const table = document.getElementById('studentTable');
-            table.innerHTML = '<tr><td colspan="10" class="empty">Loading students...</td></tr>';
-
-            try {
-                const response = await fetch('/api/payments/students', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to load students.');
-                }
-
-                students = data.students || [];
-                filteredStudents = [...students];
-                populateClassFilter();
-                renderStudents();
-
-            } catch (error) {
-                console.error('STUDENT ERROR:', error);
-                table.innerHTML = `<tr><td colspan="10" class="empty">${escapeHtml(error.message)}</td></tr>`;
-            }
-        }
-
-        function populateClassFilter() {
-            const select = document.getElementById('studentClass');
-            const classes = new Set();
-            students.forEach(s => { if (s.class_name) classes.add(s.class_name) });
-            select.innerHTML = '<option value="">All Classes</option>';
-            [...classes].sort().forEach(cls => {
-                const option = document.createElement('option');
-                option.value = cls;
-                option.textContent = cls;
-                select.appendChild(option);
-            });
-        }
-
-        function applyStudentFilters() {
-            const search = document.getElementById('studentSearch').value.trim().toLowerCase();
-            const className = document.getElementById('studentClass').value;
-            const status = document.getElementById('studentFinanceStatus').value;
-
-            filteredStudents = students.filter(s => {
-                const name = String(s.student_name || '').toLowerCase();
-                const admission = String(s.admission_number || '').toLowerCase();
-                const matchesSearch = !search || name.includes(search) || admission.includes(search);
-                const matchesClass = !className || s.class_name === className;
-                let financeStatus = 'Unpaid';
-                if (Number(s.total_balance) <= 0 && Number(s.total_expected) > 0) financeStatus = 'Paid';
-                else if (Number(s.total_paid) > 0) financeStatus = 'Partially Paid';
-                const matchesStatus = !status || financeStatus === status;
-                return matchesSearch && matchesClass && matchesStatus;
-            });
-
+        try {
+            const data = await apiRequest('/api/students/finance?sector=Secondary&academic_year=2026/2027');
+            students = data?.students || [];
+            filteredStudents = [...students];
+            populateClassFilter();
             renderStudents();
+        } catch (error) {
+            console.error('STUDENT ERROR:', error);
+            document.getElementById('studentMessage').innerHTML = `<div class="error-message">${display(error.message)}</div>`;
+            table.innerHTML = `<tr><td colspan="8" class="empty">Error loading students: ${display(error.message)}</td></tr>`;
+        }
+    }
+
+    function populateClassFilter() {
+        const select = document.getElementById('studentClass');
+        const classes = new Set();
+        students.forEach(s => { if (s.class_name) classes.add(s.class_name); });
+        select.innerHTML = '<option value="">All Classes</option>';
+        [...classes].sort().forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls;
+            option.textContent = cls;
+            select.appendChild(option);
+        });
+    }
+
+    function applyStudentFilters() {
+        const search = document.getElementById('studentSearch').value.trim().toLowerCase();
+        const className = document.getElementById('studentClass').value;
+        const status = document.getElementById('studentFinanceStatus').value;
+
+        filteredStudents = students.filter(s => {
+            const name = String(s.first_name || '').toLowerCase() + ' ' + String(s.last_name || '').toLowerCase();
+            const admission = String(s.admission_number || '').toLowerCase();
+            const matchesSearch = !search || name.includes(search) || admission.includes(search);
+            const matchesClass = !className || s.class_name === className;
+            
+            let financeStatus = 'Unpaid';
+            const balance = Number(s.total_balance || 0);
+            const expected = Number(s.total_expected || 0);
+            if (balance <= 0 && expected > 0) financeStatus = 'Paid';
+            else if (Number(s.total_paid || 0) > 0) financeStatus = 'Partially Paid';
+            const matchesStatus = !status || financeStatus === status;
+            
+            return matchesSearch && matchesClass && matchesStatus;
+        });
+
+        renderStudents();
+    }
+
+    function renderStudents() {
+        const table = document.getElementById('studentTable');
+        document.getElementById('studentCount').textContent =
+            `${filteredStudents.length} Student${filteredStudents.length === 1 ? '' : 's'}`;
+
+        if (!filteredStudents.length) {
+            table.innerHTML = '<tr><td colspan="8" class="empty">No students found.</td></tr>';
+            return;
         }
 
-        function renderStudents() {
-            const table = document.getElementById('studentTable');
-            document.getElementById('studentCount').textContent =
-                `${filteredStudents.length} Student${filteredStudents.length === 1 ? '' : 's'}`;
+        table.innerHTML = filteredStudents.map(s => {
+            const fullName = s.student_name || [s.first_name, s.middle_name, s.last_name].filter(Boolean).join(' ');
+            const balance = Number(s.total_balance || 0);
+            const expected = Number(s.total_expected || 0);
+            const paid = Number(s.total_paid || 0);
+            
+            let statusText = 'Unpaid';
+            let statusClass = 'unpaid';
+            if (balance <= 0 && expected > 0) { statusText = 'Paid'; statusClass = 'paid'; } 
+            else if (paid > 0 && balance > 0) { statusText = 'Partially Paid'; statusClass = 'partially-paid'; }
 
-            if (!filteredStudents.length) {
-                table.innerHTML = '<tr><td colspan="10" class="empty">No students found.</td></tr>';
-                return;
-            }
+            return `<tr>
+                <td>${display(s.admission_number)}</td>
+                <td><strong>${display(fullName)}</strong></td>
+                <td>${display(s.class_name)}${s.arm ? ` — ${display(s.arm)}` : ''}</td>
+                <td>${formatCurrency(expected)}</td>
+                <td>${formatCurrency(paid)}</td>
+                <td><strong>${formatCurrency(balance)}</strong></td>
+                <td><span class="status ${statusClass}">${statusText}</span></td>
+                <td>
+                    <button class="btn view-btn" onclick="viewStudentFinance(${Number(s.student_id)})">View</button>
+                    ${canEdit ? `<button class="btn edit-btn" onclick="editStudentFees(${Number(s.student_id)})">Edit</button>` : ''}
+                </td>
+            </tr>`;
+        }).join('');
+    }
 
-            table.innerHTML = filteredStudents.map(s =>
-                `<tr>
-                    <td>${display(s.admission_number)}</td>
-                    <td><strong>${display(s.student_name)}</strong></td>
-                    <td>${display(s.class_name)}${s.arm ? ` — ${display(s.arm)}` : ''}</td>
-                    <td>${formatCurrency(s.total_expected)}</td>
-                    <td>${formatCurrency(s.total_paid)}</td>
-                    <td><strong>${formatCurrency(s.total_balance)}</strong></td>
-                    <td>${s.paid_fees || 0}</td>
-                    <td>${s.partially_paid_fees || 0}</td>
-                    <td>${s.unpaid_fees || 0}</td>
-                    <td><button class="btn view-btn" onclick="openStudentDetails(${Number(s.student_id)})">View Finance</button></td>
-                </tr>`
-            ).join('');
-        }
+    function viewStudentFinance(studentId) {
+        window.location.href = `finance-student.html?studentId=${studentId}&sector=secondary`;
+    }
 
-        // =========================================================
-        // OPEN STUDENT DETAILS (Navigate to finance-student.html)
-        // =========================================================
+    function editStudentFees(studentId) {
+        window.location.href = `finance-student-edit.html?studentId=${studentId}&sector=secondary`;
+    }
 
-        function openStudentDetails(studentId) {
-            window.location.href = `finance-student.html?studentId=${Number(studentId)}`;
-        }
+    // =========================================================
+    // LOAD PAYMENT HISTORY
+    // =========================================================
 
-        // =========================================================
-        // LOAD BALANCES
-        // =========================================================
+    async function loadPaymentHistory() {
+        const table = document.getElementById('paymentTable');
+        table.innerHTML = '<tr><td colspan="8" class="empty">Loading payments...</td></tr>';
 
-        async function loadBalances() {
-            const table = document.getElementById('balanceTable');
-            table.innerHTML = '<tr><td colspan="11" class="empty">Loading balances...</td></tr>';
+        try {
+            const data = await apiRequest('/api/payments/history?sector=secondary&academic_year=2026/2027');
 
-            try {
-                const response = await fetch('/api/payments/balances', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to load balances.');
-                }
-
-                balances = data.balances || [];
-                filteredBalances = [...balances];
-                populateBalanceFeeFilter();
-                renderBalances();
-
-            } catch (error) {
-                table.innerHTML = `<tr><td colspan="11" class="empty">${escapeHtml(error.message)}</td></tr>`;
-            }
-        }
-
-        function populateBalanceFeeFilter() {
-            const select = document.getElementById('balanceFee');
-            const fees = new Set();
-            balances.forEach(i => { if (i.fee_name) fees.add(i.fee_name) });
-            select.innerHTML = '<option value="">All Fees</option>';
-            [...fees].sort().forEach(fee => {
-                const option = document.createElement('option');
-                option.value = fee;
-                option.textContent = fee;
-                select.appendChild(option);
-            });
-        }
-
-        function applyBalanceFilters() {
-            const search = document.getElementById('balanceSearch').value.trim().toLowerCase();
-            const status = document.getElementById('balanceStatus').value;
-            const fee = document.getElementById('balanceFee').value;
-
-            filteredBalances = balances.filter(i => {
-                const studentName = String(i.student_name || '').toLowerCase();
-                const admission = String(i.admission_number || '').toLowerCase();
-                return (!search || studentName.includes(search) || admission.includes(search)) &&
-                    (!status || i.payment_status === status) &&
-                    (!fee || i.fee_name === fee);
-            });
-
-            renderBalances();
-        }
-
-        function renderBalances() {
-            const table = document.getElementById('balanceTable');
-            document.getElementById('balanceCount').textContent =
-                `${filteredBalances.length} Record${filteredBalances.length === 1 ? '' : 's'}`;
-
-            if (!filteredBalances.length) {
-                table.innerHTML = '<tr><td colspan="11" class="empty">No fee records found.</td></tr>';
-                return;
-            }
-
-            table.innerHTML = filteredBalances.map(i => {
-                const status = i.payment_status || 'Unpaid';
-                const statusClass = status.toLowerCase().replace(/\s+/g, '-');
-
-                return `<tr>
-                    <td>${display(i.admission_number)}</td>
-                    <td><strong>${display(i.student_name)}</strong></td>
-                    <td>${display(i.class_name)}${i.arm ? ` — ${display(i.arm)}` : ''}</td>
-                    <td>${display(i.fee_name)}</td>
-                    <td>${display(i.academic_year)}</td>
-                    <td>${display(i.term_name)}</td>
-                    <td>${formatCurrency(i.amount_due)}</td>
-                    <td>${formatCurrency(i.total_paid)}</td>
-                    <td><strong>${formatCurrency(i.balance)}</strong></td>
-                    <td><span class="status ${escapeHtml(statusClass)}">${escapeHtml(status)}</span></td>
-                    <td><button class="btn view-btn" onclick="openStudentDetails(${Number(i.student_id)})">View Finance</button></td>
-                </tr>`;
-            }).join('');
-        }
-
-        // =========================================================
-        // LOAD PAYMENT HISTORY
-        // =========================================================
-
-        async function loadPaymentHistory() {
-            const table = document.getElementById('paymentTable');
-            table.innerHTML = '<tr><td colspan="10" class="empty">Loading payment history...</td></tr>';
-
-            try {
-                const response = await fetch('/api/payments/history', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to load payment history.');
-                }
-
-                payments = data.payments || [];
-                filteredPayments = [...payments];
-                renderPayments();
-
-            } catch (error) {
-                table.innerHTML = `<tr><td colspan="10" class="empty">${escapeHtml(error.message)}</td></tr>`;
-            }
-        }
-
-        function applyPaymentFilters() {
-            const search = document.getElementById('paymentSearch').value.trim().toLowerCase();
-            const method = document.getElementById('paymentMethodFilter').value;
-            const date = document.getElementById('paymentDateFilter').value;
-
-            filteredPayments = payments.filter(i => {
-                const student = String(i.student_name || '').toLowerCase();
-                const admission = String(i.admission_number || '').toLowerCase();
-                const slip = String(i.payment_slip_number || '').toLowerCase();
-                const paymentDate = i.payment_date ? String(i.payment_date).substring(0, 10) : '';
-                return (!search || student.includes(search) || admission.includes(search) || slip.includes(search)) &&
-                    (!method || i.payment_method === method) &&
-                    (!date || paymentDate === date);
-            });
-
+            payments = data?.payments || [];
+            filteredPayments = [...payments];
             renderPayments();
+
+        } catch (error) {
+            console.error('PAYMENT ERROR:', error);
+            document.getElementById('paymentMessage').innerHTML = `<div class="error-message">${display(error.message)}</div>`;
+            table.innerHTML = `<tr><td colspan="8" class="empty">Error loading payments: ${display(error.message)}</td></tr>`;
+        }
+    }
+
+    function applyPaymentFilters() {
+        const search = document.getElementById('paymentSearch').value.trim().toLowerCase();
+        const method = document.getElementById('paymentMethodFilter').value;
+        const status = document.getElementById('paymentStatusFilter').value;
+        const date = document.getElementById('paymentDateFilter').value;
+
+        filteredPayments = payments.filter(p => {
+            const student = String(p.student_name || '').toLowerCase();
+            const admission = String(p.admission_number || '').toLowerCase();
+            const slip = String(p.payment_slip_number || '').toLowerCase();
+            const paymentDate = p.payment_date ? String(p.payment_date).substring(0, 10) : '';
+            return (!search || student.includes(search) || admission.includes(search) || slip.includes(search)) &&
+                (!method || p.payment_method === method) &&
+                (!status || p.approval_status === status) &&
+                (!date || paymentDate === date);
+        });
+
+        renderPayments();
+    }
+
+    function renderPayments() {
+        const table = document.getElementById('paymentTable');
+        document.getElementById('paymentCount').textContent =
+            `${filteredPayments.length} Payment${filteredPayments.length === 1 ? '' : 's'}`;
+
+        if (!filteredPayments.length) {
+            table.innerHTML = '<tr><td colspan="8" class="empty">No payments found.</td></tr>';
+            return;
         }
 
-        function renderPayments() {
-            const table = document.getElementById('paymentTable');
-            document.getElementById('paymentCount').textContent =
-                `${filteredPayments.length} Payment${filteredPayments.length === 1 ? '' : 's'}`;
+        table.innerHTML = filteredPayments.map(p => {
+            const status = p.approval_status || 'pending';
+            const statusClass = status === 'approved' ? 'approved' : status === 'pending' ? 'pending' : 'rejected';
+            const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
 
-            if (!filteredPayments.length) {
-                table.innerHTML = '<tr><td colspan="10" class="empty">No payments found.</td></tr>';
+            let actionButtons = '';
+            if (canApprove && status === 'pending') {
+                actionButtons = `<button class="btn approve-btn" onclick="openApprovalModal('Payment', ${p.id})">Review</button>`;
+            }
+
+            return `<tr>
+                <td>${formatDate(p.payment_date)}</td>
+                <td>${display(p.admission_number)}</td>
+                <td><strong>${display(p.student_name)}</strong></td>
+                <td>${display(p.fee_name)}</td>
+                <td><strong>${formatCurrency(p.amount_paid)}</strong></td>
+                <td>${display(p.payment_method)}</td>
+                <td><span class="status ${statusClass}">${statusLabel}</span></td>
+                <td>${actionButtons}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // =========================================================
+    // LOAD APPROVALS
+    // =========================================================
+
+    async function loadApprovals() {
+        const table = document.getElementById('approvalTable');
+        table.innerHTML = '<tr><td colspan="6" class="empty">Loading approvals...</td></tr>';
+
+        try {
+            const data = await apiRequest('/api/approvals?sector=secondary');
+
+            approvals = Array.isArray(data) ? data : [];
+            filteredApprovals = [...approvals];
+            renderApprovals();
+
+            const pendingApprovals = approvals.filter(a => a.approval_status === 'Pending');
+            const pendingCount = pendingApprovals.length;
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('pendingCountBadge').textContent = pendingCount;
+            document.getElementById('pendingChanges').textContent = pendingCount;
+            document.getElementById('approvalBanner').style.display = pendingCount > 0 ? 'flex' : 'none';
+
+        } catch (error) {
+            console.error('APPROVAL ERROR:', error);
+            document.getElementById('approvalMessage').innerHTML = `<div class="error-message">${display(error.message)}</div>`;
+            table.innerHTML = `<tr><td colspan="6" class="empty">Error loading approvals: ${display(error.message)}</td></tr>`;
+        }
+    }
+
+    function applyApprovalFilters() {
+        const status = document.getElementById('approvalStatusFilter').value;
+
+        filteredApprovals = approvals.filter(a => {
+            const matchesStatus = !status || a.approval_status === status;
+            return matchesStatus;
+        });
+
+        renderApprovals();
+    }
+
+    function renderApprovals() {
+        const table = document.getElementById('approvalTable');
+        document.getElementById('approvalCount').textContent =
+            `${filteredApprovals.length} Item${filteredApprovals.length === 1 ? '' : 's'}`;
+
+        if (!filteredApprovals.length) {
+            table.innerHTML = '<tr><td colspan="6" class="empty">No approvals found.</td></tr>';
+            return;
+        }
+
+        table.innerHTML = filteredApprovals.map(a => {
+            const status = a.approval_status || 'Pending';
+            const statusClass = status === 'Approved' ? 'approved' : status === 'Pending' ? 'pending' : 'rejected';
+
+            let actionButtons = '';
+            if (canApprove && status === 'Pending') {
+                actionButtons = `<button class="btn approve-btn" onclick="openApprovalModal('${a.record_type}', ${a.approval_id})">Review</button>`;
+            }
+
+            let details = a.description || a.fee_name || a.record_type || '—';
+
+            return `<tr>
+                <td><strong>${a.record_type || '—'}</strong></td>
+                <td>${display(details)}</td>
+                <td><strong>${formatCurrency(a.amount)}</strong></td>
+                <td><span class="status ${statusClass}">${status}</span></td>
+                <td>${formatDate(a.created_at)}</td>
+                <td>${actionButtons}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // =========================================================
+    // APPROVAL MODAL
+    // =========================================================
+
+    let currentApprovalId = null;
+    let currentApprovalType = null;
+
+    function openApprovalModal(type, id) {
+        if (!canApprove) {
+            alert('You do not have permission to approve items.');
+            return;
+        }
+
+        currentApprovalType = type;
+        currentApprovalId = id;
+
+        const approval = approvals.find(a => {
+            if (type === 'Payment') {
+                return a.record_type === 'Payment' && a.record_id === id;
+            } else {
+                return a.approval_id === id;
+            }
+        });
+
+        let detailsHTML = `<div class="balance-box">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><strong>Type:</strong> ${type}</div>
+                <div><strong>ID:</strong> ${id}</div>
+                ${approval ? `<div><strong>Amount:</strong> ${formatCurrency(approval.amount)}</div>` : ''}
+                ${approval ? `<div style="grid-column:1/-1;"><strong>Details:</strong> ${display(approval.description || approval.fee_name || '')}</div>` : ''}
+            </div>
+        </div>`;
+
+        document.getElementById('approvalDetails').innerHTML = detailsHTML;
+        document.getElementById('approvalModal').style.display = 'block';
+        document.getElementById('approvalNotes').value = '';
+    }
+
+    async function submitApprovalDecision(decision) {
+        if (!currentApprovalId) return;
+
+        const notes = document.getElementById('approvalNotes').value.trim();
+
+        if (decision === 'reject' && !notes) {
+            alert('Please provide a reason for rejection.');
+            return;
+        }
+
+        if (decision === 'reject' && !confirm('Are you sure you want to reject this request?')) return;
+        if (decision === 'approve' && !confirm('Are you sure you want to approve this request?')) return;
+
+        try {
+            const approval = approvals.find(a => a.approval_id === currentApprovalId || a.record_id === currentApprovalId);
+            let url = '';
+            let body = {};
+
+            if (approval) {
+                url = `/api/approvals/${approval.approval_id}/${decision}`;
+                body = { approval_notes: notes || 'Reviewed and ' + decision + 'd.' };
+            } else {
+                alert('Could not find the approval record.');
                 return;
             }
 
-            table.innerHTML = filteredPayments.map(i =>
-                `<tr>
-                    <td>${formatDateTime(i.payment_date)}</td>
-                    <td>${display(i.admission_number)}</td>
-                    <td><strong>${display(i.student_name)}</strong></td>
-                    <td>${display(i.class_name)}${i.arm ? ` — ${display(i.arm)}` : ''}</td>
-                    <td>${display(i.fee_name)}</td>
-                    <td><strong>${formatCurrency(i.amount_paid)}</strong></td>
-                    <td>${display(i.payment_method)}</td>
-                    <td>${display(i.payment_slip_number)}</td>
-                    <td>${display(i.bank_reference)}</td>
-                    <td>${display(i.purpose)}</td>
-                </tr>`
-            ).join('');
+            const result = await apiRequest(url, {
+                method: 'PUT',
+                body: JSON.stringify(body)
+            });
+
+            if (result) {
+                alert(`Request ${decision === 'approve' ? 'approved' : 'rejected'} successfully!`);
+                closeModal('approvalModal');
+                document.getElementById('approvalNotes').value = '';
+                currentApprovalId = null;
+                currentApprovalType = null;
+                loadAllData();
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    // =========================================================
+    // SUBMIT PAYMENT
+    // =========================================================
+
+    async function submitPayment(event) {
+        event.preventDefault();
+
+        if (!isFinanceOfficer && !isManager) {
+            alert('You do not have permission to record payments.');
+            return;
         }
 
-        // =========================================================
-        // LOAD ALL DATA
-        // =========================================================
+        const data = {
+            student_id: document.getElementById('paymentStudent').value,
+            fee_id: document.getElementById('paymentFee').value,
+            amount_paid: parseFloat(document.getElementById('paymentAmount').value),
+            payment_method: document.getElementById('paymentMethod').value,
+            payment_slip_number: document.getElementById('paymentSlip').value,
+            bank_reference: document.getElementById('paymentRef').value,
+            academic_year: document.getElementById('paymentYear').value,
+            term: document.getElementById('paymentTerm').value,
+            purpose: document.getElementById('paymentNotes').value,
+            sector: 'secondary'
+        };
 
-        async function loadFinanceData() {
-            await Promise.all([
-                loadSummary(),
-                loadFeeCategories(),
-                loadStudents(),
-                loadBalances(),
-                loadPaymentHistory()
-            ]);
+        try {
+            const result = await apiRequest('/api/payments', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+
+            if (result) {
+                alert('Payment recorded successfully! ' + (result.needs_approval ? 'It is pending approval.' : ''));
+                closeModal('paymentModal');
+                document.getElementById('paymentForm').reset();
+                loadAllData();
+            }
+        } catch (error) {
+            alert('Error recording payment: ' + error.message);
         }
+    }
 
-        // =========================================================
-        // FORMATTING HELPERS
-        // =========================================================
+    // =========================================================
+    // POPULATE DROPDOWNS
+    // =========================================================
 
-        function formatCurrency(value) {
-            const number = Number(value || 0);
-            return 'Le' + number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    async function populatePaymentDropdowns() {
+        try {
+            // Get students from working endpoint
+            const studentData = await apiRequest('/api/students?status=Active');
+            const studentSelect = document.getElementById('paymentStudent');
+            studentSelect.innerHTML = '<option value="">Select Student</option>';
+            (studentData || []).forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.student_id;
+                const fullName = [s.first_name, s.middle_name, s.last_name].filter(Boolean).join(' ');
+                opt.textContent = `${s.admission_number} - ${fullName}`;
+                studentSelect.appendChild(opt);
+            });
+
+            // Get fee categories
+            const feeData = await apiRequest('/api/payments/fees?sector=secondary&academic_year=2026/2027');
+            const feeSelect = document.getElementById('paymentFee');
+            feeSelect.innerHTML = '<option value="">Select Fee</option>';
+            (feeData?.fees || []).forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.id;
+                opt.textContent = `${f.name} (${formatCurrency(f.amount)})`;
+                feeSelect.appendChild(opt);
+            });
+
+        } catch (error) {
+            console.error('Error populating dropdowns:', error);
         }
+    }
 
-        function display(value) {
-            if (value === null || value === undefined || value === '') return 'Not provided';
-            return escapeHtml(String(value));
+    // =========================================================
+    // LOAD SUMMARY
+    // =========================================================
+
+    async function loadSummary() {
+        try {
+            const data = await apiRequest('/api/payments/summary?sector=secondary&academic_year=2026/2027');
+
+            const summary = data?.summary || {};
+            document.getElementById('totalExpected').textContent = formatCurrency(summary.total_expected);
+            document.getElementById('totalCollected').textContent = formatCurrency(summary.total_collected);
+            document.getElementById('totalOutstanding').textContent = formatCurrency(summary.total_outstanding);
+            document.getElementById('totalStudents').textContent = summary.total_students || 0;
+
+        } catch (error) {
+            console.error('SUMMARY ERROR:', error);
+            document.getElementById('overviewMessage').innerHTML = `<div class="error-message">${display(error.message)}</div>`;
         }
+    }
 
-        function escapeHtml(value) {
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
+    // =========================================================
+    // LOAD ALL DATA
+    // =========================================================
 
-        function formatDateTime(value) {
-            if (!value) return 'Not provided';
-            const date = new Date(value);
-            if (Number.isNaN(date.getTime())) return 'Not provided';
-            return date.toLocaleString();
-        }
+    async function loadAllData() {
+        await Promise.all([
+            loadSummary(),
+            loadStudents(),
+            loadPaymentHistory(),
+            loadApprovals()
+        ]);
+    }
 
-        // =========================================================
-        // INITIAL LOAD
-        // =========================================================
+    // =========================================================
+    // LOGOUT
+    // =========================================================
 
-        loadFinanceData();
+    function logout() {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    // =========================================================
+    // INITIAL LOAD
+    // =========================================================
+
+    loadAllData();
     </script>
-
 </body>
-
 </html>

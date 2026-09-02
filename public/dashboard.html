@@ -279,7 +279,7 @@
 
     <script>
         // =========================================================
-        // AUTHENTICATION
+        // AUTHENTICATION - DECLARED ONCE
         // =========================================================
 
         const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
@@ -299,17 +299,46 @@
         }
 
         // =========================================================
-        // USER INFORMATION
+        // USER INFORMATION - DECLARED ONCE
         // =========================================================
 
+        const role = user?.role_name || user?.role || '';
+        const userRole = (user?.role_name || user?.role || '').toLowerCase();
+
         document.getElementById('userRole').textContent = user.full_name || user.name || 'User';
-        document.getElementById('userRoleLabel').textContent = user.role_name || user.role || '';
+        document.getElementById('userRoleLabel').textContent = role;
+
+        // =========================================================
+        // BLOCK: Finance Officers from Main Dashboard
+        // =========================================================
+        const isFinanceOfficer = 
+            role === 'Finance Officer (Primary)' ||
+            role === 'Finance Officer (Secondary)' ||
+            role === 'Finance Officer' ||
+            role.toLowerCase() === 'finance officer' ||
+            role.toLowerCase().includes('finance');
+
+        if (isFinanceOfficer) {
+            if (role.includes('Primary') || role.includes('primary')) {
+                window.location.href = 'primary-finance.html';
+            } else if (role.includes('Secondary') || role.includes('secondary')) {
+                window.location.href = 'secondary-finance.html';
+            } else {
+                window.location.href = 'primary-finance.html';
+            }
+        }
+
+        // =========================================================
+        // BLOCK: Teachers from Main Dashboard
+        // =========================================================
+        if (role === 'Teacher - Primary' || role === 'Teacher - Secondary' || 
+            role === 'Teacher' || userRole.includes('teacher')) {
+            window.location.href = 'teachers-dashboard.html';
+        }
 
         // =========================================================
         // ROLE-BASED DASHBOARD CONFIGURATION
         // =========================================================
-
-        const userRole = (user.role_name || user.role || '').toLowerCase();
 
         function getModuleLinks() {
             if (userRole.includes('manager-primary') || userRole.includes('primary manager')) {
@@ -349,7 +378,7 @@
                     title: 'Primary School Finance',
                     subtitle: 'Manage Primary School financial records.',
                     cards: [
-                        { icon: '💰', title: 'Finance', desc: 'Manage fees and payments.', link: 'primary-finance.html' }
+                        { icon: '💰', title: 'Finance Dashboard', desc: 'Manage fees and payments.', link: 'primary-finance.html' }
                     ]
                 };
             } else if (userRole.includes('secondary finance')) {
@@ -357,11 +386,10 @@
                     title: 'Secondary School Finance',
                     subtitle: 'Manage Secondary School financial records.',
                     cards: [
-                        { icon: '💰', title: 'Finance', desc: 'Manage fees and payments.', link: 'secondary-finance.html' }
+                        { icon: '💰', title: 'Finance Dashboard', desc: 'Manage fees and payments.', link: 'secondary-finance.html' }
                     ]
                 };
-                            } else if (userRole.includes('teacher')) {
-                // Teachers - only see their dashboard
+            } else if (userRole.includes('teacher')) {
                 return {
                     title: 'Teacher Dashboard',
                     subtitle: 'Welcome to your teacher portal.',
@@ -388,10 +416,8 @@
                         { icon: '📋', title: 'Teacher Applications', desc: 'Review teacher applications.', link: 'teacher-applications.html' }
                     ]
                 };
-        
             }
-          }
-
+        }
 
         // =========================================================
         // RENDER DASHBOARD
@@ -399,12 +425,12 @@
 
         function renderDashboard() {
             const config = getModuleLinks();
-            
+
             document.getElementById('dashboardTitle').textContent = config.title;
             document.getElementById('dashboardSubtitle').textContent = config.subtitle;
 
             const cardsContainer = document.getElementById('cardsContainer');
-            
+
             cardsContainer.innerHTML = config.cards.map(card => `
                 <div class="card" onclick="window.location.href='${card.link}'">
                     <span class="icon">${card.icon}</span>

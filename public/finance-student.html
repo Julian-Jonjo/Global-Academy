@@ -1,698 +1,2164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Global Education Academy | Student Finance</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#222}
-.header{background:#1f2937;color:#fff;padding:18px 30px;display:flex;justify-content:space-between;align-items:center}
-.header h1{margin:0;font-size:22px}
-.user-info{font-size:14px;text-align:right}
-.container{max-width:1450px;margin:25px auto;padding:0 20px}
-.page-title{margin-bottom:20px}
-.page-title h2{margin:0 0 6px}
-.page-title p{margin:0;color:#6b7280}
-.finance-nav{display:flex;flex-wrap:wrap;gap:5px;background:#fff;padding:8px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.06);margin-bottom:20px}
-.finance-nav a{text-decoration:none;color:#4b5563;padding:12px 16px;border-radius:6px;font-size:14px;font-weight:bold}
-.finance-nav a:hover{background:#f3f4f6}
-.finance-nav a.active{background:#1f2937;color:#fff}
-.card{background:#fff;padding:25px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,.08);margin-bottom:20px}
-.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:15px}
-.section-header h3{margin:0}
-.back-btn,.record-btn,.refresh-btn{border:none;border-radius:6px;padding:10px 16px;cursor:pointer;font-weight:bold}
-.back-btn{background:#e5e7eb;color:#374151}
-.record-btn{background:#166534;color:#fff}
-.refresh-btn{background:#374151;color:#fff}
-.student-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px}
-.info-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:15px}
-.info-box span{display:block;color:#6b7280;font-size:12px;margin-bottom:6px;text-transform:uppercase}
-.info-box strong{font-size:15px}
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
-.summary-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:20px}
-.summary-card h4{margin:0 0 10px;color:#6b7280;font-size:12px;text-transform:uppercase}
-.summary-number{font-size:24px;font-weight:bold}
-table{width:100%;border-collapse:collapse}
-th,td{padding:12px 10px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}
-th{background:#f9fafb;color:#4b5563}
-.status{display:inline-block;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:bold}
-.status-paid{background:#dcfce7;color:#166534}
-.status-partial{background:#fef3c7;color:#92400e}
-.status-unpaid{background:#fee2e2;color:#991b1b}
-.action-btn{background:#1f2937;color:#fff;border:none;border-radius:5px;padding:7px 10px;cursor:pointer;font-size:12px}
-.action-btn:hover{background:#111827}
-.message{padding:12px;border-radius:6px;margin-bottom:15px}
-.error{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b}
-.success{background:#dcfce7;border:1px solid #86efac;color:#166534}
-.empty{text-align:center;color:#6b7280;padding:25px}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);padding:20px;overflow:auto;z-index:1000}
-.modal-content{background:#fff;max-width:650px;margin:40px auto;padding:25px;border-radius:10px}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.modal-header h3{margin:0}
-.close{background:none;border:none;font-size:25px;cursor:pointer;color:#6b7280}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.form-group{display:flex;flex-direction:column}
-.form-group.full{grid-column:1/-1}
-.form-group label{font-size:13px;font-weight:bold;margin-bottom:6px}
-.form-group input,.form-group select,.form-group textarea{padding:10px;border:1px solid #d1d5db;border-radius:6px;font:inherit}
-.form-group textarea{min-height:80px;resize:vertical}
-.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
-.submit-btn{background:#166534;color:#fff;border:none;border-radius:6px;padding:11px 20px;cursor:pointer;font-weight:bold}
-.submit-btn:hover{background:#14532d}
-.submit-btn:disabled{opacity:0.6;cursor:not-allowed}
-.cancel-btn{background:#e5e7eb;color:#374151;border:none;border-radius:6px;padding:11px 20px;cursor:pointer;font-weight:bold}
-.loading{text-align:center;padding:30px;color:#6b7280}
-@media(max-width:700px){
-.finance-nav{flex-direction:column}
-.finance-nav a{width:100%;text-align:left}
-.form-grid{grid-template-columns:1fr}
-.form-group.full{grid-column:auto}
-}
-@media(max-width:600px){
-.header{flex-direction:column;align-items:flex-start;gap:8px}
-.container{padding:0 12px}
-.card{padding:18px}
-table{display:block;overflow-x:auto;white-space:nowrap}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Fee Receipt | Global Education Academy</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef1f5;
+            color: #222;
+        }
+
+        /* =========================================================
+           SCREEN HEADER
+           ========================================================= */
+
+        .screen-header {
+            background: #173b6d;
+            color: white;
+            padding: 13px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-logo {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .header-title p {
+            margin: 2px 0 0;
+            font-size: 11px;
+            color: #b9d3f7;
+        }
+
+        .user-info {
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .user-info .role {
+            display: block;
+            font-weight: 700;
+        }
+
+        .user-info .label {
+            font-size: 11px;
+            color: #b9d3f7;
+        }
+
+        /* =========================================================
+           PAGE
+           ========================================================= */
+
+        .page-container {
+            max-width: 1050px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 10px;
+        }
+
+        .toolbar-left,
+        .toolbar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        .print-btn {
+            background: #173b6d;
+            color: white;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* =========================================================
+           RECEIPT
+           ========================================================= */
+
+        .receipt {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.10);
+            overflow: hidden;
+        }
+
+        .receipt-top-line {
+            height: 7px;
+            background: #173b6d;
+        }
+
+        .receipt-header {
+            padding: 28px 35px 20px;
+            border-bottom: 1px solid #d9dee7;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .school-brand {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .school-logo {
+            width: 78px;
+            height: 78px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .school-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 6px;
+        }
+
+        .school-name h1 {
+            margin: 0;
+            color: #173b6d;
+            font-size: 25px;
+            letter-spacing: 0.3px;
+        }
+
+        .school-name p {
+            margin: 4px 0 0;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .school-contact {
+            margin-top: 7px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .receipt-title {
+            text-align: right;
+        }
+
+        .receipt-title h2 {
+            margin: 0;
+            color: #173b6d;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .receipt-title .receipt-label {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .receipt-number-box {
+            margin-top: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 8px 12px;
+            background: #f8fafc;
+        }
+
+        .receipt-number-box .label {
+            display: block;
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .receipt-number-box .number {
+            display: block;
+            margin-top: 2px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #173b6d;
+            letter-spacing: 0.5px;
+        }
+
+        /* =========================================================
+           STUDENT INFORMATION
+           ========================================================= */
+
+        .student-section {
+            padding: 22px 35px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #173b6d;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            border-bottom: 2px solid #173b6d;
+            padding-bottom: 7px;
+            margin-bottom: 15px;
+        }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 12px 25px;
+        }
+
+        .field {
+            min-height: 42px;
+        }
+
+        .field-label {
+            font-size: 10px;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .field-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* =========================================================
+           FINANCIAL SUMMARY
+           ========================================================= */
+
+        .finance-section {
+            padding: 0 35px 25px;
+        }
+
+        .finance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .finance-table th {
+            background: #173b6d;
+            color: white;
+            padding: 11px 12px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .finance-table td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .finance-table .amount {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .finance-table .total-row {
+            background: #f8fafc;
+            font-weight: 800;
+        }
+
+        .finance-table .balance-row {
+            background: #fff8e1;
+            font-weight: 800;
+        }
+
+        .balance-positive {
+            color: #b45309;
+        }
+
+        .balance-zero {
+            color: #15803d;
+        }
+
+        /* =========================================================
+           STATUS
+           ========================================================= */
+
+        .status-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .status-box {
+            border: 1px solid #e5e7eb;
+            border-radius: 7px;
+            padding: 12px;
+            text-align: center;
+            background: #fafafa;
+        }
+
+        .status-box .number {
+            font-size: 20px;
+            font-weight: 800;
+            color: #173b6d;
+        }
+
+        .status-box .label {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* =========================================================
+           PAYMENT HISTORY
+           ========================================================= */
+
+        .history-section {
+            padding: 0 35px 25px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 9px 10px;
+            text-align: left;
+            font-size: 10px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .history-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 11px;
+        }
+
+        .history-table .amount {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* =========================================================
+           SIGNATURE
+           ========================================================= */
+
+        .receipt-footer {
+            padding: 20px 35px 30px;
+            border-top: 1px solid #d9dee7;
+        }
+
+        .footer-note {
+            font-size: 10px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 35px;
+        }
+
+        .signature-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+        }
+
+        .signature-box {
+            padding-top: 38px;
+            border-bottom: 1px solid #1f2937;
+            position: relative;
+        }
+
+        .signature-label {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .signature-date {
+            position: absolute;
+            top: 44px;
+            right: 0;
+            font-size: 11px;
+            color: #374151;
+        }
+
+        .signature-caption {
+            margin-top: 7px;
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        .receipt-bottom {
+            background: #173b6d;
+            color: white;
+            padding: 10px 35px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+        }
+
+        /* =========================================================
+           LOADING / ERROR
+           ========================================================= */
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .error {
+            margin: 20px 35px;
+            padding: 15px;
+            border-radius: 7px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-size: 13px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 768px) {
+
+            .screen-header {
+                padding: 12px 15px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .user-info {
+                text-align: left;
+            }
+
+            .page-container {
+                padding: 0 10px;
+                margin-top: 15px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .toolbar-left,
+            .toolbar-right {
+                width: 100%;
+            }
+
+            .toolbar .btn {
+                flex: 1;
+            }
+
+            .receipt-header {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .receipt-title {
+                text-align: left;
+            }
+
+            .school-name h1 {
+                font-size: 20px;
+            }
+
+            .student-section,
+            .finance-section,
+            .history-section,
+            .receipt-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .student-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .status-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .signature-area {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .receipt-bottom {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .finance-table,
+            .history-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        /* =========================================================
+           PRINT
+           ========================================================= */
+
+        @media print {
+
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            .screen-header,
+            .toolbar {
+                display: none !important;
+            }
+
+            .page-container {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .receipt {
+                box-shadow: none;
+                border-radius: 0;
+                border: 1px solid #d1d5db;
+            }
+
+            .receipt-top-line {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .finance-table th,
+            .receipt-bottom,
+            .finance-table .total-row,
+            .finance-table .balance-row {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<header class="header">
-<h1>GLOBAL EDUCATION ACADEMY — Finance</h1>
-<div id="userInfo" class="user-info"></div>
+<!-- =========================================================
+     SCREEN HEADER
+     ========================================================= -->
+
+<header class="screen-header">
+
+    <div class="header-left">
+
+        <div class="header-logo">
+            <img
+                src="/images/logo.png"
+                alt="Global Education Academy"
+                onerror="this.style.display='none'; this.parentElement.textContent='🏫';"
+            >
+        </div>
+
+        <div class="header-title">
+            <h1>GLOBAL EDUCATION ACADEMY</h1>
+            <p>Student Finance</p>
+        </div>
+
+    </div>
+
+    <div class="user-info">
+        <span class="role" id="userRole">Finance</span>
+        <span class="label">Finance Department</span>
+    </div>
+
 </header>
 
-<main class="container">
 
-<div class="page-title">
-<h2>Student Finance Record</h2>
-<p>View fees, balances and payment history.</p>
-</div>
+<main class="page-container">
 
-<nav class="finance-nav">
-<a href="finance.html">Overview</a>
+    <!-- =====================================================
+         TOOLBAR
+         ===================================================== -->
 
-<button class="back-btn" onclick="goBack()">← Back to Students</button>
-</nav>
+    <div class="toolbar">
 
-<div id="message"></div>
+        <div class="toolbar-left">
 
-<section class="card">
-<div class="section-header">
-<h3>Student Information</h3>
+            <button
+                class="btn back-btn"
+                onclick="goBack()"
+            >
+                ← Back
+            </button>
 
-</div>
+        </div>
 
-<div id="studentInfo" class="loading">Loading student information...</div>
-</section>
+        <div class="toolbar-right">
 
-<section class="card">
-<div class="section-header">
-<h3>Finance Summary</h3>
-<button class="record-btn" onclick="openPaymentModal()">+ Record Payment</button>
-</div>
+            <button
+                class="btn print-btn"
+                onclick="printReceipt()"
+            >
+                🖨️ Print Receipt
+            </button>
 
-<div class="summary-grid">
-<div class="summary-card">
-<h4>Total Expected</h4>
-<div id="totalExpected" class="summary-number">Le0.00</div>
-</div>
+            <button
+                class="btn logout-btn"
+                onclick="logout()"
+            >
+                🚪 Logout
+            </button>
 
-<div class="summary-card">
-<h4>Total Paid</h4>
-<div id="totalPaid" class="summary-number">Le0.00</div>
-</div>
+        </div>
 
-<div class="summary-card">
-<h4>Outstanding Balance</h4>
-<div id="totalBalance" class="summary-number">Le0.00</div>
-</div>
-</div>
-</section>
+    </div>
 
-<section class="card">
-<div class="section-header">
-<h3>Fee Records</h3>
-</div>
 
-<div id="feesContainer" class="loading">Loading fee records...</div>
-</section>
+    <!-- =====================================================
+         RECEIPT
+         ===================================================== -->
 
-<section class="card">
-<div class="section-header">
-<h3>Payment History</h3>
-</div>
+    <div class="receipt" id="receipt">
 
-<div id="paymentsContainer" class="loading">Loading payment history...</div>
-</section>
+        <div class="receipt-top-line"></div>
+
+
+        <!-- RECEIPT HEADER -->
+
+        <div class="receipt-header">
+
+            <div class="school-brand">
+
+                <div class="school-logo">
+
+                    <img
+                        src="/images/logo.png"
+                        alt="Global Education Academy"
+                        onerror="this.style.display='none'; this.parentElement.textContent='🏫';"
+                    >
+
+                </div>
+
+                <div class="school-name">
+
+                    <h1>GLOBAL EDUCATION ACADEMY</h1>
+
+                    <p>
+                        Kono, Sierra Leone
+                    </p>
+
+                    <div class="school-contact">
+                        Official Student Financial Record
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="receipt-title">
+
+                <h2>Fee Receipt</h2>
+
+                <div class="receipt-label">
+                    Student Financial Statement
+                </div>
+
+                <div class="receipt-number-box">
+
+                    <span class="label">
+                        Receipt Serial No.
+                    </span>
+
+                    <span
+                        class="number"
+                        id="receiptSerial"
+                    >
+                        Generating...
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STUDENT INFORMATION -->
+
+        <section class="student-section">
+
+            <div class="section-title">
+                Student Information
+            </div>
+
+            <div class="student-grid">
+
+                <div class="field">
+
+                    <div class="field-label">
+                        Student Name
+                    </div>
+
+                    <div
+                        class="field-value"
+                        id="studentName"
+                    >
+                        Loading...
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <div class="field-label">
+                        Admission Number
+                    </div>
+
+                    <div
+                        class="field-value"
+                        id="admissionNumber"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <div class="field-label">
+                        Class
+                    </div>
+
+                    <div
+                        class="field-value"
+                        id="className"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <div class="field-label">
+                        School Section
+                    </div>
+
+                    <div
+                        class="field-value"
+                        id="sector"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <div class="field-label">
+                        Academic Year
+                    </div>
+
+                    <div
+                        class="field-value"
+                        id="academicYear"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <div class="field-label">
+                        Student Status
+                    </div>
+
+                    <div
+                        class="field-value"
+                        id="studentStatus"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FINANCIAL INFORMATION -->
+
+        <section class="finance-section">
+
+            <div class="section-title">
+                Financial Summary
+            </div>
+
+            <table class="finance-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Description</th>
+                        <th style="text-align:right;">
+                            Amount
+                        </th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>
+                            Total Fees Expected
+                        </td>
+
+                        <td
+                            class="amount"
+                            id="totalExpected"
+                        >
+                            Le0.00
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+                            Total Amount Paid
+                        </td>
+
+                        <td
+                            class="amount"
+                            id="totalPaid"
+                        >
+                            Le0.00
+                        </td>
+                    </tr>
+
+
+                    <tr class="balance-row">
+
+                        <td>
+                            Outstanding Balance
+                        </td>
+
+                        <td
+                            class="amount"
+                            id="totalBalance"
+                        >
+                            Le0.00
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+
+            <!-- PAYMENT STATUS COUNTS -->
+
+            <div class="status-summary">
+
+                <div class="status-box">
+
+                    <div
+                        class="number"
+                        id="paidFees"
+                    >
+                        0
+                    </div>
+
+                    <div class="label">
+                        Fully Paid Fees
+                    </div>
+
+                </div>
+
+
+                <div class="status-box">
+
+                    <div
+                        class="number"
+                        id="partiallyPaidFees"
+                    >
+                        0
+                    </div>
+
+                    <div class="label">
+                        Partially Paid Fees
+                    </div>
+
+                </div>
+
+
+                <div class="status-box">
+
+                    <div
+                        class="number"
+                        id="unpaidFees"
+                    >
+                        0
+                    </div>
+
+                    <div class="label">
+                        Unpaid Fees
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PAYMENT HISTORY -->
+
+        <section class="history-section">
+
+            <div class="section-title">
+                Payment History
+            </div>
+
+            <div id="paymentHistory">
+
+                <div class="loading">
+                    Loading payment history...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECEIPT FOOTER / SIGNATURE -->
+
+        <footer class="receipt-footer">
+
+            <div class="footer-note">
+
+                This document is an official financial record of
+                Global Education Academy. The figures shown above
+                are based on the student's financial records in the
+                school's finance system. Please retain this receipt
+                for future reference.
+
+            </div>
+
+
+            <div class="signature-area">
+
+                <div>
+
+                    <div class="signature-box">
+
+                        <span class="signature-label">
+                            Finance Officer Signature
+                        </span>
+
+                    </div>
+
+                    <div class="signature-caption">
+                        Authorized Finance Officer
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="signature-box">
+
+                        <span class="signature-label">
+                            Date
+                        </span>
+
+                        <span
+                            class="signature-date"
+                            id="receiptDate"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+                    <div class="signature-caption">
+                        Date of issue
+                    </div>
+
+                </div>
+
+            </div>
+
+        </footer>
+
+
+        <div class="receipt-bottom">
+
+            <span>
+                GLOBAL EDUCATION ACADEMY
+            </span>
+
+            <span>
+                Receipt Serial:
+                <strong id="footerSerial">—</strong>
+            </span>
+
+        </div>
+
+    </div>
 
 </main>
 
-<div id="paymentModal" class="modal">
-<div class="modal-content">
-
-<div class="modal-header">
-<h3>Record Payment</h3>
-<button class="close" onclick="closePaymentModal()">×</button>
-</div>
-
-<div id="paymentMessage"></div>
-
-<form id="paymentForm">
-
-<div class="form-grid">
-
-<div class="form-group full">
-<label>Student</label>
-<input id="paymentStudent" type="text" readonly>
-</div>
-
-<div class="form-group full">
-<label>Fee</label>
-<select id="studentFeeId" required>
-<option value="">Select fee</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>Amount Paid (Le)</label>
-<input id="amountPaid" type="number" min="0.01" step="0.01" required>
-</div>
-
-<div class="form-group">
-<label>Payment Date</label>
-<input id="paymentDate" type="date">
-</div>
-
-<div class="form-group">
-<label>Payment Method</label>
-<select id="paymentMethod">
-<option value="">Select method</option>
-<option value="Cash">Cash</option>
-<option value="Bank">Bank</option>
-<option value="Mobile Money">Mobile Money</option>
-<option value="Cheque">Cheque</option>
-<option value="Other">Other</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>Payment Slip Number</label>
-<input id="paymentSlipNumber" type="text" placeholder="e.g. SLIP-001">
-</div>
-
-<div class="form-group">
-<label>Bank Reference</label>
-<input id="bankReference" type="text" placeholder="e.g. REF-123">
-</div>
-
-<div class="form-group">
-<label>Purpose</label>
-<input id="purpose" type="text">
-</div>
-
-<div class="form-group full">
-<label>Notes</label>
-<textarea id="notes" placeholder="Additional notes..."></textarea>
-</div>
-
-</div>
-
-<div class="form-actions">
-<button type="button" class="cancel-btn" onclick="closePaymentModal()">Cancel</button>
-<button type="submit" class="submit-btn">Record Payment</button>
-</div>
-
-</form>
-</div>
-</div>
 
 <script>
-// ==========================================================
-// AUTHENTICATION
-// ==========================================================
-const token = sessionStorage.getItem('authToken');
-const userData = sessionStorage.getItem('user');
-const params = new URLSearchParams(window.location.search);
-const studentId = params.get('studentId');
 
-if (!token || !userData) window.location.href = '/';
+/* =========================================================
+   AUTHENTICATION
+   ========================================================= */
 
-let user;
+const token =
+    sessionStorage.getItem('authToken');
+
+const userData =
+    sessionStorage.getItem('user');
+
+if (!token || !userData) {
+
+    window.location.href =
+        '/login.html';
+}
+
+let user = null;
+
 try {
+
     user = JSON.parse(userData);
+
 } catch (error) {
+
+    console.error(
+        'Invalid user session:',
+        error
+    );
+
     sessionStorage.removeItem('authToken');
     sessionStorage.removeItem('user');
-    window.location.href = '/';
+
+    window.location.href =
+        '/login.html';
 }
 
-document.getElementById('userInfo').textContent =
-    `${user.full_name || 'User'} (${user.role_name || ''})`;
 
-// ==========================================================
-// VALIDATE STUDENT ID
-// ==========================================================
-if (!studentId || !Number.isInteger(Number(studentId))) {
-    showMessage('Invalid student ID. Please go back and try again.', 'error');
-    document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
-} else {
-    loadStudentFinance();
+/* =========================================================
+   USER ROLE
+   ========================================================= */
+
+document.getElementById('userRole').textContent =
+    user?.role_name || 'Finance';
+
+
+/* =========================================================
+   URL PARAMETERS
+   ========================================================= */
+
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const studentId =
+    urlParams.get('studentId');
+
+const sector =
+    (
+        urlParams.get('sector') ||
+        'primary'
+    ).toLowerCase();
+
+
+if (!studentId) {
+
+    alert(
+        'Student ID is required.'
+    );
+
+    goBack();
 }
 
-let studentData = null;
 
-// ==========================================================
-// LOAD STUDENT FINANCE
-// ==========================================================
-async function loadStudentFinance() {
-    try {
-        const response = await fetch(
-            `/api/payments/student/${Number(studentId)}`,
+/* =========================================================
+   RECEIPT SERIAL NUMBER
+   =========================================================
+
+   The serial is generated locally using:
+
+   - GEA prefix
+   - Current date
+   - Cryptographically random characters
+
+   Example:
+
+   GEA-20260901-8F42C7
+
+   crypto.randomUUID() gives a practically unique
+   identifier for each generated receipt.
+
+   IMPORTANT:
+   This is a frontend receipt serial. For legally
+   authoritative accounting serials, the serial should
+   eventually be generated by the backend/database.
+   ========================================================= */
+
+function generateReceiptSerial() {
+
+    const now =
+        new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2, '0');
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(2, '0');
+
+
+    let randomPart;
+
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID === 'function'
+    ) {
+
+        randomPart =
+            window.crypto
+                .randomUUID()
+                .replace(/-/g, '')
+                .substring(0, 6)
+                .toUpperCase();
+
+    } else {
+
+        randomPart =
+            Math.random()
+                .toString(36)
+                .substring(2, 8)
+                .toUpperCase();
+
+    }
+
+
+    return `GEA-${year}${month}${day}-${randomPart}`;
+}
+
+
+const receiptSerial =
+    generateReceiptSerial();
+
+
+document.getElementById(
+    'receiptSerial'
+).textContent =
+    receiptSerial;
+
+
+document.getElementById(
+    'footerSerial'
+).textContent =
+    receiptSerial;
+
+
+/* =========================================================
+   RECEIPT DATE
+   ========================================================= */
+
+function getCurrentDate() {
+
+    return new Date()
+        .toLocaleDateString(
+            'en-GB',
             {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }
+        );
+}
+
+
+document.getElementById(
+    'receiptDate'
+).textContent =
+    getCurrentDate();
+
+
+/* =========================================================
+   API HELPER
+   ========================================================= */
+
+async function apiRequest(
+    url,
+    options = {}
+) {
+
+    console.log(
+        'API REQUEST:',
+        url
+    );
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                ...options,
+
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: 'application/json'
+
+                    ...(options.body instanceof FormData
+                        ? {}
+                        : {
+                            'Content-Type':
+                                'application/json'
+                        }),
+
+                    ...(options.headers || {}),
+
+                    'Authorization':
+                        `Bearer ${token}`
                 }
             }
         );
 
-        const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to load student finance record.');
-        }
-
-        // Store the data
-        studentData = data;
-
-        // Display all sections
-        displayStudent(data.student);
-        displayTotals(data.totals);
-        displayFees(data.fees);
-        displayPayments(data.payments);
-        populateFeeSelect(data.fees);
-
-    } catch (error) {
-        console.error('STUDENT FINANCE ERROR:', error);
-        showMessage(error.message, 'error');
-        document.querySelectorAll('.card:not(:first-child)').forEach(c => c.style.display = 'none');
-    }
-}
-
-// ==========================================================
-// DISPLAY STUDENT INFORMATION
-// ==========================================================
-function displayStudent(student) {
-    if (!student) {
-        document.getElementById('studentInfo').innerHTML = 
-            '<div class="empty">No student information available.</div>';
-        return;
-    }
-
-    document.getElementById('studentInfo').innerHTML = `
-        <div class="student-grid">
-            <div class="info-box">
-                <span>Student Name</span>
-                <strong>${escapeHtml(student.student_name || '-')}</strong>
-            </div>
-            <div class="info-box">
-                <span>Admission Number</span>
-                <strong>${escapeHtml(student.admission_number || '-')}</strong>
-            </div>
-            <div class="info-box">
-                <span>Class</span>
-                <strong>${escapeHtml(student.class_name || '-')}</strong>
-            </div>
-            <div class="info-box">
-                <span>Arm</span>
-                <strong>${escapeHtml(student.arm || '-')}</strong>
-            </div>
-            <div class="info-box">
-                <span>Status</span>
-                <strong>${escapeHtml(student.student_status || '-')}</strong>
-            </div>
-        </div>
-    `;
-
-    document.getElementById('paymentStudent').value = student.student_name || '';
-}
-
-// ==========================================================
-// DISPLAY FINANCE TOTALS
-// ==========================================================
-function displayTotals(totals) {
-    if (!totals) {
-        document.getElementById('totalExpected').textContent = 'Le0.00';
-        document.getElementById('totalPaid').textContent = 'Le0.00';
-        document.getElementById('totalBalance').textContent = 'Le0.00';
-        return;
-    }
-
-    document.getElementById('totalExpected').textContent = 
-        formatCurrency(totals.total_expected);
-    document.getElementById('totalPaid').textContent = 
-        formatCurrency(totals.total_paid);
-    document.getElementById('totalBalance').textContent = 
-        formatCurrency(totals.total_balance);
-}
-
-// ==========================================================
-// DISPLAY FEE RECORDS
-// ==========================================================
-function displayFees(fees) {
-    const container = document.getElementById('feesContainer');
-
-    if (!fees || !fees.length) {
-        container.innerHTML = '<div class="empty">No fee records found for this student.</div>';
-        return;
-    }
-
-    let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th>Fee</th>
-                    <th>Academic Year</th>
-                    <th>Term</th>
-                    <th>Amount Due</th>
-                    <th>Paid</th>
-                    <th>Balance</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    fees.forEach(fee => {
-        let statusClass = 'status-unpaid';
-        if (fee.payment_status === 'Paid') {
-            statusClass = 'status-paid';
-        } else if (fee.payment_status === 'Partially Paid') {
-            statusClass = 'status-partial';
-        }
-
-        const canPay = Number(fee.balance) > 0;
-
-        html += `
-            <tr>
-                <td>${escapeHtml(fee.fee_name || '-')}</td>
-                <td>${escapeHtml(fee.academic_year || '-')}</td>
-                <td>${escapeHtml(fee.term_name || '-')}</td>
-                <td>${formatCurrency(fee.amount_due)}</td>
-                <td>${formatCurrency(fee.total_paid)}</td>
-                <td><strong>${formatCurrency(fee.balance)}</strong></td>
-                <td>
-                    <span class="status ${statusClass}">
-                        ${escapeHtml(fee.payment_status || 'Unpaid')}
-                    </span>
-                </td>
-                <td>
-                    ${canPay ? 
-                        `<button class="action-btn" onclick="openPaymentModal(${fee.student_fee_id})">Record Payment</button>` : 
-                        '—'}
-                </td>
-            </tr>
-        `;
-    });
-
-    html += `
-            </tbody>
-        </table>
-    `;
-
-    container.innerHTML = html;
-}
-
-// ==========================================================
-// DISPLAY PAYMENT HISTORY
-// ==========================================================
-function displayPayments(payments) {
-    const container = document.getElementById('paymentsContainer');
-
-    if (!payments || !payments.length) {
-        container.innerHTML = '<div class="empty">No payment history found for this student.</div>';
-        return;
-    }
-
-    let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Fee</th>
-                    <th>Amount</th>
-                    <th>Method</th>
-                    <th>Slip Number</th>
-                    <th>Bank Reference</th>
-                    <th>Purpose</th>
-                    <th>Notes</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    payments.forEach(payment => {
-        html += `
-            <tr>
-                <td>${formatDate(payment.payment_date)}</td>
-                <td>${escapeHtml(payment.fee_name || '-')}</td>
-                <td><strong>${formatCurrency(payment.amount_paid)}</strong></td>
-                <td>${escapeHtml(payment.payment_method || '-')}</td>
-                <td>${escapeHtml(payment.payment_slip_number || '-')}</td>
-                <td>${escapeHtml(payment.bank_reference || '-')}</td>
-                <td>${escapeHtml(payment.purpose || '-')}</td>
-                <td>${escapeHtml(payment.notes || '-')}</td>
-            </tr>
-        `;
-    });
-
-    html += `
-            </tbody>
-        </table>
-    `;
-
-    container.innerHTML = html;
-}
-
-// ==========================================================
-// POPULATE FEE SELECT DROPDOWN
-// ==========================================================
-function populateFeeSelect(fees) {
-    const select = document.getElementById('studentFeeId');
-    select.innerHTML = '<option value="">Select fee</option>';
-
-    if (!fees || !fees.length) {
-        select.innerHTML = '<option value="">No fees available</option>';
-        return;
-    }
-
-    fees.forEach(fee => {
-        if (Number(fee.balance) > 0) {
-            const option = document.createElement('option');
-            option.value = fee.student_fee_id;
-            option.textContent = 
-                `${fee.fee_name} — ${fee.academic_year || ''} ${fee.term_name || ''} — Balance ${formatCurrency(fee.balance)}`;
-            select.appendChild(option);
-        }
-    });
-
-    if (select.options.length === 1) {
-        select.innerHTML = '<option value="">No outstanding fees</option>';
-    }
-}
-
-// ==========================================================
-// OPEN PAYMENT MODAL
-// ==========================================================
-function openPaymentModal(feeId = null) {
-    if (!studentData || !studentData.student) {
-        showMessage('Student data not loaded. Please refresh.', 'error');
-        return;
-    }
-
-    const select = document.getElementById('studentFeeId');
-
-    if (feeId) {
-        select.value = String(feeId);
-        const fee = studentData.fees.find(
-            item => Number(item.student_fee_id) === Number(feeId)
-        );
-        if (fee) {
-            document.getElementById('amountPaid').max = Number(fee.balance);
-            document.getElementById('purpose').value = fee.fee_name || '';
-        }
-    }
-
-    document.getElementById('paymentModal').style.display = 'block';
-}
-
-// ==========================================================
-// CLOSE PAYMENT MODAL
-// ==========================================================
-function closePaymentModal() {
-    document.getElementById('paymentModal').style.display = 'none';
-    document.getElementById('paymentForm').reset();
-    document.getElementById('paymentMessage').innerHTML = '';
-
-    if (studentData && studentData.student) {
-        document.getElementById('paymentStudent').value = studentData.student.student_name || '';
-    }
-}
-
-// ==========================================================
-// FEE SELECT CHANGE HANDLER
-// ==========================================================
-document.getElementById('studentFeeId').addEventListener('change', function() {
-    if (!studentData) return;
-
-    const fee = studentData.fees.find(
-        item => Number(item.student_fee_id) === Number(this.value)
-    );
-
-    if (fee) {
-        document.getElementById('amountPaid').max = Number(fee.balance);
-        document.getElementById('purpose').value = fee.fee_name || '';
-    }
-});
-
-// ==========================================================
-// PAYMENT FORM SUBMIT
-// ==========================================================
-document.getElementById('paymentForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
-
-    const feeId = Number(document.getElementById('studentFeeId').value);
-    const amount = Number(document.getElementById('amountPaid').value);
-
-    if (!feeId) {
-        showPaymentMessage('Please select a fee.', 'error');
-        return;
-    }
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-        showPaymentMessage('Enter a valid payment amount.', 'error');
-        return;
-    }
-
-    const fee = studentData.fees.find(
-        item => Number(item.student_fee_id) === feeId
-    );
-
-    if (fee && amount > Number(fee.balance)) {
-        showPaymentMessage(
-            `Payment cannot exceed the outstanding balance of ${formatCurrency(fee.balance)}.`,
-            'error'
-        );
-        return;
-    }
-
-    const button = document.querySelector('#paymentForm .submit-btn');
-    button.disabled = true;
-    button.textContent = 'Recording...';
+    let data = null;
 
     try {
-        const response = await fetch('/api/payments', {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            },
-            body: JSON.stringify({
-                student_id: Number(studentId),
-                student_fee_id: feeId,
-                amount_paid: amount,
-                payment_date: document.getElementById('paymentDate').value || null,
-                payment_method: document.getElementById('paymentMethod').value || null,
-                payment_slip_number: document.getElementById('paymentSlipNumber').value.trim() || null,
-                bank_reference: document.getElementById('bankReference').value.trim() || null,
-                purpose: document.getElementById('purpose').value.trim() || null,
-                notes: document.getElementById('notes').value.trim() || null
-            })
-        });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to record payment.');
-        }
-
-        closePaymentModal();
-        showMessage('Payment recorded successfully!', 'success');
-        await loadStudentFinance();
+        data =
+            await response.json();
 
     } catch (error) {
-        console.error('RECORD PAYMENT ERROR:', error);
-        showPaymentMessage(error.message, 'error');
-    } finally {
-        button.disabled = false;
-        button.textContent = 'Record Payment';
-    }
-});
 
-// ==========================================================
-// HELPER FUNCTIONS
-// ==========================================================
-function goBack() {
-    window.location.href = 'finance.html';
+        data = null;
+    }
+
+
+    console.log(
+        'API RESPONSE:',
+        url,
+        data
+    );
+
+
+    if (
+        response.status === 401
+    ) {
+
+        sessionStorage.removeItem(
+            'authToken'
+        );
+
+        sessionStorage.removeItem(
+            'user'
+        );
+
+        window.location.href =
+            '/login.html';
+
+        return null;
+    }
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data?.message ||
+            `Request failed with status ${response.status}`
+        );
+    }
+
+
+    return data;
 }
+
+
+/* =========================================================
+   FORMATTING
+   ========================================================= */
 
 function formatCurrency(value) {
-    const number = Number(value || 0);
-    return 'Le' + number.toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+
+    const number =
+        Number(value || 0);
+
+
+    return 'Le' +
+        number.toLocaleString(
+            'en-US',
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
 }
+
 
 function formatDate(value) {
-    if (!value) return '-';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleDateString('en-GB');
-}
 
-function showMessage(message, type) {
-    const container = document.getElementById('message');
-    container.innerHTML = `<div class="message ${type}">${escapeHtml(message)}</div>`;
-    container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-function showPaymentMessage(message, type) {
-    document.getElementById('paymentMessage').innerHTML = 
-        `<div class="message ${type}">${escapeHtml(message)}</div>`;
-}
-
-function escapeHtml(value) {
-    if (value === null || value === undefined) return '';
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-// ==========================================================
-// CLOSE MODAL ON OUTSIDE CLICK
-// ==========================================================
-window.onclick = function(event) {
-    const modal = document.getElementById('paymentModal');
-    if (event.target === modal) {
-        closePaymentModal();
+    if (!value) {
+        return '—';
     }
-};
 
-// Set default date to today
-document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('paymentDate').value = today;
-});
+
+    try {
+
+        const date =
+            new Date(value);
+
+
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+            return '—';
+        }
+
+
+        return date.toLocaleDateString(
+            'en-GB',
+            {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            }
+        );
+
+    } catch {
+
+        return '—';
+    }
+}
+
+
+function display(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ''
+    ) {
+
+        return '—';
+    }
+
+
+    return String(value);
+}
+
+
+/* =========================================================
+   LOAD STUDENT
+   ========================================================= */
+
+async function loadStudentData() {
+
+    try {
+
+        const student =
+            await apiRequest(
+                `/api/students/${encodeURIComponent(studentId)}`
+            );
+
+
+        console.log(
+            'STUDENT DATA:',
+            student
+        );
+
+
+        if (!student) {
+
+            throw new Error(
+                'Student record was not returned.'
+            );
+        }
+
+
+        const fullName =
+            [
+                student.first_name,
+                student.middle_name,
+                student.last_name
+            ]
+            .filter(Boolean)
+            .join(' ');
+
+
+        document.getElementById(
+            'studentName'
+        ).textContent =
+            fullName ||
+            student.student_name ||
+            'Unknown Student';
+
+
+        document.getElementById(
+            'admissionNumber'
+        ).textContent =
+            display(
+                student.admission_number
+            );
+
+
+        const className =
+            student.class_name ||
+            student.classes?.class_name ||
+            '—';
+
+
+        const arm =
+            student.arm ||
+            student.classes?.arm ||
+            '';
+
+
+        document.getElementById(
+            'className'
+        ).textContent =
+            arm
+                ? `${className} — ${arm}`
+                : className;
+
+
+        document.getElementById(
+            'sector'
+        ).textContent =
+            display(
+                student.school_section ||
+                student.classes?.school_section ||
+                sector
+            );
+
+
+        let academicYear =
+            student.academic_year ||
+            student.year_name;
+
+
+        /*
+         * If the student object only gives
+         * academic_year_id, use the current
+         * school year as the display value.
+         */
+
+        if (!academicYear) {
+
+            academicYear =
+                '2026/2027';
+        }
+
+
+        document.getElementById(
+            'academicYear'
+        ).textContent =
+            academicYear;
+
+
+        document.getElementById(
+            'studentStatus'
+        ).textContent =
+            display(
+                student.student_status ||
+                student.status ||
+                'Active'
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            'ERROR LOADING STUDENT:',
+            error
+        );
+
+
+        document.getElementById(
+            'studentName'
+        ).textContent =
+            'Unable to load student';
+
+
+        document.getElementById(
+            'className'
+        ).textContent =
+            error.message;
+    }
+}
+
+
+/* =========================================================
+   LOAD FINANCIAL RECORD
+   =========================================================
+
+   WORKING BACKEND:
+
+   GET /api/students/finance?sector=primary
+
+   The backend returns:
+
+   {
+       student_id,
+       student_name,
+       admission_number,
+       class_name,
+       arm,
+       sector,
+       total_expected,
+       total_paid,
+       total_balance,
+       paid_fees,
+       partially_paid_fees,
+       unpaid_fees
+   }
+
+   ========================================================= */
+
+async function loadFinanceRecord() {
+
+    try {
+
+        const data =
+            await apiRequest(
+                `/api/students/finance?sector=${encodeURIComponent(sector)}`
+            );
+
+
+        console.log(
+            'FINANCE STUDENTS RESPONSE:',
+            data
+        );
+
+
+        const students =
+            data?.students || [];
+
+
+        console.log(
+            'FINANCE STUDENTS:',
+            students
+        );
+
+
+        const currentStudent =
+            students.find(
+                student =>
+                    Number(
+                        student.student_id
+                    ) === Number(studentId)
+            );
+
+
+        if (!currentStudent) {
+
+            console.warn(
+                'Student not found in finance response.',
+                {
+                    studentId,
+                    students
+                }
+            );
+
+
+            showFinanceError(
+                'No financial record was found for this student.'
+            );
+
+            return;
+        }
+
+
+        console.log(
+            'CURRENT STUDENT FINANCE:',
+            currentStudent
+        );
+
+
+        /*
+         * THESE ARE THE EXACT FIELDS
+         * RETURNED BY YOUR WORKING BACKEND.
+         */
+
+        const totalExpected =
+            Number(
+                currentStudent.total_expected || 0
+            );
+
+
+        const totalPaid =
+            Number(
+                currentStudent.total_paid || 0
+            );
+
+
+        const totalBalance =
+            Number(
+                currentStudent.total_balance || 0
+            );
+
+
+        const paidFees =
+            Number(
+                currentStudent.paid_fees || 0
+            );
+
+
+        const partiallyPaidFees =
+            Number(
+                currentStudent.partially_paid_fees || 0
+            );
+
+
+        const unpaidFees =
+            Number(
+                currentStudent.unpaid_fees || 0
+            );
+
+
+        /*
+         * DISPLAY FINANCIAL VALUES
+         */
+
+        document.getElementById(
+            'totalExpected'
+        ).textContent =
+            formatCurrency(
+                totalExpected
+            );
+
+
+        document.getElementById(
+            'totalPaid'
+        ).textContent =
+            formatCurrency(
+                totalPaid
+            );
+
+
+        document.getElementById(
+            'totalBalance'
+        ).textContent =
+            formatCurrency(
+                totalBalance
+            );
+
+
+        document.getElementById(
+            'paidFees'
+        ).textContent =
+            paidFees;
+
+
+        document.getElementById(
+            'partiallyPaidFees'
+        ).textContent =
+            partiallyPaidFees;
+
+
+        document.getElementById(
+            'unpaidFees'
+        ).textContent =
+            unpaidFees;
+
+
+        /*
+         * Change balance colour when fully paid.
+         */
+
+        const balanceElement =
+            document.getElementById(
+                'totalBalance'
+            );
+
+
+        if (totalBalance <= 0) {
+
+            balanceElement.className =
+                'amount balance-zero';
+
+        } else {
+
+            balanceElement.className =
+                'amount balance-positive';
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            'ERROR LOADING FINANCE:',
+            error
+        );
+
+
+        showFinanceError(
+            error.message
+        );
+    }
+}
+
+
+/* =========================================================
+   FINANCE ERROR
+   ========================================================= */
+
+function showFinanceError(message) {
+
+    document.getElementById(
+        'totalExpected'
+    ).textContent =
+        'Le0.00';
+
+
+    document.getElementById(
+        'totalPaid'
+    ).textContent =
+        'Le0.00';
+
+
+    document.getElementById(
+        'totalBalance'
+    ).textContent =
+        'Le0.00';
+
+
+    document.getElementById(
+        'paymentHistory'
+    ).innerHTML = `
+        <div class="error">
+            Unable to load the student's financial record:
+            ${display(message)}
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   LOAD PAYMENT HISTORY
+   =========================================================
+
+   WORKING BACKEND:
+
+   GET /api/payments/history?student_id=...
+
+   IMPORTANT:
+   Do NOT add sector here because your working
+   backend does not require it.
+   ========================================================= */
+
+async function loadPaymentHistory() {
+
+    const container =
+        document.getElementById(
+            'paymentHistory'
+        );
+
+
+    try {
+
+        const data =
+            await apiRequest(
+                `/api/payments/history?student_id=${encodeURIComponent(studentId)}`
+            );
+
+
+        console.log(
+            'PAYMENT HISTORY RESPONSE:',
+            data
+        );
+
+
+        const payments =
+            data?.payments ||
+            data?.data ||
+            [];
+
+
+        if (!payments.length) {
+
+            container.innerHTML = `
+                <div class="loading">
+                    No individual payment transactions
+                    are currently recorded for this student.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        let html = `
+
+            <table class="history-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Date</th>
+                        <th>Fee</th>
+                        <th>Amount Paid</th>
+                        <th>Method</th>
+                        <th>Slip No.</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+        `;
+
+
+        payments.forEach(
+            payment => {
+
+                const approvalStatus =
+                    String(
+                        payment.approval_status ||
+                        'approved'
+                    ).toLowerCase();
+
+
+                let statusClass =
+                    'status-approved';
+
+
+                if (
+                    approvalStatus === 'pending'
+                ) {
+
+                    statusClass =
+                        'status-pending';
+
+                } else if (
+                    approvalStatus === 'rejected'
+                ) {
+
+                    statusClass =
+                        'status-rejected';
+                }
+
+
+                html += `
+
+                    <tr>
+
+                        <td>
+                            ${formatDate(
+                                payment.payment_date
+                            )}
+                        </td>
+
+                        <td>
+                            ${display(
+                                payment.fee_name ||
+                                payment.fee_type_name ||
+                                'School Fees'
+                            )}
+                        </td>
+
+                        <td class="amount">
+                            ${formatCurrency(
+                                payment.amount_paid
+                            )}
+                        </td>
+
+                        <td>
+                            ${display(
+                                payment.payment_method
+                            )}
+                        </td>
+
+                        <td>
+                            ${display(
+                                payment.payment_slip_number
+                            )}
+                        </td>
+
+                        <td>
+                            <span
+                                class="status ${statusClass}"
+                            >
+                                ${approvalStatus}
+                            </span>
+                        </td>
+
+                    </tr>
+                `;
+            }
+        );
+
+
+        html += `
+
+                </tbody>
+
+            </table>
+        `;
+
+
+        container.innerHTML =
+            html;
+
+
+    } catch (error) {
+
+        console.error(
+            'ERROR LOADING PAYMENT HISTORY:',
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="error">
+                Failed to load payment history:
+                ${display(error.message)}
+            </div>
+
+        `;
+    }
+}
+
+
+/* =========================================================
+   PRINT RECEIPT
+   ========================================================= */
+
+function printReceipt() {
+
+    window.print();
+}
+
+
+/* =========================================================
+   GO BACK
+   ========================================================= */
+
+function goBack() {
+
+    if (
+        sector.toLowerCase() ===
+        'primary'
+    ) {
+
+        window.location.href =
+            'primary-finance.html';
+
+    } else {
+
+        window.location.href =
+            'secondary-finance.html';
+    }
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+function logout() {
+
+    sessionStorage.removeItem(
+        'authToken'
+    );
+
+    sessionStorage.removeItem(
+        'user'
+    );
+
+
+    window.location.href =
+        '/login.html';
+}
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+async function init() {
+
+    console.log(
+        '===================================='
+    );
+
+    console.log(
+        'FINANCE STUDENT RECEIPT INITIALIZING'
+    );
+
+    console.log(
+        'Student ID:',
+        studentId
+    );
+
+    console.log(
+        'Sector:',
+        sector
+    );
+
+    console.log(
+        'Receipt Serial:',
+        receiptSerial
+    );
+
+    console.log(
+        '===================================='
+    );
+
+
+    /*
+     * Run the three independent requests
+     * concurrently after authentication.
+     */
+
+    await Promise.all([
+        loadStudentData(),
+        loadFinanceRecord(),
+        loadPaymentHistory()
+    ]);
+
+
+    console.log(
+        'FINANCE STUDENT RECEIPT READY'
+    );
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+init();
+
 </script>
 
 </body>

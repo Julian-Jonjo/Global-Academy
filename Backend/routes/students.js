@@ -48,20 +48,48 @@ async function uploadFileToSupabase(file, bucket, folder, fileName) {
 const MANAGEMENT_ROLES = ['Proprietor', 'Administrator', 'Manager-Primary', 'Manager-Secondary'];
 
 // ============================================================
-// GET ALL STUDENTS (Role-filtered)
+// HELPER: Get sector from role
+// ============================================================
+function getSectorFromRole(roleName) {
+    if (roleName === 'Manager-Primary' || roleName === 'Finance Officer (Primary)') {
+        return 'primary';
+    } else if (roleName === 'Manager-Secondary' || roleName === 'Finance Officer (Secondary)') {
+        return 'secondary';
+    }
+    return null;
+}
+
+// ============================================================
+// GET ALL STUDENTS (Role-filtered with sector)
 // ============================================================
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const userRole = req.user.role_name || '';
+        const { sector } = req.query;
+        
         let query = supabase
             .from('students')
-            .select('*')
+            .select(`
+                *,
+                classes!inner (
+                    class_id,
+                    class_name,
+                    arm,
+                    school_section
+                )
+            `)
             .order('student_id', { ascending: false });
 
+        // Sector filtering from query param
+        if (sector) {
+            query = query.eq('classes.school_section', sector);
+        }
+
+        // Role-based filtering
         if (isPrimaryManager(userRole)) {
-            query = query.in('school_section', ['Nursery', 'Primary']);
+            query = query.in('classes.school_section', ['Nursery', 'Primary']);
         } else if (isSecondaryManager(userRole)) {
-            query = query.in('school_section', ['JSS', 'SSS', 'Secondary']);
+            query = query.in('classes.school_section', ['JSS', 'SSS', 'Secondary']);
         }
 
         const { data, error } = await query;
@@ -74,17 +102,11 @@ router.get('/', authenticateToken, async (req, res) => {
         const guardiansMap = {};
         (guardians || []).forEach(g => { guardiansMap[g.guardian_id] = g; });
 
-        const { data: classes } = await supabase
-            .from('classes')
-            .select('class_id, class_name, arm, school_section');
-
-        const classesMap = {};
-        (classes || []).forEach(c => { classesMap[c.class_id] = c; });
-
         const students = (data || []).map(student => ({
             ...student,
-            class_name: classesMap[student.class_id]?.class_name || null,
-            arm: classesMap[student.class_id]?.arm || null,
+            class_name: student.classes?.class_name || null,
+            arm: student.classes?.arm || null,
+            school_section: student.classes?.school_section || null,
             guardian_name: guardiansMap[student.guardian_id]?.full_name || null,
             guardian_relationship: guardiansMap[student.guardian_id]?.relationship || null,
             guardian_phone: guardiansMap[student.guardian_id]?.phone || null,
@@ -100,6 +122,469 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // ============================================================
+// GET STUDENTS FOR FINANCE (with sector and academic year filtering)
+// ============================================================
+router.get('/finance', authenticateToken, async (req, res) => {
+    try {
+        const { sector, class_id } = req.query;
+        const userRole = req.user.role_name || '';
+
+        /*
+         * ---------------------------------------------------------
+         * NORMALIZE SECTOR
+         * ---------------------------------------------------------
+         * Frontend may send:
+         *   primary
+         *   Primary
+         *   secondary
+         *   Secondary
+         *
+         * Database uses values such as:
+         *   Nursery
+         *   Primary
+         *   JSS
+         *   SSS
+         *   Secondary
+         */
+        const normalizedSector = String(sector || '').trim().toLowerCase();
+
+        let sectorValues = null;
+
+        if (normalizedSector === 'primary') {
+            sectorValues = ['Nursery', 'Primary'];
+        } else if (normalizedSector === 'secondary') {
+            sectorValues = ['JSS', 'SSS', 'Secondary'];
+        }
+
+        /*
+         * ---------------------------------------------------------
+         * LOAD STUDENTS
+         * ---------------------------------------------------------
+         * We deliberately do NOT filter students based on whether
+         * they have paid a fee. Every relevant student must appear.
+         */
+        let query = supabase
+            .from('students')
+            .select(`
+                student_id,
+                first_name,
+                middle_name,
+                last_name,
+                admission_number,
+                class_id,
+                student_status,
+                school_section,
+                classes!inner (
+                    class_id,
+                    class_name,
+                    arm,
+                    school_section
+                )
+            `)
+            .order('student_id', { ascending: false });
+
+        /*
+         * Sector requested by frontend
+         */
+        if (sectorValues) {
+            query = query.in(
+                'classes.school_section',
+                sectorValues
+            );
+        }
+
+        /*
+         * Specific class filter
+         */
+        if (class_id) {
+            query = query.eq('class_id', class_id);
+        }
+
+        /*
+         * Finance Officer permissions
+         */
+        if (userRole === 'Finance Officer (Primary)') {
+            query = query.in(
+                'classes.school_section',
+                ['Nursery', 'Primary']
+            );
+        } else if (userRole === 'Finance Officer (Secondary)') {
+            query = query.in(
+                'classes.school_section',
+                ['JSS', 'SSS', 'Secondary']
+            );
+        }
+
+        /*
+         * IMPORTANT:
+         * Keep Active students for the normal finance list.
+         * We are NOT filtering by payment status.
+         */
+        query = query.eq('student_status', 'Active');
+
+        const {
+            data: students,
+            error: studentError
+        } = await query;
+
+        if (studentError) {
+            console.error(
+                'Finance student query error:',
+                studentError
+            );
+
+            throw studentError;
+        }
+
+        /*
+         * No students
+         */
+        if (!students || students.length === 0) {
+            return res.json({
+                students: []
+            });
+        }
+
+        const studentIds = students.map(
+            student => student.student_id
+        );
+
+        /*
+         * ---------------------------------------------------------
+         * LOAD STUDENT FEES
+         * ---------------------------------------------------------
+         */
+        const {
+            data: feeRecords,
+            error: feeError
+        } = await supabase
+            .from('student_fees')
+            .select(`
+                student_fee_id,
+                student_id,
+                fee_type_id,
+                amount_due,
+                academic_year_id,
+                term_id,
+                fee_types (
+                    fee_name
+                )
+            `)
+            .in('student_id', studentIds);
+
+        if (feeError) {
+            console.error(
+                'Finance fee query error:',
+                feeError
+            );
+
+            throw feeError;
+        }
+
+        /*
+         * ---------------------------------------------------------
+         * LOAD PAYMENTS
+         * ---------------------------------------------------------
+         *
+         * We retrieve the payments for these students and then
+         * count ONLY approved payments.
+         *
+         * This protects us against differences such as:
+         *   approved
+         *   Approved
+         *   APPROVED
+         */
+        const {
+            data: paymentRecords,
+            error: paymentError
+        } = await supabase
+            .from('payments')
+            .select(`
+                payment_id,
+                student_id,
+                student_fee_id,
+                amount_paid,
+                payment_date,
+                payment_method,
+                payment_slip_number,
+                bank_reference,
+                purpose,
+                academic_year_id,
+                approval_status
+            `)
+            .in('student_id', studentIds);
+
+        if (paymentError) {
+            console.error(
+                'Finance payment query error:',
+                paymentError
+            );
+
+            throw paymentError;
+        }
+
+        /*
+         * ---------------------------------------------------------
+         * CREATE FINANCE MAP
+         * ---------------------------------------------------------
+         */
+        const financeMap = {};
+
+        studentIds.forEach(studentId => {
+            financeMap[studentId] = {
+                total_expected: 0,
+                total_paid: 0,
+                total_balance: 0,
+
+                paid_fees: 0,
+                partially_paid_fees: 0,
+                unpaid_fees: 0,
+
+                payment_count: 0,
+
+                fee_details: []
+            };
+        });
+
+        /*
+         * ---------------------------------------------------------
+         * ADD FEES
+         * ---------------------------------------------------------
+         */
+        (feeRecords || []).forEach(fee => {
+            const studentId = fee.student_id;
+
+            if (!financeMap[studentId]) {
+                return;
+            }
+
+            const amountDue = Number(
+                fee.amount_due || 0
+            );
+
+            financeMap[studentId].total_expected += amountDue;
+
+            financeMap[studentId].fee_details.push({
+                student_fee_id: fee.student_fee_id,
+                fee_type_id: fee.fee_type_id,
+                fee_name: fee.fee_types?.fee_name || 'Unknown Fee',
+                amount_due: amountDue,
+                amount_paid: 0,
+                balance: amountDue
+            });
+        });
+
+        /*
+         * ---------------------------------------------------------
+         * ADD APPROVED PAYMENTS
+         * ---------------------------------------------------------
+         */
+        (paymentRecords || []).forEach(payment => {
+
+            const studentId = payment.student_id;
+
+            if (!financeMap[studentId]) {
+                return;
+            }
+
+            const approvalStatus = String(
+                payment.approval_status || ''
+            ).trim().toLowerCase();
+
+            /*
+             * ONLY APPROVED PAYMENTS COUNT
+             */
+            if (approvalStatus !== 'approved') {
+                return;
+            }
+
+            const amountPaid = Number(
+                payment.amount_paid || 0
+            );
+
+            financeMap[studentId].total_paid += amountPaid;
+
+            financeMap[studentId].payment_count += 1;
+
+            /*
+             * If the payment is linked to a specific student fee,
+             * add it to that fee's payment amount.
+             */
+            if (payment.student_fee_id) {
+
+                const fee = financeMap[studentId]
+                    .fee_details
+                    .find(
+                        item =>
+                            item.student_fee_id ===
+                            payment.student_fee_id
+                    );
+
+                if (fee) {
+                    fee.amount_paid += amountPaid;
+                }
+            }
+        });
+
+        /*
+         * ---------------------------------------------------------
+         * CALCULATE BALANCES AND FEE STATUSES
+         * ---------------------------------------------------------
+         */
+        studentIds.forEach(studentId => {
+
+            const finance = financeMap[studentId];
+
+            /*
+             * Calculate individual fee balances
+             */
+            finance.fee_details.forEach(fee => {
+
+                fee.balance =
+                    Math.max(
+                        0,
+                        fee.amount_due -
+                        fee.amount_paid
+                    );
+
+                if (fee.amount_paid >= fee.amount_due) {
+                    finance.paid_fees += 1;
+                } else if (fee.amount_paid > 0) {
+                    finance.partially_paid_fees += 1;
+                } else {
+                    finance.unpaid_fees += 1;
+                }
+            });
+
+            /*
+             * Overall student balance
+             */
+            finance.total_balance =
+                Math.max(
+                    0,
+                    finance.total_expected -
+                    finance.total_paid
+                );
+        });
+
+        /*
+         * ---------------------------------------------------------
+         * BUILD RESPONSE
+         * ---------------------------------------------------------
+         */
+        const result = students.map(student => {
+
+            const studentId = student.student_id;
+
+            const finance =
+                financeMap[studentId] || {
+                    total_expected: 0,
+                    total_paid: 0,
+                    total_balance: 0,
+                    paid_fees: 0,
+                    partially_paid_fees: 0,
+                    unpaid_fees: 0,
+                    payment_count: 0,
+                    fee_details: []
+                };
+
+            /*
+             * Overall payment status
+             */
+            let paymentStatus = 'Unpaid';
+
+            if (finance.total_expected <= 0) {
+                paymentStatus = 'Unpaid';
+            } else if (
+                finance.total_paid >=
+                finance.total_expected
+            ) {
+                paymentStatus = 'Paid';
+            } else if (finance.total_paid > 0) {
+                paymentStatus = 'Partially Paid';
+            }
+
+            return {
+                student_id: studentId,
+
+                student_name:
+                    `${student.first_name || ''} ${student.middle_name || ''} ${student.last_name || ''}`
+                        .replace(/\s+/g, ' ')
+                        .trim(),
+
+                admission_number:
+                    student.admission_number,
+
+                class_id:
+                    student.class_id,
+
+                class_name:
+                    student.classes?.class_name || null,
+
+                arm:
+                    student.classes?.arm || null,
+
+                sector:
+                    student.classes?.school_section ||
+                    student.school_section ||
+                    null,
+
+                student_status:
+                    student.student_status,
+
+                total_expected:
+                    finance.total_expected,
+
+                total_paid:
+                    finance.total_paid,
+
+                total_balance:
+                    finance.total_balance,
+
+                paid_fees:
+                    finance.paid_fees,
+
+                partially_paid_fees:
+                    finance.partially_paid_fees,
+
+                unpaid_fees:
+                    finance.unpaid_fees,
+
+                payment_count:
+                    finance.payment_count,
+
+                payment_status:
+                    paymentStatus,
+
+                fee_details:
+                    finance.fee_details
+            };
+        });
+
+        console.log(
+            `Finance students loaded: ${result.length}`
+        );
+
+        res.json({
+            students: result
+        });
+
+    } catch (error) {
+
+        console.error(
+            'Finance students error:',
+            error
+        );
+
+        res.status(500).json({
+            message:
+                error.message ||
+                'Failed to load finance students'
+        });
+    }
+});
+
+// ============================================================
 // GET SINGLE STUDENT
 // ============================================================
 router.get('/:studentId', authenticateToken, async (req, res) => {
@@ -109,7 +594,15 @@ router.get('/:studentId', authenticateToken, async (req, res) => {
     try {
         const { data: student, error } = await supabase
             .from('students')
-            .select('*')
+            .select(`
+                *,
+                classes!inner (
+                    class_id,
+                    class_name,
+                    arm,
+                    school_section
+                )
+            `)
             .eq('student_id', studentId)
             .single();
 
@@ -121,16 +614,11 @@ router.get('/:studentId', authenticateToken, async (req, res) => {
             .eq('guardian_id', student.guardian_id)
             .maybeSingle();
 
-        const { data: classData } = await supabase
-            .from('classes')
-            .select('class_id, class_name, arm, school_section')
-            .eq('class_id', student.class_id)
-            .maybeSingle();
-
         res.json({
             ...student,
-            class_name: classData?.class_name || null,
-            arm: classData?.arm || null,
+            class_name: student.classes?.class_name || null,
+            arm: student.classes?.arm || null,
+            school_section: student.classes?.school_section || null,
             guardian_name: guardian?.full_name || null,
             guardian_relationship: guardian?.relationship || null,
             guardian_phone: guardian?.phone || null,

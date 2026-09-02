@@ -1,1092 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Global Education Academy | Teacher Assignments</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#1f2937}
-.header{background:#1f2937;color:#fff;padding:18px 30px;display:flex;justify-content:space-between;align-items:center}
-.header h1{margin:0;font-size:22px}.header p{margin:5px 0 0;color:#d1d5db;font-size:13px}.user{text-align:right;font-size:13px}.user strong{display:block;font-size:14px}
-.container{max-width:1500px;margin:25px auto;padding:0 20px}.page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
-.page-head h2{margin:0 0 5px;font-size:25px}.page-head p{margin:0;color:#6b7280;font-size:14px}
-.nav{background:#fff;border-radius:10px;padding:8px;display:flex;flex-wrap:wrap;gap:5px;box-shadow:0 3px 12px rgba(0,0,0,.06);margin-bottom:22px}
-.nav a{text-decoration:none;color:#4b5563;padding:11px 15px;border-radius:6px;font-size:13px;font-weight:bold}.nav a:hover{background:#f3f4f6}.nav a.active{background:#1f2937;color:#fff}
-.card{background:#fff;border-radius:10px;padding:22px;box-shadow:0 3px 15px rgba(0,0,0,.07);margin-bottom:22px}
-.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.card-head h3{margin:0;font-size:18px}
-.btn{border:0;border-radius:6px;padding:10px 16px;cursor:pointer;font-weight:bold}.primary{background:#166534;color:#fff}.primary:hover{background:#14532d}
-.filters{display:grid;grid-template-columns:1.5fr 1.2fr 1.2fr 1.2fr 1.2fr auto;gap:10px;margin-bottom:18px}
-input,select{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font:inherit;background:#fff}.reset{background:#e5e7eb;color:#374151}
-.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:1000px}th,td{padding:12px 10px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}
-th{background:#f9fafb;color:#4b5563;font-size:12px;text-transform:uppercase}tbody tr:hover{background:#f9fafb}
-.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#dbeafe;color:#1e40af;font-size:11px;font-weight:bold}
-.remove{background:#fee2e2;color:#b91c1c}.empty,.loading,.error{text-align:center;padding:30px;color:#6b7280}.error{color:#b91c1c}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);padding:20px;overflow:auto;z-index:1000}
-.modal-content{background:#fff;max-width:700px;margin:40px auto;border-radius:10px;padding:25px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.modal-head h3{margin:0}.close{border:0;background:none;font-size:26px;color:#6b7280;cursor:pointer}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.group{display:flex;flex-direction:column}.group.full{grid-column:1/-1}.group label{font-size:12px;font-weight:bold;margin-bottom:6px}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
-.cancel{background:#e5e7eb;color:#374151}.save{background:#166534;color:#fff}
-@media(max-width:1050px){.filters{grid-template-columns:1fr 1fr 1fr}}
-@media(max-width:700px){.header{flex-direction:column;align-items:flex-start;gap:10px}.user{text-align:left}.page-head{flex-direction:column;align-items:flex-start;gap:15px}.nav{flex-direction:column}.nav a{width:100%}.filters{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.group.full{grid-column:auto}.card{padding:17px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Teacher Assignments</title>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; }
+        .container { max-width: 1200px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-header h2 { margin: 0; color: #1f2937; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .card { background: white; border-radius: 10px; padding: 22px; box-shadow: 0 3px 15px rgba(0,0,0,0.07); margin-bottom: 20px; }
+        .card-header { margin-bottom: 18px; }
+        .card-header h3 { margin: 0; font-size: 18px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full { grid-column: 1/-1; }
+        .form-group label { font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #374151; }
+        .form-group select { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
+        .btn { border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: #1a3c6e; color: white; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f9fafb; text-align: left; padding: 12px 10px; font-size: 11px; text-transform: uppercase; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
+        td { padding: 12px 10px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+        .empty { text-align: center; padding: 30px; color: #6b7280; }
+        .error { text-align: center; padding: 30px; color: #b91c1c; }
+        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
+
 <body>
 
-<header class="header">
-<div>
-<h1>GLOBAL EDUCATION ACADEMY</h1>
-<p>Secondary School • Teacher Assignment Management</p>
-</div>
-<div class="user"><strong id="userName">Loading...</strong><span id="userRole">Loading...</span></div>
-</header>
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>GLOBAL EDUCATION ACADEMY SECONDARY SCHOOL</h1>
+                <p>Teacher Assignments</p>
+            </div>
+        </div>
+        <div id="userInfo" class="user-info"></div>
+    </header>
 
-<main class="container">
+    <main class="container">
+        <div class="page-header">
+            <h2>Assign Teacher to Class & Subject</h2>
+            <button class="back-btn" onclick="window.location.href='secondary-teachers.html'">← Back</button>
+        </div>
 
-<div class="page-head">
-<div>
-<h2>Secondary Teacher Assignments</h2>
-<p>Assign teachers to subjects and classes for the current academic year.</p>
-</div>
-<button class="btn primary" onclick="openModal()">+ Assign Teacher</button>
-</div>
+        <div class="card">
+            <div class="card-header"><h3>New Assignment</h3></div>
+            <form id="assignmentForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Teacher *</label>
+                        <select id="teacherSelect" required><option value="">Loading teachers...</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Class *</label>
+                        <select id="classSelect" required><option value="">Loading classes...</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject *</label>
+                        <select id="subjectSelect" required><option value="">Loading subjects...</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Academic Year</label>
+                        <select id="yearSelect"><option value="1">2026/2027</option></select>
+                    </div>
+                    <div class="form-group full">
+                        <button type="submit" class="btn btn-primary">Assign Teacher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-<nav class="nav">
-<a href="teachers.html">Teachers Dashboard</a>
-<a href="teachers-primary.html">Primary Teachers</a>
-<a href="secondary-teachers.html">Secondary Teachers</a>
-<a href="secondary-teacher-assignments.html" class="active">Teacher Assignments</a>
-</nav>
+        <div class="card">
+            <div class="card-header"><h3>Current Assignments</h3></div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Teacher</th>
+                            <th>Subject</th>
+                            <th>Class</th>
+                            <th>Academic Year</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignmentsTable">
+                        <tr><td colspan="4" class="empty">Loading assignments...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 
-<section class="card">
-<div class="card-head">
-<h3>Teaching Assignments</h3>
-<span id="recordCount">0 Records</span>
-</div>
-
-<div class="filters">
-<input id="search" placeholder="Search teacher or staff ID..." oninput="filterAssignments()">
-
-<select id="departmentFilter" onchange="filterAssignments()">
-<option value="">All Departments</option>
-</select>
-
-<select id="subjectFilter" onchange="filterAssignments()">
-<option value="">All Subjects</option>
-</select>
-
-<select id="classFilter" onchange="filterAssignments()">
-<option value="">All Classes</option>
-</select>
-
-<select id="yearFilter" onchange="filterAssignments()">
-<option value="">All Academic Years</option>
-</select>
-
-<button class="btn reset" onclick="resetFilters()">Reset</button>
-</div>
-
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>Teacher</th>
-<th>Staff ID</th>
-<th>Department</th>
-<th>Subject</th>
-<th>Class</th>
-<th>Academic Year</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody id="assignmentTable">
-<tr><td colspan="7" class="loading">Loading assignments...</td></tr>
-</tbody>
-</table>
-</div>
-</section>
-</main>
-
-<div id="modal" class="modal">
-<div class="modal-content">
-
-<div class="modal-head">
-<h3>Assign Teacher to Class and Subject</h3>
-<button class="close" onclick="closeModal()">×</button>
-</div>
-
-<form id="assignmentForm">
-<div class="form-grid">
-
-<div class="group full">
-<label>Teacher</label>
-<select id="teacher" required>
-<option value="">Select teacher</option>
-</select>
-</div>
-
-<div class="group">
-<label>Department</label>
-<select id="department" required onchange="loadDepartmentSubjects()">
-<option value="">Select department</option>
-</select>
-</div>
-
-<div class="group">
-<label>Subject</label>
-<select id="subject" required>
-<option value="">Select subject</option>
-</select>
-</div>
-
-<div class="group">
-<label>Class</label>
-<select id="class" required>
-<option value="">Select class</option>
-</select>
-</div>
-
-<div class="group">
-<label>Academic Year</label>
-<select id="academicYear" required>
-<option value="">Select academic year</option>
-</select>
-</div>
-
-</div>
-
-<div class="actions">
-<button type="button" class="btn cancel" onclick="closeModal()">Cancel</button>
-<button type="submit" class="btn save">Assign Teacher</button>
-</div>
-</form>
-</div>
-</div>
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
 <script>
-const API_BASE='/api';
-let token=null,user=null,teachers=[],departments=[],subjects=[],classes=[],academicYears=[],assignments=[],currentYear=null;
-
-function auth(){
- token=sessionStorage.getItem('authToken')||localStorage.getItem('authToken');
- const raw=sessionStorage.getItem('user')||localStorage.getItem('user');
- try{user=raw?JSON.parse(raw):null}catch{user=null}
-}
-auth();
-
-document.getElementById('userName').textContent=user?.full_name||'Administrator';
-document.getElementById('userRole').textContent=user?.role_name||'School Management';
-
-async function api(url,options={}){
- auth();
- if(!token){location.href='index.html';return null}
- const response=await fetch(API_BASE+url,{...options,headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`,...(options.headers||{})}});
- let data=null;
- try{data=await response.json()}catch{}
- if(response.status===401){
-  sessionStorage.clear();localStorage.removeItem('token');localStorage.removeItem('user');
-  alert('Your session has expired. Please log in again.');location.href='index.html';return null;
- }
- if(!response.ok)throw new Error(data?.message||`Request failed (${response.status})`);
- return data;
-}
-
-async function loadPage(){
- try{
-
-  /* --------------------------------------------------------
-     LOAD CURRENT ACADEMIC YEAR FIRST
-  -------------------------------------------------------- */
-
-  currentYear=await api('/teachers/academic-year/current');
-
-  if(!currentYear||!currentYear.academic_year_id){
-   throw new Error('No current academic year was found.');
-  }
-
-
-  /* --------------------------------------------------------
-     LOAD TEACHER DATA AND ASSIGNMENTS
-  -------------------------------------------------------- */
-
-  const [t,c,s,as]=await Promise.all([
-
-   api('/teachers'),
-
-   api('/teachers/data/departments'),
-
-   api('/teachers/data/subjects'),
-
-   api(
-    `/teachers/secondary-assignments?academic_year_id=${currentYear.academic_year_id}`
-   )
-
-  ]);
-
-
-  /* --------------------------------------------------------
-     STORE DATA
-  -------------------------------------------------------- */
-
-  teachers=Array.isArray(t)?t:[];
-
-  departments=Array.isArray(c)?c:[];
-
-  subjects=Array.isArray(s)
-   ?s.filter(
-      x=>
-       !x.school_level||
-       ['JSS','SSS'].includes(x.school_level)
-    )
-   :[];
-
-  assignments=Array.isArray(as)?as:[];
-
-  academicYears=currentYear?[currentYear]:[];
-
-
-  /* --------------------------------------------------------
-     LOAD SECONDARY CLASSES
-  -------------------------------------------------------- */
-
-  const classData=
-   await api('/teachers/data/secondary-classes');
-
-  classes=
-   Array.isArray(classData)
-    ?classData
-    :[];
-
-
-  /* --------------------------------------------------------
-     POPULATE PAGE
-  -------------------------------------------------------- */
-
-  populateForms();
-
-  render(assignments);
-
-
- }catch(e){
-
-  console.error(e);
-
-  const table=
-   document.getElementById('assignmentTable');
-
-  if(table){
-   table.innerHTML=
-    `<tr>
-      <td colspan="7" class="error">
-       ${esc(e.message)}
-      </td>
-     </tr>`;
-  }
- }
-}
-
-
-/* ============================================================
-   POPULATE FORMS
-============================================================ */
-
-function populateForms(){
-
- const teacher=
-  document.getElementById('teacher');
-
- const dept=
-  document.getElementById('department');
-
- const cls=
-  document.getElementById('class');
-
- const year=
-  document.getElementById('academicYear');
-
-
- /* --------------------------------------------------------
-    TEACHERS
- -------------------------------------------------------- */
-
- teachers.forEach(t=>{
-
-  const o=new Option(
-
-   `${t.first_name||''} ${t.middle_name||''} ${t.last_name||''}`
-    .replace(/\s+/g,' ')
-    .trim()
-    +` (${t.staff_number||''})`,
-
-   t.teacher_id
-
-  );
-
-  teacher.appendChild(o);
-
- });
-
-
- /* --------------------------------------------------------
-    DEPARTMENTS
- -------------------------------------------------------- */
-
- departments.forEach(d=>{
-
-  const o=
-   new Option(
-    d.department_name,
-    d.department_id
-   );
-
-  dept.appendChild(o);
-
- });
-
-
- /* --------------------------------------------------------
-    CLASSES
- -------------------------------------------------------- */
-
- classes.forEach(c=>{
-
-  const o=
-   new Option(
-    `${c.class_name} ${c.arm||''}`.trim(),
-    c.class_id
-   );
-
-  cls.appendChild(o);
-
- });
-
-
- /* --------------------------------------------------------
-    CURRENT ACADEMIC YEAR
- -------------------------------------------------------- */
-
- if(currentYear){
-
-  const o=
-   new Option(
-
-    currentYear.year_name||
-    currentYear.academic_year||
-    currentYear.name||
-    `Academic Year ${currentYear.academic_year_id}`,
-
-    currentYear.academic_year_id
-
-   );
-
-  year.appendChild(o);
-
-  year.value=
-   currentYear.academic_year_id;
- }
-
-
- /* --------------------------------------------------------
-    FILTERS
- -------------------------------------------------------- */
-
- const df=
-  document.getElementById('departmentFilter');
-
- const sf=
-  document.getElementById('subjectFilter');
-
- const cf=
-  document.getElementById('classFilter');
-
- const yf=
-  document.getElementById('yearFilter');
-
-
- departments.forEach(d=>{
-
-  df.appendChild(
-   new Option(
-    d.department_name,
-    d.department_id
-   )
-  );
-
- });
-
-
- subjects.forEach(s=>{
-
-  sf.appendChild(
-
-   new Option(
-
-    `${s.subject_name}${
-      s.subject_code
-       ?' ('+s.subject_code+')'
-       :''
-    }`,
-
-    s.subject_id
-
-   )
-
-  );
-
- });
-
-
- classes.forEach(c=>{
-
-  cf.appendChild(
-
-   new Option(
-
-    `${c.class_name} ${c.arm||''}`.trim(),
-
-    c.class_id
-
-   )
-
-  );
-
- });
-
-
- if(currentYear){
-
-  yf.appendChild(
-
-   new Option(
-
-    currentYear.year_name||
-    currentYear.academic_year||
-    currentYear.name||
-    `Academic Year ${currentYear.academic_year_id}`,
-
-    currentYear.academic_year_id
-
-   )
-
-  );
-
-  yf.value=
-   currentYear.academic_year_id;
- }
-
-}
-
-
-/* ============================================================
-   LOAD SUBJECTS BY DEPARTMENT
-============================================================ */
-
-function loadDepartmentSubjects(){
-
- const department=
-  document.getElementById('department').value;
-
- const subject=
-  document.getElementById('subject');
-
- subject.innerHTML=
-  '<option value="">Select subject</option>';
-
-
- subjects
-
-  .filter(
-   s=>
-    String(s.department_id)===
-    String(department)
-  )
-
-  .forEach(s=>{
-
-   subject.appendChild(
-
-    new Option(
-
-     `${s.subject_name}${
-       s.subject_code
-        ?' ('+s.subject_code+')'
-        :''
-     }`,
-
-     s.subject_id
-
-    )
-
-   );
-
-  });
-
-}
-
-
-/* ============================================================
-   RENDER ASSIGNMENTS
-============================================================ */
-
-function render(list){
-
- const recordCount=
-  document.getElementById('recordCount');
-
- if(recordCount){
-
-  recordCount.textContent=
-   `${list.length} Record${
-     list.length===1?'':'s'
-   }`;
-
- }
-
-
- const table=
-  document.getElementById('assignmentTable');
-
-
- if(!table)return;
-
-
- if(!list.length){
-
-  table.innerHTML=
-   '<tr><td colspan="7" class="empty">No teaching assignments found.</td></tr>';
-
-  return;
- }
-
-
- table.innerHTML=
-  list.map(a=>{
-
-   const t=
-    a.teachers||{};
-
-   const s=
-    a.subjects||{};
-
-   const c=
-    a.classes||{};
-
-   const d=
-    a.departments||
-    s.departments||
-    {};
-
-
-   const name=[
-
-    t.first_name,
-
-    t.middle_name,
-
-    t.last_name
-
-   ]
-    .filter(Boolean)
-    .join(' ');
-
-
-   const className=
-    `${c.class_name||''} ${c.arm||''}`.trim();
-
-
-   const academicYear=
-    a.academic_years?.year_name||
-    a.academic_years?.academic_year||
-    currentYear?.year_name||
-    currentYear?.academic_year||
-    currentYear?.name||
-    '-';
-
-
-   return `<tr>
-
-    <td>
-     <strong>${esc(name||'-')}</strong>
-    </td>
-
-    <td>
-     ${esc(t.staff_number||'-')}
-    </td>
-
-    <td>
-     ${esc(d.department_name||'-')}
-    </td>
-
-    <td>
-     ${esc(s.subject_name||'-')}
-    </td>
-
-    <td>
-     <span class="badge">
-      ${esc(className||'-')}
-     </span>
-    </td>
-
-    <td>
-     ${esc(academicYear)}
-    </td>
-
-    <td>
-
-     <button
-      class="btn remove"
-      onclick="removeAssignment(${a.class_subject_id})"
-     >
-      Remove
-     </button>
-
-    </td>
-
-   </tr>`;
-
-  }).join('');
-
-}
-
-
-/* ============================================================
-   FILTER ASSIGNMENTS
-============================================================ */
-
-function filterAssignments(){
-
- const q=
-  document.getElementById('search').value
-   .toLowerCase()
-   .trim();
-
-
- const d=
-  document.getElementById('departmentFilter').value;
-
-
- const s=
-  document.getElementById('subjectFilter').value;
-
-
- const c=
-  document.getElementById('classFilter').value;
-
-
- const y=
-  document.getElementById('yearFilter').value;
-
-
- render(
-
-  assignments.filter(a=>{
-
-   const t=
-    a.teachers||{};
-
-   const sub=
-    a.subjects||{};
-
-   const cl=
-    a.classes||{};
-
-   const dep=
-    a.departments||
-    sub.departments||
-    {};
-
-
-   const name=[
-
-    t.first_name,
-
-    t.middle_name,
-
-    t.last_name
-
-   ]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
-
-
-   const searchOk=
-
-    !q||
-
-    name.includes(q)||
-
-    (t.staff_number||'')
-     .toLowerCase()
-     .includes(q);
-
-
-   return searchOk&&
-
-    (
-     !d||
-
-     String(sub.department_id)===
-     String(d)||
-
-     String(dep.department_id)===
-     String(d)
-    )&&
-
-    (
-     !s||
-     String(a.subject_id)===
-     String(s)
-    )&&
-
-    (
-     !c||
-     String(a.class_id)===
-     String(c)
-    )&&
-
-    (
-     !y||
-     String(a.academic_year_id)===
-     String(y)
-    );
-
-  })
-
- );
-
-}
-
-
-/* ============================================================
-   RESET FILTERS
-============================================================ */
-
-function resetFilters(){
-
- [
-  'search',
-  'departmentFilter',
-  'subjectFilter',
-  'classFilter',
-  'yearFilter'
- ]
-
- .forEach(id=>{
-
-  const element=
-   document.getElementById(id);
-
-  if(element){
-   element.value='';
-  }
-
- });
-
-
- if(currentYear){
-
-  const yearFilter=
-   document.getElementById('yearFilter');
-
-  if(yearFilter){
-
-   yearFilter.value=
-    currentYear.academic_year_id;
-
-  }
-
- }
-
-
- render(assignments);
-
-}
-
-
-/* ============================================================
-   OPEN MODAL
-============================================================ */
-
-function openModal(){
-
- document.getElementById('modal')
-  .style.display='block';
-
-}
-
-
-/* ============================================================
-   CLOSE MODAL
-============================================================ */
-
-function closeModal(){
-
- document.getElementById('modal')
-  .style.display='none';
-
-
- document.getElementById('assignmentForm')
-  .reset();
-
-
- if(currentYear){
-
-  document.getElementById('academicYear')
-   .value=
-   currentYear.academic_year_id;
-
- }
-
-
- document.getElementById('subject')
-  .innerHTML=
-  '<option value="">Select subject</option>';
-
-}
-
-
-/* ============================================================
-   ASSIGN TEACHER
-============================================================ */
-
-document
- .getElementById('assignmentForm')
- .addEventListener(
-  'submit',
-  async e=>{
-
-   e.preventDefault();
-
-
-   try{
-
-    const teacherId=
-     Number(
-      document.getElementById('teacher').value
-     );
-
-
-    const classId=
-     Number(
-      document.getElementById('class').value
-     );
-
-
-    const subjectId=
-     Number(
-      document.getElementById('subject').value
-     );
-
-
-    const academicYearId=
-     Number(
-      document.getElementById('academicYear').value
-     );
-
-
-    if(
-     !teacherId||
-     !classId||
-     !subjectId||
-     !academicYearId
-    ){
-
-     alert(
-      'Teacher, class, subject and academic year are required.'
-     );
-
-     return;
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
+
+    const user = JSON.parse(userData);
+    document.getElementById('userInfo').textContent = `${user.full_name || 'User'} (${user.role_name})`;
+
+    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+    let teachers = [];
+    let classes = [];
+    let subjects = [];
+    let assignments = [];
+
+    async function loadTeachers() {
+        try {
+            const response = await fetch('/api/teachers', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            teachers = (Array.isArray(data) ? data : []).filter(t => {
+                const section = String(t.school_section || '').toLowerCase();
+                return section.includes('secondary') || section.includes('jss') || section.includes('sss');
+            });
+            const select = document.getElementById('teacherSelect');
+            select.innerHTML = '<option value="">Select teacher</option>';
+            teachers.forEach(t => {
+                const name = [t.first_name, t.middle_name, t.last_name].filter(Boolean).join(' ');
+                select.add(new Option(`${name} (${t.staff_number})`, t.teacher_id || t.id));
+            });
+        } catch (error) { console.error('Teachers error:', error); }
     }
 
-
-    const data=
-     await api(
-      '/teachers/secondary-assignments',
-      {
-
-       method:'POST',
-
-       body:JSON.stringify({
-
-        teacher_id:teacherId,
-
-        class_id:classId,
-
-        subject_id:subjectId,
-
-        academic_year_id:academicYearId
-
-       })
-
-      }
-     );
-
-
-    alert(
-     data?.message||
-     'Teacher assigned successfully.'
-    );
-
-
-    closeModal();
-
-
-    assignments=
-     await api(
-      `/teachers/secondary-assignments?academic_year_id=${currentYear.academic_year_id}`
-     );
-
-
-    assignments=
-     Array.isArray(assignments)
-      ?assignments
-      :[];
-
-
-    render(assignments);
-
-
-   }catch(e){
-
-    console.error(
-     'Error assigning teacher:',
-     e
-    );
-
-    alert(
-     e.message||
-     'Failed to assign teacher.'
-    );
-
-   }
-
-  }
-);
-
-
-/* ============================================================
-   REMOVE ASSIGNMENT
-============================================================ */
-
-async function removeAssignment(id){
-
- if(
-  !confirm(
-   'Remove this teaching assignment?'
-  )
- )return;
-
-
- try{
-
-  const data=
-   await api(
-    `/teachers/secondary-assignments/${id}`,
-    {
-     method:'DELETE'
+    async function loadClasses() {
+        try {
+            const response = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            classes = (Array.isArray(data) ? data : []).filter(c => ['JSS', 'SSS', 'Secondary'].includes(c.school_section));
+            const select = document.getElementById('classSelect');
+            select.innerHTML = '<option value="">Select class</option>';
+            classes.forEach(c => {
+                select.add(new Option(`${c.class_name}${c.arm ? ' - ' + c.arm : ''}`, c.class_id));
+            });
+        } catch (error) { console.error('Classes error:', error); }
     }
-   );
 
+    async function loadSubjects() {
+        try {
+            const response = await fetch('/api/teachers/data/subjects', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            subjects = (Array.isArray(data) ? data : []).filter(s => {
+                const level = String(s.school_level || '').toLowerCase();
+                return level === 'jss' || level === 'sss' || level === 'secondary';
+            });
+            const select = document.getElementById('subjectSelect');
+            select.innerHTML = '<option value="">Select subject</option>';
+            subjects.forEach(s => {
+                select.add(new Option(`${s.subject_name}${s.subject_code ? ' (' + s.subject_code + ')' : ''}`, s.subject_id));
+            });
+        } catch (error) { console.error('Subjects error:', error); }
+    }
 
-  alert(
-   data?.message||
-   'Assignment removed successfully.'
-  );
+    async function loadAssignments() {
+        const table = document.getElementById('assignmentsTable');
+        try {
+            const response = await fetch('/api/teachers/secondary-assignments?academic_year_id=1', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            assignments = Array.isArray(data) ? data : [];
+            if (!assignments.length) {
+                table.innerHTML = '<tr><td colspan="4" class="empty">No assignments found.</td></tr>';
+                return;
+            }
+            table.innerHTML = assignments.map(a => {
+                const teacherName = [a.teachers?.first_name, a.teachers?.middle_name, a.teachers?.last_name].filter(Boolean).join(' ') || '-';
+                const subjectName = a.subjects?.subject_name || '-';
+                const className = a.classes ? `${a.classes.class_name}${a.classes.arm ? ' ' + a.classes.arm : ''}` : '-';
+                return `<tr>
+                    <td>${escapeHtml(teacherName)}</td>
+                    <td>${escapeHtml(subjectName)}</td>
+                    <td>${escapeHtml(className)}</td>
+                    <td>2026/2027</td>
+                </tr>`;
+            }).join('');
+        } catch (error) {
+            table.innerHTML = `<tr><td colspan="4" class="error">Error: ${escapeHtml(error.message)}</td></tr>`;
+        }
+    }
 
+    document.getElementById('assignmentForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const teacher_id = document.getElementById('teacherSelect').value;
+        const class_id = document.getElementById('classSelect').value;
+        const subject_id = document.getElementById('subjectSelect').value;
+        const academic_year_id = document.getElementById('yearSelect').value;
 
-  assignments=
-   await api(
-    `/teachers/secondary-assignments?academic_year_id=${currentYear.academic_year_id}`
-   );
+        if (!teacher_id || !class_id || !subject_id) {
+            alert('Please select teacher, class, and subject.');
+            return;
+        }
 
+        try {
+            const response = await fetch('/api/teachers/assignments', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ teacher_id: Number(teacher_id), class_id: Number(class_id), subject_id: Number(subject_id), academic_year_id: Number(academic_year_id) })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed to assign');
+            alert('Teacher assigned successfully!');
+            this.reset();
+            loadAssignments();
+        } catch (error) { alert(error.message); }
+    });
 
-  assignments=
-   Array.isArray(assignments)
-    ?assignments
-    :[];
-
-
-  render(assignments);
-
-
- }catch(e){
-
-  console.error(
-   'Error removing assignment:',
-   e
-  );
-
-  alert(
-   e.message||
-   'Failed to remove assignment.'
-  );
-
- }
-
-}
-
-
-/* ============================================================
-   ESCAPE HTML
-============================================================ */
-
-function esc(v){
-
- return String(v??'')
-
-  .replace(
-   /&/g,
-   '&amp;'
-  )
-
-  .replace(
-   /</g,
-   '&lt;'
-  )
-
-  .replace(
-   />/g,
-   '&gt;'
-  )
-
-  .replace(
-   /"/g,
-   '&quot;'
-  )
-
-  .replace(
-   /'/g,
-   '&#039;'
-  );
-
-}
-
-
-/* ============================================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
-============================================================ */
-
-window.onclick=e=>{
-
- if(
-  e.target===
-  document.getElementById('modal')
- ){
-
-  closeModal();
-
- }
-
-};
-
-
-/* ============================================================
-   INITIALIZE PAGE
-============================================================ */
-
-loadPage();
-
+    loadTeachers();
+    loadClasses();
+    loadSubjects();
+    loadAssignments();
 </script>
 
 </body>
+
 </html>

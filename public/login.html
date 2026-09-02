@@ -48,9 +48,6 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
-        /* =========================================================
-           LOGO SECTION - SQUARE
-        ========================================================= */
         .brand {
             text-align: center;
             margin-bottom: 25px;
@@ -76,7 +73,6 @@
             padding: 8px;
         }
 
-        /* Fallback if logo doesn't load */
         .brand-logo .fallback-text {
             font-size: 36px;
             font-weight: bold;
@@ -102,9 +98,6 @@
             font-style: italic;
         }
 
-        /* =========================================================
-           FORM
-        ========================================================= */
         .form-group {
             margin-bottom: 18px;
         }
@@ -158,9 +151,6 @@
             transform: scale(0.98);
         }
 
-        /* =========================================================
-           MESSAGES
-        ========================================================= */
         #message {
             margin-top: 16px;
             text-align: center;
@@ -178,9 +168,6 @@
             color: #2563eb;
         }
 
-        /* =========================================================
-           FOOTER
-        ========================================================= */
         .version {
             text-align: center;
             margin-top: 20px;
@@ -188,9 +175,6 @@
             color: #9ca3af;
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================= */
         @media (max-width: 480px) {
             .login-card {
                 padding: 30px 20px;
@@ -212,12 +196,7 @@
     <div class="login-container">
         <div class="login-card">
 
-            <!-- =================================================
-                 LOGO SECTION - SQUARE
-            ================================================= -->
             <div class="brand">
-
-                <!-- Logo Image - Square -->
                 <div class="brand-logo">
                     <img src="/images/logo.png" alt="Global Education Academy Logo" onerror="this.style.display='none'; this.parentElement.querySelector('.fallback-text').style.display='block';">
                     <span class="fallback-text" style="display:none;">🏫</span>
@@ -228,9 +207,6 @@
                 <p class="motto">"Excellence in Education"</p>
             </div>
 
-            <!-- =================================================
-                 LOGIN FORM
-            ================================================= -->
             <form id="loginForm">
                 <div class="form-group">
                     <label for="username">Username</label>
@@ -287,11 +263,39 @@
 
                 setTimeout(() => {
                     const user = JSON.parse(sessionStorage.getItem('user'));
-                    if (user.role_name === 'Teacher') {
-                        window.location.href = '/teachers-dashboard.html';
-                    } else {
-                        window.location.href = '/dashboard.html';
+                    const role = user.role_name || user.role || '';
+
+                    // =============================================
+                    // CHECK FOR FINANCE OFFICER
+                    // =============================================
+                    const isFinanceOfficer = 
+                        role === 'Finance Officer (Primary)' ||
+                        role === 'Finance Officer (Secondary)' ||
+                        role === 'Finance Officer' ||
+                        role.toLowerCase() === 'finance officer' ||
+                        role.toLowerCase().includes('finance');
+
+                    if (isFinanceOfficer) {
+                        if (role.includes('Primary') || role.includes('primary')) {
+                            window.location.href = '/primary-finance.html';
+                        } else if (role.includes('Secondary') || role.includes('secondary')) {
+                            window.location.href = '/secondary-finance.html';
+                        } else {
+                            window.location.href = '/primary-finance.html';
+                        }
+                        return;
                     }
+
+                    // Teacher redirect
+                    if (role === 'Teacher - Primary' || role === 'Teacher - Secondary' || 
+                        role === 'Teacher' || role.toLowerCase() === 'teacher') {
+                        window.location.href = '/teachers-dashboard.html';
+                        return;
+                    }
+
+                    // Default: Main dashboard
+                    window.location.href = '/dashboard.html';
+
                 }, 500);
 
             } catch (error) {
