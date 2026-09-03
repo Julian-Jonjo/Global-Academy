@@ -6,10 +6,27 @@ const { authenticateToken } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// ============================================================
-// LOGIN
-// ============================================================
+/**
+ * Safely extract role_name from Supabase nested relation.
+ * Depending on the relationship configuration, Supabase may
+ * return user_roles as an object or an array.
+ */
+function getRoleName(user) {
+    if (!user?.user_roles) {
+        return null;
+    }
 
+    if (Array.isArray(user.user_roles)) {
+        return user.user_roles[0]?.role_name || null;
+    }
+
+    return user.user_roles.role_name || null;
+}
+
+
+/**
+ * POST /api/auth/login
+ */
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -20,7 +37,6 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Get user with role name
         const { data: user, error } = await supabase
             .from('users')
             .select(`
@@ -30,8 +46,11 @@ router.post('/login', async (req, res) => {
                 full_name,
                 is_active,
                 role_id,
+                sector,
                 teacher_id,
+                student_id,
                 user_roles!inner (
+                    role_id,
                     role_name
                 )
             `)
@@ -39,6 +58,8 @@ router.post('/login', async (req, res) => {
             .single();
 
         if (error || !user) {
+            console.error('LOGIN USER ERROR:', error);
+
             return res.status(401).json({
                 message: 'Invalid username or password'
             });
@@ -50,7 +71,16 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password_hash);
+        if (!user.password_hash) {
+            return res.status(500).json({
+                message: 'User account has no password configured'
+            });
+        }
+
+        const passwordMatch = await bcrypt.compare(
+            password,
+            user.password_hash
+        );
 
         if (!passwordMatch) {
             return res.status(401).json({
@@ -58,14 +88,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Update last_login
-        await supabase
-            .from('users')
-            .update({ last_login: new Date().toISOString() })
-            .eq('user_id', user.user_id);
-
-        // Get role_name from the nested object
-        const roleName = user.user_roles?.role_name || null;
+        const roleName = getRoleName(user);
 
         if (!roleName) {
             return res.status(500).json({
@@ -73,44 +96,97 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        /**
+         * Validate that role_id exists.
+         */
+        if (!user.role_id) {
+            return res.status(500).json({
+                message: 'User has no role assigned'
+            });
+        }
+
+        /**
+         * Update last login.
+         */
+        const { error: loginUpdateError } = await supabase
+            .from('users')
+            .update({
+                last_login: new Date().toISOString()
+            })
+            .eq('user_id', user.user_id);
+
+        if (loginUpdateError) {
+            console.error(
+                'LAST LOGIN UPDATE ERROR:',
+                loginUpdateError
+            );
+        }
+
+        /**
+         * Create JWT.
+         *
+         * IMPORTANT:
+         * role_id = authoritative role
+         * sector  = authoritative sector scope
+         */
         const token = jwt.sign(
             {
                 user_id: user.user_id,
                 username: user.username,
+
+                role_id: Number(user.role_id),
+                role_name: roleName,
+
+                sector: user.sector || null,
+
                 teacher_id: user.teacher_id || null,
-                student_id: user.student_id || null,
-                role_id: user.role_id,
-                role_name: roleName
+                student_id: user.student_id || null
             },
             process.env.JWT_SECRET,
-            { expiresIn: '8h' }
+            {
+                expiresIn: '8h'
+            }
         );
 
-        res.json({
+        /**
+         * Return user information to frontend.
+         */
+        return res.json({
             message: 'Login successful',
+
             token,
+
             user: {
                 user_id: user.user_id,
                 username: user.username,
                 full_name: user.full_name,
-                teacher_id: user.teacher_id,
-                role_id: user.role_id,
-                role_name: roleName
+
+                role_id: Number(user.role_id),
+                role_name: roleName,
+
+                sector: user.sector || null,
+
+                teacher_id: user.teacher_id || null,
+                student_id: user.student_id || null
             }
         });
 
     } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({
-            message: 'Server error during login: ' + error.message
+        console.error('LOGIN ERROR:', error);
+
+        return res.status(500).json({
+            message: 'Server error during login'
         });
     }
 });
 
-// ============================================================
-// GET CURRENT USER PROFILE
-// ============================================================
 
+/**
+ * GET /api/auth/me
+ *
+ * Returns the currently authenticated user's
+ * current database information.
+ */
 router.get('/me', authenticateToken, async (req, res) => {
     try {
         const { data: user, error } = await supabase
@@ -121,8 +197,11 @@ router.get('/me', authenticateToken, async (req, res) => {
                 full_name,
                 is_active,
                 role_id,
+                sector,
                 teacher_id,
-                user_roles (
+                student_id,
+                user_roles!inner (
+                    role_id,
                     role_name
                 )
             `)
@@ -130,37 +209,63 @@ router.get('/me', authenticateToken, async (req, res) => {
             .single();
 
         if (error || !user) {
+            console.error('AUTH ME ERROR:', error);
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
-        res.json({
+        if (!user.is_active) {
+            return res.status(403).json({
+                message: 'This account is inactive'
+            });
+        }
+
+        const roleName = getRoleName(user);
+
+        if (!roleName) {
+            return res.status(500).json({
+                message: 'User role is not properly configured'
+            });
+        }
+
+        return res.json({
             user: {
                 user_id: user.user_id,
                 username: user.username,
                 full_name: user.full_name,
-                teacher_id: user.teacher_id,
-                role_id: user.role_id,
-                role_name: user.user_roles?.role_name || req.user.role_name
+
+                role_id: Number(user.role_id),
+                role_name: roleName,
+
+                sector: user.sector || null,
+
+                teacher_id: user.teacher_id || null,
+                student_id: user.student_id || null
             }
         });
+
     } catch (error) {
-        console.error('Error loading profile:', error);
-        res.status(500).json({
-            message: 'Failed to load profile'
+        console.error('AUTH ME SERVER ERROR:', error);
+
+        return res.status(500).json({
+            message: 'Server error retrieving user information'
         });
     }
 });
 
-// ============================================================
-// LOGOUT
-// ============================================================
 
+/**
+ * POST /api/auth/logout
+ *
+ * JWT logout is handled client-side by removing the token.
+ */
 router.post('/logout', authenticateToken, (req, res) => {
-    res.json({
+    return res.json({
         message: 'Logged out successfully'
     });
 });
+
 
 module.exports = router;

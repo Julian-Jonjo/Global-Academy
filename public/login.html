@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Global Education Academy | Login</title>
+
     <style>
         * {
             margin: 0;
@@ -161,9 +163,11 @@
         .error {
             color: #dc2626;
         }
+
         .success {
             color: #16a34a;
         }
+
         .info {
             color: #2563eb;
         }
@@ -191,119 +195,553 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="login-container">
+
         <div class="login-card">
 
+            <!-- BRAND -->
             <div class="brand">
+
                 <div class="brand-logo">
-                    <img src="/images/logo.png" alt="Global Education Academy Logo" onerror="this.style.display='none'; this.parentElement.querySelector('.fallback-text').style.display='block';">
-                    <span class="fallback-text" style="display:none;">🏫</span>
+
+                    <img
+                        src="/images/logo.png"
+                        alt="Global Education Academy Logo"
+                        onerror="
+                            this.style.display='none';
+                            this.parentElement.querySelector('.fallback-text').style.display='block';
+                        "
+                    >
+
+                    <span
+                        class="fallback-text"
+                        style="display:none;"
+                    >
+                        🏫
+                    </span>
+
                 </div>
 
                 <h1>Global Education Academy</h1>
-                <p class="subtitle">Management Information System</p>
-                <p class="motto">"Excellence in Education"</p>
+
+                <p class="subtitle">
+                    Management Information System
+                </p>
+
+                <p class="motto">
+                    "Excellence in Education"
+                </p>
+
             </div>
 
+
+            <!-- LOGIN FORM -->
             <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username" required autocomplete="username">
-                </div>
 
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+
+                    <label for="username">
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="Enter your username"
+                        required
+                        autocomplete="username"
+                    >
+
                 </div>
 
-                <button type="submit">Sign In</button>
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+
+                </div>
+
+
+                <button type="submit">
+                    Sign In
+                </button>
+
             </form>
 
+
+            <!-- MESSAGE -->
             <div id="message"></div>
-            <div class="version">Version 1.0 • Global Education Academy</div>
+
+
+            <!-- VERSION -->
+            <div class="version">
+                Version 1.0 • Global Education Academy
+            </div>
 
         </div>
+
     </div>
 
+
     <script>
+
+        // ============================================================
+        // LOGIN ELEMENTS
+        // ============================================================
+
         const loginForm = document.getElementById('loginForm');
         const message = document.getElementById('message');
 
+
+        // ============================================================
+        // LOGIN
+        // ============================================================
+
         loginForm.addEventListener('submit', async (event) => {
+
             event.preventDefault();
 
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
+
+            const username =
+                document.getElementById('username').value.trim();
+
+            const password =
+                document.getElementById('password').value;
+
+
+            // --------------------------------------------------------
+            // SHOW LOGIN STATUS
+            // --------------------------------------------------------
 
             message.textContent = 'Signing in...';
             message.className = 'info';
 
+
             try {
+
+                // ----------------------------------------------------
+                // SEND LOGIN REQUEST
+                // ----------------------------------------------------
+
                 const response = await fetch('/api/auth/login', {
+
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+
                 });
+
+
+                // ----------------------------------------------------
+                // READ RESPONSE
+                // ----------------------------------------------------
 
                 const data = await response.json();
 
+
+                // ----------------------------------------------------
+                // LOGIN FAILED
+                // ----------------------------------------------------
+
                 if (!response.ok) {
-                    message.textContent = data.message || 'Login failed.';
+
+                    message.textContent =
+                        data.message || 'Login failed.';
+
                     message.className = 'error';
+
                     return;
                 }
 
-                sessionStorage.setItem('authToken', data.token);
-                sessionStorage.setItem('user', JSON.stringify(data.user));
 
-                message.textContent = 'Login successful. Redirecting...';
+                // ----------------------------------------------------
+                // VALIDATE LOGIN RESPONSE
+                // ----------------------------------------------------
+
+                if (!data.token || !data.user) {
+
+                    console.error(
+                        'Invalid login response:',
+                        data
+                    );
+
+                    message.textContent =
+                        'Login response is incomplete.';
+
+                    message.className = 'error';
+
+                    return;
+                }
+
+
+                // ----------------------------------------------------
+                // SAVE AUTHENTICATION DATA
+                // ----------------------------------------------------
+
+                sessionStorage.setItem(
+                    'authToken',
+                    data.token
+                );
+
+                sessionStorage.setItem(
+                    'user',
+                    JSON.stringify(data.user)
+                );
+
+
+                // ----------------------------------------------------
+                // SUCCESS MESSAGE
+                // ----------------------------------------------------
+
+                message.textContent =
+                    'Login successful. Redirecting...';
+
                 message.className = 'success';
 
+
+                // ----------------------------------------------------
+                // REDIRECT
+                // ----------------------------------------------------
+
                 setTimeout(() => {
-                    const user = JSON.parse(sessionStorage.getItem('user'));
-                    const role = user.role_name || user.role || '';
 
-                    // =============================================
-                    // CHECK FOR FINANCE OFFICER
-                    // =============================================
-                    const isFinanceOfficer = 
-                        role === 'Finance Officer (Primary)' ||
-                        role === 'Finance Officer (Secondary)' ||
-                        role === 'Finance Officer' ||
-                        role.toLowerCase() === 'finance officer' ||
-                        role.toLowerCase().includes('finance');
+                    const user = data.user;
 
-                    if (isFinanceOfficer) {
-                        if (role.includes('Primary') || role.includes('primary')) {
-                            window.location.href = '/primary-finance.html';
-                        } else if (role.includes('Secondary') || role.includes('secondary')) {
-                            window.location.href = '/secondary-finance.html';
-                        } else {
-                            window.location.href = '/primary-finance.html';
+
+                    // =================================================
+                    // IMPORTANT:
+                    //
+                    // role_id = WHAT THE USER IS
+                    //
+                    // sector = WHERE THE USER WORKS
+                    //
+                    // We do NOT determine the sector from role_name.
+                    // =================================================
+
+                    const roleId =
+                        Number(user?.role_id);
+
+                    const roleName =
+                        String(
+                            user?.role_name ||
+                            user?.role ||
+                            ''
+                        ).trim();
+
+                    const sector =
+                        String(
+                            user?.sector || ''
+                        ).trim().toLowerCase();
+
+
+                    // ------------------------------------------------
+                    // DEBUG INFORMATION
+                    // ------------------------------------------------
+
+                    console.log(
+                        'LOGIN SUCCESS - USER:',
+                        {
+                            role_id: roleId,
+                            role_name: roleName,
+                            sector: sector,
+                            username: user?.username,
+                            user: user
                         }
+                    );
+
+
+                    // =================================================
+                    // ROLE 1 — PROPRIETOR
+                    // =================================================
+
+                    if (roleId === 1) {
+
+                        console.log(
+                            'Redirecting Proprietor to dashboard'
+                        );
+
+                        window.location.href =
+                            '/dashboard.html';
+
                         return;
                     }
 
-                    // Teacher redirect
-                    if (role === 'Teacher - Primary' || role === 'Teacher - Secondary' || 
-                        role === 'Teacher' || role.toLowerCase() === 'teacher') {
-                        window.location.href = '/teachers-dashboard.html';
+
+                    // =================================================
+                    // ROLE 2 — ADMINISTRATOR
+                    // =================================================
+
+                    if (roleId === 2) {
+
+                        console.log(
+                            'Redirecting Administrator to dashboard'
+                        );
+
+                        window.location.href =
+                            '/dashboard.html';
+
                         return;
                     }
 
-                    // Default: Main dashboard
-                    window.location.href = '/dashboard.html';
+
+                    // =================================================
+                    // ROLE 3 — FINANCE
+                    //
+                    // Sector determines Finance dashboard.
+                    //
+                    // Primary Finance:
+                    // role_id = 3
+                    // sector = primary
+                    //
+                    // Secondary Finance:
+                    // role_id = 3
+                    // sector = secondary
+                    // =================================================
+
+                    if (roleId === 3) {
+
+                        console.log(
+                            'Finance login detected:',
+                            {
+                                role_id: roleId,
+                                role_name: roleName,
+                                sector: sector
+                            }
+                        );
+
+
+                        // --------------------------------------------
+                        // PRIMARY FINANCE
+                        // --------------------------------------------
+
+                        if (sector === 'primary') {
+
+                            console.log(
+                                'Redirecting to Primary Finance'
+                            );
+
+                            window.location.href =
+                                '/primary-finance.html';
+
+                            return;
+                        }
+
+
+                        // --------------------------------------------
+                        // SECONDARY FINANCE
+                        // --------------------------------------------
+
+                        if (sector === 'secondary') {
+
+                            console.log(
+                                'Redirecting to Secondary Finance'
+                            );
+
+                            window.location.href =
+                                '/secondary-finance.html';
+
+                            return;
+                        }
+
+
+                        // --------------------------------------------
+                        // INVALID FINANCE SECTOR
+                        // --------------------------------------------
+
+                        console.error(
+                            'FINANCE USER HAS INVALID SECTOR:',
+                            {
+                                role_id: roleId,
+                                role_name: roleName,
+                                sector: sector,
+                                user: user
+                            }
+                        );
+
+                        alert(
+                            'Your Finance account does not have a valid school sector.\n\n' +
+                            'Please contact the Administrator.'
+                        );
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // ROLE 4 — TEACHER
+                    //
+                    // Both Primary and Secondary Teachers use the
+                    // common Teacher Dashboard.
+                    //
+                    // The Teacher Dashboard determines the sector.
+                    // =================================================
+
+                    if (roleId === 4) {
+
+                        console.log(
+                            'Redirecting Teacher to teachers-dashboard'
+                        );
+
+                        window.location.href =
+                            '/teachers-dashboard.html';
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // ROLE 5 — STUDENT
+                    //
+                    // Both Primary and Secondary Students use the
+                    // common Student Dashboard.
+                    // =================================================
+
+                    if (roleId === 5) {
+
+                        console.log(
+                            'Redirecting Student to students-dashboard'
+                        );
+
+                        window.location.href =
+                            '/students-dashboard.html';
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // ROLE 6 — MANAGER
+                    //
+                    // Managers use the MAIN dashboard.
+                    //
+                    // dashboard.html will use the Manager's sector
+                    // to determine which Primary/Secondary pages
+                    // they should access.
+                    // =================================================
+
+                    if (roleId === 6) {
+
+                        // --------------------------------------------
+                        // PRIMARY MANAGER
+                        // --------------------------------------------
+
+                        if (sector === 'primary') {
+
+                            console.log(
+                                'Primary Manager → dashboard.html'
+                            );
+
+                            window.location.href =
+                                '/dashboard.html';
+
+                            return;
+                        }
+
+
+                        // --------------------------------------------
+                        // SECONDARY MANAGER
+                        // --------------------------------------------
+
+                        if (sector === 'secondary') {
+
+                            console.log(
+                                'Secondary Manager → dashboard.html'
+                            );
+
+                            window.location.href =
+                                '/dashboard.html';
+
+                            return;
+                        }
+
+
+                        // --------------------------------------------
+                        // INVALID MANAGER SECTOR
+                        // --------------------------------------------
+
+                        console.error(
+                            'MANAGER HAS INVALID SECTOR:',
+                            {
+                                role_id: roleId,
+                                role_name: roleName,
+                                sector: sector,
+                                user: user
+                            }
+                        );
+
+                        alert(
+                            'Your Manager account does not have a valid school sector.\n\n' +
+                            'Please contact the Administrator.'
+                        );
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // UNKNOWN ROLE
+                    // =================================================
+
+                    console.error(
+                        'UNKNOWN USER ROLE:',
+                        {
+                            role_id: roleId,
+                            role_name: roleName,
+                            sector: sector,
+                            user: user
+                        }
+                    );
+
+
+                    alert(
+                        'Your account has an unrecognized role.\n\n' +
+                        'Please contact the Administrator.'
+                    );
+
 
                 }, 500);
 
+
             } catch (error) {
-                console.error(error);
-                message.textContent = 'Unable to connect to the server.';
+
+                // ----------------------------------------------------
+                // CONNECTION ERROR
+                // ----------------------------------------------------
+
+                console.error(
+                    'LOGIN ERROR:',
+                    error
+                );
+
+                message.textContent =
+                    'Unable to connect to the server.';
+
                 message.className = 'error';
+
             }
+
         });
+
     </script>
 
 </body>

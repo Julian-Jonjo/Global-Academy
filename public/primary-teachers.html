@@ -200,32 +200,175 @@
 
 <script>
     const token = sessionStorage.getItem('authToken');
-    const userData = sessionStorage.getItem('user');
-    if (!token || !userData) { window.location.href = '/login.html'; }
+const userData = sessionStorage.getItem('user');
 
-    let user;
-    try { user = JSON.parse(userData); } catch (error) { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+if (!token || !userData) {
+    window.location.href = '/login.html';
+}
 
-    const role = user?.role_name || '';
-    const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
+let user;
 
-    if (userRoleForAccess.includes('manager-secondary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
-    if (userRoleForAccess.includes('finance officer (secondary)')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
-    if (userRoleForAccess.includes('teacher - secondary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+try {
+    user = JSON.parse(userData);
+} catch (error) {
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('user');
+    window.location.href = '/login.html';
+}
 
-    const allowedRoles = ['manager-primary', 'admin', 'proprietor'];
-    const hasAccess = allowedRoles.some(r => userRoleForAccess.includes(r));
-    if (!hasAccess) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+// ============================================================
+// ROLE AND SECTOR
+// ============================================================
+// 1 = Proprietor
+// 2 = Administrator
+// 3 = Finance
+// 4 = Teacher
+// 5 = Student
+// 6 = Manager
+//
+// sector = primary / secondary
+// ============================================================
 
-    document.getElementById('userInfo').textContent = `${user?.full_name || 'User'} (${role})`;
+const roleId = Number(user?.role_id);
+const role = user?.role_name || '';
+const sector = String(user?.sector || '').trim().toLowerCase();
 
-    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
-    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+const userRoleForAccess = String(
+    user?.role_name || user?.role || ''
+).toLowerCase();
 
-    let teachers = [];
-    let classes = [];
-    let classAssignments = [];
+// ============================================================
+// ROLE FLAGS
+// ============================================================
 
+const isProprietor = roleId === 1;
+const isAdministrator = roleId === 2;
+const isFinance = roleId === 3;
+const isTeacher = roleId === 4;
+const isStudent = roleId === 5;
+const isManager = roleId === 6;
+
+// ============================================================
+// SECTOR FLAGS
+// ============================================================
+
+const isPrimary = sector === 'primary';
+const isSecondary = sector === 'secondary';
+
+// ============================================================
+// ROLE + SECTOR FLAGS
+// ============================================================
+
+const isPrimaryManager =
+    isManager && isPrimary;
+
+const isSecondaryManager =
+    isManager && isSecondary;
+
+const isPrimaryFinance =
+    isFinance && isPrimary;
+
+const isSecondaryFinance =
+    isFinance && isSecondary;
+
+const isPrimaryTeacher =
+    isTeacher && isPrimary;
+
+const isSecondaryTeacher =
+    isTeacher && isSecondary;
+
+// ============================================================
+// PRIMARY ACCESS CONTROL
+// ============================================================
+//
+// Allowed:
+//   Proprietor
+//   Administrator
+//   Primary Manager
+//
+// Denied:
+//   Secondary Manager
+//   Primary Finance
+//   Secondary Finance
+//   Primary Teacher
+//   Secondary Teacher
+//   Student
+//
+// The system uses role_id + sector.
+// ============================================================
+
+const hasAccess =
+    isProprietor ||
+    isAdministrator ||
+    isPrimaryManager;
+
+if (!hasAccess) {
+
+    console.error(
+        'PRIMARY TEACHERS ACCESS DENIED',
+        {
+            role_id: roleId,
+            role_name: role,
+            sector: sector,
+            user: user
+        }
+    );
+
+    alert('Access denied.');
+
+    window.location.href = 'dashboard.html';
+}
+
+// ============================================================
+// DISPLAY USER
+// ============================================================
+
+const userInfoElement =
+    document.getElementById('userInfo');
+
+if (userInfoElement) {
+    userInfoElement.textContent =
+        `${user?.full_name || 'User'} (${role})`;
+}
+
+// ============================================================
+// LOGOUT
+// ============================================================
+
+function logout() {
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('user');
+    window.location.href = '/login.html';
+}
+
+// ============================================================
+// HTML ESCAPING
+// ============================================================
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return '';
+    }
+
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// ============================================================
+// DATA
+// ============================================================
+
+let teachers = [];
+let classes = [];
+let classAssignments = [];
     async function loadClassAssignments() {
         try {
             const response = await fetch('/api/teachers/primary-class-assignments', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });

@@ -1,283 +1,364 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Education Academy | Dashboard</title>
-<style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f0f2f5;
-        color: #222;
-        min-height: 100vh;
-        background-image: url('/images/school-bg.jpg');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        background-repeat: no-repeat;
-        position: relative;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background: rgba(255, 255, 255, 0.82);
-        z-index: 0;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #222;
+            min-height: 100vh;
 
-    .header {
-        background: #1a3c6e;
-        color: white;
-        padding: 12px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    }
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
 
-    .header-left {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
+            position: relative;
+        }
 
-    .header-logo {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        overflow: hidden;
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.82);
+            z-index: 0;
+        }
 
-    .header-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        padding: 4px;
-    }
-
-    .header-title h1 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 700;
-        color: white;
-    }
-
-    .header-title p {
-        margin: 0;
-        font-size: 11px;
-        color: #a0c4ff;
-    }
-
-    .user-info {
-        text-align: right;
-        font-size: 13px;
-        color: white;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .user-info .role {
-        display: block;
-        font-weight: 600;
-        font-size: 14px;
-    }
-
-    .user-info .role-label {
-        font-size: 11px;
-        color: #a0c4ff;
-    }
-
-    .logout-btn-header {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        padding: 6px 14px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 11px;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
-
-    .logout-btn-header:hover {
-        background: rgba(255, 255, 255, 0.25);
-    }
-
-    .container {
-        max-width: 1400px;
-        margin: 25px auto;
-        padding: 0 20px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .welcome {
-        margin-bottom: 25px;
-    }
-
-    .welcome h1 {
-        margin-bottom: 8px;
-        color: #1f2937;
-        font-size: 28px;
-    }
-
-    .welcome p {
-        color: #4b5563;
-        font-size: 15px;
-    }
-
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-    }
-
-    .card {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        cursor: pointer;
-        transition: all 0.3s;
-        border: 1px solid #e5e7eb;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-        border-color: #1a3c6e;
-    }
-
-    .card h3 {
-        margin-bottom: 10px;
-        color: #1f2937;
-        font-size: 18px;
-    }
-
-    .card p {
-        color: #6b7280;
-        font-size: 14px;
-    }
-
-    .card .icon {
-        font-size: 28px;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    .logout-btn {
-        margin-top: 30px;
-        padding: 10px 24px;
-        border: none;
-        border-radius: 6px;
-        background: #dc2626;
-        color: white;
-        cursor: pointer;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
-
-    .logout-btn:hover {
-        background: #b91c1c;
-        transform: translateY(-2px);
-    }
-
-    @media (max-width: 700px) {
         .header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 12px 20px;
+            background: #1a3c6e;
+            color: white;
+            padding: 12px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .user-info {
-            text-align: left;
-            width: 100%;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .cards {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-
-    @media (max-width: 500px) {
-        .cards {
-            grid-template-columns: 1fr;
-        }
-
-        .header-title h1 {
-            font-size: 15px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .header-logo {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
+
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-title p {
+            margin: 0;
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        .user-info {
+            text-align: right;
+            font-size: 13px;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info .role {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info .role-label {
+            font-size: 11px;
+            color: #a0c4ff;
+        }
+
+        .logout-btn-header {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            padding: 6px 14px;
+            border-radius: 4px;
+
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+
+            transition: all 0.3s;
+        }
+
+        .logout-btn-header:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px;
+
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
         }
 
         .welcome h1 {
-            font-size: 22px;
+            margin-bottom: 8px;
+            color: #1f2937;
+            font-size: 28px;
         }
-    }
-</style>
 
+        .welcome p {
+            color: #4b5563;
+            font-size: 15px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+
+            cursor: pointer;
+            transition: all 0.3s;
+
+            border: 1px solid #e5e7eb;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.12);
+
+            border-color: #1a3c6e;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #1f2937;
+            font-size: 18px;
+        }
+
+        .card p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .card .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .logout-btn {
+            margin-top: 30px;
+
+            padding: 10px 24px;
+
+            border: none;
+            border-radius: 6px;
+
+            background: #dc2626;
+            color: white;
+
+            cursor: pointer;
+            font-weight: bold;
+
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: white;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+
+            padding: 20px;
+            border-radius: 10px;
+
+            margin-top: 20px;
+
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 20px;
+            }
+
+            .user-info {
+                text-align: left;
+                width: 100%;
+
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .header-title h1 {
+                font-size: 15px;
+            }
+
+            .header-logo {
+                width: 32px;
+                height: 32px;
+            }
+
+            .welcome h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
 </head>
 
 <body>
+
 <header class="header">
+
     <div class="header-left">
+
         <div class="header-logo">
-            <img src="/images/logo.png" alt="Global Education Academy" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            <img
+                src="/images/logo.png"
+                alt="Global Education Academy"
+                onerror="this.style.display='none'; this.parentElement.textContent='🏫';"
+            >
         </div>
+
         <div class="header-title">
             <h1>Global Education Academy</h1>
             <p>Management Information System</p>
         </div>
+
     </div>
+
     <div class="user-info">
+
         <div>
-            <span class="role" id="userRole"></span>
-            <span class="role-label" id="userRoleLabel"></span>
+            <span class="role" id="userRole">
+                Loading...
+            </span>
+
+            <span class="role-label" id="userRoleLabel">
+                Loading...
+            </span>
         </div>
-        <button class="logout-btn-header" onclick="logout()">🚪 Logout</button>
+
+        <button
+            class="logout-btn-header"
+            onclick="logout()"
+        >
+            🚪 Logout
+        </button>
+
     </div>
+
 </header>
+
 
 <main class="container">
 
     <div class="welcome">
-        <h1 id="dashboardTitle">Dashboard</h1>
-        <p id="dashboardSubtitle">Welcome to the Global Education Academy Management System.</p>
+
+        <h1 id="dashboardTitle">
+            Dashboard
+        </h1>
+
+        <p id="dashboardSubtitle">
+            Loading your dashboard...
+        </p>
+
     </div>
 
-    <div class="cards" id="cardsContainer">
-        <!-- Cards will be dynamically generated based on role -->
+    <div
+        class="cards"
+        id="cardsContainer"
+    >
+        <!-- Dashboard cards generated here -->
     </div>
 
-    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    <button
+        class="logout-btn"
+        onclick="logout()"
+    >
+        🚪 Logout
+    </button>
 
 </main>
 
+
 <script>
+
     // =========================================================
     // AUTHENTICATION
     // =========================================================
@@ -286,351 +367,43 @@
         sessionStorage.getItem('authToken') ||
         localStorage.getItem('authToken');
 
-    const userData =
+    const storedUser =
         sessionStorage.getItem('user') ||
         localStorage.getItem('user');
 
-    if (!token || !userData) {
-        window.location.href = '/login.html';
-    }
-
-    let user;
-
-    try {
-        user = JSON.parse(userData);
-    } catch (error) {
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('user');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
-        window.location.href = '/login.html';
-    }
 
     // =========================================================
-    // CURRENT ROLE IDs
+    // NO TOKEN = LOGIN
+    // =========================================================
+
+    if (!token) {
+        window.location.href = '/login.html';
+    }
+
+
+    // =========================================================
+    // ROLE IDS
     // =========================================================
 
     const ROLE_PROPRIETOR = 1;
     const ROLE_ADMINISTRATOR = 2;
-    const ROLE_FINANCE_OFFICER = 3;
+    const ROLE_FINANCE = 3;
     const ROLE_TEACHER = 4;
     const ROLE_STUDENT = 5;
     const ROLE_MANAGER = 6;
 
-    // =========================================================
-    // USER INFORMATION
-    // =========================================================
-
-    const roleId = Number(user?.role_id);
-
-    const role =
-        user?.role_name ||
-        user?.role ||
-        '';
-
-    const userRole = String(role).toLowerCase();
-
-    const sector =
-        String(user?.sector || '')
-            .toLowerCase()
-            .trim();
-
-    document.getElementById('userRole').textContent =
-        user?.full_name ||
-        user?.name ||
-        'User';
-
-    document.getElementById('userRoleLabel').textContent = role;
 
     // =========================================================
-    // ROLE-BASED REDIRECTS
+    // SECTOR NORMALIZATION
     // =========================================================
 
-    // Finance Officer
-    if (roleId === ROLE_FINANCE_OFFICER) {
+    function normalizeSector(value) {
 
-        if (sector === 'primary') {
-            window.location.href = 'primary-finance.html';
-
-        } else if (sector === 'secondary') {
-            window.location.href = 'secondary-finance.html';
-
-        } else {
-            window.location.href = 'primary-finance.html';
-        }
+        return String(value || '')
+            .trim()
+            .toLowerCase();
     }
 
-    // Teacher
-    if (roleId === ROLE_TEACHER) {
-        window.location.href = 'teachers-dashboard.html';
-    }
-
-    // Student
-    if (roleId === ROLE_STUDENT) {
-        window.location.href = 'students-dashboard.html';
-    }
-
-    // =========================================================
-    // ROLE-BASED DASHBOARD CONFIGURATION
-    // =========================================================
-
-   function getModuleLinks() {
-
-    // =====================================================
-    // MANAGER
-    // =====================================================
-
-    if (roleId === ROLE_MANAGER) {
-        return {
-            title: 'Manager Dashboard',
-            subtitle: 'Manage school operations.',
-            cards: [
-                {
-                    icon: '👨‍🎓',
-                    title: 'Students',
-                    desc: 'Manage student records.',
-                    link: 'students.html'
-                },
-                {
-                    icon: '👨‍🏫',
-                    title: 'Teachers',
-                    desc: 'Manage teachers and assignments.',
-                    link: 'teachers.html'
-                },
-                {
-                    icon: '💰',
-                    title: 'Finance',
-                    desc: 'View fees and payments.',
-                    link: 'finance.html'
-                },
-                {
-                    icon: '📚',
-                    title: 'Classes',
-                    desc: 'Manage classes and sections.',
-                    link: 'classes.html'
-                },
-                {
-                    icon: '📋',
-                    title: 'Attendance',
-                    desc: 'Manage student attendance.',
-                    link: 'attendance.html'
-                },
-                {
-                    icon: '📊',
-                    title: 'Academic Records',
-                    desc: 'Manage academic results.',
-                    link: 'academic.html'
-                },
-                {
-                    icon: '📋',
-                    title: 'Teacher Applications',
-                    desc: 'Review teacher applications.',
-                    link: 'teacher-applications.html'
-                }
-            ]
-        };
-    }
-
-    // =====================================================
-    // FINANCE OFFICER - PRIMARY
-    // =====================================================
-
-    if (
-        roleId === ROLE_FINANCE_OFFICER &&
-        sector === 'primary'
-    ) {
-        return {
-            title: 'Primary School Finance',
-            subtitle: 'Manage Primary School financial records.',
-            cards: [
-                {
-                    icon: '💰',
-                    title: 'Finance Dashboard',
-                    desc: 'Manage fees and payments.',
-                    link: 'primary-finance.html'
-                }
-            ]
-        };
-    }
-
-    // =====================================================
-    // FINANCE OFFICER - SECONDARY
-    // =====================================================
-
-    if (
-        roleId === ROLE_FINANCE_OFFICER &&
-        sector === 'secondary'
-    ) {
-        return {
-            title: 'Secondary School Finance',
-            subtitle: 'Manage Secondary School financial records.',
-            cards: [
-                {
-                    icon: '💰',
-                    title: 'Finance Dashboard',
-                    desc: 'Manage fees and payments.',
-                    link: 'secondary-finance.html'
-                }
-            ]
-        };
-    }
-
-    // =====================================================
-    // TEACHER
-    // =====================================================
-
-    if (roleId === ROLE_TEACHER) {
-        return {
-            title: 'Teacher Dashboard',
-            subtitle: 'Welcome to your teacher portal.',
-            cards: [
-                {
-                    icon: '👨‍🏫',
-                    title: 'My Profile',
-                    desc: 'View your profile.',
-                    link: 'teacher-profile.html'
-                },
-                {
-                    icon: '📋',
-                    title: 'My Assignments',
-                    desc: 'View your class assignments.',
-                    link: 'teacher-assignments.html'
-                },
-                {
-                    icon: '👨‍🎓',
-                    title: 'My Students',
-                    desc: 'View students in your classes.',
-                    link: 'teacher-students.html'
-                }
-            ]
-        };
-    }
-
-    // =====================================================
-    // STUDENT
-    // =====================================================
-
-    if (roleId === ROLE_STUDENT) {
-        return {
-            title: 'Student Dashboard',
-            subtitle: 'Welcome to your student portal.',
-            cards: []
-        };
-    }
-
-    // =====================================================
-    // ADMINISTRATOR / PROPRIETOR
-    // =====================================================
-
-    if (
-        roleId === ROLE_ADMINISTRATOR ||
-        roleId === ROLE_PROPRIETOR
-    ) {
-        return {
-            title: 'Global Education Academy Dashboard',
-            subtitle: 'Welcome to the Global Education Academy Management System.',
-            cards: [
-                {
-                    icon: '👨‍🎓',
-                    title: 'Students',
-                    desc: 'Manage student records.',
-                    link: 'students.html'
-                },
-                {
-                    icon: '👨‍🏫',
-                    title: 'Teachers',
-                    desc: 'Manage teachers and assignments.',
-                    link: 'teachers.html'
-                },
-                {
-                    icon: '💰',
-                    title: 'Finance',
-                    desc: 'View fees and payments.',
-                    link: 'finance.html'
-                },
-                {
-                    icon: '✅',
-                    title: 'Approvals',
-                    desc: 'Review records requiring approval.',
-                    link: 'approvals.html'
-                },
-                {
-                    icon: '📚',
-                    title: 'Classes',
-                    desc: 'Manage classes and sections.',
-                    link: 'classes.html'
-                },
-                {
-                    icon: '📋',
-                    title: 'Attendance',
-                    desc: 'Manage student attendance.',
-                    link: 'attendance.html'
-                },
-                {
-                    icon: '📊',
-                    title: 'Academic Records',
-                    desc: 'Manage academic results.',
-                    link: 'academic.html'
-                },
-                {
-                    icon: '👤',
-                    title: 'Users & Roles',
-                    desc: 'Manage system users and permissions.',
-                    link: 'users.html'
-                },
-                {
-                    icon: '📋',
-                    title: 'Teacher Applications',
-                    desc: 'Review teacher applications.',
-                    link: 'teacher-applications.html'
-                }
-            ]
-        };
-    }
-
-    // =====================================================
-    // FALLBACK
-    // =====================================================
-
-    return {
-        title: 'Dashboard',
-        subtitle: 'Welcome to the Global Education Academy Management System.',
-        cards: []
-    };
-}
-    // =========================================================
-    // RENDER DASHBOARD
-    // =========================================================
-
-    function renderDashboard() {
-
-        const config = getModuleLinks();
-
-        document.getElementById('dashboardTitle').textContent =
-            config.title;
-
-        document.getElementById('dashboardSubtitle').textContent =
-            config.subtitle;
-
-        const cardsContainer =
-            document.getElementById('cardsContainer');
-
-        cardsContainer.innerHTML =
-            config.cards.map(card => `
-                <div class="card"
-                     onclick="window.location.href='${card.link}'">
-
-                    <span class="icon">${card.icon}</span>
-
-                    <h3>${card.title}</h3>
-
-                    <p>${card.desc}</p>
-
-                </div>
-            `).join('');
-    }
-
-    renderDashboard();
 
     // =========================================================
     // LOGOUT
@@ -646,8 +419,606 @@
 
         window.location.href = '/login.html';
     }
+
+
+    // =========================================================
+    // LOAD AUTHENTICATED USER
+    // =========================================================
+    //
+    // The stored user is used initially so the dashboard can
+    // start quickly.
+    //
+    // The server is then queried through /api/auth/me so that
+    // stale role/sector information cannot control the dashboard.
+    // =========================================================
+
+    async function loadAuthenticatedUser() {
+
+        let initialUser = null;
+
+        if (storedUser) {
+
+            try {
+                initialUser = JSON.parse(storedUser);
+
+            } catch (error) {
+
+                console.warn(
+                    'Stored user information is invalid.'
+                );
+
+                sessionStorage.removeItem('user');
+                localStorage.removeItem('user');
+            }
+        }
+
+
+        // -----------------------------------------------------
+        // No usable stored user
+        // -----------------------------------------------------
+
+        if (initialUser) {
+            updateHeader(initialUser);
+        }
+
+
+        // -----------------------------------------------------
+        // Verify with backend
+        // -----------------------------------------------------
+
+        try {
+
+            const response = await fetch(
+                '/api/auth/me',
+                {
+                    method: 'GET',
+
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+
+            if (
+                response.status === 401 ||
+                response.status === 403
+            ) {
+
+                logout();
+                return;
+            }
+
+
+            if (!response.ok) {
+                throw new Error(
+                    `Authentication check failed: ${response.status}`
+                );
+            }
+
+
+            const result = await response.json();
+
+
+            // -------------------------------------------------
+            // auth/me may return user directly or inside user
+            // -------------------------------------------------
+
+            const authenticatedUser =
+                result?.user || result;
+
+
+            if (!authenticatedUser) {
+                throw new Error(
+                    'Authenticated user information was not returned.'
+                );
+            }
+
+
+            // -------------------------------------------------
+            // Save fresh authenticated user
+            // -------------------------------------------------
+
+            sessionStorage.setItem(
+                'user',
+                JSON.stringify(authenticatedUser)
+            );
+
+            localStorage.setItem(
+                'user',
+                JSON.stringify(authenticatedUser)
+            );
+
+
+            updateHeader(authenticatedUser);
+
+            handleDashboard(authenticatedUser);
+
+
+        } catch (error) {
+
+            console.error(
+                'Authentication verification error:',
+                error
+            );
+
+
+            // If we have no valid stored user, return to login.
+            if (!initialUser) {
+
+                logout();
+                return;
+            }
+
+
+            // Otherwise use the stored user as fallback.
+            handleDashboard(initialUser);
+        }
+    }
+
+
+    // =========================================================
+    // UPDATE HEADER
+    // =========================================================
+
+    function updateHeader(user) {
+
+        const fullName =
+            user?.full_name ||
+            user?.name ||
+            user?.username ||
+            'User';
+
+
+        const roleName =
+            user?.role_name ||
+            '';
+
+
+        document.getElementById(
+            'userRole'
+        ).textContent = fullName;
+
+
+        document.getElementById(
+            'userRoleLabel'
+        ).textContent = roleName;
+    }
+
+
+    // =========================================================
+    // HANDLE DASHBOARD
+    // =========================================================
+
+    function handleDashboard(user) {
+
+        const roleId =
+            Number(user?.role_id);
+
+
+        const sector =
+            normalizeSector(user?.sector);
+
+
+        // -----------------------------------------------------
+        // Invalid role
+        // -----------------------------------------------------
+
+        if (!Number.isInteger(roleId)) {
+
+            showError(
+                'Your account does not have a valid role. Please contact the Administrator.'
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // FINANCE OFFICER
+        // =====================================================
+
+        if (roleId === ROLE_FINANCE) {
+
+            if (sector === 'primary') {
+
+                window.location.href =
+                    'primary-finance.html';
+
+                return;
+            }
+
+
+            if (sector === 'secondary') {
+
+                window.location.href =
+                    'secondary-finance.html';
+
+                return;
+            }
+
+
+            showError(
+                'Your Finance Officer account does not have a valid school sector.'
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // TEACHER
+        // =====================================================
+
+        if (roleId === ROLE_TEACHER) {
+
+            window.location.href =
+                'teachers-dashboard.html';
+
+            return;
+        }
+
+
+        // =====================================================
+        // STUDENT
+        // =====================================================
+
+        if (roleId === ROLE_STUDENT) {
+
+            window.location.href =
+                'students-dashboard.html';
+
+            return;
+        }
+
+
+        // =====================================================
+        // MANAGER
+        // =====================================================
+
+        if (roleId === ROLE_MANAGER) {
+
+            if (
+                sector !== 'primary' &&
+                sector !== 'secondary'
+            ) {
+
+                showError(
+                    'Your Manager account does not have a valid school sector.'
+                );
+
+                return;
+            }
+
+
+            renderDashboard(
+                getManagerDashboard(sector)
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // PROPRIETOR / ADMINISTRATOR
+        // =====================================================
+
+        if (
+            roleId === ROLE_PROPRIETOR ||
+            roleId === ROLE_ADMINISTRATOR
+        ) {
+
+            renderDashboard(
+                getAdministrationDashboard()
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // UNKNOWN ROLE
+        // =====================================================
+
+        showError(
+            'Your account role is not recognized by the system. Please contact the Administrator.'
+        );
+    }
+
+
+    // =========================================================
+    // MANAGER DASHBOARD
+    // =========================================================
+
+    function getManagerDashboard(sector) {
+
+        const isSecondary =
+            sector === 'secondary';
+
+
+        return {
+
+            title: isSecondary
+                ? 'Secondary School Manager Dashboard'
+                : 'Primary School Manager Dashboard',
+
+
+            subtitle: isSecondary
+                ? 'Manage Secondary School operations.'
+                : 'Manage Primary School operations.',
+
+
+            cards: [
+
+                {
+                    icon: '👨‍🎓',
+                    title: 'Students',
+                    desc: 'Manage student records.',
+                    link: isSecondary
+                        ? 'secondary-students.html'
+                        : 'primary-students.html'
+                },
+
+
+                {
+                    icon: '👨‍🏫',
+                    title: 'Teachers',
+                    desc: 'Manage teachers and assignments.',
+                    link: isSecondary
+                        ? 'secondary-teachers.html'
+                        : 'primary-teachers.html'
+                },
+
+
+                {
+                    icon: '💰',
+                    title: 'Finance',
+                    desc: 'Manage school financial records.',
+                    link: isSecondary
+                        ? 'secondary-finance.html'
+                        : 'primary-finance.html'
+                },
+
+
+                {
+                    icon: '📚',
+                    title: 'Classes',
+                    desc: 'Manage school classes and sections.',
+                    link: isSecondary
+                        ? 'secondary-classes.html'
+                        : 'primary-classes.html'
+                },
+
+
+                {
+                    icon: '📋',
+                    title: 'Attendance',
+                    desc: 'Manage student attendance.',
+                    link: isSecondary
+                        ? 'secondary-attendance.html'
+                        : 'primary-attendance.html'
+                },
+
+
+                {
+                    icon: '📊',
+                    title: 'Academic Records',
+                    desc: 'Manage academic records and results.',
+                    link: isSecondary
+                        ? 'secondary-academic.html'
+                        : 'primary-academic.html'
+                },
+
+
+                {
+                    icon: '📋',
+                    title: 'Teacher Applications',
+                    desc: 'Review teacher applications.',
+                    link: 'teacher-applications.html'
+                }
+
+            ]
+        };
+    }
+
+
+    // =========================================================
+    // ADMINISTRATOR / PROPRIETOR DASHBOARD
+    // =========================================================
+
+    function getAdministrationDashboard() {
+
+        return {
+
+            title:
+                'Global Education Academy Dashboard',
+
+
+            subtitle:
+                'Welcome to the Global Education Academy Management System.',
+
+
+            cards: [
+
+                {
+                    icon: '👨‍🎓',
+                    title: 'Students',
+                    desc: 'Manage student records.',
+                    link: 'students.html'
+                },
+
+
+                {
+                    icon: '👨‍🏫',
+                    title: 'Teachers',
+                    desc: 'Manage teachers and assignments.',
+                    link: 'teachers.html'
+                },
+
+
+                {
+                    icon: '💰',
+                    title: 'Finance',
+                    desc: 'View fees and payments.',
+                    link: 'finance.html'
+                },
+
+
+                {
+                    icon: '✅',
+                    title: 'Approvals',
+                    desc: 'Review records requiring approval.',
+                    link: 'approvals.html'
+                },
+
+
+                {
+                    icon: '📚',
+                    title: 'Classes',
+                    desc: 'Manage classes and sections.',
+                    link: 'classes.html'
+                },
+
+
+                {
+                    icon: '📋',
+                    title: 'Attendance',
+                    desc: 'Manage student attendance.',
+                    link: 'attendance.html'
+                },
+
+
+                {
+                    icon: '📊',
+                    title: 'Academic Records',
+                    desc: 'Manage academic results.',
+                    link: 'academic.html'
+                },
+
+
+                {
+                    icon: '👤',
+                    title: 'Users & Roles',
+                    desc: 'Manage system users and permissions.',
+                    link: 'users.html'
+                },
+
+
+                {
+                    icon: '📋',
+                    title: 'Teacher Applications',
+                    desc: 'Review teacher applications.',
+                    link: 'teacher-applications.html'
+                }
+
+            ]
+        };
+    }
+
+
+    // =========================================================
+    // RENDER DASHBOARD
+    // =========================================================
+
+    function renderDashboard(config) {
+
+        document.getElementById(
+            'dashboardTitle'
+        ).textContent =
+            config.title;
+
+
+        document.getElementById(
+            'dashboardSubtitle'
+        ).textContent =
+            config.subtitle;
+
+
+        const cardsContainer =
+            document.getElementById(
+                'cardsContainer'
+            );
+
+
+        cardsContainer.innerHTML =
+            config.cards
+                .map(card => `
+
+                    <div
+                        class="card"
+                        onclick="window.location.href='${card.link}'"
+                    >
+
+                        <span class="icon">
+                            ${card.icon}
+                        </span>
+
+                        <h3>
+                            ${card.title}
+                        </h3>
+
+                        <p>
+                            ${card.desc}
+                        </p>
+
+                    </div>
+
+                `)
+                .join('');
+    }
+
+
+    // =========================================================
+    // SHOW ERROR
+    // =========================================================
+
+    function showError(message) {
+
+        document.getElementById(
+            'dashboardTitle'
+        ).textContent =
+            'Access Error';
+
+
+        document.getElementById(
+            'dashboardSubtitle'
+        ).textContent =
+            '';
+
+
+        document.getElementById(
+            'cardsContainer'
+        ).innerHTML = `
+
+            <div class="error-message">
+
+                <strong>
+                    ${message}
+                </strong>
+
+                <br><br>
+
+                <button
+                    class="logout-btn"
+                    onclick="logout()"
+                >
+                    Return to Login
+                </button>
+
+            </div>
+
+        `;
+    }
+
+
+    // =========================================================
+    // START
+    // =========================================================
+
+    loadAuthenticatedUser();
+
 </script>
 
 </body>
-
 </html>

@@ -10,6 +10,7 @@
            GLOBAL STYLES
         ========================================================= */
         * { box-sizing: border-box; }
+
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,6 +24,7 @@
             position: relative;
             min-height: 100vh;
         }
+
         body::before {
             content: '';
             position: fixed;
@@ -43,677 +45,2429 @@
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
-        .header-title h1 { margin: 0; font-size: 18px; font-weight: 700; color: white; }
-        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
-        .user-info { text-align: right; font-size: 13px; color: white; }
-        .user-info .role { display: block; font-weight: 600; font-size: 14px; }
-        .user-info .role-label { font-size: 11px; color: #a0c4ff; }
 
-        .container { max-width: 1450px; margin: 25px auto; padding: 0 20px; position: relative; z-index: 1; }
-        .page-title { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .page-title h2 { margin: 0 0 6px; color: #1f2937; }
-        .page-title p { margin: 0; color: #6b7280; }
-        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; transition: all 0.3s; margin-bottom: 20px; }
-        .back-btn:hover { background: #4b5563; transform: translateY(-2px); }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-        .role-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
-        .role-badge.proprietor { background: #1a3c6e; color: white; }
-        .role-badge.admin { background: #7c3aed; color: white; }
-        .role-badge.manager { background: #d97706; color: white; }
-        .role-badge.finance { background: #1a3c6e; color: white; }
-        .role-badge.viewer { background: #6b7280; color: white; }
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
 
-        .tabs { display: flex; flex-wrap: wrap; gap: 5px; background: white; padding: 8px; border-radius: 10px 10px 0 0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06); }
-        .tab-button { border: none; background: transparent; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #4b5563; transition: all 0.3s; }
-        .tab-button:hover { background: #f3f4f6; }
-        .tab-button.active { background: #1a3c6e; color: white; }
-        .tab-content { display: none; background: white; padding: 25px; border-radius: 0 0 10px 10px; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); }
-        .tab-content.active { display: block; }
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
 
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap; }
-        .section-header h3 { margin: 0; color: #1f2937; }
-        .refresh-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 11px 18px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
-        .refresh-btn:hover { background: #0f2a4a; transform: translateY(-2px); }
+        .header-title h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
 
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 18px; margin-bottom: 30px; }
-        .summary-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; transition: all 0.3s; position: relative; }
-        .summary-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
-        .summary-card.pending-approval { border-left: 4px solid #d97706; background: #fffbeb; }
-        .summary-card h4 { margin: 0 0 10px; color: #6b7280; font-size: 12px; text-transform: uppercase; }
-        .summary-number { font-size: 25px; font-weight: bold; color: #1a3c6e; }
-        .summary-card p { margin: 8px 0 0; color: #6b7280; font-size: 13px; }
-        .approval-count { position: absolute; top: 10px; right: 10px; background: #d97706; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .header-title p {
+            margin: 0;
+            font-size: 11px;
+            color: #a0c4ff;
+        }
 
-        .filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; margin-bottom: 20px; }
-        .filters input, .filters select { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: white; }
-        .filters input:focus, .filters select:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1); }
+        .user-info {
+            text-align: right;
+            font-size: 13px;
+            color: white;
+        }
 
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f3f4f6; text-align: left; padding: 13px; font-size: 13px; border-bottom: 2px solid #ddd; color: #374151; }
-        td { padding: 13px; border-bottom: 1px solid #eee; font-size: 14px; }
-        tr:hover td { background: #f9fafb; }
+        .user-info .role {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+        }
 
-        .status { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-        .paid { background: #dcfce7; color: #166534; }
-        .partially-paid { background: #fef3c7; color: #92400e; }
-        .unpaid { background: #fee2e2; color: #991b1b; }
-        .pending { background: #fef3c7; color: #92400e; border: 1px solid #d97706; }
-        .approved { background: #dcfce7; color: #166534; }
-        .rejected { background: #fee2e2; color: #991b1b; }
+        .user-info .role-label {
+            font-size: 11px;
+            color: #a0c4ff;
+        }
 
-        .btn { border: none; padding: 9px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 12px; }
-        .btn:hover { transform: translateY(-2px); }
-        .payment-btn { background: #16a34a; color: white; }
-        .payment-btn:hover { background: #15803d; }
-        .view-btn { background: #1f2937; color: white; }
-        .view-btn:hover { background: #111827; }
-        .approve-btn { background: #16a34a; color: white; }
-        .approve-btn:hover { background: #15803d; }
-        .reject-btn { background: #dc2626; color: white; }
-        .reject-btn:hover { background: #b91c1c; }
-        .edit-btn { background: #d97706; color: white; }
-        .edit-btn:hover { background: #b45309; }
-        .close-btn { background: #6b7280; color: white; }
-        .close-btn:hover { background: #4b5563; }
+        .container {
+            max-width: 1450px;
+            margin: 25px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
 
-        .approval-banner { background: #fef3c7; border: 1px solid #d97706; border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .approval-banner .count { font-weight: bold; color: #92400e; }
+        .page-title {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.55); overflow-y: auto; }
-        .modal-content { background: white; max-width: 900px; margin: 40px auto; padding: 30px; border-radius: 10px; position: relative; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .modal-header h2 { margin: 0; }
-        .close { font-size: 30px; cursor: pointer; color: #666; background: none; border: none; }
-        .close:hover { color: #111; }
+        .page-title h2 {
+            margin: 0 0 6px;
+            color: #1f2937;
+        }
 
-        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
-        .form-field { display: flex; flex-direction: column; gap: 6px; }
-        .form-field.full { grid-column: 1 / -1; }
-        .form-field label { font-size: 12px; font-weight: bold; color: #4b5563; }
-        .form-field input, .form-field select, .form-field textarea { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
-        .form-field textarea { min-height: 90px; resize: vertical; }
-        .form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        .page-title p {
+            margin: 0;
+            color: #6b7280;
+        }
 
-        .balance-box { background: #f3f4f6; border: 1px solid #ddd; border-radius: 8px; padding: 18px; margin-bottom: 20px; }
-        .empty { text-align: center; padding: 50px; color: #6b7280; }
-        .error-message { color: #991b1b; background: #fee2e2; border: 1px solid #fca5a5; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
 
-        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); }
-        .logout-bottom:hover { background: #b91c1c; transform: translateY(-2px); }
+        .back-btn:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
 
-        @media (max-width: 900px) { .filters { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 20px; } .user-info { text-align: left; width: 100%; } .tabs { flex-direction: column; } .tab-button { width: 100%; text-align: left; } .form-grid { grid-template-columns: 1fr; } .form-field.full { grid-column: auto; } .page-title { flex-direction: column; align-items: flex-start; gap: 10px; } }
-        @media (max-width: 600px) { .filters { grid-template-columns: 1fr; } .modal-content { margin: 20px; padding: 20px; } .summary-grid { grid-template-columns: 1fr 1fr; } .header-title h1 { font-size: 15px; } .header-logo { width: 32px; height: 32px; } }
-        @media (max-width: 450px) { .summary-grid { grid-template-columns: 1fr; } }
+        .role-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .role-badge.proprietor {
+            background: #1a3c6e;
+            color: white;
+        }
+
+        .role-badge.admin {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .role-badge.manager {
+            background: #d97706;
+            color: white;
+        }
+
+        .role-badge.finance {
+            background: #1a3c6e;
+            color: white;
+        }
+
+        .role-badge.viewer {
+            background: #6b7280;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            background: white;
+            padding: 8px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .tab-button {
+            border: none;
+            background: transparent;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #4b5563;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover {
+            background: #f3f4f6;
+        }
+
+        .tab-button.active {
+            background: #1a3c6e;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .refresh-btn {
+            background: #1a3c6e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #0f2a4a;
+            transform: translateY(-2px);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary-card.pending-approval {
+            border-left: 4px solid #d97706;
+            background: #fffbeb;
+        }
+
+        .summary-card h4 {
+            margin: 0 0 10px;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .summary-number {
+            font-size: 25px;
+            font-weight: bold;
+            color: #1a3c6e;
+        }
+
+        .summary-card p {
+            margin: 8px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .approval-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #d97706;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filters input,
+        .filters select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .filters input:focus,
+        .filters select:focus {
+            outline: none;
+            border-color: #1a3c6e;
+            box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f3f4f6;
+            text-align: left;
+            padding: 13px;
+            font-size: 13px;
+            border-bottom: 2px solid #ddd;
+            color: #374151;
+        }
+
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        tr:hover td {
+            background: #f9fafb;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .paid {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .partially-paid {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .unpaid {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #d97706;
+        }
+
+        .approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .payment-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .payment-btn:hover {
+            background: #15803d;
+        }
+
+        .view-btn {
+            background: #1f2937;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #111827;
+        }
+
+        .approve-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: #15803d;
+        }
+
+        .reject-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background: #b91c1c;
+        }
+
+        .edit-btn {
+            background: #d97706;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #b45309;
+        }
+
+        .close-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        .close-btn:hover {
+            background: #4b5563;
+        }
+
+        .approval-banner {
+            background: #fef3c7;
+            border: 1px solid #d97706;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .approval-banner .count {
+            font-weight: bold;
+            color: #92400e;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close {
+            font-size: 30px;
+            cursor: pointer;
+            color: #666;
+            background: none;
+            border: none;
+        }
+
+        .close:hover {
+            color: #111;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-field label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-field textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .balance-box {
+            background: #f3f4f6;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 50px;
+            color: #6b7280;
+        }
+
+        .error-message {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .logout-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+        }
+
+        .logout-bottom:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 900px) {
+            .filters {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 20px;
+            }
+
+            .user-info {
+                text-align: left;
+                width: 100%;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                width: 100%;
+                text-align: left;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-field.full {
+                grid-column: auto;
+            }
+
+            .page-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .header-title h1 {
+                font-size: 15px;
+            }
+
+            .header-logo {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-    <!-- HEADER -->
+    <!-- =========================================================
+         HEADER
+    ========================================================= -->
+
     <header class="header">
+
         <div class="header-left">
+
             <div class="header-logo">
-                <img src="/images/logo.png" alt="Global Education Academy" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+                <img
+                    src="/images/logo.png"
+                    alt="Global Education Academy"
+                    onerror="this.style.display='none'; this.parentElement.textContent='🏫';"
+                >
             </div>
+
             <div class="header-title">
                 <h1>GLOBAL EDUCATION ACADEMY</h1>
                 <p>Secondary School Finance Management</p>
             </div>
+
         </div>
+
         <div class="user-info">
-            <span class="role" id="userRole"></span>
-            <span class="role-label" id="userRoleLabel"></span>
+
+            <span
+                class="role"
+                id="userRole"
+            ></span>
+
+            <span
+                class="role-label"
+                id="userRoleLabel"
+            ></span>
+
         </div>
+
     </header>
 
+
+    <!-- =========================================================
+         MAIN
+    ========================================================= -->
+
     <main class="container">
+
         <div class="page-title">
+
             <div>
                 <h2>🎓 Secondary School Finance Dashboard</h2>
-                <p>Manage fees, student balances, payments and financial records for Secondary School.</p>
+
+                <p>
+                    Manage fees, student balances, payments and
+                    financial records for Secondary School.
+                </p>
             </div>
-            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+
+            <button
+                class="back-btn"
+                onclick="window.location.href='dashboard.html'"
+            >
+                ← Back to Dashboard
+            </button>
+
         </div>
+
 
         <div id="roleBadgeContainer"></div>
 
-        <div id="approvalBanner" style="display:none;" class="approval-banner">
-            <span>⏳ <span class="count" id="pendingCount">0</span> items pending approval</span>
-            <button class="btn view-btn" onclick="switchToApprovals()">Review Pending</button>
+
+        <!-- =====================================================
+             APPROVAL BANNER
+        ====================================================== -->
+
+        <div
+            id="approvalBanner"
+            style="display:none;"
+            class="approval-banner"
+        >
+
+            <span>
+                ⏳
+                <span
+                    class="count"
+                    id="pendingCount"
+                >0</span>
+                items pending approval
+            </span>
+
+            <button
+                class="btn view-btn"
+                onclick="switchToApprovals()"
+            >
+                Review Pending
+            </button>
+
         </div>
 
-        <!-- TABS -->
+
+        <!-- =====================================================
+             TABS
+        ====================================================== -->
+
         <div class="tabs">
-            <button class="tab-button active" onclick="openTab('overview', this)">📊 Overview</button>
-            <button class="tab-button" onclick="openTab('students', this)">👨‍🎓 Students</button>
-            <button class="tab-button" onclick="openTab('payments', this)">💳 Payments</button>
-            <button class="tab-button" onclick="openTab('approvals', this)">✅ Approvals</button>
+
+            <button
+                class="tab-button active"
+                onclick="openTab('overview', this)"
+            >
+                📊 Overview
+            </button>
+
+            <button
+                class="tab-button"
+                onclick="openTab('students', this)"
+            >
+                👨‍🎓 Students
+            </button>
+
+            <button
+                class="tab-button"
+                onclick="openTab('payments', this)"
+            >
+                💳 Payments
+            </button>
+
+            <button
+                class="tab-button"
+                onclick="openTab('approvals', this)"
+            >
+                ✅ Approvals
+            </button>
+
         </div>
 
-        <!-- OVERVIEW TAB -->
-        <section id="overview" class="tab-content active">
+
+        <!-- =====================================================
+             OVERVIEW TAB
+        ====================================================== -->
+
+        <section
+            id="overview"
+            class="tab-content active"
+        >
+
             <div class="section-header">
-                <h3>Secondary School Financial Summary</h3>
-                <button class="refresh-btn" onclick="loadAllData()">🔄 Refresh</button>
+
+                <h3>
+                    Secondary School Financial Summary
+                </h3>
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadAllData()"
+                >
+                    🔄 Refresh
+                </button>
+
             </div>
+
             <div id="overviewMessage"></div>
+
             <div class="summary-grid">
-                <div class="summary-card"><h4>Total Expected Fees</h4><div id="totalExpected" class="summary-number">Le0.00</div><p>All fees assigned to students</p></div>
-                <div class="summary-card"><h4>Total Collected</h4><div id="totalCollected" class="summary-number">Le0.00</div><p>Approved payments received</p></div>
-                <div class="summary-card"><h4>Outstanding Balance</h4><div id="totalOutstanding" class="summary-number">Le0.00</div><p>Money still owed</p></div>
-                <div class="summary-card"><h4>Active Students</h4><div id="totalStudents" class="summary-number">0</div><p>Currently enrolled</p></div>
-                <div class="summary-card pending-approval"><h4>Pending Approvals</h4><div id="pendingChanges" class="summary-number">0</div><p>Awaiting review</p><div class="approval-count" id="pendingCountBadge">0</div></div>
+
+                <div class="summary-card">
+
+                    <h4>Total Expected Fees</h4>
+
+                    <div
+                        id="totalExpected"
+                        class="summary-number"
+                    >
+                        Le0.00
+                    </div>
+
+                    <p>
+                        All fees assigned to students
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h4>Total Collected</h4>
+
+                    <div
+                        id="totalCollected"
+                        class="summary-number"
+                    >
+                        Le0.00
+                    </div>
+
+                    <p>
+                        Approved payments received
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h4>Outstanding Balance</h4>
+
+                    <div
+                        id="totalOutstanding"
+                        class="summary-number"
+                    >
+                        Le0.00
+                    </div>
+
+                    <p>
+                        Money still owed
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h4>Active Students</h4>
+
+                    <div
+                        id="totalStudents"
+                        class="summary-number"
+                    >
+                        0
+                    </div>
+
+                    <p>
+                        Currently enrolled
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card pending-approval">
+
+                    <h4>Pending Approvals</h4>
+
+                    <div
+                        id="pendingChanges"
+                        class="summary-number"
+                    >
+                        0
+                    </div>
+
+                    <p>
+                        Awaiting review
+                    </p>
+
+                    <div
+                        class="approval-count"
+                        id="pendingCountBadge"
+                    >
+                        0
+                    </div>
+
+                </div>
+
             </div>
-            <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
-                <button class="btn payment-btn" onclick="openRecordPayment()">💳 Record Payment</button>
-                <button class="btn view-btn" onclick="openTab('students', document.querySelector('.tabs').children[1])">👨‍🎓 View All Students</button>
+
+
+            <!--
+                Record Payment is intentionally NOT included here.
+                It is added dynamically only for Secondary Finance.
+            -->
+
+            <div
+                id="overviewActionContainer"
+                style="
+                    margin-top:20px;
+                    display:flex;
+                    gap:12px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <button
+                    id="overviewRecordPaymentBtn"
+                    class="btn payment-btn"
+                    onclick="openRecordPayment()"
+                    style="display:none;"
+                >
+                    💳 Record Payment
+                </button>
+
+                <button
+                    class="btn view-btn"
+                    onclick="openTab(
+                        'students',
+                        document.querySelector('.tabs').children[1]
+                    )"
+                >
+                    👨‍🎓 View All Students
+                </button>
+
             </div>
+
         </section>
 
-        <!-- STUDENTS TAB -->
-        <section id="students" class="tab-content">
+
+        <!-- =====================================================
+             STUDENTS TAB
+        ====================================================== -->
+
+        <section
+            id="students"
+            class="tab-content"
+        >
+
             <div class="section-header">
-                <h3>Secondary School Students</h3>
-                <span id="studentCount">0 Students</span>
+
+                <h3>
+                    Secondary School Students
+                </h3>
+
+                <span id="studentCount">
+                    0 Students
+                </span>
+
             </div>
+
+
             <div class="filters">
-                <input type="text" id="studentSearch" placeholder="Search student or admission number..." oninput="applyStudentFilters()">
-                <select id="studentClass" onchange="applyStudentFilters()"><option value="">All Classes</option></select>
-                <select id="studentFinanceStatus" onchange="applyStudentFilters()"><option value="">All Status</option><option value="Paid">Fully Paid</option><option value="Partially Paid">Partially Paid</option><option value="Unpaid">Unpaid</option></select>
-                <button class="refresh-btn" onclick="loadStudents()">Refresh</button>
+
+                <input
+                    type="text"
+                    id="studentSearch"
+                    placeholder="Search student or admission number..."
+                    oninput="applyStudentFilters()"
+                >
+
+                <select
+                    id="studentClass"
+                    onchange="applyStudentFilters()"
+                >
+                    <option value="">
+                        All Classes
+                    </option>
+                </select>
+
+                <select
+                    id="studentFinanceStatus"
+                    onchange="applyStudentFilters()"
+                >
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="Paid">
+                        Fully Paid
+                    </option>
+
+                    <option value="Partially Paid">
+                        Partially Paid
+                    </option>
+
+                    <option value="Unpaid">
+                        Unpaid
+                    </option>
+                </select>
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadStudents()"
+                >
+                    Refresh
+                </button>
+
             </div>
+
+
             <div id="studentMessage"></div>
+
+
             <div class="table-container">
+
                 <table>
-                    <thead><tr><th>Admission</th><th>Student</th><th>Class</th><th>Expected</th><th>Paid</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead>
-                    <tbody id="studentTable"><tr><td colspan="8" class="empty">Loading students...</td></tr></tbody>
+
+                    <thead>
+
+                        <tr>
+                            <th>Admission</th>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Expected</th>
+                            <th>Paid</th>
+                            <th>Balance</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="studentTable">
+
+                        <tr>
+                            <td
+                                colspan="8"
+                                class="empty"
+                            >
+                                Loading students...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
                 </table>
+
             </div>
+
         </section>
 
-        <!-- PAYMENTS TAB -->
-        <section id="payments" class="tab-content">
+
+        <!-- =====================================================
+             PAYMENTS TAB
+        ====================================================== -->
+
+        <section
+            id="payments"
+            class="tab-content"
+        >
+
             <div class="section-header">
-                <h3>Payment History</h3>
-                <span id="paymentCount">0 Payments</span>
-                <button class="btn payment-btn" onclick="openRecordPayment()">+ Record Payment</button>
+
+                <h3>
+                    Payment History
+                </h3>
+
+                <span id="paymentCount">
+                    0 Payments
+                </span>
+
+                <!--
+                    Only Secondary Finance Officer sees this.
+                    JavaScript controls visibility.
+                -->
+
+                <button
+                    id="paymentsRecordButton"
+                    class="btn payment-btn"
+                    onclick="openRecordPayment()"
+                    style="display:none;"
+                >
+                    + Record Payment
+                </button>
+
             </div>
+
+
             <div class="filters">
-                <input type="text" id="paymentSearch" placeholder="Search student, admission or slip..." oninput="applyPaymentFilters()">
-                <select id="paymentMethodFilter" onchange="applyPaymentFilters()"><option value="">All Methods</option><option value="Bank">Bank</option><option value="Cash">Cash</option><option value="Mobile Money">Mobile Money</option><option value="Cheque">Cheque</option></select>
-                <select id="paymentStatusFilter" onchange="applyPaymentFilters()"><option value="">All Statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>
-                <input type="date" id="paymentDateFilter" onchange="applyPaymentFilters()">
-                <button class="refresh-btn" onclick="loadPaymentHistory()">Refresh</button>
+
+                <input
+                    type="text"
+                    id="paymentSearch"
+                    placeholder="Search student, admission or slip..."
+                    oninput="applyPaymentFilters()"
+                >
+
+                <select
+                    id="paymentMethodFilter"
+                    onchange="applyPaymentFilters()"
+                >
+                    <option value="">
+                        All Methods
+                    </option>
+
+                    <option value="Bank">
+                        Bank
+                    </option>
+
+                    <option value="Cash">
+                        Cash
+                    </option>
+
+                    <option value="Mobile Money">
+                        Mobile Money
+                    </option>
+
+                    <option value="Cheque">
+                        Cheque
+                    </option>
+                </select>
+
+
+                <select
+                    id="paymentStatusFilter"
+                    onchange="applyPaymentFilters()"
+                >
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="approved">
+                        Approved
+                    </option>
+
+                    <option value="rejected">
+                        Rejected
+                    </option>
+                </select>
+
+
+                <input
+                    type="date"
+                    id="paymentDateFilter"
+                    onchange="applyPaymentFilters()"
+                >
+
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadPaymentHistory()"
+                >
+                    Refresh
+                </button>
+
             </div>
+
+
             <div id="paymentMessage"></div>
+
+
             <div class="table-container">
+
                 <table>
-                    <thead><tr><th>Date</th><th>Admission</th><th>Student</th><th>Fee</th><th>Amount</th><th>Method</th><th>Status</th><th>Action</th></tr></thead>
-                    <tbody id="paymentTable"><tr><td colspan="8" class="empty">Loading payments...</td></tr></tbody>
+
+                    <thead>
+
+                        <tr>
+                            <th>Date</th>
+                            <th>Admission</th>
+                            <th>Student</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="paymentTable">
+
+                        <tr>
+                            <td
+                                colspan="7"
+                                class="empty"
+                            >
+                                Loading payments...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
                 </table>
+
             </div>
+
         </section>
 
-        <!-- APPROVALS TAB -->
-        <section id="approvals" class="tab-content">
+
+        <!-- =====================================================
+             APPROVALS TAB
+        ====================================================== -->
+
+        <section
+            id="approvals"
+            class="tab-content"
+        >
+
             <div class="section-header">
-                <h3>Approvals</h3>
-                <span id="approvalCount">0 Items</span>
-                <button class="refresh-btn" onclick="loadApprovals()">Refresh</button>
+
+                <h3>
+                    Approvals
+                </h3>
+
+                <span id="approvalCount">
+                    0 Items
+                </span>
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadApprovals()"
+                >
+                    Refresh
+                </button>
+
             </div>
+
+
             <div id="approvalMessage"></div>
+
+
             <div class="filters">
-                <select id="approvalStatusFilter" onchange="applyApprovalFilters()"><option value="">All Statuses</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select>
+
+                <select
+                    id="approvalStatusFilter"
+                    onchange="applyApprovalFilters()"
+                >
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Approved">
+                        Approved
+                    </option>
+
+                    <option value="Rejected">
+                        Rejected
+                    </option>
+                </select>
+
             </div>
+
+
             <div class="table-container">
+
                 <table>
-                    <thead><tr><th>Type</th><th>Details</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
-                    <tbody id="approvalTable"><tr><td colspan="6" class="empty">Loading approvals...</td></tr></tbody>
+
+                    <thead>
+
+                        <tr>
+                            <th>Type</th>
+                            <th>Details</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="approvalTable">
+
+                        <tr>
+                            <td
+                                colspan="6"
+                                class="empty"
+                            >
+                                Loading approvals...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
                 </table>
+
             </div>
+
         </section>
 
     </main>
 
-    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
-    <!-- MODAL: RECORD PAYMENT -->
-    <div id="paymentModal" class="modal">
+    <button
+        class="logout-bottom"
+        onclick="logout()"
+    >
+        🚪 Logout
+    </button>
+
+
+    <!-- =========================================================
+         MODAL: RECORD PAYMENT
+    ========================================================== -->
+
+    <div
+        id="paymentModal"
+        class="modal"
+    >
+
         <div class="modal-content">
+
             <div class="modal-header">
-                <h2>💰 Record Payment</h2>
-                <button class="close" onclick="closeModal('paymentModal')">&times;</button>
+
+                <h2>
+                    💰 Record Payment
+                </h2>
+
+                <button
+                    class="close"
+                    onclick="closeModal('paymentModal')"
+                >
+                    &times;
+                </button>
+
             </div>
-            <form id="paymentForm" onsubmit="submitPayment(event)">
+
+
+            <form
+                id="paymentForm"
+                onsubmit="submitPayment(event)"
+            >
+
                 <div class="form-grid">
-                    <!-- Search Student -->
+
                     <div class="form-field full">
-                        <label>Search Student *</label>
-                        <input type="text" id="studentSearchInput" placeholder="Type admission number or student name to search..." required autocomplete="off">
-                        <div id="studentSearchResults" style="display:none;border:1px solid #ccc;border-radius:6px;max-height:200px;overflow-y:auto;background:white;position:relative;z-index:1000;margin-top:4px;"></div>
-                        <input type="hidden" id="selectedStudentId" value="">
-                        <span id="selectedStudentName" style="font-size:13px;color:#1a3c6e;font-weight:bold;"></span>
+
+                        <label>
+                            Search Student *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="studentSearchInput"
+                            placeholder="Type admission number or student name to search..."
+                            required
+                            autocomplete="off"
+                        >
+
+                        <div
+                            id="studentSearchResults"
+                            style="
+                                display:none;
+                                border:1px solid #ccc;
+                                border-radius:6px;
+                                max-height:200px;
+                                overflow-y:auto;
+                                background:white;
+                                position:relative;
+                                z-index:1000;
+                                margin-top:4px;
+                            "
+                        ></div>
+
+                        <input
+                            type="hidden"
+                            id="selectedStudentId"
+                            value=""
+                        >
+
+                        <span
+                            id="selectedStudentName"
+                            style="
+                                font-size:13px;
+                                color:#1a3c6e;
+                                font-weight:bold;
+                            "
+                        ></span>
+
                     </div>
 
-                    <!-- Fee Summary -->
+
                     <div class="form-field full">
-                        <label>Outstanding Fees</label>
-                        <div id="feeSummary" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:12px;font-size:13px;min-height:60px;">
-                            Search and select a student to view outstanding fees.
+
+                        <label>
+                            Outstanding Fees
+                        </label>
+
+                        <div
+                            id="feeSummary"
+                            style="
+                                background:#f9fafb;
+                                border:1px solid #e5e7eb;
+                                border-radius:6px;
+                                padding:12px;
+                                font-size:13px;
+                                min-height:60px;
+                            "
+                        >
+                            Search and select a student to
+                            view outstanding fees.
                         </div>
+
                     </div>
 
+
                     <div class="form-field">
-                        <label>Amount Paid *</label>
-                        <input type="number" id="paymentAmount" step="0.01" required placeholder="Enter amount">
+
+                        <label>
+                            Amount Paid *
+                        </label>
+
+                        <input
+                            type="number"
+                            id="paymentAmount"
+                            step="0.01"
+                            required
+                            placeholder="Enter amount"
+                        >
+
                     </div>
+
+
                     <div class="form-field">
-                        <label>Payment Method *</label>
-                        <select id="paymentMethod" required>
-                            <option value="">Select Method</option>
-                            <option value="Bank">Bank</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Mobile Money">Mobile Money</option>
-                            <option value="Cheque">Cheque</option>
+
+                        <label>
+                            Payment Method *
+                        </label>
+
+                        <select
+                            id="paymentMethod"
+                            required
+                        >
+
+                            <option value="">
+                                Select Method
+                            </option>
+
+                            <option value="Bank">
+                                Bank
+                            </option>
+
+                            <option value="Cash">
+                                Cash
+                            </option>
+
+                            <option value="Mobile Money">
+                                Mobile Money
+                            </option>
+
+                            <option value="Cheque">
+                                Cheque
+                            </option>
+
                         </select>
+
                     </div>
+
+
                     <div class="form-field">
-                        <label>Slip Number</label>
-                        <input type="text" id="paymentSlip" placeholder="Receipt/slip number">
+
+                        <label>
+                            Slip Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="paymentSlip"
+                            placeholder="Receipt/slip number"
+                        >
+
                     </div>
+
+
                     <div class="form-field">
-                        <label>Bank Reference</label>
-                        <input type="text" id="paymentRef" placeholder="Bank reference (if applicable)">
+
+                        <label>
+                            Bank Reference
+                        </label>
+
+                        <input
+                            type="text"
+                            id="paymentRef"
+                            placeholder="Bank reference (if applicable)"
+                        >
+
                     </div>
+
+
                     <div class="form-field">
-                        <label>Academic Year *</label>
-                        <input type="text" id="paymentYear" value="2026/2027" required>
+
+                        <label>
+                            Academic Year *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="paymentYear"
+                            value="2026/2027"
+                            required
+                        >
+
                     </div>
+
+
                     <div class="form-field full">
-                        <label>Purpose / Notes</label>
-                        <textarea id="paymentNotes" placeholder="Additional notes"></textarea>
+
+                        <label>
+                            Purpose / Notes
+                        </label>
+
+                        <textarea
+                            id="paymentNotes"
+                            placeholder="Additional notes"
+                        ></textarea>
+
                     </div>
+
+
                     <div class="form-actions">
-                        <button type="button" class="btn close-btn" onclick="closeModal('paymentModal')">Cancel</button>
-                        <button type="submit" class="btn payment-btn">Record Payment</button>
+
+                        <button
+                            type="button"
+                            class="btn close-btn"
+                            onclick="closeModal('paymentModal')"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn payment-btn"
+                        >
+                            Record Payment
+                        </button>
+
                     </div>
+
                 </div>
+
             </form>
+
         </div>
+
     </div>
 
-    <!-- MODAL: APPROVAL ACTION -->
-    <div id="approvalModal" class="modal">
+
+    <!-- =========================================================
+         MODAL: APPROVAL ACTION
+    ========================================================== -->
+
+    <div
+        id="approvalModal"
+        class="modal"
+    >
+
         <div class="modal-content">
-            <div class="modal-header"><h2>✅ Review & Approve</h2><button class="close" onclick="closeModal('approvalModal')">&times;</button></div>
-            <div id="approvalDetails"></div>
-            <div class="form-grid">
-                <div class="form-field full"><label>Review Notes / Rejection Reason</label><textarea id="approvalNotes" placeholder="Add review notes..."></textarea></div>
-                <div class="form-actions"><button type="button" class="btn reject-btn" onclick="submitApprovalDecision('reject')">❌ Reject</button><button type="button" class="btn approve-btn" onclick="submitApprovalDecision('approve')">✅ Approve</button></div>
+
+            <div class="modal-header">
+
+                <h2>
+                    ✅ Review & Approve
+                </h2>
+
+                <button
+                    class="close"
+                    onclick="closeModal('approvalModal')"
+                >
+                    &times;
+                </button>
+
             </div>
+
+            <div id="approvalDetails"></div>
+
+            <div class="form-grid">
+
+                <div class="form-field full">
+
+                    <label>
+                        Review Notes / Rejection Reason
+                    </label>
+
+                    <textarea
+                        id="approvalNotes"
+                        placeholder="Add review notes..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="btn reject-btn"
+                        onclick="submitApprovalDecision('reject')"
+                    >
+                        ❌ Reject
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn approve-btn"
+                        onclick="submitApprovalDecision('approve')"
+                    >
+                        ✅ Approve
+                    </button>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
-    <script>
-    // =========================================================
-    // AUTHENTICATION & ROLE
-    // =========================================================
 
-    const token = sessionStorage.getItem('authToken');
-    const userData = sessionStorage.getItem('user');
+<script>
 
-    if (!token || !userData) {
-        window.location.href = '/login.html';
-    }
+/* =========================================================
+   AUTHENTICATION & ROLE
+========================================================= */
 
-    let user;
+const token = sessionStorage.getItem('authToken');
+const userData = sessionStorage.getItem('user');
 
-    try {
-        user = JSON.parse(userData);
-    } catch (error) {
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('user');
-        window.location.href = '/login.html';
-    }
+if (!token || !userData) {
+    window.location.href = '/login.html';
+}
 
-    const role = user.role_name || user.role || '';
-    const userRole = (user.role_name || user.role || '').toLowerCase();
+let user;
 
-    // =========================================================
-    // ROLE DETECTION
-    // =========================================================
-    const isFinanceOfficer =
-        role === 'Finance Officer (Secondary)' ||
-        role === 'Finance Officer' ||
-        role.toLowerCase().includes('finance');
+try {
+    user = JSON.parse(userData);
+} catch (error) {
 
-    const isManager =
-        role === 'Manager-Secondary' ||
-        role === 'Manager' ||
-        userRole === 'manager-secondary' ||
-        userRole === 'manager';
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('user');
 
-    const isProprietor =
-        role === 'Proprietor' ||
-        userRole === 'proprietor';
+    window.location.href = '/login.html';
+}
 
-    const isAdmin =
-        role === 'Administrator' ||
-        role === 'Admin' ||
-        userRole === 'administrator' ||
-        userRole === 'admin';
 
-    // =========================================================
-    // VIEW-ONLY ROLES (Proprietor, Admin ONLY)
-    // =========================================================
-    const isViewOnly = isProprietor || isAdmin;
+/* =========================================================
+   ROLE AND SECTOR
+========================================================= */
 
-    // =========================================================
-    // PERMISSIONS
-    // =========================================================
-    const canEdit = isFinanceOfficer || isManager;
-    const canApprove = isManager || isProprietor || isAdmin;
-    const canRecordPayment = isFinanceOfficer || isManager;
+// 1 = Proprietor
+// 2 = Administrator
+// 3 = Finance
+// 4 = Teacher
+// 5 = Student
+// 6 = Manager
 
-    const isAllowed = isFinanceOfficer || isManager || isProprietor || isAdmin;
+const roleId = Number(user?.role_id);
 
-    if (!isAllowed) {
-        alert('You do not have permission to access Secondary School Finance.');
-        window.location.href = 'dashboard.html';
-    }
+const role =
+    user?.role_name ||
+    user?.role ||
+    '';
 
-    document.getElementById('userRole').textContent =
-        role || 'Finance Officer';
+const sector =
+    String(
+        user?.sector || ''
+    )
+    .trim()
+    .toLowerCase();
 
-    document.getElementById('userRoleLabel').textContent =
+const userRole =
+    String(
+        user?.role_name ||
+        user?.role ||
+        ''
+    )
+    .toLowerCase();
+
+
+/* =========================================================
+   ROLE DETECTION
+========================================================= */
+
+const isFinanceOfficer =
+    roleId === 3;
+
+const isManager =
+    roleId === 6;
+
+const isProprietor =
+    roleId === 1;
+
+const isAdmin =
+    roleId === 2;
+
+
+/* =========================================================
+   SECTOR DETECTION
+========================================================= */
+
+const isPrimary =
+    sector === 'primary';
+
+const isSecondary =
+    sector === 'secondary';
+
+
+/* =========================================================
+   ROLE + SECTOR
+========================================================= */
+
+const isPrimaryManager =
+    isManager &&
+    isPrimary;
+
+const isSecondaryManager =
+    isManager &&
+    isSecondary;
+
+const isPrimaryFinance =
+    isFinanceOfficer &&
+    isPrimary;
+
+const isSecondaryFinance =
+    isFinanceOfficer &&
+    isSecondary;
+
+
+/* =========================================================
+   SECONDARY FINANCE ACCESS
+========================================================= */
+
+const isAllowed =
+    isProprietor ||
+    isAdmin ||
+    isSecondaryManager ||
+    isSecondaryFinance;
+
+if (!isAllowed) {
+
+    console.error(
+        'SECONDARY FINANCE ACCESS DENIED',
+        {
+            role_id: roleId,
+            role_name: role,
+            sector: sector,
+            user: user
+        }
+    );
+
+    alert(
+        'You do not have permission to access Secondary School Finance.'
+    );
+
+    window.location.href =
+        'dashboard.html';
+}
+
+
+/* =========================================================
+   VIEW-ONLY
+========================================================= */
+
+// IMPORTANT:
+// Secondary Manager is VIEW ONLY.
+//
+// Therefore:
+// Manager = false
+// Finance Officer = true
+//
+// Proprietor/Admin are also view only.
+
+const isViewOnly =
+    isProprietor ||
+    isAdmin ||
+    isSecondaryManager;
+
+
+/* =========================================================
+   PERMISSIONS
+========================================================= */
+
+// ONLY SECONDARY FINANCE OFFICER
+// can edit or record payments.
+
+const canEdit =
+    isSecondaryFinance;
+
+const canRecordPayment =
+    isSecondaryFinance;
+
+
+// Only Proprietor/Admin can approve.
+
+const canApprove =
+    isProprietor ||
+    isAdmin;
+
+
+/* =========================================================
+   DISPLAY USER
+========================================================= */
+
+const userRoleElement =
+    document.getElementById('userRole');
+
+if (userRoleElement) {
+
+    userRoleElement.textContent =
+        role || 'User';
+}
+
+
+const userRoleLabelElement =
+    document.getElementById('userRoleLabel');
+
+if (userRoleLabelElement) {
+
+    userRoleLabelElement.textContent =
         'Secondary School Finance';
+}
 
-    const badgeContainer =
-        document.getElementById('roleBadgeContainer');
 
-    let badgeClass = 'viewer';
-    let badgeText = 'View-Only Access';
+/* =========================================================
+   ROLE BADGE
+========================================================= */
+
+const badgeContainer =
+    document.getElementById(
+        'roleBadgeContainer'
+    );
+
+if (badgeContainer) {
+
+    let badgeClass =
+        'viewer';
+
+    let badgeText =
+        'View-Only Access';
+
 
     if (isProprietor) {
-        badgeClass = 'proprietor';
-        badgeText = '👑 Proprietor (View-Only)';
+
+        badgeClass =
+            'proprietor';
+
+        badgeText =
+            '👑 Proprietor (View-Only)';
+
     } else if (isAdmin) {
-        badgeClass = 'admin';
-        badgeText = '⚙️ Admin (View-Only)';
-    } else if (isManager) {
-        badgeClass = 'manager';
-        badgeText = '📋 Manager';
-    } else if (isFinanceOfficer) {
-        badgeClass = 'finance';
-        badgeText = '💰 Finance Officer';
+
+        badgeClass =
+            'admin';
+
+        badgeText =
+            '⚙️ Administrator (View-Only)';
+
+    } else if (isSecondaryManager) {
+
+        badgeClass =
+            'manager';
+
+        badgeText =
+            '📋 Manager (View-Only)';
+
+    } else if (isSecondaryFinance) {
+
+        badgeClass =
+            'finance';
+
+        badgeText =
+            '💰 Finance Officer';
     }
+
 
     badgeContainer.innerHTML =
         `<span class="role-badge ${badgeClass}">${badgeText}</span>`;
+}
 
-    // =========================================================
-    // HIDE RECORD PAYMENT BUTTON FOR VIEW-ONLY USERS
-    // =========================================================
-    if (isViewOnly) {
-        document.addEventListener('DOMContentLoaded', function() {
-            const recordBtn = document.querySelector('.payment-btn');
-            if (recordBtn) recordBtn.style.display = 'none';
+
+/* =========================================================
+   APPLY ROLE-BASED UI
+========================================================= */
+
+function applyFinancePermissions() {
+
+    /*
+       SECONDARY MANAGER:
+
+       Can:
+         - View overview
+         - View students
+         - View payments
+         - View approvals
+
+       Cannot:
+         - Record payment
+         - Edit student fees
+         - Approve/reject payments
+    */
+
+
+    const overviewRecordButton =
+        document.getElementById(
+            'overviewRecordPaymentBtn'
+        );
+
+    const paymentsRecordButton =
+        document.getElementById(
+            'paymentsRecordButton'
+        );
+
+
+    /*
+       Only Secondary Finance Officer
+       gets Record Payment buttons.
+    */
+
+    if (isSecondaryFinance) {
+
+        if (overviewRecordButton) {
+            overviewRecordButton.style.display =
+                'inline-block';
+        }
+
+        if (paymentsRecordButton) {
+            paymentsRecordButton.style.display =
+                'inline-block';
+        }
+
+    } else {
+
+        if (overviewRecordButton) {
+            overviewRecordButton.style.display =
+                'none';
+        }
+
+        if (paymentsRecordButton) {
+            paymentsRecordButton.style.display =
+                'none';
+        }
+    }
+}
+
+
+/* =========================================================
+   TAB SYSTEM
+========================================================= */
+
+function openTab(tabId, button) {
+
+    /*
+       Prevent Manager from opening any
+       editing/payment-recording tab if
+       another part of the page attempts it.
+    */
+
+    if (
+        isSecondaryManager &&
+        (
+            tabId === 'edit' ||
+            tabId === 'record-payment' ||
+            tabId === 'recordPayment'
+        )
+    ) {
+
+        alert(
+            'Secondary Manager has view-only access.'
+        );
+
+        return;
+    }
+
+
+    document
+        .querySelectorAll('.tab-content')
+        .forEach(tab => {
+
+            tab.classList.remove('active');
         });
+
+
+    document
+        .querySelectorAll('.tab-button')
+        .forEach(btn => {
+
+            btn.classList.remove('active');
+        });
+
+
+    const tab =
+        document.getElementById(tabId);
+
+    if (tab) {
+
+        tab.classList.add('active');
     }
 
-    // =========================================================
-    // GLOBAL DATA
-    // =========================================================
 
-    let students = [];
-    let filteredStudents = [];
-    let approvals = [];
-    let filteredApprovals = [];
+    if (button) {
 
-    // =========================================================
-    // TAB SYSTEM
-    // =========================================================
+        button.classList.add('active');
+    }
+}
 
-    function openTab(tabId, button) {
 
-        document
-            .querySelectorAll('.tab-content')
-            .forEach(tab => {
-                tab.classList.remove('active');
-            });
+/* =========================================================
+   SWITCH TO APPROVALS
+========================================================= */
 
-        document
-            .querySelectorAll('.tab-button')
-            .forEach(btn => {
-                btn.classList.remove('active');
-            });
+function switchToApprovals() {
 
-        const tab =
-            document.getElementById(tabId);
+    const buttons =
+        document.querySelectorAll(
+            '.tab-button'
+        );
 
-        if (tab) {
-            tab.classList.add('active');
-        }
+    openTab(
+        'approvals',
+        buttons[3]
+    );
 
-        if (button) {
-            button.classList.add('active');
-        }
+    loadApprovals();
+}
+
+
+/* =========================================================
+   MODAL HELPERS
+========================================================= */
+
+function closeModal(id) {
+
+    const modal =
+        document.getElementById(id);
+
+    if (modal) {
+
+        modal.style.display =
+            'none';
+    }
+}
+
+
+/* =========================================================
+   RECORD PAYMENT
+========================================================= */
+
+async function openRecordPayment() {
+
+    /*
+       ONLY Secondary Finance Officer
+       is permitted to record payments.
+    */
+
+    if (!canRecordPayment) {
+
+        alert(
+            'Secondary Manager has view-only access. Only the Secondary Finance Officer can record payments.'
+        );
+
+        return;
     }
 
-    function switchToApprovals() {
 
-        const buttons =
-            document.querySelectorAll('.tab-button');
+    await populatePaymentDropdowns();
 
-        openTab('approvals', buttons[3]);
 
-        loadApprovals();
-    }
+    const modal =
+        document.getElementById(
+            'paymentModal'
+        );
 
-    // =========================================================
-    // MODAL HELPERS
-    // =========================================================
+    if (modal) {
 
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
-    }
-
-    async function openRecordPayment() {
-
-        // Only Finance Officers and Managers can record payments
-        if (!isFinanceOfficer && !isManager) {
-            alert(
-                'Only Finance Officers and Managers can record payments.'
-            );
-            return;
-        }
-
-        await populatePaymentDropdowns();
-
-        document.getElementById('paymentModal').style.display =
+        modal.style.display =
             'block';
     }
+}
 
-    // =========================================================
-    // API HELPER
-    // =========================================================
 
-    async function apiRequest(url, options = {}) {
+/* =========================================================
+   API HELPER
+========================================================= */
 
-        try {
+async function apiRequest(
+    url,
+    options = {}
+) {
 
-            const response = await fetch(url, {
+    const response =
+        await fetch(
+            url,
+            {
                 ...options,
 
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type':
+                        'application/json',
+
                     ...(options.headers || {}),
-                    'Authorization': `Bearer ${token}`
+
+                    'Authorization':
+                        `Bearer ${token}`
                 }
-            });
-
-            let data = null;
-
-            try {
-                data = await response.json();
-            } catch (error) {
-                data = null;
             }
+        );
 
-            if (response.status === 401) {
 
-                sessionStorage.removeItem('authToken');
-                sessionStorage.removeItem('user');
+    let data = null;
 
-                window.location.href = '/login.html';
+    try {
 
-                return null;
-            }
+        data =
+            await response.json();
 
-            if (!response.ok) {
+    } catch (error) {
 
-                throw new Error(
-                    data?.message ||
-                    `Request failed with status ${response.status}`
-                );
-            }
-
-            return data;
-
-        } catch (error) {
-
-            throw error;
-        }
+        data =
+            null;
     }
 
-    // =========================================================
-    // FORMATTING HELPERS
-    // =========================================================
 
-    function formatCurrency(value) {
+    if (response.status === 401) {
 
-        const num = Number(value || 0);
+        sessionStorage.removeItem(
+            'authToken'
+        );
 
-        return 'Le' +
-            num.toLocaleString('en-US', {
+        sessionStorage.removeItem(
+            'user'
+        );
+
+        window.location.href =
+            '/login.html';
+
+        return null;
+    }
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data?.message ||
+            `Request failed with status ${response.status}`
+        );
+    }
+
+
+    return data;
+}
+
+
+/* =========================================================
+   FORMATTING
+========================================================= */
+
+function formatCurrency(value) {
+
+    const num =
+        Number(value || 0);
+
+    return 'Le' +
+        num.toLocaleString(
+            'en-US',
+            {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
-            });
-    }
-
-    function display(value) {
-
-        if (
-            value === null ||
-            value === undefined ||
-            value === ''
-        ) {
-            return '—';
-        }
-
-        return String(value);
-    }
-
-    function formatDate(value) {
-
-        if (!value) {
-            return '—';
-        }
-
-        try {
-
-            const d = new Date(value);
-
-            if (isNaN(d.getTime())) {
-                return '—';
             }
+        );
+}
 
-            return d.toLocaleDateString();
 
-        } catch (error) {
+function display(value) {
 
+    if (
+        value === null ||
+        value === undefined ||
+        value === ''
+    ) {
+        return '—';
+    }
+
+    return String(value);
+}
+
+
+function escapeHTML(value) {
+
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+        return '—';
+    }
+
+    try {
+
+        const d =
+            new Date(value);
+
+        if (isNaN(d.getTime())) {
             return '—';
         }
+
+        return d.toLocaleDateString();
+
+    } catch (error) {
+
+        return '—';
     }
+}
 
-    // =========================================================
-    // LOAD ALL SECONDARY STUDENTS
-    // =========================================================
 
-    async function loadStudents() {
-        const table = document.getElementById('studentTable');
-        table.innerHTML = `<tr><td colspan="8" class="empty">Loading Secondary School students...</td></tr>`;
-        document.getElementById('studentMessage').innerHTML = '';
+/* =========================================================
+   LOAD SECONDARY STUDENTS
+========================================================= */
 
-        try {
-            const data = await apiRequest('/api/students/finance?sector=Secondary&academic_year=2026/2027');
-            students = data?.students || [];
+async function loadStudents() {
 
-            if (students.length === 0) {
-                const fallbackData = await apiRequest('/api/students?status=Active');
-                const allStudents = Array.isArray(fallbackData) ? fallbackData : (fallbackData?.students || []);
-                students = allStudents.filter(student => {
-                    const sector = String(
-                        student.sector ||
-                        student.school_section ||
-                        ''
-                    ).trim().toLowerCase();
-                    return sector === 'secondary' || sector === 'secondary school' ||
-                           sector === 'jss' || sector === 'sss';
-                });
-            }
+    const table =
+        document.getElementById(
+            'studentTable'
+        );
 
-            filteredStudents = [...students];
-            populateClassFilter();
-            renderStudents();
+    table.innerHTML =
+        `<tr>
+            <td
+                colspan="8"
+                class="empty"
+            >
+                Loading Secondary School students...
+            </td>
+        </tr>`;
 
-        } catch (error) {
-            console.error('SECONDARY STUDENTS ERROR:', error);
-            document.getElementById('studentMessage').innerHTML =
-                `<div class="error-message">${display(error.message)}</div>`;
-            table.innerHTML =
-                `<tr><td colspan="8" class="empty">Error loading students: ${display(error.message)}</td></tr>`;
+
+    document
+        .getElementById(
+            'studentMessage'
+        )
+        .innerHTML = '';
+
+
+    try {
+
+        const data =
+            await apiRequest(
+                '/api/payments/students?sector=secondary&academic_year=2026/2027'
+            );
+
+
+        students =
+            Array.isArray(data?.students)
+                ? data.students
+                : [];
+
+
+        if (students.length === 0) {
+
+            const fallbackData =
+                await apiRequest(
+                    '/api/students?status=Active'
+                );
+
+
+            const allStudents =
+                Array.isArray(fallbackData)
+                    ? fallbackData
+                    : (
+                        fallbackData?.students ||
+                        []
+                    );
+
+
+            students =
+                allStudents.filter(
+                    student => {
+
+                        const studentSector =
+                            String(
+                                student.sector ||
+                                student.school_section ||
+                                ''
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        return (
+                            studentSector ===
+                                'secondary' ||
+
+                            studentSector ===
+                                'secondary school' ||
+
+                            studentSector ===
+                                'jss' ||
+
+                            studentSector ===
+                                'sss'
+                        );
+                    }
+                );
         }
+
+
+        filteredStudents =
+            [...students];
+
+
+        populateClassFilter();
+
+        renderStudents();
+
+    } catch (error) {
+
+        console.error(
+            'SECONDARY STUDENTS ERROR:',
+            error
+        );
+
+
+        document
+            .getElementById(
+                'studentMessage'
+            )
+            .innerHTML =
+            `<div class="error-message">
+                ${display(error.message)}
+            </div>`;
+
+
+        table.innerHTML =
+            `<tr>
+                <td
+                    colspan="8"
+                    class="empty"
+                >
+                    Error loading students:
+                    ${display(error.message)}
+                </td>
+            </tr>`;
     }
+}
 
-    // =========================================================
-    // CLASS FILTER
-    // =========================================================
 
-    function populateClassFilter() {
+/* =========================================================
+   CLASS FILTER
+========================================================= */
 
-        const select =
-            document.getElementById('studentClass');
+function populateClassFilter() {
 
-        const previousValue =
-            select.value;
+    const select =
+        document.getElementById(
+            'studentClass'
+        );
 
-        const classes =
-            new Set();
+    const previousValue =
+        select.value;
 
-        students.forEach(student => {
+
+    const classSet =
+        new Set();
+
+
+    students.forEach(
+        student => {
 
             if (student.class_name) {
 
-                classes.add(
+                classSet.add(
                     student.class_name
                 );
             }
-        });
+        }
+    );
 
-        select.innerHTML =
-            '<option value="">All Classes</option>';
 
-        [...classes]
-            .sort()
-            .forEach(className => {
+    select.innerHTML =
+        '<option value="">All Classes</option>';
+
+
+    [...classSet]
+        .sort()
+        .forEach(
+            className => {
 
                 const option =
-                    document.createElement('option');
+                    document.createElement(
+                        'option'
+                    );
 
                 option.value =
                     className;
@@ -721,41 +2475,59 @@
                 option.textContent =
                     className;
 
-                select.appendChild(option);
-            });
+                select.appendChild(
+                    option
+                );
+            }
+        );
 
-        if (
-            [...classes].includes(previousValue)
-        ) {
-            select.value = previousValue;
-        }
+
+    if (
+        [...classSet]
+            .includes(previousValue)
+    ) {
+
+        select.value =
+            previousValue;
     }
+}
 
-    // =========================================================
-    // STUDENT FILTERS
-    // =========================================================
 
-    function applyStudentFilters() {
+/* =========================================================
+   STUDENT FILTERS
+========================================================= */
 
-        const search =
-            document
-                .getElementById('studentSearch')
-                .value
-                .trim()
-                .toLowerCase();
+function applyStudentFilters() {
 
-        const className =
-            document
-                .getElementById('studentClass')
-                .value;
+    const search =
+        document
+            .getElementById(
+                'studentSearch'
+            )
+            .value
+            .trim()
+            .toLowerCase();
 
-        const status =
-            document
-                .getElementById('studentFinanceStatus')
-                .value;
 
-        filteredStudents =
-            students.filter(student => {
+    const className =
+        document
+            .getElementById(
+                'studentClass'
+            )
+            .value;
+
+
+    const status =
+        document
+            .getElementById(
+                'studentFinanceStatus'
+            )
+            .value;
+
+
+    filteredStudents =
+        students.filter(
+            student => {
 
                 const fullName =
                     [
@@ -767,38 +2539,51 @@
                     .join(' ')
                     .toLowerCase();
 
+
                 const admission =
                     String(
-                        student.admission_number || ''
+                        student.admission_number ||
+                        ''
                     )
                     .toLowerCase();
+
 
                 const matchesSearch =
                     !search ||
                     fullName.includes(search) ||
                     admission.includes(search);
 
+
                 const matchesClass =
                     !className ||
-                    student.class_name === className;
+                    student.class_name ===
+                        className;
+
 
                 const expected =
                     Number(
-                        student.total_expected || 0
+                        student.total_due ||
+                        0
                     );
+
 
                 const paid =
                     Number(
-                        student.total_paid || 0
+                        student.total_paid ||
+                        0
                     );
+
 
                 const balance =
                     Number(
-                        student.total_balance || 0
+                        student.outstanding ||
+                        0
                     );
+
 
                 let financeStatus =
                     'Unpaid';
+
 
                 if (
                     balance <= 0 &&
@@ -816,596 +2601,1649 @@
                         'Partially Paid';
                 }
 
+
                 const matchesStatus =
                     !status ||
-                    financeStatus === status;
+                    financeStatus ===
+                        status;
+
 
                 return (
                     matchesSearch &&
                     matchesClass &&
                     matchesStatus
                 );
-            });
-
-        renderStudents();
-    }
-
-    // =========================================================
-    // RENDER STUDENTS
-    // =========================================================
-
-    function renderStudents() {
-        const table = document.getElementById('studentTable');
-        document.getElementById('studentCount').textContent =
-            `${filteredStudents.length} Student${filteredStudents.length === 1 ? '' : 's'}`;
-
-        if (!filteredStudents.length) {
-            table.innerHTML = `<tr><td colspan="8" class="empty">No Secondary School students found.</td></tr>`;
-            return;
-        }
-
-        const showEditButton = canEdit && !isViewOnly;
-
-        table.innerHTML = filteredStudents.map(student => {
-            const fullName = student.student_name ||
-                [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ');
-
-            const expected = Number(student.total_expected || 0);
-            const paid = Number(student.total_paid || 0);
-            const balance = Number(student.total_balance || 0);
-
-            let statusText = 'Unpaid';
-            let statusClass = 'unpaid';
-
-            if (balance <= 0 && expected > 0) {
-                statusText = 'Paid';
-                statusClass = 'paid';
-            } else if (paid > 0 && balance > 0) {
-                statusText = 'Partially Paid';
-                statusClass = 'partially-paid';
-            } else if (paid > 0 && balance <= 0) {
-                statusText = 'Paid';
-                statusClass = 'paid';
             }
+        );
 
-            return `<tr>
-                <td>${display(student.admission_number)}</td>
-                <td><strong>${display(fullName)}</strong></td>
-                <td>${display(student.class_name)}${student.arm ? ` — ${display(student.arm)}` : ''}</td>
-                <td>${formatCurrency(expected)}</td>
-                <td>${formatCurrency(paid)}</td>
-                <td><strong>${formatCurrency(balance)}</strong></td>
-                <td><span class="status ${statusClass}">${statusText}</span></td>
-                <td>
-                    <button class="btn view-btn" onclick="viewStudentFinance(${Number(student.student_id)})">View</button>
-                    ${showEditButton ? `<button class="btn edit-btn" onclick="editStudentFees(${Number(student.student_id)})">Edit</button>` : ''}
-                </td>
-            </tr>`;
-        }).join('');
-    }
 
-    // =========================================================
-    // VIEW STUDENT FINANCE
-    // =========================================================
+    renderStudents();
+}
 
-    function viewStudentFinance(studentId) {
 
-        window.location.href =
-            `finance-student.html?studentId=${studentId}&sector=secondary`;
-    }
+/* =========================================================
+   RENDER STUDENTS
+========================================================= */
 
-    function editStudentFees(studentId) {
+function renderStudents() {
 
-        window.location.href =
-            `finance-student-edit.html?studentId=${studentId}&sector=secondary`;
-    }
+    const table =
+        document.getElementById(
+            'studentTable'
+        );
 
-    // =========================================================
-    // PAYMENT MODAL - SEARCH STUDENT (No Dropdown)
-    // =========================================================
 
-    let searchTimeout = null;
-    let allSecondaryStudents = [];
+    document
+        .getElementById(
+            'studentCount'
+        )
+        .textContent =
+        `${filteredStudents.length} Student${
+            filteredStudents.length === 1
+                ? ''
+                : 's'
+        }`;
 
-    async function populatePaymentDropdowns() {
-        try {
-            const studentData = await apiRequest('/api/students?status=Active');
-            
-            const allStudents = Array.isArray(studentData) ? studentData : (studentData?.students || []);
-            
-            allSecondaryStudents = allStudents.filter(student => {
-                const sector = String(
-                    student.sector ||
-                    student.school_section ||
-                    ''
-                ).trim().toLowerCase();
-                return sector === 'secondary' || sector === 'secondary school' ||
-                       sector === 'jss' || sector === 'sss';
-            });
 
-            console.log('📊 Loaded students for search:', allSecondaryStudents.length);
-
-            const searchInput = document.getElementById('studentSearchInput');
-            const resultsContainer = document.getElementById('studentSearchResults');
-            const selectedNameSpan = document.getElementById('selectedStudentName');
-            const selectedIdInput = document.getElementById('selectedStudentId');
-
-            if (!searchInput || !resultsContainer) {
-                console.error('Search elements not found');
-                return;
-            }
-
-            const newSearch = searchInput.cloneNode(true);
-            searchInput.parentNode.replaceChild(newSearch, searchInput);
-
-            newSearch.addEventListener('input', function() {
-                const searchTerm = this.value.trim();
-                
-                if (!searchTerm) {
-                    resultsContainer.style.display = 'none';
-                    document.getElementById('selectedStudentId').value = '';
-                    document.getElementById('selectedStudentName').textContent = '';
-                    document.getElementById('feeSummary').innerHTML = 'Search and select a student to view outstanding fees.';
-                    return;
-                }
-
-                if (searchTimeout) {
-                    clearTimeout(searchTimeout);
-                }
-
-                searchTimeout = setTimeout(() => {
-                    performStudentSearch(searchTerm);
-                }, 300);
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('#studentSearchInput') && !e.target.closest('#studentSearchResults')) {
-                    resultsContainer.style.display = 'none';
-                }
-            });
-
-            async function performStudentSearch(searchTerm) {
-                const term = searchTerm.toLowerCase().trim();
-                
-                if (term.length < 2) {
-                    resultsContainer.style.display = 'none';
-                    return;
-                }
-
-                const results = allSecondaryStudents.filter(student => {
-                    const fullName = student.student_name ||
-                        [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ');
-                    const nameMatch = fullName.toLowerCase().includes(term);
-                    const admissionMatch = (student.admission_number || '').toLowerCase().includes(term);
-                    return nameMatch || admissionMatch;
-                });
-
-                const displayResults = results.slice(0, 20);
-
-                if (displayResults.length === 0) {
-                    resultsContainer.innerHTML = '<div style="padding:10px;color:#6b7280;">No students found.</div>';
-                    resultsContainer.style.display = 'block';
-                    return;
-                }
-
-                let html = '';
-                displayResults.forEach(student => {
-                    const fullName = student.student_name ||
-                        [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ');
-                    html += `
-                        <div class="search-result-item" 
-                             style="padding:10px 12px;cursor:pointer;border-bottom:1px solid #f1f1f1;display:flex;justify-content:space-between;align-items:center;"
-                             onmouseover="this.style.backgroundColor='#f3f4f6'"
-                             onmouseout="this.style.backgroundColor='white'"
-                             onclick="selectStudent(${student.student_id}, '${fullName.replace(/'/g, "\\'")}', '${student.admission_number || ''}')">
-                            <div>
-                                <strong>${fullName}</strong>
-                                <div style="font-size:12px;color:#6b7280;">${student.admission_number || 'No admission number'} - ${student.class_name || 'No class'}</div>
-                            </div>
-                            <div style="font-size:12px;color:#1a3c6e;">Select →</div>
-                        </div>
-                    `;
-                });
-
-                if (results.length > 20) {
-                    html += `<div style="padding:10px;color:#6b7280;font-style:italic;text-align:center;">+ ${results.length - 20} more results</div>`;
-                }
-
-                resultsContainer.innerHTML = html;
-                resultsContainer.style.display = 'block';
-            }
-
-            window.selectStudent = function(studentId, studentName, admissionNumber) {
-                document.getElementById('selectedStudentId').value = studentId;
-                document.getElementById('selectedStudentName').textContent = `✅ Selected: ${studentName} (${admissionNumber})`;
-                document.getElementById('studentSearchInput').value = studentName;
-                document.getElementById('studentSearchResults').style.display = 'none';
-                
-                loadStudentFees(studentId);
-            };
-
-            async function loadStudentFees(studentId) {
-                const feeSummary = document.getElementById('feeSummary');
-                
-                if (!feeSummary) return;
-
-                try {
-                    const feeData = await apiRequest(`/api/students/finance?sector=secondary&academic_year=2026/2027`);
-                    const student = feeData?.students?.find(s => s.student_id == studentId);
-                    
-                    if (student && student.fee_details && student.fee_details.length > 0) {
-                        const totalBalance = student.total_balance || 0;
-                        const totalExpected = student.total_expected || 0;
-                        const totalPaid = student.total_paid || 0;
-                        
-                        let html = `
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-                                <div><strong>Total Expected:</strong> ${formatCurrency(totalExpected)}</div>
-                                <div><strong>Total Paid:</strong> ${formatCurrency(totalPaid)}</div>
-                                <div><strong>Outstanding Balance:</strong> <span style="color:#dc2626;font-weight:bold;">${formatCurrency(totalBalance)}</span></div>
-                                <div><strong>Payment Status:</strong> ${student.payment_status || 'Unpaid'}</div>
-                            </div>
-                            <hr style="margin:8px 0;">
-                            <div style="max-height:150px;overflow-y:auto;font-size:12px;">
-                        `;
-                        
-                        student.fee_details.forEach(fee => {
-                            const balance = fee.balance || 0;
-                            const status = balance <= 0 ? '✅ Paid' : '⏳ Pending';
-                            html += `
-                                <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f1f1;">
-                                    <span>${fee.fee_name}</span>
-                                    <span>Balance: ${formatCurrency(balance)}</span>
-                                    <span style="font-size:11px;">${status}</span>
-                                </div>
-                            `;
-                        });
-                        
-                        html += `</div>`;
-                        feeSummary.innerHTML = html;
-                    } else {
-                        feeSummary.innerHTML = `
-                            <div style="color:#6b7280;">
-                                No fees found for this student. 
-                                <br><span style="font-size:12px;">Total Expected: ${formatCurrency(0)}</span>
-                            </div>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('Error fetching student fees:', error);
-                    feeSummary.innerHTML = 'Error loading fee details.';
-                }
-            }
-
-        } catch (error) {
-            console.error('PAYMENT SETUP ERROR:', error);
-            alert('Unable to load students: ' + error.message);
-        }
-    }
-
-    // =========================================================
-    // SUBMIT PAYMENT - AUTO-DISTRIBUTE ACROSS FEES
-    // =========================================================
-
-    async function submitPayment(event) {
-        event.preventDefault();
-
-        if (!isFinanceOfficer && !isManager) {
-            alert('Only Finance Officers and Managers can record payments.');
-            return;
-        }
-
-        const studentIdInput = document.getElementById('selectedStudentId');
-        const amountInput = document.getElementById('paymentAmount');
-        const methodSelect = document.getElementById('paymentMethod');
-        const slipInput = document.getElementById('paymentSlip');
-        const refInput = document.getElementById('paymentRef');
-        const yearInput = document.getElementById('paymentYear');
-        const purposeInput = document.getElementById('paymentNotes');
-
-        if (!studentIdInput) {
-            alert('Error: Student selection element not found. Please refresh the page.');
-            return;
-        }
-
-        if (!amountInput || !methodSelect) {
-            alert('Error: Form elements not found. Please refresh the page.');
-            return;
-        }
-
-        const studentId = studentIdInput.value;
-        const amountPaid = parseFloat(amountInput.value);
-        const paymentMethod = methodSelect.value;
-        const paymentSlip = slipInput ? slipInput.value : '';
-        const bankRef = refInput ? refInput.value : '';
-        const academicYear = yearInput ? yearInput.value : '2026/2027';
-        const purpose = purposeInput ? purposeInput.value : '';
-
-        if (!studentId) {
-            alert('Please search and select a student.');
-            return;
-        }
-
-        if (!amountPaid || amountPaid <= 0) {
-            alert('Please enter a valid amount.');
-            return;
-        }
-
-        if (!paymentMethod) {
-            alert('Please select a payment method.');
-            return;
-        }
-
-        try {
-            const feeData = await apiRequest(`/api/students/finance?sector=secondary&academic_year=2026/2027`);
-            const student = feeData?.students?.find(s => s.student_id == studentId);
-            
-            if (!student || !student.fee_details || student.fee_details.length === 0) {
-                alert('This student has no fees to pay.');
-                return;
-            }
-
-            const pendingFees = student.fee_details.filter(f => f.balance > 0);
-            
-            if (pendingFees.length === 0) {
-                alert('This student has no outstanding fees. All fees are paid!');
-                return;
-            }
-
-            const totalOutstanding = pendingFees.reduce((sum, f) => sum + f.balance, 0);
-            
-            if (amountPaid > totalOutstanding) {
-                if (!confirm(`Amount (${formatCurrency(amountPaid)}) exceeds total outstanding (${formatCurrency(totalOutstanding)}). The excess will be recorded as overpayment. Continue?`)) {
-                    return;
-                }
-            }
-
-            pendingFees.sort((a, b) => a.student_fee_id - b.student_fee_id);
-
-            let remainingAmount = amountPaid;
-            const distribution = [];
-
-            for (const fee of pendingFees) {
-                if (remainingAmount <= 0) break;
-                
-                const feeBalance = fee.balance;
-                const amountToPay = Math.min(remainingAmount, feeBalance);
-                
-                if (amountToPay > 0) {
-                    distribution.push({
-                        student_fee_id: fee.student_fee_id,
-                        amount: amountToPay,
-                        fee_name: fee.fee_name
-                    });
-                    remainingAmount -= amountToPay;
-                }
-            }
-
-            let successCount = 0;
-            let errors = [];
-
-            for (const item of distribution) {
-                try {
-                    const result = await apiRequest('/api/payments', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            student_id: studentId,
-                            fee_id: item.student_fee_id,
-                            amount_paid: item.amount,
-                            payment_method: paymentMethod,
-                            payment_slip_number: paymentSlip || null,
-                            bank_reference: bankRef || null,
-                            purpose: purpose || `Auto-distributed payment - ${item.fee_name}`,
-                            notes: null,
-                            academic_year: academicYear
-                        })
-                    });
-                    
-                    if (result) {
-                        successCount++;
-                    }
-                } catch (error) {
-                    errors.push(`Failed to record payment for ${item.fee_name}: ${error.message}`);
-                }
-            }
-
-            if (remainingAmount > 0) {
-                alert(`All fees paid! Overpayment of ${formatCurrency(remainingAmount)} will be recorded as credit.`);
-            }
-
-            if (errors.length > 0) {
-                alert(`Payment recorded with some issues:\n- ${successCount} payments successful\n- ${errors.length} issues: ${errors.join('\n')}`);
-            } else {
-                alert(`✅ Payment of ${formatCurrency(amountPaid)} recorded successfully!\nDistributed across ${successCount} fee categories.`);
-            }
-
-            closeModal('paymentModal');
-            document.getElementById('paymentForm').reset();
-            
-            const feeSummary = document.getElementById('feeSummary');
-            if (feeSummary) {
-                feeSummary.innerHTML = 'Search and select a student to view outstanding fees.';
-            }
-            
-            const selectedName = document.getElementById('selectedStudentName');
-            if (selectedName) {
-                selectedName.textContent = '';
-            }
-            
-            const searchInput = document.getElementById('studentSearchInput');
-            if (searchInput) {
-                searchInput.value = '';
-            }
-            
-            const studentIdHidden = document.getElementById('selectedStudentId');
-            if (studentIdHidden) {
-                studentIdHidden.value = '';
-            }
-            
-            loadAllData();
-
-        } catch (error) {
-            alert('Error recording payment: ' + error.message);
-            console.error('Payment error:', error);
-        }
-    }
-
-    // =========================================================
-    // LOAD APPROVALS
-    // =========================================================
-
-    async function loadApprovals() {
-
-        const table =
-            document.getElementById(
-                'approvalTable'
-            );
+    if (!filteredStudents.length) {
 
         table.innerHTML =
             `<tr>
-                <td colspan="6" class="empty">
-                    Loading approvals...
+                <td
+                    colspan="8"
+                    class="empty"
+                >
+                    No Secondary School students found.
                 </td>
             </tr>`;
 
-        try {
+        return;
+    }
 
-            const data =
-                await apiRequest(
-                    '/api/approvals?sector=secondary'
+
+    /*
+       Only Secondary Finance Officer
+       can edit student fees.
+    */
+
+    const showEditButton =
+        canEdit &&
+        !isViewOnly;
+
+
+    table.innerHTML =
+        filteredStudents
+            .map(
+                student => {
+
+                    const fullName =
+                        student.student_name ||
+                        [
+                            student.first_name,
+                            student.middle_name,
+                            student.last_name
+                        ]
+                        .filter(Boolean)
+                        .join(' ');
+
+
+                    const expected =
+                        Number(
+                            student.total_due ||
+                            0
+                        );
+
+
+                    const paid =
+                        Number(
+                            student.total_paid ||
+                            0
+                        );
+
+
+                    const balance =
+                        Number(
+                            student.outstanding ||
+                            0
+                        );
+
+
+                    let statusText =
+                        'Unpaid';
+
+                    let statusClass =
+                        'unpaid';
+
+
+                    if (
+                        balance <= 0 &&
+                        expected > 0
+                    ) {
+
+                        statusText =
+                            'Paid';
+
+                        statusClass =
+                            'paid';
+
+                    } else if (
+                        paid > 0 &&
+                        balance > 0
+                    ) {
+
+                        statusText =
+                            'Partially Paid';
+
+                        statusClass =
+                            'partially-paid';
+
+                    } else if (
+                        paid > 0 &&
+                        balance <= 0
+                    ) {
+
+                        statusText =
+                            'Paid';
+
+                        statusClass =
+                            'paid';
+                    }
+
+
+                    return `
+                        <tr>
+
+                            <td>
+                                ${display(
+                                    student.admission_number
+                                )}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${display(fullName)}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${display(
+                                    student.class_name
+                                )}
+
+                                ${
+                                    student.arm
+                                        ? ` — ${display(student.arm)}`
+                                        : ''
+                                }
+                            </td>
+
+                            <td>
+                                ${formatCurrency(
+                                    expected
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatCurrency(
+                                    paid
+                                )}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${formatCurrency(
+                                        balance
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                <span
+                                    class="status ${statusClass}"
+                                >
+                                    ${statusText}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn view-btn"
+                                    onclick="viewStudentFinance(
+                                        ${Number(student.student_id)}
+                                    )"
+                                >
+                                    View
+                                </button>
+
+                                ${
+                                    showEditButton
+                                        ? `
+                                            <button
+                                                class="btn edit-btn"
+                                                onclick="editStudentFees(
+                                                    ${Number(student.student_id)}
+                                                )"
+                                            >
+                                                Edit
+                                            </button>
+                                        `
+                                        : ''
+                                }
+
+                            </td>
+
+                        </tr>
+                    `;
+                }
+            )
+            .join('');
+}
+
+
+/* =========================================================
+   VIEW STUDENT FINANCE
+========================================================= */
+
+function viewStudentFinance(studentId) {
+
+    window.location.href =
+        `finance-student.html?studentId=${studentId}&sector=secondary`;
+}
+
+
+/* =========================================================
+   EDIT STUDENT FEES
+========================================================= */
+
+function editStudentFees(studentId) {
+
+    /*
+       HARD FRONTEND BLOCK.
+
+       Even if something elsewhere calls this function,
+       a Secondary Manager cannot edit.
+    */
+
+    if (!canEdit) {
+
+        alert(
+            'Secondary Manager has view-only access. You cannot edit student fees.'
+        );
+
+        return;
+    }
+
+
+    window.location.href =
+        `finance-student-edit.html?studentId=${studentId}&sector=secondary`;
+}
+
+
+/* =========================================================
+   PAYMENT DATA
+========================================================= */
+
+let searchTimeout = null;
+
+let allSecondaryStudents = [];
+
+
+/* =========================================================
+   PAYMENT SETUP
+========================================================= */
+
+async function populatePaymentDropdowns() {
+
+    /*
+       NEVER allow a Manager to initialise
+       the payment-recording interface.
+    */
+
+    if (!canRecordPayment) {
+
+        console.warn(
+            'Payment interface blocked:',
+            {
+                role_id: roleId,
+                role_name: role,
+                sector: sector
+            }
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const studentData =
+            await apiRequest(
+                '/api/students?status=Active'
+            );
+
+
+        const allStudents =
+            Array.isArray(studentData)
+                ? studentData
+                : (
+                    studentData?.students ||
+                    []
                 );
 
-            approvals =
-                Array.isArray(data)
-                    ? data
-                    : [];
 
-            filteredApprovals =
-                [...approvals];
+        allSecondaryStudents =
+            allStudents.filter(
+                student => {
 
-            renderApprovals();
+                    const studentSector =
+                        String(
+                            student.sector ||
+                            student.school_section ||
+                            ''
+                        )
+                        .trim()
+                        .toLowerCase();
 
-            const pendingApprovals =
-                approvals.filter(
-                    approval =>
-                        approval.approval_status ===
-                        'Pending'
-                );
 
-            const pendingCount =
-                pendingApprovals.length;
+                    return (
+                        studentSector ===
+                            'secondary' ||
 
-            document
-                .getElementById('pendingCount')
-                .textContent =
-                pendingCount;
+                        studentSector ===
+                            'secondary school' ||
 
-            document
-                .getElementById('pendingCountBadge')
-                .textContent =
-                pendingCount;
+                        studentSector ===
+                            'jss' ||
 
-            document
-                .getElementById('pendingChanges')
-                .textContent =
-                pendingCount;
+                        studentSector ===
+                            'sss'
+                    );
+                }
+            );
 
-            document
-                .getElementById('approvalBanner')
-                .style.display =
-                pendingCount > 0
-                    ? 'flex'
-                    : 'none';
 
-        } catch (error) {
+        console.log(
+            '📊 Loaded students for search:',
+            allSecondaryStudents.length
+        );
+
+
+        const searchInput =
+            document.getElementById(
+                'studentSearchInput'
+            );
+
+
+        const resultsContainer =
+            document.getElementById(
+                'studentSearchResults'
+            );
+
+
+        if (
+            !searchInput ||
+            !resultsContainer
+        ) {
 
             console.error(
-                'APPROVAL ERROR:',
-                error
+                'Search elements not found'
             );
-
-            document
-                .getElementById('approvalMessage')
-                .innerHTML =
-                `<div class="error-message">
-                    ${display(error.message)}
-                </div>`;
-
-            table.innerHTML =
-                `<tr>
-                    <td colspan="6" class="empty">
-                        Error loading approvals:
-                        ${display(error.message)}
-                    </td>
-                </tr>`;
-        }
-    }
-
-    // =========================================================
-    // APPROVAL FILTER
-    // =========================================================
-
-    function applyApprovalFilters() {
-
-        const status =
-            document
-                .getElementById(
-                    'approvalStatusFilter'
-                )
-                .value;
-
-        filteredApprovals =
-            approvals.filter(
-                approval =>
-                    !status ||
-                    approval.approval_status ===
-                    status
-            );
-
-        renderApprovals();
-    }
-
-    // =========================================================
-    // RENDER APPROVALS
-    // =========================================================
-
-    function renderApprovals() {
-
-        const table =
-            document.getElementById(
-                'approvalTable'
-            );
-
-        document
-            .getElementById(
-                'approvalCount'
-            )
-            .textContent =
-            `${filteredApprovals.length} Item${
-                filteredApprovals.length === 1
-                    ? ''
-                    : 's'
-            }`;
-
-        if (!filteredApprovals.length) {
-
-            table.innerHTML =
-                `<tr>
-                    <td colspan="6" class="empty">
-                        No approvals found.
-                    </td>
-                </tr>`;
 
             return;
         }
 
+
+        const newSearch =
+            searchInput.cloneNode(
+                true
+            );
+
+
+        searchInput.parentNode.replaceChild(
+            newSearch,
+            searchInput
+        );
+
+
+        newSearch.addEventListener(
+            'input',
+            function() {
+
+                const searchTerm =
+                    this.value.trim();
+
+
+                if (!searchTerm) {
+
+                    resultsContainer.style.display =
+                        'none';
+
+                    document
+                        .getElementById(
+                            'selectedStudentId'
+                        )
+                        .value = '';
+
+                    document
+                        .getElementById(
+                            'selectedStudentName'
+                        )
+                        .textContent = '';
+
+                    document
+                        .getElementById(
+                            'feeSummary'
+                        )
+                        .innerHTML =
+                        'Search and select a student to view outstanding fees.';
+
+                    return;
+                }
+
+
+                if (searchTimeout) {
+
+                    clearTimeout(
+                        searchTimeout
+                    );
+                }
+
+
+                searchTimeout =
+                    setTimeout(
+                        () => {
+
+                            performStudentSearch(
+                                searchTerm
+                            );
+
+                        },
+                        300
+                    );
+            }
+        );
+
+
+        document.addEventListener(
+            'click',
+            function(e) {
+
+                if (
+                    !e.target.closest(
+                        '#studentSearchInput'
+                    ) &&
+                    !e.target.closest(
+                        '#studentSearchResults'
+                    )
+                ) {
+
+                    resultsContainer.style.display =
+                        'none';
+                }
+            }
+        );
+
+
+        async function performStudentSearch(
+            searchTerm
+        ) {
+
+            const term =
+                searchTerm
+                    .toLowerCase()
+                    .trim();
+
+
+            if (term.length < 2) {
+
+                resultsContainer.style.display =
+                    'none';
+
+                return;
+            }
+
+
+            const results =
+                allSecondaryStudents.filter(
+                    student => {
+
+                        const fullName =
+                            student.student_name ||
+                            [
+                                student.first_name,
+                                student.middle_name,
+                                student.last_name
+                            ]
+                            .filter(Boolean)
+                            .join(' ');
+
+
+                        const nameMatch =
+                            fullName
+                                .toLowerCase()
+                                .includes(term);
+
+
+                        const admissionMatch =
+                            (
+                                student.admission_number ||
+                                ''
+                            )
+                            .toLowerCase()
+                            .includes(term);
+
+
+                        return (
+                            nameMatch ||
+                            admissionMatch
+                        );
+                    }
+                );
+
+
+            const displayResults =
+                results.slice(0, 20);
+
+
+            if (!displayResults.length) {
+
+                resultsContainer.innerHTML =
+                    '<div style="padding:10px;color:#6b7280;">No students found.</div>';
+
+                resultsContainer.style.display =
+                    'block';
+
+                return;
+            }
+
+
+            let html = '';
+
+
+            displayResults.forEach(
+                student => {
+
+                    const fullName =
+                        student.student_name ||
+                        [
+                            student.first_name,
+                            student.middle_name,
+                            student.last_name
+                        ]
+                        .filter(Boolean)
+                        .join(' ');
+
+
+                    html += `
+                        <div
+                            class="search-result-item"
+                            style="
+                                padding:10px 12px;
+                                cursor:pointer;
+                                border-bottom:1px solid #f1f1f1;
+                                display:flex;
+                                justify-content:space-between;
+                                align-items:center;
+                            "
+                            onclick="selectStudent(
+                                ${student.student_id},
+                                '${String(fullName).replace(/'/g, "\\'")}',
+                                '${String(student.admission_number || '').replace(/'/g, "\\'")}'
+                            )"
+                        >
+
+                            <div>
+
+                                <strong>
+                                    ${fullName}
+                                </strong>
+
+                                <div
+                                    style="
+                                        font-size:12px;
+                                        color:#6b7280;
+                                    "
+                                >
+                                    ${
+                                        student.admission_number ||
+                                        'No admission number'
+                                    }
+                                    -
+                                    ${
+                                        student.class_name ||
+                                        'No class'
+                                    }
+                                </div>
+
+                            </div>
+
+                            <div
+                                style="
+                                    font-size:12px;
+                                    color:#1a3c6e;
+                                "
+                            >
+                                Select →
+                            </div>
+
+                        </div>
+                    `;
+                }
+            );
+
+
+            if (results.length > 20) {
+
+                html += `
+                    <div
+                        style="
+                            padding:10px;
+                            color:#6b7280;
+                            font-style:italic;
+                            text-align:center;
+                        "
+                    >
+                        + ${results.length - 20}
+                        more results
+                    </div>
+                `;
+            }
+
+
+            resultsContainer.innerHTML =
+                html;
+
+            resultsContainer.style.display =
+                'block';
+        }
+
+
+        window.selectStudent =
+            function(
+                studentId,
+                studentName,
+                admissionNumber
+            ) {
+
+                document
+                    .getElementById(
+                        'selectedStudentId'
+                    )
+                    .value =
+                    studentId;
+
+
+                document
+                    .getElementById(
+                        'selectedStudentName'
+                    )
+                    .textContent =
+                    `✅ Selected: ${studentName} (${admissionNumber})`;
+
+
+                document
+                    .getElementById(
+                        'studentSearchInput'
+                    )
+                    .value =
+                    studentName;
+
+
+                document
+                    .getElementById(
+                        'studentSearchResults'
+                    )
+                    .style.display =
+                    'none';
+
+
+                loadStudentFees(
+                    studentId
+                );
+            };
+
+
+        async function loadStudentFees(
+            studentId
+        ) {
+
+            const feeSummary =
+                document.getElementById(
+                    'feeSummary'
+                );
+
+
+            if (!feeSummary) {
+                return;
+            }
+
+
+            try {
+
+                const feeData =
+                    await apiRequest(
+                        '/api/payments/students?sector=secondary&academic_year=2026/2027'
+                    );
+
+
+                const student =
+                    feeData?.students?.find(
+                        s =>
+                            s.student_id ==
+                            studentId
+                    );
+
+
+                if (
+                    student &&
+                    student.fees &&
+                    student.fees.length > 0
+                ) {
+
+                    const totalBalance =
+                        student.outstanding ||
+                        0;
+
+
+                    const totalExpected =
+                        student.total_due ||
+                        0;
+
+
+                    const totalPaid =
+                        student.total_paid ||
+                        0;
+
+
+                    let html = `
+
+                        <div
+                            style="
+                                display:grid;
+                                grid-template-columns:1fr 1fr;
+                                gap:8px;
+                                margin-bottom:8px;
+                            "
+                        >
+
+                            <div>
+                                <strong>
+                                    Total Expected:
+                                </strong>
+                                ${formatCurrency(
+                                    totalExpected
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Total Paid:
+                                </strong>
+                                ${formatCurrency(
+                                    totalPaid
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Outstanding Balance:
+                                </strong>
+
+                                <span
+                                    style="
+                                        color:#dc2626;
+                                        font-weight:bold;
+                                    "
+                                >
+                                    ${formatCurrency(
+                                        totalBalance
+                                    )}
+                                </span>
+
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Payment Status:
+                                </strong>
+
+                                ${
+                                    totalBalance <= 0 && totalExpected > 0
+                                        ? 'Paid'
+                                        : totalPaid > 0
+                                            ? 'Partially Paid'
+                                            : 'Unpaid'
+                                }
+
+                            </div>
+
+                        </div>
+
+                        <hr style="margin:8px 0;">
+
+                        <div
+                            style="
+                                max-height:150px;
+                                overflow-y:auto;
+                                font-size:12px;
+                            "
+                        >
+                    `;
+
+
+                    student.fees.forEach(
+                        fee => {
+
+                            const amountDue =
+                                Number(
+                                    fee.amount_due ||
+                                    fee.expected ||
+                                    0
+                                );
+
+                            const amountPaid =
+                                Number(
+                                    fee.amount_paid ||
+                                    fee.paid ||
+                                    0
+                                );
+
+                            const balance =
+                                Number(
+                                    fee.balance ??
+                                    (amountDue - amountPaid)
+                                );
+
+                            const status =
+                                balance <= 0
+                                    ? '✅ Paid'
+                                    : '⏳ Pending';
+
+                            const feeName =
+                                fee.fee_types?.fee_name ||
+                                fee.fee_name ||
+                                'Fee';
+
+
+                            html += `
+
+                                <div
+                                    style="
+                                        display:flex;
+                                        justify-content:space-between;
+                                        padding:4px 0;
+                                        border-bottom:1px solid #f1f1f1;
+                                    "
+                                >
+
+                                    <span>
+                                        ${feeName}
+                                    </span>
+
+                                    <span>
+                                        Balance:
+                                        ${formatCurrency(
+                                            balance
+                                        )}
+                                    </span>
+
+                                    <span
+                                        style="
+                                            font-size:11px;
+                                        "
+                                    >
+                                        ${status}
+                                    </span>
+
+                                </div>
+
+                            `;
+                        }
+                    );
+
+
+                    html +=
+                        '</div>';
+
+
+                    feeSummary.innerHTML =
+                        html;
+
+                } else {
+
+                    feeSummary.innerHTML = `
+
+                        <div
+                            style="
+                                color:#6b7280;
+                            "
+                        >
+                            No fees found for this student.
+
+                            <br>
+
+                            <span
+                                style="
+                                    font-size:12px;
+                                "
+                            >
+                                Total Expected:
+                                ${formatCurrency(0)}
+                            </span>
+
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+
+                console.error(
+                    'Error fetching student fees:',
+                    error
+                );
+
+                feeSummary.innerHTML =
+                    'Error loading fee details.';
+            }
+        }
+
+    } catch (error) {
+
+        console.error(
+            'PAYMENT SETUP ERROR:',
+            error
+        );
+
+        alert(
+            'Unable to load students: ' +
+            error.message
+        );
+    }
+}
+
+
+/* =========================================================
+   SUBMIT PAYMENT
+========================================================= */
+
+async function submitPayment(event) {
+
+    event.preventDefault();
+
+
+    /*
+       HARD SECURITY/UI CHECK.
+
+       Secondary Manager can NEVER submit
+       a payment from this page.
+    */
+
+    if (!canRecordPayment) {
+
+        alert(
+            'Secondary Manager has view-only access. Only the Secondary Finance Officer can record payments.'
+        );
+
+        return;
+    }
+
+
+    const studentIdInput =
+        document.getElementById(
+            'selectedStudentId'
+        );
+
+
+    const amountInput =
+        document.getElementById(
+            'paymentAmount'
+        );
+
+
+    const methodSelect =
+        document.getElementById(
+            'paymentMethod'
+        );
+
+
+    const slipInput =
+        document.getElementById(
+            'paymentSlip'
+        );
+
+
+    const refInput =
+        document.getElementById(
+            'paymentRef'
+        );
+
+
+    const yearInput =
+        document.getElementById(
+            'paymentYear'
+        );
+
+
+    const purposeInput =
+        document.getElementById(
+            'paymentNotes'
+        );
+
+
+    if (!studentIdInput) {
+
+        alert(
+            'Error: Student selection element not found. Please refresh the page.'
+        );
+
+        return;
+    }
+
+
+    if (
+        !amountInput ||
+        !methodSelect
+    ) {
+
+        alert(
+            'Error: Form elements not found. Please refresh the page.'
+        );
+
+        return;
+    }
+
+
+    const studentId =
+        studentIdInput.value;
+
+
+    const amountPaid =
+        parseFloat(
+            amountInput.value
+        );
+
+
+    const paymentMethod =
+        methodSelect.value;
+
+
+    const paymentSlip =
+        slipInput
+            ? slipInput.value
+            : '';
+
+
+    const bankRef =
+        refInput
+            ? refInput.value
+            : '';
+
+
+    const academicYear =
+        yearInput
+            ? yearInput.value
+            : '2026/2027';
+
+
+    const purpose =
+        purposeInput
+            ? purposeInput.value
+            : '';
+
+
+    if (!studentId) {
+
+        alert(
+            'Please search and select a student.'
+        );
+
+        return;
+    }
+
+
+    if (
+        !amountPaid ||
+        amountPaid <= 0
+    ) {
+
+        alert(
+            'Please enter a valid amount.'
+        );
+
+        return;
+    }
+
+
+    if (!paymentMethod) {
+
+        alert(
+            'Please select a payment method.'
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const feeData =
+            await apiRequest(
+                '/api/payments/students?sector=secondary&academic_year=2026/2027'
+            );
+
+
+        const student =
+            feeData?.students?.find(
+                s =>
+                    s.student_id ==
+                    studentId
+            );
+
+
+        if (
+            !student ||
+            !student.fees ||
+            student.fees.length === 0
+        ) {
+
+            alert(
+                'This student has no fees to pay.'
+            );
+
+            return;
+        }
+
+
+        const pendingFees =
+            student.fees.filter(
+                fee => {
+                    const amountDue = Number(fee.amount_due || fee.expected || 0);
+                    const amountPaid = Number(fee.amount_paid || fee.paid || 0);
+                    const balance = Number(fee.balance ?? (amountDue - amountPaid));
+                    return balance > 0;
+                }
+            );
+
+
+        if (!pendingFees.length) {
+
+            alert(
+                'This student has no outstanding fees. All fees are paid!'
+            );
+
+            return;
+        }
+
+
+        const totalOutstanding =
+            pendingFees.reduce(
+                (sum, fee) => {
+                    const amountDue = Number(fee.amount_due || fee.expected || 0);
+                    const amountPaid = Number(fee.amount_paid || fee.paid || 0);
+                    const balance = Number(fee.balance ?? (amountDue - amountPaid));
+                    return sum + balance;
+                },
+                0
+            );
+
+
+        if (
+            amountPaid >
+            totalOutstanding
+        ) {
+
+            if (
+                !confirm(
+                    `Amount (${formatCurrency(amountPaid)}) exceeds total outstanding (${formatCurrency(totalOutstanding)}). The excess will be recorded as overpayment. Continue?`
+                )
+            ) {
+
+                return;
+            }
+        }
+
+
+        pendingFees.sort(
+            (a, b) =>
+                a.student_fee_id -
+                b.student_fee_id
+        );
+
+
+        let remainingAmount =
+            amountPaid;
+
+
+        const distribution = [];
+
+
+        for (
+            const fee
+            of pendingFees
+        ) {
+
+            if (
+                remainingAmount <= 0
+            ) {
+                break;
+            }
+
+            const amountDue = Number(fee.amount_due || fee.expected || 0);
+            const amountPaidForFee = Number(fee.amount_paid || fee.paid || 0);
+            const feeBalance = Number(fee.balance ?? (amountDue - amountPaidForFee));
+
+
+            const amountToPay =
+                Math.min(
+                    remainingAmount,
+                    feeBalance
+                );
+
+
+            if (
+                amountToPay > 0
+            ) {
+
+                distribution.push({
+
+                    student_fee_id:
+                        fee.student_fee_id,
+
+                    amount:
+                        amountToPay,
+
+                    fee_name:
+                        fee.fee_types?.fee_name ||
+                        fee.fee_name ||
+                        'Fee'
+
+                });
+
+
+                remainingAmount -= amountToPay;
+            }
+        }
+
+
+        let successCount = 0;
+
+        const errors = [];
+
+
+        for (
+            const item
+            of distribution
+        ) {
+
+            try {
+
+                const result =
+                    await apiRequest(
+                        '/api/payments',
+                        {
+                            method: 'POST',
+
+                            body:
+                                JSON.stringify({
+
+                                    student_id:
+                                        studentId,
+
+                                    fee_id:
+                                        item.student_fee_id,
+
+                                    amount_paid:
+                                        item.amount,
+
+                                    payment_method:
+                                        paymentMethod,
+
+                                    payment_slip_number:
+                                        paymentSlip ||
+                                        null,
+
+                                    bank_reference:
+                                        bankRef ||
+                                        null,
+
+                                    purpose:
+                                        purpose ||
+                                        `Auto-distributed payment - ${item.fee_name}`,
+
+                                    notes:
+                                        null,
+
+                                    academic_year:
+                                        academicYear
+
+                                })
+                        }
+                    );
+
+
+                if (result) {
+
+                    successCount++;
+                }
+
+            } catch (error) {
+
+                errors.push(
+                    `Failed to record payment for ${item.fee_name}: ${error.message}`
+                );
+            }
+        }
+
+
+        if (
+            remainingAmount > 0
+        ) {
+
+            alert(
+                `All fees paid! Overpayment of ${formatCurrency(remainingAmount)} will be recorded as credit.`
+            );
+        }
+
+
+        if (
+            errors.length > 0
+        ) {
+
+            alert(
+                `Payment recorded with some issues:
+- ${successCount} payments successful
+- ${errors.length} issues:
+${errors.join('\n')}`
+            );
+
+        } else {
+
+            alert(
+                `✅ Payment of ${formatCurrency(amountPaid)} recorded successfully!
+Distributed across ${successCount} fee categories.`
+            );
+        }
+
+
+        closeModal(
+            'paymentModal'
+        );
+
+
+        document
+            .getElementById(
+                'paymentForm'
+            )
+            .reset();
+
+
+        const feeSummary =
+            document.getElementById(
+                'feeSummary'
+            );
+
+
+        if (feeSummary) {
+
+            feeSummary.innerHTML =
+                'Search and select a student to view outstanding fees.';
+        }
+
+
+        const selectedName =
+            document.getElementById(
+                'selectedStudentName'
+            );
+
+
+        if (selectedName) {
+
+            selectedName.textContent =
+                '';
+        }
+
+
+        const searchInput =
+            document.getElementById(
+                'studentSearchInput'
+            );
+
+
+        if (searchInput) {
+
+            searchInput.value =
+                '';
+        }
+
+
+        const studentIdHidden =
+            document.getElementById(
+                'selectedStudentId'
+            );
+
+
+        if (studentIdHidden) {
+
+            studentIdHidden.value =
+                '';
+        }
+
+
+        loadAllData();
+
+    } catch (error) {
+
+        alert(
+            'Error recording payment: ' +
+            error.message
+        );
+
+        console.error(
+            'Payment error:',
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   APPROVALS
+========================================================= */
+
+async function loadApprovals() {
+
+    const table =
+        document.getElementById(
+            'approvalTable'
+        );
+
+
+    table.innerHTML =
+        `<tr>
+            <td
+                colspan="6"
+                class="empty"
+            >
+                Loading approvals...
+            </td>
+        </tr>`;
+
+
+    try {
+
+        const data =
+            await apiRequest(
+                '/api/approvals?sector=secondary'
+            );
+
+
+        approvals =
+            Array.isArray(data)
+                ? data
+                : [];
+
+
+        filteredApprovals =
+            [...approvals];
+
+
+        renderApprovals();
+
+
+        const pendingApprovals =
+            approvals.filter(
+                approval =>
+                    approval.approval_status ===
+                    'Pending'
+            );
+
+
+        const pendingCount =
+            pendingApprovals.length;
+
+
+        document
+            .getElementById(
+                'pendingCount'
+            )
+            .textContent =
+            pendingCount;
+
+
+        document
+            .getElementById(
+                'pendingCountBadge'
+            )
+            .textContent =
+            pendingCount;
+
+
+        document
+            .getElementById(
+                'pendingChanges'
+            )
+            .textContent =
+            pendingCount;
+
+
+        document
+            .getElementById(
+                'approvalBanner'
+            )
+            .style.display =
+            pendingCount > 0
+                ? 'flex'
+                : 'none';
+
+    } catch (error) {
+
+        console.error(
+            'APPROVAL ERROR:',
+            error
+        );
+
+
+        document
+            .getElementById(
+                'approvalMessage'
+            )
+            .innerHTML =
+            `<div class="error-message">
+                ${display(error.message)}
+            </div>`;
+
+
         table.innerHTML =
-            filteredApprovals
-                .map(approval => {
+            `<tr>
+                <td
+                    colspan="6"
+                    class="empty"
+                >
+                    Error loading approvals:
+                    ${display(error.message)}
+                </td>
+            </tr>`;
+    }
+}
+
+
+/* =========================================================
+   APPROVAL FILTER
+========================================================= */
+
+function applyApprovalFilters() {
+
+    const status =
+        document
+            .getElementById(
+                'approvalStatusFilter'
+            )
+            .value;
+
+
+    filteredApprovals =
+        approvals.filter(
+            approval =>
+                !status ||
+                approval.approval_status ===
+                    status
+        );
+
+
+    renderApprovals();
+}
+
+
+/* =========================================================
+   RENDER APPROVALS
+========================================================= */
+
+function renderApprovals() {
+
+    const table =
+        document.getElementById(
+            'approvalTable'
+        );
+
+
+    document
+        .getElementById(
+            'approvalCount'
+        )
+        .textContent =
+        `${filteredApprovals.length} Item${
+            filteredApprovals.length === 1
+                ? ''
+                : 's'
+        }`;
+
+
+    if (!filteredApprovals.length) {
+
+        table.innerHTML =
+            `<tr>
+                <td
+                    colspan="6"
+                    class="empty"
+                >
+                    No approvals found.
+                </td>
+            </tr>`;
+
+        return;
+    }
+
+
+    table.innerHTML =
+        filteredApprovals
+            .map(
+                approval => {
 
                     const status =
                         approval.approval_status ||
                         'Pending';
+
 
                     const statusClass =
                         status === 'Approved'
@@ -1414,7 +4252,15 @@
                                 ? 'pending'
                                 : 'rejected';
 
-                    let actionButtons = '';
+
+                    let actionButtons =
+                        '';
+
+
+                    /*
+                       ONLY Proprietor and Administrator
+                       can approve/reject.
+                    */
 
                     if (
                         canApprove &&
@@ -1435,11 +4281,13 @@
                             </button>`;
                     }
 
+
                     const details =
                         approval.description ||
                         approval.fee_name ||
                         approval.record_type ||
                         '—';
+
 
                     return `
                         <tr>
@@ -1465,11 +4313,13 @@
                             </td>
 
                             <td>
+
                                 <span
                                     class="status ${statusClass}"
                                 >
                                     ${status}
                                 </span>
+
                             </td>
 
                             <td>
@@ -1484,358 +4334,719 @@
 
                         </tr>
                     `;
+                }
+            )
+            .join('');
+}
 
-                })
-                .join('');
+
+/* =========================================================
+   APPROVAL MODAL
+========================================================= */
+
+let currentApprovalId = null;
+
+let currentApprovalType = null;
+
+
+function openApprovalModal(
+    type,
+    id
+) {
+
+    if (!canApprove) {
+
+        alert(
+            'You do not have permission to approve items.'
+        );
+
+        return;
     }
 
-    // =========================================================
-    // APPROVAL MODAL
-    // =========================================================
 
-    let currentApprovalId = null;
-    let currentApprovalType = null;
+    currentApprovalType =
+        type;
 
-    function openApprovalModal(type, id) {
 
-        if (!canApprove) {
+    currentApprovalId =
+        id;
 
-            alert(
-                'You do not have permission to approve items.'
-            );
 
-            return;
-        }
+    const approval =
+        approvals.find(
+            item =>
+                item.approval_id ===
+                id
+        );
 
-        currentApprovalType =
-            type;
 
-        currentApprovalId =
-            id;
+    let detailsHTML =
+        `<div class="balance-box">
 
-        const approval =
-            approvals.find(
-                item =>
-                    item.approval_id === id
-            );
+            <div
+                style="
+                    display:grid;
+                    grid-template-columns:1fr 1fr;
+                    gap:10px;
+                "
+            >
 
-        let detailsHTML =
-            `<div class="balance-box">
-
-                <div
-                    style="
-                        display:grid;
-                        grid-template-columns:1fr 1fr;
-                        gap:10px;
-                    "
-                >
-
-                    <div>
-                        <strong>Type:</strong>
-                        ${display(type)}
-                    </div>
-
-                    <div>
-                        <strong>ID:</strong>
-                        ${display(id)}
-                    </div>
-
-                    ${
-                        approval
-                            ? `
-                                <div>
-                                    <strong>Amount:</strong>
-                                    ${formatCurrency(
-                                        approval.amount
-                                    )}
-                                </div>
-                            `
-                            : ''
-                    }
-
-                    ${
-                        approval
-                            ? `
-                                <div
-                                    style="
-                                        grid-column:1/-1;
-                                    "
-                                >
-                                    <strong>
-                                        Details:
-                                    </strong>
-
-                                    ${display(
-                                        approval.description ||
-                                        approval.fee_name ||
-                                        ''
-                                    )}
-                                </div>
-                            `
-                            : ''
-                    }
-
+                <div>
+                    <strong>Type:</strong>
+                    ${display(type)}
                 </div>
 
-            </div>`;
+                <div>
+                    <strong>ID:</strong>
+                    ${display(id)}
+                </div>
 
-        document
-            .getElementById(
-                'approvalDetails'
-            )
-            .innerHTML =
-            detailsHTML;
+                ${
+                    approval
+                        ? `
+                            <div>
+                                <strong>Amount:</strong>
+                                ${formatCurrency(
+                                    approval.amount
+                                )}
+                            </div>
+                        `
+                        : ''
+                }
 
+                ${
+                    approval
+                        ? `
+                            <div
+                                style="
+                                    grid-column:1/-1;
+                                "
+                            >
+
+                                <strong>
+                                    Details:
+                                </strong>
+
+                                ${display(
+                                    approval.description ||
+                                    approval.fee_name ||
+                                    ''
+                                )}
+
+                            </div>
+                        `
+                        : ''
+                }
+
+            </div>
+
+        </div>`;
+
+
+    document
+        .getElementById(
+            'approvalDetails'
+        )
+        .innerHTML =
+        detailsHTML;
+
+
+    document
+        .getElementById(
+            'approvalNotes'
+        )
+        .value =
+        '';
+
+
+    document
+        .getElementById(
+            'approvalModal'
+        )
+        .style.display =
+        'block';
+}
+
+
+/* =========================================================
+   APPROVAL DECISION
+========================================================= */
+
+async function submitApprovalDecision(
+    decision
+) {
+
+    if (!canApprove) {
+
+        alert(
+            'You do not have permission to approve or reject items.'
+        );
+
+        return;
+    }
+
+
+    if (!currentApprovalId) {
+        return;
+    }
+
+
+    const notes =
         document
             .getElementById(
                 'approvalNotes'
             )
-            .value = '';
+            .value
+            .trim();
 
-        document
-            .getElementById(
-                'approvalModal'
-            )
-            .style.display =
-            'block';
-    }
 
-    // =========================================================
-    // SUBMIT APPROVAL DECISION - UPDATED FOR PAYMENT APPROVALS
-    // =========================================================
-
-    async function submitApprovalDecision(
-        decision
+    if (
+        decision === 'reject' &&
+        !notes
     ) {
 
-        if (!currentApprovalId) {
-            return;
-        }
+        alert(
+            'Please provide a reason for rejection.'
+        );
 
-        const notes =
-            document
-                .getElementById(
-                    'approvalNotes'
-                )
-                .value
-                .trim();
+        return;
+    }
 
-        if (
-            decision === 'reject' &&
-            !notes
-        ) {
+
+    if (
+        decision === 'reject' &&
+        !confirm(
+            'Are you sure you want to reject this request?'
+        )
+    ) {
+
+        return;
+    }
+
+
+    if (
+        decision === 'approve' &&
+        !confirm(
+            'Are you sure you want to approve this request?'
+        )
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        const approval =
+            approvals.find(
+                item =>
+                    item.approval_id ===
+                    currentApprovalId
+            );
+
+
+        if (!approval) {
 
             alert(
-                'Please provide a reason for rejection.'
+                'Could not find the approval record.'
             );
 
             return;
         }
 
-        if (
-            decision === 'reject' &&
-            !confirm(
-                'Are you sure you want to reject this request?'
-            )
-        ) {
-            return;
-        }
+
+        let url;
+
+        let body = {};
+
 
         if (
-            decision === 'approve' &&
-            !confirm(
-                'Are you sure you want to approve this request?'
-            )
+            approval.record_type ===
+            'Payment'
         ) {
-            return;
-        }
 
-        try {
+            if (
+                decision ===
+                'approve'
+            ) {
 
-            const approval =
-                approvals.find(
-                    item =>
-                        item.approval_id ===
-                        currentApprovalId
-                );
+                url =
+                    `/api/approvals/${approval.approval_id}/approve-payment`;
 
-            if (!approval) {
-
-                alert(
-                    'Could not find the approval record.'
-                );
-
-                return;
-            }
-
-            let url;
-            let body = {};
-
-            if (approval.record_type === 'Payment') {
-                if (decision === 'approve') {
-                    url = `/api/approvals/${approval.approval_id}/approve-payment`;
-                    body = { approval_notes: notes || 'Payment approved' };
-                } else {
-                    url = `/api/approvals/${approval.approval_id}/reject-payment`;
-                    body = { rejection_reason: notes || 'Payment rejected' };
-                }
-            } else {
-                url = `/api/approvals/${approval.approval_id}/${decision}`;
                 body = {
                     approval_notes:
                         notes ||
-                        `Reviewed and ${decision}d.`
+                        'Payment approved'
+                };
+
+            } else {
+
+                url =
+                    `/api/approvals/${approval.approval_id}/reject-payment`;
+
+                body = {
+                    rejection_reason:
+                        notes ||
+                        'Payment rejected'
                 };
             }
 
-            const result =
-                await apiRequest(
-                    url,
-                    {
-                        method: 'PUT',
+        } else {
 
-                        body:
-                            JSON.stringify(body)
-                    }
-                );
+            url =
+                `/api/approvals/${approval.approval_id}/${decision}`;
 
-            if (result) {
+            body = {
 
-                alert(
-                    `Request ${
-                        decision === 'approve'
-                            ? 'approved'
-                            : 'rejected'
-                    } successfully!`
-                );
+                approval_notes:
+                    notes ||
+                    `Reviewed and ${decision}d.`
+            };
+        }
 
-                closeModal(
-                    'approvalModal'
-                );
 
-                currentApprovalId =
-                    null;
+        const result =
+            await apiRequest(
+                url,
+                {
+                    method: 'PUT',
 
-                currentApprovalType =
-                    null;
+                    body:
+                        JSON.stringify(body)
+                }
+            );
 
-                await loadAllData();
-            }
 
-        } catch (error) {
+        if (result) {
 
             alert(
-                'Error: ' +
-                error.message
+                `Request ${
+                    decision === 'approve'
+                        ? 'approved'
+                        : 'rejected'
+                } successfully!`
             );
+
+
+            closeModal(
+                'approvalModal'
+            );
+
+
+            currentApprovalId =
+                null;
+
+
+            currentApprovalType =
+                null;
+
+
+            await loadAllData();
         }
+
+    } catch (error) {
+
+        alert(
+            'Error: ' +
+            error.message
+        );
+    }
+}
+
+
+/* =========================================================
+   LOAD SUMMARY
+========================================================= */
+
+async function loadSummary() {
+
+    try {
+
+        const data =
+            await apiRequest(
+                '/api/payments/summary?sector=secondary&academic_year=2026/2027'
+            );
+
+
+        const summary =
+            data?.summary ||
+            {};
+
+
+        document
+            .getElementById(
+                'totalExpected'
+            )
+            .textContent =
+            formatCurrency(
+                summary.total_expected
+            );
+
+
+        document
+            .getElementById(
+                'totalCollected'
+            )
+            .textContent =
+            formatCurrency(
+                summary.total_collected
+            );
+
+
+        document
+            .getElementById(
+                'totalOutstanding'
+            )
+            .textContent =
+            formatCurrency(
+                summary.total_outstanding
+            );
+
+
+        document
+            .getElementById(
+                'totalStudents'
+            )
+            .textContent =
+            summary.total_students ||
+            0;
+
+    } catch (error) {
+
+        console.error(
+            'SUMMARY ERROR:',
+            error
+        );
+
+
+        document
+            .getElementById(
+                'overviewMessage'
+            )
+            .innerHTML =
+            `<div class="error-message">
+                ${display(error.message)}
+            </div>`;
+    }
+}
+
+
+/* =========================================================
+   LOAD PAYMENT HISTORY
+========================================================= */
+
+async function loadPaymentHistory() {
+
+    const table =
+        document.getElementById(
+            'paymentTable'
+        );
+
+    if (!table) {
+        return;
     }
 
-    // =========================================================
-    // LOAD SUMMARY
-    // =========================================================
 
-    async function loadSummary() {
+    table.innerHTML =
+        `<tr>
+            <td
+                colspan="7"
+                class="empty"
+            >
+                Loading payments...
+            </td>
+        </tr>`;
 
-        try {
 
-            const data =
-                await apiRequest(
-                    '/api/payments/summary?sector=secondary&academic_year=2026/2027'
-                );
+    try {
 
-            const summary =
-                data?.summary || {};
-
-            document
-                .getElementById(
-                    'totalExpected'
-                )
-                .textContent =
-                formatCurrency(
-                    summary.total_expected
-                );
-
-            document
-                .getElementById(
-                    'totalCollected'
-                )
-                .textContent =
-                formatCurrency(
-                    summary.total_collected
-                );
-
-            document
-                .getElementById(
-                    'totalOutstanding'
-                )
-                .textContent =
-                formatCurrency(
-                    summary.total_outstanding
-                );
-
-            document
-                .getElementById(
-                    'totalStudents'
-                )
-                .textContent =
-                summary.total_students || 0;
-
-        } catch (error) {
-
-            console.error(
-                'SUMMARY ERROR:',
-                error
+        const data =
+            await apiRequest(
+                '/api/payments?sector=secondary&academic_year=2026/2027'
             );
 
-            document
-                .getElementById(
-                    'overviewMessage'
-                )
-                .innerHTML =
-                `<div class="error-message">
+
+        console.log(
+            'SECONDARY PAYMENT HISTORY:',
+            data
+        );
+
+
+        const payments =
+            Array.isArray(data?.payments)
+                ? data.payments
+                : [];
+
+
+        if (!payments.length) {
+
+            table.innerHTML =
+                `<tr>
+                    <td
+                        colspan="7"
+                        class="empty"
+                    >
+                        No payment records found.
+                    </td>
+                </tr>`;
+
+            return;
+        }
+
+        // Group payments by payment_id to show bulk transactions
+        const groupedPayments = {};
+
+        payments.forEach(payment => {
+            const key = payment.payment_id || payment.id;
+            
+            if (!groupedPayments[key]) {
+                groupedPayments[key] = {
+                    payment_id: key,
+                    payment_date: payment.payment_date || payment.created_at,
+                    payment_method: payment.payment_method || 'N/A',
+                    payment_slip_number: payment.payment_slip_number || 'N/A',
+                    bank_reference: payment.bank_reference || 'N/A',
+                    approval_status: payment.approval_status || 'approved',
+                    total_amount: 0,
+                    // Get student info
+                    student_name: payment.student_name || '',
+                    admission_number: payment.admission_number || ''
+                };
+            }
+            
+            groupedPayments[key].total_amount += Number(payment.amount_paid || 0);
+        });
+
+        // Convert to array and sort by date (newest first)
+        const groupedPaymentList = Object.values(groupedPayments)
+            .sort((a, b) => new Date(b.payment_date) - new Date(a.payment_date));
+
+
+        document
+            .getElementById(
+                'paymentCount'
+            )
+            .textContent =
+            `${groupedPaymentList.length} Payment${groupedPaymentList.length === 1 ? '' : 's'}`;
+
+
+        table.innerHTML =
+            groupedPaymentList
+                .map(payment => {
+
+                    const status =
+                        String(
+                            payment.approval_status ||
+                            'Pending'
+                        );
+
+
+                    const statusLower =
+                        status.toLowerCase();
+
+
+                    let statusClass =
+                        'pending';
+
+
+                    if (
+                        statusLower ===
+                        'approved'
+                    ) {
+
+                        statusClass =
+                            'approved';
+
+                    } else if (
+                        statusLower ===
+                        'rejected'
+                    ) {
+
+                        statusClass =
+                            'rejected';
+                    }
+
+
+                    const studentName =
+                        payment.student_name ||
+                        '—';
+
+
+                    const admission =
+                        payment.admission_number ||
+                        '—';
+
+
+                    return `
+                        <tr>
+
+                            <td>
+                                ${formatDate(
+                                    payment.payment_date
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    display(admission)
+                                )}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${escapeHTML(
+                                        display(studentName)
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${formatCurrency(payment.total_amount)}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    display(payment.payment_method)
+                                )}
+                            </td>
+
+                            <td>
+                                <span
+                                    class="status ${statusClass}"
+                                >
+                                    ${escapeHTML(status)}
+                                </span>
+                            </td>
+
+                            <td>
+                                <button
+                                    class="btn view-btn"
+                                    onclick="viewPayment(
+                                        ${Number(payment.payment_id)}
+                                    )"
+                                >
+                                    View
+                                </button>
+                            </td>
+
+                        </tr>
+                    `;
+                })
+                .join('');
+
+    } catch (error) {
+
+        console.error(
+            'PAYMENT HISTORY ERROR:',
+            error
+        );
+
+
+        document
+            .getElementById(
+                'paymentMessage'
+            )
+            .innerHTML =
+            `<div class="error-message">
+                ${display(error.message)}
+            </div>`;
+
+
+        table.innerHTML =
+            `<tr>
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+                    Error loading payments:
                     ${display(error.message)}
-                </div>`;
-        }
+                </td>
+            </tr>`;
+    }
+}
+
+/* =========================================================
+   PAYMENT FILTERS
+========================================================= */
+
+function applyPaymentFilters() {
+
+    /*
+       Kept as a safe placeholder for the existing payment
+       history interface. Filtering can be applied to the
+       loaded payment array if the existing implementation
+       contains local filtering.
+    */
+
+    loadPaymentHistory();
+}
+
+
+/* =========================================================
+   VIEW PAYMENT
+========================================================= */
+
+function viewPayment(paymentId) {
+
+    if (!paymentId) {
+        return;
     }
 
-    // =========================================================
-    // LOAD ALL DATA
-    // =========================================================
+    window.location.href =
+        `finance-payment.html?paymentId=${paymentId}&sector=secondary`;
+}
 
-    async function loadAllData() {
 
-        await Promise.all([
-            loadSummary(),
-            loadStudents(),
-            loadApprovals()
-        ]);
-    }
+/* =========================================================
+   LOAD ALL DATA
+========================================================= */
 
-    // =========================================================
-    // LOGOUT
-    // =========================================================
+async function loadAllData() {
 
-    function logout() {
+    await Promise.all([
+        loadSummary(),
+        loadStudents(),
+        loadPaymentHistory(),
+        loadApprovals()
+    ]);
+}
 
-        sessionStorage.removeItem(
-            'authToken'
-        );
 
-        sessionStorage.removeItem(
-            'user'
-        );
+/* =========================================================
+   LOGOUT
+========================================================= */
 
-        window.location.href =
-            '/login.html';
-    }
+function logout() {
 
-    // =========================================================
-    // INITIAL LOAD
-    // =========================================================
+    sessionStorage.removeItem(
+        'authToken'
+    );
 
-    loadAllData();
+    sessionStorage.removeItem(
+        'user'
+    );
 
-</script>  
+    window.location.href =
+        '/login.html';
+}
+
+
+/* =========================================================
+   INITIALIZE ROLE-BASED UI
+========================================================= */
+
+applyFinancePermissions();
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadAllData();
+
+</script>
+
 </body>
 </html>

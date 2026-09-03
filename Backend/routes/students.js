@@ -1,1003 +1,2278 @@
 const express = require('express');
 const multer = require('multer');
 const supabase = require('../Config/db');
+
 const {
     authenticateToken,
     requireRoles,
-    isAdminOrProprietor,
-    isPrimaryManager,
-    isSecondaryManager
+    getRoleId,
+    getSector,
+    ROLE_IDS
 } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+/* =========================================================
+   ROLE CONSTANTS
+   ========================================================= */
+
+const PROPRIETOR = ROLE_IDS.PROPRIETOR;       // 1
+const ADMINISTRATOR = ROLE_IDS.ADMINISTRATOR; // 2
+const FINANCE = ROLE_IDS.FINANCE;             // 3
+const TEACHER = ROLE_IDS.TEACHER;             // 4
+const STUDENT = ROLE_IDS.STUDENT;             // 5
+const MANAGER = ROLE_IDS.MANAGER;             // 6
+
+const MANAGEMENT_ROLES = [
+    PROPRIETOR,
+    ADMINISTRATOR,
+    MANAGER
+];
+
+const FINANCE_ACCESS_ROLES = [
+    PROPRIETOR,
+    ADMINISTRATOR,
+    FINANCE,
+    MANAGER
+];
+
+
+/* =========================================================
+   MULTER
+   ========================================================= */
+
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
     fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+        const allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
-            cb(new Error('Invalid file type. Only JPEG, PNG, PDF, DOC, DOCX are allowed.'));
+            cb(new Error('Unsupported file type.'));
         }
     }
 });
 
-async function uploadFileToSupabase(file, bucket, folder, fileName) {
-    if (!file) return null;
-    try {
-        const filePath = `${folder}/${fileName}`;
-        const { error } = await supabase.storage.from(bucket).upload(filePath, file.buffer, {
-            contentType: file.mimetype,
-            cacheControl: '3600',
-            upsert: true
-        });
-        if (error) {
-            console.error('Upload error:', error.message);
-            return null;
-        }
-        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
-        return urlData.publicUrl;
-    } catch (error) {
-        console.error('File upload exception:', error.message);
+
+/* =========================================================
+   STORAGE UPLOAD HELPER
+   ========================================================= */
+
+async function uploadToStorage(
+    bucket,
+    file,
+    folder = ''
+) {
+    if (!file) {
         return null;
     }
+
+    const safeName = String(file.originalname || 'file')
+        .replace(/[^a-zA-Z0-9._-]/g, '_');
+
+    const uniqueName =
+        `${Date.now()}-${Math.random().toString(36).substring(2, 10)}-${safeName}`;
+
+    const filePath = folder
+        ? `${folder}/${uniqueName}`
+        : uniqueName;
+
+    const { error } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false
+        });
+
+    if (error) {
+        throw error;
+    }
+
+    const { data } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+    return data?.publicUrl || null;
 }
 
-const MANAGEMENT_ROLES = ['Proprietor', 'Administrator', 'Manager-Primary', 'Manager-Secondary'];
 
-// ============================================================
-// HELPER: Get sector from role
-// ============================================================
-function getSectorFromRole(roleName) {
-    if (roleName === 'Manager-Primary' || roleName === 'Finance Officer (Primary)') {
-        return 'primary';
-    } else if (roleName === 'Manager-Secondary' || roleName === 'Finance Officer (Secondary)') {
-        return 'secondary';
-    }
-    return null;
+/* =========================================================
+   SECTOR / SCHOOL SECTION HELPERS
+   ========================================================= */
+
+function normalizeSector(sector) {
+    return String(sector || '')
+        .trim()
+        .toLowerCase();
 }
 
-// ============================================================
-// GET ALL STUDENTS (Role-filtered with sector)
-// ============================================================
-router.get('/', authenticateToken, async (req, res) => {
-    try {
-        const userRole = req.user.role_name || '';
-        const { sector } = req.query;
-        
-        let query = supabase
-            .from('students')
-            .select(`
-                *,
-                classes!inner (
-                    class_id,
-                    class_name,
-                    arm,
-                    school_section
-                )
-            `)
-            .order('student_id', { ascending: false });
 
-        // Sector filtering from query param
-        if (sector) {
-            query = query.eq('classes.school_section', sector);
-        }
+function normalizeSection(section) {
+    return String(section || '')
+        .trim()
+        .toLowerCase();
+}
 
-        // Role-based filtering
-        if (isPrimaryManager(userRole)) {
-            query = query.in('classes.school_section', ['Nursery', 'Primary']);
-        } else if (isSecondaryManager(userRole)) {
-            query = query.in('classes.school_section', ['JSS', 'SSS', 'Secondary']);
-        }
 
-        const { data, error } = await query;
-        if (error) throw error;
+function getPrimarySections() {
+    return [
+        'Nursery',
+        'Primary'
+    ];
+}
 
-        const { data: guardians } = await supabase
-            .from('guardians')
-            .select('guardian_id, full_name, relationship, phone, email, address, emergency_contact_name, emergency_contact_phone, emergency_contact_relationship');
 
-        const guardiansMap = {};
-        (guardians || []).forEach(g => { guardiansMap[g.guardian_id] = g; });
+function getSecondarySections() {
+    return [
+        'JSS',
+        'SSS',
+        'Secondary'
+    ];
+}
 
-        const students = (data || []).map(student => ({
-            ...student,
-            class_name: student.classes?.class_name || null,
-            arm: student.classes?.arm || null,
-            school_section: student.classes?.school_section || null,
-            guardian_name: guardiansMap[student.guardian_id]?.full_name || null,
-            guardian_relationship: guardiansMap[student.guardian_id]?.relationship || null,
-            guardian_phone: guardiansMap[student.guardian_id]?.phone || null,
-            guardian_email: guardiansMap[student.guardian_id]?.email || null,
-            guardian_address: guardiansMap[student.guardian_id]?.address || null
-        }));
 
-        res.json(students);
-    } catch (error) {
-        console.error('Error loading students:', error);
-        res.status(500).json({ message: 'Failed to load students' });
+function getSectionsForSector(sector) {
+
+    const normalizedSector = normalizeSector(sector);
+
+    if (normalizedSector === 'primary') {
+        return getPrimarySections();
     }
-});
 
-// ============================================================
-// GET STUDENTS FOR FINANCE (with sector and academic year filtering)
-// ============================================================
-router.get('/finance', authenticateToken, async (req, res) => {
-    try {
-        const { sector, class_id } = req.query;
-        const userRole = req.user.role_name || '';
+    if (normalizedSector === 'secondary') {
+        return getSecondarySections();
+    }
 
-        /*
-         * ---------------------------------------------------------
-         * NORMALIZE SECTOR
-         * ---------------------------------------------------------
-         * Frontend may send:
-         *   primary
-         *   Primary
-         *   secondary
-         *   Secondary
-         *
-         * Database uses values such as:
-         *   Nursery
-         *   Primary
-         *   JSS
-         *   SSS
-         *   Secondary
-         */
-        const normalizedSector = String(sector || '').trim().toLowerCase();
+    return [];
+}
 
-        let sectorValues = null;
 
-        if (normalizedSector === 'primary') {
-            sectorValues = ['Nursery', 'Primary'];
-        } else if (normalizedSector === 'secondary') {
-            sectorValues = ['JSS', 'SSS', 'Secondary'];
-        }
+function sectionBelongsToSector(
+    schoolSection,
+    sector
+) {
+    const normalizedSection =
+        normalizeSection(schoolSection);
 
-        /*
-         * ---------------------------------------------------------
-         * LOAD STUDENTS
-         * ---------------------------------------------------------
-         * We deliberately do NOT filter students based on whether
-         * they have paid a fee. Every relevant student must appear.
-         */
-        let query = supabase
-            .from('students')
-            .select(`
-                student_id,
-                first_name,
-                middle_name,
-                last_name,
-                admission_number,
+    const allowedSections =
+        getSectionsForSector(sector);
+
+    return allowedSections.some(section =>
+        normalizeSection(section) === normalizedSection
+    );
+}
+
+
+/* =========================================================
+   MANAGER ACCESS
+   ========================================================= */
+
+/*
+   IMPORTANT:
+
+   Manager access is controlled ONLY by:
+
+       role_id = 6
+       sector = primary / secondary
+
+   We do NOT trust ?sector= from the browser.
+
+   Primary Manager:
+       Nursery + Primary
+
+   Secondary Manager:
+       JSS + SSS + Secondary
+*/
+
+function managerCanAccessSection(
+    user,
+    schoolSection
+) {
+    if (getRoleId(user) !== MANAGER) {
+        return false;
+    }
+
+    return sectionBelongsToSector(
+        schoolSection,
+        getSector(user)
+    );
+}
+
+
+/* =========================================================
+   STUDENT SECTOR VERIFICATION
+   ========================================================= */
+
+async function verifyStudentSector(
+    user,
+    studentId
+) {
+
+    const roleId = getRoleId(user);
+
+    /*
+       Proprietor and Administrator can access
+       students in every sector.
+    */
+    if (
+        roleId === PROPRIETOR ||
+        roleId === ADMINISTRATOR
+    ) {
+        return true;
+    }
+
+    /*
+       Only Managers use sector-based access here.
+    */
+    if (roleId !== MANAGER) {
+        return false;
+    }
+
+    const { data: student, error } = await supabase
+        .from('students')
+        .select(`
+            student_id,
+            school_section,
+            class_id,
+            classes (
                 class_id,
-                student_status,
-                school_section,
-                classes!inner (
-                    class_id,
-                    class_name,
-                    arm,
-                    school_section
-                )
-            `)
-            .order('student_id', { ascending: false });
-
-        /*
-         * Sector requested by frontend
-         */
-        if (sectorValues) {
-            query = query.in(
-                'classes.school_section',
-                sectorValues
-            );
-        }
-
-        /*
-         * Specific class filter
-         */
-        if (class_id) {
-            query = query.eq('class_id', class_id);
-        }
-
-        /*
-         * Finance Officer permissions
-         */
-        if (userRole === 'Finance Officer (Primary)') {
-            query = query.in(
-                'classes.school_section',
-                ['Nursery', 'Primary']
-            );
-        } else if (userRole === 'Finance Officer (Secondary)') {
-            query = query.in(
-                'classes.school_section',
-                ['JSS', 'SSS', 'Secondary']
-            );
-        }
-
-        /*
-         * IMPORTANT:
-         * Keep Active students for the normal finance list.
-         * We are NOT filtering by payment status.
-         */
-        query = query.eq('student_status', 'Active');
-
-        const {
-            data: students,
-            error: studentError
-        } = await query;
-
-        if (studentError) {
-            console.error(
-                'Finance student query error:',
-                studentError
-            );
-
-            throw studentError;
-        }
-
-        /*
-         * No students
-         */
-        if (!students || students.length === 0) {
-            return res.json({
-                students: []
-            });
-        }
-
-        const studentIds = students.map(
-            student => student.student_id
-        );
-
-        /*
-         * ---------------------------------------------------------
-         * LOAD STUDENT FEES
-         * ---------------------------------------------------------
-         */
-        const {
-            data: feeRecords,
-            error: feeError
-        } = await supabase
-            .from('student_fees')
-            .select(`
-                student_fee_id,
-                student_id,
-                fee_type_id,
-                amount_due,
-                academic_year_id,
-                term_id,
-                fee_types (
-                    fee_name
-                )
-            `)
-            .in('student_id', studentIds);
-
-        if (feeError) {
-            console.error(
-                'Finance fee query error:',
-                feeError
-            );
-
-            throw feeError;
-        }
-
-        /*
-         * ---------------------------------------------------------
-         * LOAD PAYMENTS
-         * ---------------------------------------------------------
-         *
-         * We retrieve the payments for these students and then
-         * count ONLY approved payments.
-         *
-         * This protects us against differences such as:
-         *   approved
-         *   Approved
-         *   APPROVED
-         */
-        const {
-            data: paymentRecords,
-            error: paymentError
-        } = await supabase
-            .from('payments')
-            .select(`
-                payment_id,
-                student_id,
-                student_fee_id,
-                amount_paid,
-                payment_date,
-                payment_method,
-                payment_slip_number,
-                bank_reference,
-                purpose,
-                academic_year_id,
-                approval_status
-            `)
-            .in('student_id', studentIds);
-
-        if (paymentError) {
-            console.error(
-                'Finance payment query error:',
-                paymentError
-            );
-
-            throw paymentError;
-        }
-
-        /*
-         * ---------------------------------------------------------
-         * CREATE FINANCE MAP
-         * ---------------------------------------------------------
-         */
-        const financeMap = {};
-
-        studentIds.forEach(studentId => {
-            financeMap[studentId] = {
-                total_expected: 0,
-                total_paid: 0,
-                total_balance: 0,
-
-                paid_fees: 0,
-                partially_paid_fees: 0,
-                unpaid_fees: 0,
-
-                payment_count: 0,
-
-                fee_details: []
-            };
-        });
-
-        /*
-         * ---------------------------------------------------------
-         * ADD FEES
-         * ---------------------------------------------------------
-         */
-        (feeRecords || []).forEach(fee => {
-            const studentId = fee.student_id;
-
-            if (!financeMap[studentId]) {
-                return;
-            }
-
-            const amountDue = Number(
-                fee.amount_due || 0
-            );
-
-            financeMap[studentId].total_expected += amountDue;
-
-            financeMap[studentId].fee_details.push({
-                student_fee_id: fee.student_fee_id,
-                fee_type_id: fee.fee_type_id,
-                fee_name: fee.fee_types?.fee_name || 'Unknown Fee',
-                amount_due: amountDue,
-                amount_paid: 0,
-                balance: amountDue
-            });
-        });
-
-        /*
-         * ---------------------------------------------------------
-         * ADD APPROVED PAYMENTS
-         * ---------------------------------------------------------
-         */
-        (paymentRecords || []).forEach(payment => {
-
-            const studentId = payment.student_id;
-
-            if (!financeMap[studentId]) {
-                return;
-            }
-
-            const approvalStatus = String(
-                payment.approval_status || ''
-            ).trim().toLowerCase();
-
-            /*
-             * ONLY APPROVED PAYMENTS COUNT
-             */
-            if (approvalStatus !== 'approved') {
-                return;
-            }
-
-            const amountPaid = Number(
-                payment.amount_paid || 0
-            );
-
-            financeMap[studentId].total_paid += amountPaid;
-
-            financeMap[studentId].payment_count += 1;
-
-            /*
-             * If the payment is linked to a specific student fee,
-             * add it to that fee's payment amount.
-             */
-            if (payment.student_fee_id) {
-
-                const fee = financeMap[studentId]
-                    .fee_details
-                    .find(
-                        item =>
-                            item.student_fee_id ===
-                            payment.student_fee_id
-                    );
-
-                if (fee) {
-                    fee.amount_paid += amountPaid;
-                }
-            }
-        });
-
-        /*
-         * ---------------------------------------------------------
-         * CALCULATE BALANCES AND FEE STATUSES
-         * ---------------------------------------------------------
-         */
-        studentIds.forEach(studentId => {
-
-            const finance = financeMap[studentId];
-
-            /*
-             * Calculate individual fee balances
-             */
-            finance.fee_details.forEach(fee => {
-
-                fee.balance =
-                    Math.max(
-                        0,
-                        fee.amount_due -
-                        fee.amount_paid
-                    );
-
-                if (fee.amount_paid >= fee.amount_due) {
-                    finance.paid_fees += 1;
-                } else if (fee.amount_paid > 0) {
-                    finance.partially_paid_fees += 1;
-                } else {
-                    finance.unpaid_fees += 1;
-                }
-            });
-
-            /*
-             * Overall student balance
-             */
-            finance.total_balance =
-                Math.max(
-                    0,
-                    finance.total_expected -
-                    finance.total_paid
-                );
-        });
-
-        /*
-         * ---------------------------------------------------------
-         * BUILD RESPONSE
-         * ---------------------------------------------------------
-         */
-        const result = students.map(student => {
-
-            const studentId = student.student_id;
-
-            const finance =
-                financeMap[studentId] || {
-                    total_expected: 0,
-                    total_paid: 0,
-                    total_balance: 0,
-                    paid_fees: 0,
-                    partially_paid_fees: 0,
-                    unpaid_fees: 0,
-                    payment_count: 0,
-                    fee_details: []
-                };
-
-            /*
-             * Overall payment status
-             */
-            let paymentStatus = 'Unpaid';
-
-            if (finance.total_expected <= 0) {
-                paymentStatus = 'Unpaid';
-            } else if (
-                finance.total_paid >=
-                finance.total_expected
-            ) {
-                paymentStatus = 'Paid';
-            } else if (finance.total_paid > 0) {
-                paymentStatus = 'Partially Paid';
-            }
-
-            return {
-                student_id: studentId,
-
-                student_name:
-                    `${student.first_name || ''} ${student.middle_name || ''} ${student.last_name || ''}`
-                        .replace(/\s+/g, ' ')
-                        .trim(),
-
-                admission_number:
-                    student.admission_number,
-
-                class_id:
-                    student.class_id,
-
-                class_name:
-                    student.classes?.class_name || null,
-
-                arm:
-                    student.classes?.arm || null,
-
-                sector:
-                    student.classes?.school_section ||
-                    student.school_section ||
-                    null,
-
-                student_status:
-                    student.student_status,
-
-                total_expected:
-                    finance.total_expected,
-
-                total_paid:
-                    finance.total_paid,
-
-                total_balance:
-                    finance.total_balance,
-
-                paid_fees:
-                    finance.paid_fees,
-
-                partially_paid_fees:
-                    finance.partially_paid_fees,
-
-                unpaid_fees:
-                    finance.unpaid_fees,
-
-                payment_count:
-                    finance.payment_count,
-
-                payment_status:
-                    paymentStatus,
-
-                fee_details:
-                    finance.fee_details
-            };
-        });
-
-        console.log(
-            `Finance students loaded: ${result.length}`
-        );
-
-        res.json({
-            students: result
-        });
-
-    } catch (error) {
-
-        console.error(
-            'Finance students error:',
-            error
-        );
-
-        res.status(500).json({
-            message:
-                error.message ||
-                'Failed to load finance students'
-        });
+                class_name,
+                school_section
+            )
+        `)
+        .eq('student_id', studentId)
+        .maybeSingle();
+
+    if (error) {
+        throw error;
     }
-});
 
-// ============================================================
-// GET SINGLE STUDENT
-// ============================================================
-router.get('/:studentId', authenticateToken, async (req, res) => {
-    const studentId = parseInt(req.params.studentId);
-    if (Number.isNaN(studentId)) return res.status(400).json({ message: 'Invalid student ID' });
-
-    try {
-        const { data: student, error } = await supabase
-            .from('students')
-            .select(`
-                *,
-                classes!inner (
-                    class_id,
-                    class_name,
-                    arm,
-                    school_section
-                )
-            `)
-            .eq('student_id', studentId)
-            .single();
-
-        if (error || !student) return res.status(404).json({ message: 'Student not found' });
-
-        const { data: guardian } = await supabase
-            .from('guardians')
-            .select('*')
-            .eq('guardian_id', student.guardian_id)
-            .maybeSingle();
-
-        res.json({
-            ...student,
-            class_name: student.classes?.class_name || null,
-            arm: student.classes?.arm || null,
-            school_section: student.classes?.school_section || null,
-            guardian_name: guardian?.full_name || null,
-            guardian_relationship: guardian?.relationship || null,
-            guardian_phone: guardian?.phone || null,
-            guardian_email: guardian?.email || null,
-            guardian_address: guardian?.address || null
-        });
-    } catch (error) {
-        console.error('Error getting student:', error);
-        res.status(500).json({ message: 'Failed to load student data' });
+    if (!student) {
+        return false;
     }
-});
 
-// ============================================================
-// REGISTER STUDENT
-// ============================================================
-router.post('/register', authenticateToken, requireRoles(...MANAGEMENT_ROLES),
-    upload.fields([
-        { name: 'student_photo', maxCount: 1 },
-        { name: 'result_file', maxCount: 1 },
-        { name: 'birth_certificate_file', maxCount: 1 },
-        { name: 'testimonial_file', maxCount: 1 },
-        { name: 'transfer_file', maxCount: 1 }
-    ]),
+    const studentSection =
+        student.classes?.school_section ||
+        student.school_section ||
+        '';
+
+    return managerCanAccessSection(
+        user,
+        studentSection
+    );
+}
+
+
+/* =========================================================
+   GET ALL STUDENTS
+   ========================================================= */
+
+router.get(
+    '/',
+    authenticateToken,
     async (req, res) => {
+
         try {
-            const userRole = req.user.role_name || '';
 
-            const { data: currentYear, error: yearError } = await supabase
-                .from('academic_years')
-                .select('academic_year_id')
-                .eq('is_current', true)
-                .single();
+            const roleId =
+                getRoleId(req.user);
 
-            if (yearError || !currentYear) {
-                return res.status(400).json({ message: 'No current academic year set.' });
+            const userSector =
+                normalizeSector(getSector(req.user));
+
+            /*
+               -------------------------------------------------
+               MANAGER VALIDATION
+               -------------------------------------------------
+            */
+
+            if (roleId === MANAGER) {
+
+                if (
+                    userSector !== 'primary' &&
+                    userSector !== 'secondary'
+                ) {
+                    return res.status(403).json({
+                        message:
+                            'Manager sector is not configured correctly.'
+                    });
+                }
             }
+
+
+            /*
+               -------------------------------------------------
+               STUDENT QUERY
+               -------------------------------------------------
+
+               We deliberately do NOT use the browser's
+               ?sector= value to determine Manager access.
+
+               The authenticated Manager's sector is authoritative.
+            */
+
+            let query = supabase
+                .from('students')
+                .select(`
+                    *,
+                    classes!inner (
+                        class_id,
+                        class_name,
+                        arm,
+                        school_section,
+                        academic_year_id,
+                        is_active
+                    )
+                `)
+                .order('student_id', {
+                    ascending: true
+                });
+
+
+            /*
+               -------------------------------------------------
+               MANAGER SECTOR FILTER
+               -------------------------------------------------
+            */
+
+            if (roleId === MANAGER) {
+
+                const allowedSections =
+                    getSectionsForSector(userSector);
+
+                if (!allowedSections.length) {
+                    return res.status(403).json({
+                        message:
+                            'Manager sector is not configured correctly.'
+                    });
+                }
+
+                /*
+                   IMPORTANT:
+
+                   Manager's own sector determines the query.
+
+                   We do not compare against req.query.sector.
+                */
+
+                query = query.in(
+                    'classes.school_section',
+                    allowedSections
+                );
+            }
+
+
+            /*
+               -------------------------------------------------
+               ADMIN / PROPRIETOR OPTIONAL FILTER
+               -------------------------------------------------
+            */
+
+            if (
+                roleId === PROPRIETOR ||
+                roleId === ADMINISTRATOR
+            ) {
+
+                const requestedSector =
+                    normalizeSector(req.query.sector);
+
+                if (requestedSector === 'primary') {
+
+                    query = query.in(
+                        'classes.school_section',
+                        getPrimarySections()
+                    );
+
+                } else if (
+                    requestedSector === 'secondary'
+                ) {
+
+                    query = query.in(
+                        'classes.school_section',
+                        getSecondarySections()
+                    );
+                }
+            }
+
 
             const {
-                admission_number, first_name, middle_name, last_name,
-                gender, date_of_birth, phone, address, class_id,
-                admission_date, previous_school, nationality,
-                emergency_contact_name, emergency_contact_phone, emergency_contact_relationship,
-                guardian_name, guardian_relationship, guardian_phone, guardian_email, guardian_address,
-                parent_name, parent_relationship, parent_phone, parent_email, parent_address
-            } = req.body;
+                data: students,
+                error: studentsError
+            } = await query;
 
-            const finalGuardianName = guardian_name || parent_name;
-            const finalGuardianRelationship = guardian_relationship || parent_relationship;
-            const finalGuardianPhone = guardian_phone || parent_phone || null;
-            const finalGuardianEmail = guardian_email || parent_email || null;
-            const finalGuardianAddress = guardian_address || parent_address || null;
 
-            if (!admission_number || !first_name || !last_name || !class_id) {
-                return res.status(400).json({ message: 'Admission number, first name, last name and class are required' });
+            if (studentsError) {
+                console.error(
+                    'STUDENTS QUERY ERROR:',
+                    studentsError
+                );
+
+                return res.status(500).json({
+                    message:
+                        'Failed to load students.',
+                    error:
+                        studentsError.message
+                });
             }
 
-            if (!finalGuardianName || !finalGuardianRelationship) {
-                return res.status(400).json({ message: 'Guardian name and relationship are required' });
+
+            /*
+               -------------------------------------------------
+               LOAD GUARDIANS
+               -------------------------------------------------
+            */
+
+            const guardianIds =
+                [
+                    ...new Set(
+                        (students || [])
+                            .map(student =>
+                                student.guardian_id
+                            )
+                            .filter(Boolean)
+                    )
+                ];
+
+
+            let guardians = [];
+
+            if (guardianIds.length) {
+
+                const {
+                    data,
+                    error: guardianError
+                } = await supabase
+                    .from('guardians')
+                    .select('*')
+                    .in(
+                        'guardian_id',
+                        guardianIds
+                    );
+
+                if (guardianError) {
+
+                    console.error(
+                        'GUARDIANS QUERY ERROR:',
+                        guardianError
+                    );
+
+                    return res.status(500).json({
+                        message:
+                            'Failed to load guardian information.',
+                        error:
+                            guardianError.message
+                    });
+                }
+
+                guardians = data || [];
             }
 
-            const { data: classData, error: classError } = await supabase
-                .from('classes')
-                .select('class_id, class_name, arm, school_section')
-                .eq('class_id', Number(class_id))
-                .single();
 
-            if (classError || !classData) {
-                return res.status(400).json({ message: 'Selected class does not exist.' });
-            }
+            /*
+               -------------------------------------------------
+               CREATE GUARDIAN LOOKUP
+               -------------------------------------------------
+            */
 
-            const section = classData.school_section;
-            if (isPrimaryManager(userRole) && !['Nursery', 'Primary'].includes(section)) {
-                return res.status(403).json({ message: 'Access denied to this sector.' });
-            }
-            if (isSecondaryManager(userRole) && !['JSS', 'SSS', 'Secondary'].includes(section)) {
-                return res.status(403).json({ message: 'Access denied to this sector.' });
-            }
+            const guardianMap =
+                new Map(
+                    guardians.map(guardian => [
+                        guardian.guardian_id,
+                        guardian
+                    ])
+                );
 
-            const { data: existing } = await supabase
-                .from('students')
-                .select('student_id')
-                .eq('admission_number', admission_number)
-                .maybeSingle();
 
-            if (existing) {
-                return res.status(409).json({ message: 'A student with this admission number already exists.' });
-            }
+            /*
+               -------------------------------------------------
+               FLATTEN RESPONSE
+               -------------------------------------------------
+            */
 
-            const { data: guardian, error: guardianError } = await supabase
-                .from('guardians')
-                .insert({
-                    full_name: finalGuardianName,
-                    relationship: finalGuardianRelationship,
-                    phone: finalGuardianPhone,
-                    email: finalGuardianEmail,
-                    address: finalGuardianAddress
-                })
-                .select()
-                .single();
+            const result =
+                (students || []).map(student => {
 
-            if (guardianError) {
-                return res.status(500).json({ message: 'Failed to create guardian: ' + guardianError.message });
-            }
+                    const guardian =
+                        guardianMap.get(
+                            student.guardian_id
+                        ) || null;
 
-            let photoUrl = null;
-            if (req.files && req.files.student_photo) {
-                const photoFile = req.files.student_photo[0];
-                const fileName = `student_${admission_number}_${Date.now()}.jpg`;
-                photoUrl = await uploadFileToSupabase(photoFile, 'student_photos', 'student-photos', fileName);
-            }
+                    const classData =
+                        student.classes || null;
 
-            const documentFiles = {
-                'result_file': { folder: 'results', column: 'result_file_url' },
-                'birth_certificate_file': { folder: 'birth-certificates', column: 'birth_certificate_url' },
-                'testimonial_file': { folder: 'testimonials', column: 'testimonial_url' },
-                'transfer_file': { folder: 'transfer-forms', column: 'transfer_form_url' }
-            };
+                    return {
 
-            const documentUrls = {};
+                        ...student,
 
-            if (req.files) {
-                for (const [fieldName, config] of Object.entries(documentFiles)) {
-                    if (req.files[fieldName]) {
-                        const file = req.files[fieldName][0];
-                        const fileName = `student_${admission_number}_${fieldName}_${Date.now()}.${file.originalname.split('.').pop()}`;
-                        const fileUrl = await uploadFileToSupabase(file, 'student_files', config.folder, fileName);
+                        class_name:
+                            classData?.class_name || null,
 
-                        if (fileUrl) {
-                            documentUrls[config.column] = fileUrl;
-                        }
-                    }
+                        arm:
+                            classData?.arm || null,
+
+                        school_section:
+                            classData?.school_section ||
+                            student.school_section ||
+                            null,
+
+                        academic_year_id:
+                            classData?.academic_year_id ||
+                            null,
+
+                        class_is_active:
+                            classData?.is_active ??
+                            null,
+
+                        guardian:
+                            guardian,
+
+                        guardian_name:
+                            guardian
+                                ? [
+                                    guardian.first_name,
+                                    guardian.middle_name,
+                                    guardian.last_name
+                                ]
+                                    .filter(Boolean)
+                                    .join(' ')
+                                : null,
+
+                        guardian_phone:
+                            guardian?.phone || null,
+
+                        guardian_email:
+                            guardian?.email || null
+                    };
+                });
+
+
+            return res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                'GET STUDENTS ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+                message:
+                    'Failed to load students.',
+                error:
+                    error.message
+            });
+        }
+    }
+);
+
+
+/* =========================================================
+   FINANCE STUDENT LIST
+   ========================================================= */
+
+router.get(
+    '/finance',
+    authenticateToken,
+    requireRoles(
+        PROPRIETOR,
+        ADMINISTRATOR,
+        FINANCE,
+        MANAGER
+    ),
+    async (req, res) => {
+
+        try {
+
+            const roleId =
+                getRoleId(req.user);
+
+            const userSector =
+                normalizeSector(
+                    getSector(req.user)
+                );
+
+            const requestedSector =
+                normalizeSector(
+                    req.query.sector
+                );
+
+
+            /*
+               Managers and Finance Officers are restricted
+               to their own sector.
+            */
+
+            if (
+                roleId === MANAGER ||
+                roleId === FINANCE
+            ) {
+
+                if (
+                    userSector !== 'primary' &&
+                    userSector !== 'secondary'
+                ) {
+                    return res.status(403).json({
+                        message:
+                            'User sector is not configured correctly.'
+                    });
+                }
+
+                /*
+                   Ignore browser sector when it conflicts.
+                   The authenticated user's sector is authoritative.
+                */
+
+                if (
+                    requestedSector &&
+                    requestedSector !== userSector
+                ) {
+                    return res.status(403).json({
+                        message:
+                            'Access denied. You cannot access students outside your sector.'
+                    });
                 }
             }
 
-            const { data: student, error: insertError } = await supabase
-                .from('students')
-                .insert({
-                    admission_number, first_name,
-                    middle_name: middle_name || null,
-                    last_name, gender: gender || null,
-                    date_of_birth: date_of_birth || null,
-                    phone: phone || null, address: address || null,
-                    class_id: Number(class_id),
-                    guardian_id: guardian.guardian_id,
-                    admission_date: admission_date || null,
-                    student_status: 'Pending',
-                    nationality: nationality || 'Sierra Leonean',
-                    previous_school: previous_school || null,
-                    emergency_contact_name: emergency_contact_name || null,
-                    emergency_contact_phone: emergency_contact_phone || null,
-                    emergency_contact_relationship: emergency_contact_relationship || null,
-                    registration_date: new Date().toISOString(),
-                    photo_url: photoUrl,
-                    academic_year_id: currentYear.academic_year_id,
-                    school_section: section,
-                    ...documentUrls
-                })
-                .select()
-                .single();
 
-            if (insertError) {
-                await supabase.from('guardians').delete().eq('guardian_id', guardian.guardian_id);
-                return res.status(500).json({ message: 'Failed to create student: ' + insertError.message });
+            let sectorToUse =
+                requestedSector;
+
+
+            if (
+                roleId === MANAGER ||
+                roleId === FINANCE
+            ) {
+                sectorToUse =
+                    userSector;
             }
 
-            await supabase
-                .from('guardians')
-                .update({
-                    student_id: student.student_id,
-                    emergency_contact_name: emergency_contact_name || null,
-                    emergency_contact_phone: emergency_contact_phone || null,
-                    emergency_contact_relationship: emergency_contact_relationship || null
-                })
-                .eq('guardian_id', guardian.guardian_id);
 
-            const { error: approvalError } = await supabase
-                .from('record_approvals')
-                .insert({
-                    record_type: 'Student',
-                    record_id: student.student_id,
-                    approval_status: 'Pending',
-                    created_by: req.user.user_id,
-                    created_at: new Date().toISOString(),
-                    school_section: section
+            let query =
+                supabase
+                    .from('students')
+                    .select(`
+                        *,
+                        classes!inner (
+                            class_id,
+                            class_name,
+                            arm,
+                            school_section,
+                            academic_year_id,
+                            is_active
+                        )
+                    `)
+                    .eq(
+                        'student_status',
+                        'Active'
+                    )
+                    .order(
+                        'student_id',
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (sectorToUse === 'primary') {
+
+                query = query.in(
+                    'classes.school_section',
+                    getPrimarySections()
+                );
+
+            } else if (
+                sectorToUse === 'secondary'
+            ) {
+
+                query = query.in(
+                    'classes.school_section',
+                    getSecondarySections()
+                );
+            }
+
+
+            const {
+                data: students,
+                error
+            } = await query;
+
+
+            if (error) {
+
+                console.error(
+                    'FINANCE STUDENTS ERROR:',
+                    error
+                );
+
+                return res.status(500).json({
+                    message:
+                        'Failed to load finance students.',
+                    error:
+                        error.message
+                });
+            }
+
+
+            /*
+               Load fee balances and payments.
+
+               These are loaded separately so this route does
+               not depend on any teachers backend.
+            */
+
+            const studentIds =
+                (students || []).map(
+                    student =>
+                        student.student_id
+                );
+
+
+            let fees = [];
+            let payments = [];
+
+
+            if (studentIds.length) {
+
+                const {
+                    data: feeData,
+                    error: feeError
+                } = await supabase
+                    .from('student_fees')
+                    .select('*')
+                    .in(
+                        'student_id',
+                        studentIds
+                    );
+
+                if (feeError) {
+
+                    console.error(
+                        'STUDENT FEES ERROR:',
+                        feeError
+                    );
+
+                } else {
+
+                    fees =
+                        feeData || [];
+                }
+
+
+                const {
+                    data: paymentData,
+                    error: paymentError
+                } = await supabase
+                    .from('payments')
+                    .select('*')
+                    .in(
+                        'student_id',
+                        studentIds
+                    );
+
+                if (paymentError) {
+
+                    console.error(
+                        'STUDENT PAYMENTS ERROR:',
+                        paymentError
+                    );
+
+                } else {
+
+                    payments =
+                        paymentData || [];
+                }
+            }
+
+
+            const result =
+                (students || []).map(student => {
+
+                    const studentFees =
+                        fees.filter(
+                            fee =>
+                                fee.student_id ===
+                                student.student_id
+                        );
+
+                    const studentPayments =
+                        payments.filter(
+                            payment =>
+                                payment.student_id ===
+                                student.student_id
+                        );
+
+                    const totalFees =
+                        studentFees.reduce(
+                            (sum, fee) =>
+                                sum +
+                                Number(
+                                    fee.amount ||
+                                    fee.expected_amount ||
+                                    0
+                                ),
+                            0
+                        );
+
+                    const totalPayments =
+                        studentPayments.reduce(
+                            (sum, payment) =>
+                                sum +
+                                Number(
+                                    payment.amount || 0
+                                ),
+                            0
+                        );
+
+                    return {
+
+                        ...student,
+
+                        class_name:
+                            student.classes?.class_name ||
+                            null,
+
+                        arm:
+                            student.classes?.arm ||
+                            null,
+
+                        school_section:
+                            student.classes?.school_section ||
+                            student.school_section ||
+                            null,
+
+                        fees:
+                            studentFees,
+
+                        payments:
+                            studentPayments,
+
+                        total_fees:
+                            totalFees,
+
+                        total_paid:
+                            totalPayments,
+
+                        balance:
+                            Math.max(
+                                totalFees -
+                                totalPayments,
+                                0
+                            )
+                    };
                 });
 
-            if (approvalError) {
-                await supabase.from('students').delete().eq('student_id', student.student_id);
-                await supabase.from('guardians').delete().eq('guardian_id', guardian.guardian_id);
-                return res.status(500).json({ message: 'Failed to create approval record' });
+
+            return res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                'FINANCE STUDENTS ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+                message:
+                    'Failed to load finance students.',
+                error:
+                    error.message
+            });
+        }
+    }
+);
+
+
+/* =========================================================
+   GET SINGLE STUDENT
+   ========================================================= */
+
+router.get(
+    '/:studentId',
+    authenticateToken,
+    async (req, res) => {
+
+        try {
+
+            const studentId =
+                req.params.studentId;
+
+            const roleId =
+                getRoleId(req.user);
+
+
+            /*
+               Manager can only open students
+               belonging to their own sector.
+            */
+
+            if (roleId === MANAGER) {
+
+                const allowed =
+                    await verifyStudentSector(
+                        req.user,
+                        studentId
+                    );
+
+                if (!allowed) {
+
+                    return res.status(403).json({
+                        message:
+                            'Access denied. Student belongs to another sector.'
+                    });
+                }
             }
 
-            res.status(201).json({
-                message: 'Student registered successfully!',
-                student_id: student.student_id,
-                guardian_id: guardian.guardian_id,
-                status: 'Pending',
-                school_section: section,
-                class_name: classData.class_name,
-                arm: classData.arm
+
+            const {
+                data: student,
+                error
+            } = await supabase
+                .from('students')
+                .select(`
+                    *,
+                    classes (
+                        class_id,
+                        class_name,
+                        arm,
+                        school_section,
+                        academic_year_id,
+                        is_active
+                    )
+                `)
+                .eq(
+                    'student_id',
+                    studentId
+                )
+                .maybeSingle();
+
+
+            if (error) {
+
+                console.error(
+                    'GET SINGLE STUDENT ERROR:',
+                    error
+                );
+
+                return res.status(500).json({
+                    message:
+                        'Failed to load student.',
+                    error:
+                        error.message
+                });
+            }
+
+
+            if (!student) {
+
+                return res.status(404).json({
+                    message:
+                        'Student not found.'
+                });
+            }
+
+
+            /*
+               Load guardian
+            */
+
+            let guardian = null;
+
+            if (student.guardian_id) {
+
+                const {
+                    data: guardianData
+                } = await supabase
+                    .from('guardians')
+                    .select('*')
+                    .eq(
+                        'guardian_id',
+                        student.guardian_id
+                    )
+                    .maybeSingle();
+
+                guardian =
+                    guardianData || null;
+            }
+
+
+            return res.json({
+
+                ...student,
+
+                guardian
+
             });
 
         } catch (error) {
-            console.error('Student registration error:', error);
-            res.status(500).json({ message: 'Failed to register student: ' + error.message });
+
+            console.error(
+                'GET SINGLE STUDENT ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+                message:
+                    'Failed to load student.',
+                error:
+                    error.message
+            });
         }
     }
 );
 
-// ============================================================
-// UPDATE STUDENT WITH PHOTO AND DOCUMENTS
-// ============================================================
-router.put('/:studentId/update-with-photo', authenticateToken, 
+
+/* =========================================================
+   REGISTER STUDENT
+   ========================================================= */
+
+router.post(
+    '/register',
+    authenticateToken,
+    requireRoles(
+        PROPRIETOR,
+        ADMINISTRATOR,
+        MANAGER
+    ),
     upload.fields([
-        { name: 'student_photo', maxCount: 1 },
-        { name: 'result_file', maxCount: 1 },
-        { name: 'birth_certificate_file', maxCount: 1 },
-        { name: 'testimonial_file', maxCount: 1 },
-        { name: 'transfer_file', maxCount: 1 }
-    ]), 
+        {
+            name: 'photo',
+            maxCount: 1
+        },
+        {
+            name: 'acceptance_letter',
+            maxCount: 1
+        },
+        {
+            name: 'birth_certificate',
+            maxCount: 1
+        }
+    ]),
     async (req, res) => {
-        const studentId = parseInt(req.params.studentId);
-        if (Number.isNaN(studentId)) return res.status(400).json({ message: 'Invalid student ID' });
 
         try {
-            // Build student update with ONLY students table columns
-            const studentUpdate = {
-                admission_number: req.body.admission_number,
-                first_name: req.body.first_name,
-                middle_name: req.body.middle_name || null,
-                last_name: req.body.last_name,
-                gender: req.body.gender || null,
-                date_of_birth: req.body.date_of_birth || null,
-                nationality: req.body.nationality || null,
-                phone: req.body.phone || null,
-                address: req.body.address || null,
-                class_id: req.body.class_id ? Number(req.body.class_id) : null,
-                admission_date: req.body.admission_date || null,
-                previous_school: req.body.previous_school || null,
-                student_status: req.body.student_status || 'Active',
-                emergency_contact_name: req.body.emergency_contact_name || null,
-                emergency_contact_phone: req.body.emergency_contact_phone || null,
-                emergency_contact_relationship: req.body.emergency_contact_relationship || null
-            };
 
-            if (req.files && req.files.student_photo) {
-                const photoFile = req.files.student_photo[0];
-                const fileName = `student_${studentId}_${Date.now()}.jpg`;
-                const photoUrl = await uploadFileToSupabase(photoFile, 'student_photos', 'student-photos', fileName);
-                if (photoUrl) studentUpdate.photo_url = photoUrl;
+            const roleId =
+                getRoleId(req.user);
+
+            const body =
+                req.body || {};
+
+            const classId =
+                body.class_id;
+
+
+            /*
+               Load class first.
+            */
+
+            const {
+                data: classData,
+                error: classError
+            } = await supabase
+                .from('classes')
+                .select(`
+                    class_id,
+                    class_name,
+                    arm,
+                    school_section,
+                    academic_year_id,
+                    is_active
+                `)
+                .eq(
+                    'class_id',
+                    classId
+                )
+                .maybeSingle();
+
+
+            if (classError) {
+                throw classError;
             }
 
-            const documentFiles = {
-                'result_file': { folder: 'results', column: 'result_file_url' },
-                'birth_certificate_file': { folder: 'birth-certificates', column: 'birth_certificate_url' },
-                'testimonial_file': { folder: 'testimonials', column: 'testimonial_url' },
-                'transfer_file': { folder: 'transfer-forms', column: 'transfer_form_url' }
+
+            if (!classData) {
+
+                return res.status(400).json({
+                    message:
+                        'Selected class was not found.'
+                });
+            }
+
+
+            /*
+               Manager may only register students
+               in their own sector.
+            */
+
+            if (roleId === MANAGER) {
+
+                if (
+                    !managerCanAccessSection(
+                        req.user,
+                        classData.school_section
+                    )
+                ) {
+
+                    return res.status(403).json({
+                        message:
+                            'Access denied. You cannot register a student outside your sector.'
+                    });
+                }
+            }
+
+
+            /*
+               Academic year
+            */
+
+            const {
+                data: academicYear
+            } = await supabase
+                .from('academic_years')
+                .select('*')
+                .eq(
+                    'is_current',
+                    true
+                )
+                .maybeSingle();
+
+
+            /*
+               Guardian
+            */
+
+            let guardianId =
+                body.guardian_id ||
+                null;
+
+
+            if (!guardianId) {
+
+                const guardianPayload = {
+
+                    first_name:
+                        body.guardian_first_name ||
+                        null,
+
+                    middle_name:
+                        body.guardian_middle_name ||
+                        null,
+
+                    last_name:
+                        body.guardian_last_name ||
+                        null,
+
+                    relationship:
+                        body.guardian_relationship ||
+                        null,
+
+                    phone:
+                        body.guardian_phone ||
+                        null,
+
+                    email:
+                        body.guardian_email ||
+                        null,
+
+                    address:
+                        body.guardian_address ||
+                        null,
+
+                    occupation:
+                        body.guardian_occupation ||
+                        null
+                };
+
+
+                const {
+                    data: guardian,
+                    error: guardianError
+                } = await supabase
+                    .from('guardians')
+                    .insert(
+                        guardianPayload
+                    )
+                    .select()
+                    .single();
+
+
+                if (guardianError) {
+                    throw guardianError;
+                }
+
+                guardianId =
+                    guardian.guardian_id;
+            }
+
+
+            /*
+               Upload files
+            */
+
+            const files =
+                req.files || {};
+
+            let photoUrl = null;
+            let acceptanceLetterUrl = null;
+            let birthCertificateUrl = null;
+
+
+            if (files.photo?.[0]) {
+
+                photoUrl =
+                    await uploadToStorage(
+                        'student-photos',
+                        files.photo[0],
+                        'students'
+                    );
+            }
+
+
+            if (
+                files.acceptance_letter?.[0]
+            ) {
+
+                acceptanceLetterUrl =
+                    await uploadToStorage(
+                        'student-documents',
+                        files.acceptance_letter[0],
+                        'acceptance-letters'
+                    );
+            }
+
+
+            if (
+                files.birth_certificate?.[0]
+            ) {
+
+                birthCertificateUrl =
+                    await uploadToStorage(
+                        'student-documents',
+                        files.birth_certificate[0],
+                        'birth-certificates'
+                    );
+            }
+
+
+            /*
+               Create student
+            */
+
+            const studentPayload = {
+
+                first_name:
+                    body.first_name,
+
+                middle_name:
+                    body.middle_name ||
+                    null,
+
+                last_name:
+                    body.last_name,
+
+                date_of_birth:
+                    body.date_of_birth ||
+                    null,
+
+                gender:
+                    body.gender ||
+                    null,
+
+                nationality:
+                    body.nationality ||
+                    null,
+
+                admission_number:
+                    body.admission_number ||
+                    null,
+
+                admission_date:
+                    body.admission_date ||
+                    null,
+
+                class_id:
+                    classId,
+
+                guardian_id:
+                    guardianId,
+
+                student_status:
+                    'Pending',
+
+                previous_school:
+                    body.previous_school ||
+                    null,
+
+                school_section:
+                    classData.school_section,
+
+                photo_url:
+                    photoUrl,
+
+                academic_year_id:
+                    body.academic_year_id ||
+                    classData.academic_year_id ||
+                    academicYear?.academic_year_id ||
+                    null
             };
 
-            if (req.files) {
-                for (const [fieldName, config] of Object.entries(documentFiles)) {
-                    if (req.files[fieldName]) {
-                        const file = req.files[fieldName][0];
-                        const fileName = `student_${studentId}_${fieldName}_${Date.now()}.${file.originalname.split('.').pop()}`;
-                        const fileUrl = await uploadFileToSupabase(file, 'student_files', config.folder, fileName);
-                        if (fileUrl) studentUpdate[config.column] = fileUrl;
+
+            const {
+                data: student,
+                error: studentError
+            } = await supabase
+                .from('students')
+                .insert(
+                    studentPayload
+                )
+                .select()
+                .single();
+
+
+            if (studentError) {
+                throw studentError;
+            }
+
+
+            /*
+               Record approval
+            */
+
+            const {
+                error: approvalError
+            } = await supabase
+                .from('record_approvals')
+                .insert({
+
+                    record_type:
+                        'student',
+
+                    record_id:
+                        student.student_id,
+
+                    school_section:
+                        classData.school_section,
+
+                    approval_status:
+                        'Pending',
+
+                    created_by:
+                        req.user.user_id ||
+                        null
+                });
+
+
+            if (approvalError) {
+
+                console.error(
+                    'APPROVAL CREATION ERROR:',
+                    approvalError
+                );
+
+                /*
+                   Do not undo successful student creation
+                   merely because approval logging failed.
+                */
+            }
+
+
+            /*
+               Save uploaded documents
+            */
+
+            const documents = [];
+
+            if (acceptanceLetterUrl) {
+
+                documents.push({
+
+                    student_id:
+                        student.student_id,
+
+                    document_type:
+                        'Acceptance Letter',
+
+                    document_url:
+                        acceptanceLetterUrl
+                });
+            }
+
+
+            if (birthCertificateUrl) {
+
+                documents.push({
+
+                    student_id:
+                        student.student_id,
+
+                    document_type:
+                        'Birth Certificate',
+
+                    document_url:
+                        birthCertificateUrl
+                });
+            }
+
+
+            if (documents.length) {
+
+                const {
+                    error: documentError
+                } = await supabase
+                    .from('student_documents')
+                    .insert(
+                        documents
+                    );
+
+                if (documentError) {
+
+                    console.error(
+                        'DOCUMENT INSERT ERROR:',
+                        documentError
+                    );
+                }
+            }
+
+
+            return res.status(201).json({
+
+                message:
+                    'Student registered successfully.',
+
+                student
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                'REGISTER STUDENT ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    'Failed to register student.',
+
+                error:
+                    error.message
+
+            });
+        }
+    }
+);
+
+
+/* =========================================================
+   UPDATE STUDENT WITH PHOTO
+   ========================================================= */
+
+router.put(
+    '/:studentId/update-with-photo',
+    authenticateToken,
+    requireRoles(
+        PROPRIETOR,
+        ADMINISTRATOR,
+        MANAGER
+    ),
+    upload.single('photo'),
+    async (req, res) => {
+
+        try {
+
+            const studentId =
+                req.params.studentId;
+
+            const roleId =
+                getRoleId(req.user);
+
+
+            /*
+               Get existing student
+            */
+
+            const {
+                data: existingStudent,
+                error: existingError
+            } = await supabase
+                .from('students')
+                .select(`
+                    *,
+                    classes (
+                        class_id,
+                        class_name,
+                        school_section
+                    )
+                `)
+                .eq(
+                    'student_id',
+                    studentId
+                )
+                .maybeSingle();
+
+
+            if (existingError) {
+                throw existingError;
+            }
+
+
+            if (!existingStudent) {
+
+                return res.status(404).json({
+                    message:
+                        'Student not found.'
+                });
+            }
+
+
+            /*
+               Manager must own existing student sector.
+            */
+
+            if (roleId === MANAGER) {
+
+                const existingSection =
+                    existingStudent.classes
+                        ?.school_section ||
+                    existingStudent.school_section ||
+                    '';
+
+                if (
+                    !managerCanAccessSection(
+                        req.user,
+                        existingSection
+                    )
+                ) {
+
+                    return res.status(403).json({
+                        message:
+                            'Access denied. Student belongs to another sector.'
+                    });
+                }
+            }
+
+
+            /*
+               Determine class.
+            */
+
+            let classId =
+                req.body.class_id ||
+                existingStudent.class_id;
+
+
+            let newClass =
+                existingStudent.classes;
+
+
+            if (
+                req.body.class_id &&
+                Number(req.body.class_id) !==
+                Number(existingStudent.class_id)
+            ) {
+
+                const {
+                    data: classData,
+                    error: classError
+                } = await supabase
+                    .from('classes')
+                    .select(`
+                        class_id,
+                        class_name,
+                        arm,
+                        school_section,
+                        academic_year_id,
+                        is_active
+                    `)
+                    .eq(
+                        'class_id',
+                        req.body.class_id
+                    )
+                    .maybeSingle();
+
+
+                if (classError) {
+                    throw classError;
+                }
+
+
+                if (!classData) {
+
+                    return res.status(400).json({
+                        message:
+                            'Selected class was not found.'
+                    });
+                }
+
+
+                newClass =
+                    classData;
+
+
+                if (roleId === MANAGER) {
+
+                    if (
+                        !managerCanAccessSection(
+                            req.user,
+                            classData.school_section
+                        )
+                    ) {
+
+                        return res.status(403).json({
+                            message:
+                                'Access denied. You cannot move a student outside your sector.'
+                        });
                     }
                 }
             }
 
-            const { data, error } = await supabase
-                .from('students')
-                .update(studentUpdate)
-                .eq('student_id', studentId)
-                .select()
-                .single();
 
-            if (error) throw error;
+            /*
+               Build safe update object.
+            */
 
-            // Update guardian separately
-            const guardianName = req.body.guardian_name;
-            if (guardianName) {
-                const { data: studentData } = await supabase
-                    .from('students')
-                    .select('guardian_id')
-                    .eq('student_id', studentId)
-                    .single();
+            const allowedFields = [
 
-                if (studentData?.guardian_id) {
-                    await supabase
-                        .from('guardians')
-                        .update({
-                            full_name: guardianName,
-                            relationship: req.body.guardian_relationship || null,
-                            phone: req.body.guardian_phone || null,
-                            email: req.body.guardian_email || null,
-                            address: req.body.guardian_address || null
-                        })
-                        .eq('guardian_id', studentData.guardian_id);
+                'first_name',
+                'middle_name',
+                'last_name',
+                'date_of_birth',
+                'gender',
+                'nationality',
+                'admission_number',
+                'admission_date',
+                'class_id',
+                'guardian_id',
+                'student_status',
+                'previous_school',
+                'academic_year_id'
+
+            ];
+
+
+            const studentUpdate = {};
+
+
+            for (
+                const field of allowedFields
+            ) {
+
+                if (
+                    req.body[field] !==
+                    undefined
+                ) {
+
+                    studentUpdate[field] =
+                        req.body[field] === ''
+                            ? null
+                            : req.body[field];
                 }
             }
 
-            res.json({ message: 'Student updated successfully', student: data });
+
+            /*
+               Always synchronize school_section
+               with the student's class.
+            */
+
+            if (newClass) {
+
+                studentUpdate.school_section =
+                    newClass.school_section;
+            }
+
+
+            /*
+               Upload replacement photo.
+            */
+
+            if (req.file) {
+
+                const photoUrl =
+                    await uploadToStorage(
+                        'student-photos',
+                        req.file,
+                        'students'
+                    );
+
+                studentUpdate.photo_url =
+                    photoUrl;
+            }
+
+
+            const {
+                data: updatedStudent,
+                error: updateError
+            } = await supabase
+                .from('students')
+                .update(
+                    studentUpdate
+                )
+                .eq(
+                    'student_id',
+                    studentId
+                )
+                .select()
+                .single();
+
+
+            if (updateError) {
+                throw updateError;
+            }
+
+
+            return res.json({
+
+                message:
+                    'Student updated successfully.',
+
+                student:
+                    updatedStudent
+
+            });
+
         } catch (error) {
-            console.error('Update with photo error:', error);
-            res.status(500).json({ message: 'Failed to update student: ' + error.message });
+
+            console.error(
+                'UPDATE STUDENT WITH PHOTO ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    'Failed to update student.',
+
+                error:
+                    error.message
+
+            });
         }
     }
 );
 
-// ============================================================
-// UPDATE STUDENT (JSON)
-// ============================================================
-router.put('/:studentId', authenticateToken, requireRoles(...MANAGEMENT_ROLES), async (req, res) => {
-    const studentId = parseInt(req.params.studentId);
-    if (Number.isNaN(studentId)) return res.status(400).json({ message: 'Invalid student ID' });
 
-    try {
-        const { data: student, error: updateError } = await supabase
-            .from('students')
-            .update(req.body)
-            .eq('student_id', studentId)
-            .select()
-            .single();
+/* =========================================================
+   UPDATE STUDENT
+   ========================================================= */
 
-        if (updateError) throw updateError;
-        res.json({ message: 'Student updated successfully', student });
-    } catch (error) {
-        console.error('Student update error:', error);
-        res.status(500).json({ message: 'Failed to update student' });
-    }
-});
+router.put(
+    '/:studentId',
+    authenticateToken,
+    requireRoles(
+        PROPRIETOR,
+        ADMINISTRATOR,
+        MANAGER
+    ),
+    async (req, res) => {
 
-// ============================================================
-// RE-APPROVE STUDENT
-// ============================================================
-router.put('/:studentId/reapprove', authenticateToken, requireRoles('Administrator', 'Proprietor', 'Manager-Primary', 'Manager-Secondary'), async (req, res) => {
-    const studentId = parseInt(req.params.studentId);
-    if (Number.isNaN(studentId)) return res.status(400).json({ message: 'Invalid student ID' });
+        try {
 
-    try {
-        // Update student status to Pending
-        await supabase
-            .from('students')
-            .update({ student_status: 'Pending' })
-            .eq('student_id', studentId);
+            const studentId =
+                req.params.studentId;
 
-        // Update the EXISTING approval to Pending instead of deleting
-        const { error: updateApprovalError } = await supabase
-            .from('record_approvals')
-            .update({
-                approval_status: 'Pending',
-                approved_by: null,
-                approved_at: null,
-                rejection_reason: null,
-                created_at: new Date().toISOString()
-            })
-            .eq('record_id', studentId)
-            .eq('record_type', 'Student');
+            const roleId =
+                getRoleId(req.user);
 
-        if (updateApprovalError) {
-            // If no existing approval, create new one
-            const { error: insertError } = await supabase
-                .from('record_approvals')
-                .insert({
-                    record_type: 'Student',
-                    record_id: studentId,
-                    approval_status: 'Pending',
-                    created_by: req.user.user_id,
-                    created_at: new Date().toISOString()
+
+            /*
+               Get existing student
+            */
+
+            const {
+                data: existingStudent,
+                error: existingError
+            } = await supabase
+                .from('students')
+                .select(`
+                    *,
+                    classes (
+                        class_id,
+                        class_name,
+                        school_section
+                    )
+                `)
+                .eq(
+                    'student_id',
+                    studentId
+                )
+                .maybeSingle();
+
+
+            if (existingError) {
+                throw existingError;
+            }
+
+
+            if (!existingStudent) {
+
+                return res.status(404).json({
+                    message:
+                        'Student not found.'
                 });
-            if (insertError) throw insertError;
-        }
+            }
 
-        res.json({ message: 'Student sent for re-approval successfully', student_id: studentId, status: 'Pending' });
-    } catch (error) {
-        console.error('Re-approve error:', error);
-        res.status(500).json({ message: 'Failed to re-approve student: ' + error.message });
+
+            /*
+               Existing sector check
+            */
+
+            if (roleId === MANAGER) {
+
+                const existingSection =
+                    existingStudent.classes
+                        ?.school_section ||
+                    existingStudent.school_section ||
+                    '';
+
+                if (
+                    !managerCanAccessSection(
+                        req.user,
+                        existingSection
+                    )
+                ) {
+
+                    return res.status(403).json({
+                        message:
+                            'Access denied. Student belongs to another sector.'
+                    });
+                }
+            }
+
+
+            /*
+               Determine target class.
+            */
+
+            const targetClassId =
+                req.body.class_id ||
+                existingStudent.class_id;
+
+
+            const {
+                data: targetClass,
+                error: targetClassError
+            } = await supabase
+                .from('classes')
+                .select(`
+                    class_id,
+                    class_name,
+                    arm,
+                    school_section,
+                    academic_year_id,
+                    is_active
+                `)
+                .eq(
+                    'class_id',
+                    targetClassId
+                )
+                .maybeSingle();
+
+
+            if (targetClassError) {
+                throw targetClassError;
+            }
+
+
+            if (!targetClass) {
+
+                return res.status(400).json({
+                    message:
+                        'Selected class was not found.'
+                });
+            }
+
+
+            /*
+               Manager cannot move student outside
+               own sector.
+            */
+
+            if (roleId === MANAGER) {
+
+                if (
+                    !managerCanAccessSection(
+                        req.user,
+                        targetClass.school_section
+                    )
+                ) {
+
+                    return res.status(403).json({
+                        message:
+                            'Access denied. You cannot move a student outside your sector.'
+                    });
+                }
+            }
+
+
+            /*
+               Safe update fields.
+            */
+
+            const allowedFields = [
+
+                'first_name',
+                'middle_name',
+                'last_name',
+                'date_of_birth',
+                'gender',
+                'nationality',
+                'admission_number',
+                'admission_date',
+                'class_id',
+                'guardian_id',
+                'student_status',
+                'previous_school',
+                'academic_year_id',
+                'photo_url'
+
+            ];
+
+
+            const studentUpdate = {};
+
+
+            for (
+                const field of allowedFields
+            ) {
+
+                if (
+                    req.body[field] !==
+                    undefined
+                ) {
+
+                    studentUpdate[field] =
+                        req.body[field] === ''
+                            ? null
+                            : req.body[field];
+                }
+            }
+
+
+            /*
+               Keep school_section synchronized
+               with the class.
+            */
+
+            studentUpdate.class_id =
+                targetClass.class_id;
+
+            studentUpdate.school_section =
+                targetClass.school_section;
+
+
+            const {
+                data: updatedStudent,
+                error: updateError
+            } = await supabase
+                .from('students')
+                .update(
+                    studentUpdate
+                )
+                .eq(
+                    'student_id',
+                    studentId
+                )
+                .select()
+                .single();
+
+
+            if (updateError) {
+                throw updateError;
+            }
+
+
+            return res.json({
+
+                message:
+                    'Student updated successfully.',
+
+                student:
+                    updatedStudent
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                'UPDATE STUDENT ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    'Failed to update student.',
+
+                error:
+                    error.message
+
+            });
+        }
     }
-});
+);
+
+
+/* =========================================================
+   REAPPROVE STUDENT
+   ========================================================= */
+
+router.put(
+    '/:studentId/reapprove',
+    authenticateToken,
+    requireRoles(
+        PROPRIETOR,
+        ADMINISTRATOR,
+        MANAGER
+    ),
+    async (req, res) => {
+
+        try {
+
+            const studentId =
+                req.params.studentId;
+
+            const roleId =
+                getRoleId(req.user);
+
+
+            /*
+               Get student and class
+            */
+
+            const {
+                data: student,
+                error: studentError
+            } = await supabase
+                .from('students')
+                .select(`
+                    *,
+                    classes (
+                        class_id,
+                        class_name,
+                        school_section
+                    )
+                `)
+                .eq(
+                    'student_id',
+                    studentId
+                )
+                .maybeSingle();
+
+
+            if (studentError) {
+                throw studentError;
+            }
+
+
+            if (!student) {
+
+                return res.status(404).json({
+                    message:
+                        'Student not found.'
+                });
+            }
+
+
+            /*
+               Manager sector restriction
+            */
+
+            if (roleId === MANAGER) {
+
+                const section =
+                    student.classes
+                        ?.school_section ||
+                    student.school_section ||
+                    '';
+
+                if (
+                    !managerCanAccessSection(
+                        req.user,
+                        section
+                    )
+                ) {
+
+                    return res.status(403).json({
+                        message:
+                            'Access denied. Student belongs to another sector.'
+                    });
+                }
+            }
+
+
+            /*
+               Set student back to Pending.
+            */
+
+            const {
+                data: updatedStudent,
+                error: updateError
+            } = await supabase
+                .from('students')
+                .update({
+                    student_status:
+                        'Pending'
+                })
+                .eq(
+                    'student_id',
+                    studentId
+                )
+                .select()
+                .single();
+
+
+            if (updateError) {
+                throw updateError;
+            }
+
+
+            /*
+               Check for existing approval.
+            */
+
+            const {
+                data: existingApproval,
+                error: approvalLookupError
+            } = await supabase
+                .from('record_approvals')
+                .select('*')
+                .eq(
+                    'record_type',
+                    'student'
+                )
+                .eq(
+                    'record_id',
+                    studentId
+                )
+                .maybeSingle();
+
+
+            if (approvalLookupError) {
+
+                console.error(
+                    'APPROVAL LOOKUP ERROR:',
+                    approvalLookupError
+                );
+
+            } else if (existingApproval) {
+
+                const {
+                    error: approvalUpdateError
+                } = await supabase
+                    .from('record_approvals')
+                    .update({
+
+                        approval_status:
+                            'Pending',
+
+                        created_by:
+                            req.user.user_id ||
+                            null,
+
+                        created_at:
+                            new Date().toISOString()
+
+                    })
+                    .eq(
+                        'id',
+                        existingApproval.id
+                    );
+
+
+                if (approvalUpdateError) {
+
+                    console.error(
+                        'APPROVAL UPDATE ERROR:',
+                        approvalUpdateError
+                    );
+                }
+
+            } else {
+
+                const {
+                    error: approvalInsertError
+                } = await supabase
+                    .from('record_approvals')
+                    .insert({
+
+                        record_type:
+                            'student',
+
+                        record_id:
+                            studentId,
+
+                        school_section:
+                            student.classes
+                                ?.school_section ||
+                            student.school_section ||
+                            null,
+
+                        approval_status:
+                            'Pending',
+
+                        created_by:
+                            req.user.user_id ||
+                            null
+
+                    });
+
+
+                if (approvalInsertError) {
+
+                    console.error(
+                        'APPROVAL INSERT ERROR:',
+                        approvalInsertError
+                    );
+                }
+            }
+
+
+            return res.json({
+
+                message:
+                    'Student sent for approval again.',
+
+                student:
+                    updatedStudent
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                'REAPPROVE STUDENT ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    'Failed to reapprove student.',
+
+                error:
+                    error.message
+
+            });
+        }
+    }
+);
+
+
+/* =========================================================
+   EXPORT
+   ========================================================= */
 
 module.exports = router;

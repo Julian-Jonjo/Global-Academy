@@ -792,205 +792,344 @@
     <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
     <script>
-        const API_BASE = '/api';
+    const API_BASE = '/api';
 
-        let user = null;
-        let token = null;
+    let user = null;
+    let token = null;
 
-        function getAuthData() {
-            token = sessionStorage.getItem('token') ||
-                localStorage.getItem('token') ||
-                sessionStorage.getItem('authToken') ||
-                localStorage.getItem('authToken');
+    // =========================================================
+    // AUTH DATA
+    // =========================================================
+    function getAuthData() {
+        token =
+            sessionStorage.getItem('token') ||
+            localStorage.getItem('token') ||
+            sessionStorage.getItem('authToken') ||
+            localStorage.getItem('authToken');
 
-            const raw = sessionStorage.getItem('user') ||
-                localStorage.getItem('user');
+        const raw =
+            sessionStorage.getItem('user') ||
+            localStorage.getItem('user');
 
-            try {
-                user = raw ? JSON.parse(raw) : null;
-            } catch (e) {
-                user = null;
-            }
+        try {
+            user = raw ? JSON.parse(raw) : null;
+        } catch (error) {
+            console.error('Invalid stored user data:', error);
+            user = null;
         }
+    }
 
+    getAuthData();
+
+    // =========================================================
+    // AUTHENTICATION
+    // =========================================================
+    if (!token || !user) {
+        window.location.href = '/login.html';
+    }
+
+    // =========================================================
+    // CANONICAL ROLE MODEL
+    // 1 = Proprietor
+    // 2 = Administrator
+    // 3 = Finance
+    // 4 = Teacher
+    // 5 = Student
+    // 6 = Manager
+    // =========================================================
+    const roleId = Number(user?.role_id || 0);
+    const sector = String(user?.sector || '').trim().toLowerCase();
+
+    const isProprietor = roleId === 1;
+    const isAdministrator = roleId === 2;
+    const isFinance = roleId === 3;
+    const isTeacher = roleId === 4;
+    const isStudent = roleId === 5;
+    const isManager = roleId === 6;
+
+    const isPrimaryFinance = isFinance && sector === 'primary';
+    const isSecondaryFinance = isFinance && sector === 'secondary';
+
+    const isPrimaryManager = isManager && sector === 'primary';
+    const isSecondaryManager = isManager && sector === 'secondary';
+
+    // =========================================================
+    // FINANCE OFFICERS MUST USE THEIR SECTOR DASHBOARD
+    // Finance officers do NOT use finance.html
+    // =========================================================
+    if (isFinance) {
+        if (isPrimaryFinance) {
+            window.location.href = 'primary-finance.html';
+        } else if (isSecondaryFinance) {
+            window.location.href = 'secondary-finance.html';
+        } else {
+            alert('Your Finance account does not have a valid school sector.');
+            window.location.href = 'dashboard.html';
+        }
+    }
+
+    // =========================================================
+    // ONLY THESE ROLES MAY VIEW FINANCE OVERVIEW
+    // Proprietor
+    // Administrator
+    // Manager
+    // =========================================================
+    const isAllowed =
+        isProprietor ||
+        isAdministrator ||
+        isManager;
+
+    if (!isAllowed && !isFinance) {
+        alert('You do not have permission to access the Finance Overview.');
+        window.location.href = 'dashboard.html';
+    }
+
+    // =========================================================
+    // DISPLAY USER INFORMATION
+    // =========================================================
+    document.getElementById('userRole').textContent =
+        user?.role_name || 'School Management';
+
+    if (isProprietor) {
+        document.getElementById('userRoleLabel').textContent =
+            'Proprietor • Finance Overview';
+    } else if (isAdministrator) {
+        document.getElementById('userRoleLabel').textContent =
+            'Administrator • Finance Overview';
+    } else if (isPrimaryManager) {
+        document.getElementById('userRoleLabel').textContent =
+            'Primary Manager • Finance Overview';
+    } else if (isSecondaryManager) {
+        document.getElementById('userRoleLabel').textContent =
+            'Secondary Manager • Finance Overview';
+    } else {
+        document.getElementById('userRoleLabel').textContent =
+            'Finance Overview';
+    }
+
+    // =========================================================
+    // LOGOUT
+    // =========================================================
+    function logout() {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+
+        localStorage.removeItem('token');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+
+        window.location.href = '/login.html';
+    }
+
+    // =========================================================
+    // FORMATTING
+    // =========================================================
+    function formatCurrency(value) {
+        const number = Number(value || 0);
+
+        return 'SLL ' + number.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // =========================================================
+    // API REQUEST
+    // =========================================================
+    async function apiRequest(url, options = {}) {
         getAuthData();
 
-        // =========================================================
-        // AUTHENTICATION
-        // =========================================================
-        if (!token || !user) {
-            window.location.href = '/login.html';
+        if (!token) {
+            alert('Authentication required. Please log in.');
+            window.location.href = 'login.html';
+            return null;
         }
 
-        const role = user?.role_name || user?.role || '';
-        const userRole = (user?.role_name || user?.role || '').toLowerCase();
-
-        // =========================================================
-        // BLOCK: Finance Officers from Finance Overview
-        // =========================================================
-        const isFinanceOfficer = 
-            role === 'Finance Officer (Primary)' ||
-            role === 'Finance Officer (Secondary)' ||
-            role === 'Finance Officer' ||
-            role.toLowerCase() === 'finance officer' ||
-            role.toLowerCase().includes('finance');
-
-        // Finance Officers should go to their specific finance page
-        if (isFinanceOfficer) {
-            if (role.includes('Primary') || user?.sector === 'primary') {
-                window.location.href = 'primary-finance.html';
-            } else if (role.includes('Secondary') || user?.sector === 'secondary') {
-                window.location.href = 'secondary-finance.html';
-            } else {
-                window.location.href = 'primary-finance.html';
+        const response = await fetch(`${API_BASE}${url}`, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options.headers || {}),
+                'Authorization': `Bearer ${token}`
             }
-            return;
+        });
+
+        let data = null;
+
+        try {
+            data = await response.json();
+        } catch (error) {
+            data = null;
         }
 
-        // =========================================================
-        // ALLOW: Proprietor, Admin, Manager to view finance.html
-        // =========================================================
-        const isProprietor = 
-            role === 'Proprietor' ||
-            userRole === 'proprietor';
-
-        const isAdmin = 
-            role === 'Administrator' ||
-            role === 'Admin' ||
-            userRole === 'administrator' ||
-            userRole === 'admin';
-
-        const isManager = 
-            role === 'Manager' ||
-            role === 'Manager-Primary' ||
-            role === 'Manager-Secondary' ||
-            userRole === 'manager' ||
-            userRole === 'manager-primary' ||
-            userRole === 'manager-secondary';
-
-        const isAllowed = isProprietor || isAdmin || isManager;
-
-        if (!isAllowed && !isFinanceOfficer) {
-            alert('You do not have permission to access the Finance Overview.');
-            window.location.href = 'dashboard.html';
-            return;
-        }
-
-        // =========================================================
-        // DISPLAY USER INFO
-        // =========================================================
-        document.getElementById('userRole').textContent = user?.role_name || 'School Management';
-        document.getElementById('userRoleLabel').textContent = 'Finance Overview';
-
-        // =========================================================
-        // LOGOUT
-        // =========================================================
-        function logout() {
-            sessionStorage.removeItem('authToken');
-            sessionStorage.removeItem('user');
-            window.location.href = '/login.html';
-        }
-
-        // =========================================================
-        // FORMATTING HELPERS
-        // =========================================================
-        function formatCurrency(value) {
-            const number = Number(value || 0);
-            return 'SLL ' + number.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-
-        // =========================================================
-        // API REQUEST
-        // =========================================================
-        async function apiRequest(url, options = {}) {
-            getAuthData();
-
-            if (!token) {
-                alert('Authentication required. Please log in.');
-                location.href = 'login.html';
-                return null;
-            }
-
-            const response = await fetch(`${API_BASE}${url}`, {
-                ...options,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(options.headers || {}),
-                    Authorization: `Bearer ${token}`
-                }
+        // =====================================================
+        // SESSION EXPIRED
+        // =====================================================
+        if (response.status === 401) {
+            [
+                'token',
+                'authToken',
+                'user'
+            ].forEach(key => {
+                sessionStorage.removeItem(key);
+                localStorage.removeItem(key);
             });
 
-            let data = null;
-            try {
-                data = await response.json();
-            } catch (e) {
-                data = null;
-            }
-
-            if (response.status === 401) {
-                ['token', 'user', 'authToken'].forEach(k => {
-                    sessionStorage.removeItem(k);
-                    localStorage.removeItem(k);
-                });
-                alert('Your session has expired. Please log in again.');
-                location.href = 'login.html';
-                return null;
-            }
-
-            if (!response.ok) {
-                throw new Error(data?.message || `Request failed with status ${response.status}`);
-            }
-
-            return data;
+            alert('Your session has expired. Please log in again.');
+            window.location.href = 'login.html';
+            return null;
         }
 
-        // =========================================================
-        // LOAD FINANCE DATA
-        // =========================================================
-        async function loadFinanceData() {
-            try {
-                // Load primary summary
-                const primarySummary = await apiRequest('/payments/summary?sector=primary&academic_year=2026/2027');
-                const primaryData = primarySummary?.summary || {};
-
-                // Load secondary summary
-                const secondarySummary = await apiRequest('/payments/summary?sector=secondary&academic_year=2026/2027');
-                const secondaryData = secondarySummary?.summary || {};
-
-                // Calculate totals
-                const totalCollected = Number(primaryData.total_collected || 0) + Number(secondaryData.total_collected || 0);
-                const totalExpected = Number(primaryData.total_expected || 0) + Number(secondaryData.total_expected || 0);
-                const totalOutstanding = Number(primaryData.total_outstanding || 0) + Number(secondaryData.total_outstanding || 0);
-
-                // Update UI - Total Collected
-                document.getElementById('totalCollected').textContent = formatCurrency(totalCollected);
-                document.getElementById('pendingFees').textContent = formatCurrency(totalOutstanding);
-
-                // Primary School
-                document.getElementById('primaryCollected').textContent = formatCurrency(primaryData.total_collected);
-                document.getElementById('primaryTotal').textContent = formatCurrency(primaryData.total_collected);
-                document.getElementById('primaryCollectedStat').textContent = formatCurrency(primaryData.total_collected);
-                document.getElementById('primaryPending').textContent = formatCurrency(primaryData.total_outstanding);
-                document.getElementById('primaryStudentCount').textContent = primaryData.total_students || 0;
-
-                // Secondary School
-                document.getElementById('secondaryCollected').textContent = formatCurrency(secondaryData.total_collected);
-                document.getElementById('secondaryTotal').textContent = formatCurrency(secondaryData.total_collected);
-                document.getElementById('secondaryCollectedStat').textContent = formatCurrency(secondaryData.total_collected);
-                document.getElementById('secondaryPending').textContent = formatCurrency(secondaryData.total_outstanding);
-                document.getElementById('secondaryStudentCount').textContent = secondaryData.total_students || 0;
-
-            } catch (error) {
-                console.error('Error loading finance data:', error);
-            }
+        // =====================================================
+        // OTHER API ERRORS
+        // =====================================================
+        if (!response.ok) {
+            throw new Error(
+                data?.message ||
+                `Request failed with status ${response.status}`
+            );
         }
 
-        loadFinanceData();
-    </script>
+        return data;
+    }
 
+    // =========================================================
+    // LOAD FINANCE DATA
+    // =========================================================
+    async function loadFinanceData() {
+        try {
+            console.log('====================================');
+            console.log('FINANCE OVERVIEW INITIALIZING');
+            console.log('User:', user);
+            console.log('Role ID:', roleId);
+            console.log('Sector:', sector);
+            console.log('====================================');
+
+            // =================================================
+            // PRIMARY SUMMARY
+            // =================================================
+            const primarySummary = await apiRequest(
+                '/payments/summary?sector=primary&academic_year=2026/2027'
+            );
+
+            console.log('PRIMARY SUMMARY:', primarySummary);
+
+            const primaryData =
+                primarySummary?.summary || {};
+
+            // =================================================
+            // SECONDARY SUMMARY
+            // =================================================
+            const secondarySummary = await apiRequest(
+                '/payments/summary?sector=secondary&academic_year=2026/2027'
+            );
+
+            console.log('SECONDARY SUMMARY:', secondarySummary);
+
+            const secondaryData =
+                secondarySummary?.summary || {};
+
+            // =================================================
+            // NUMERIC VALUES
+            // =================================================
+            const primaryCollected =
+                Number(primaryData.total_collected || 0);
+
+            const secondaryCollected =
+                Number(secondaryData.total_collected || 0);
+
+            const primaryOutstanding =
+                Number(primaryData.total_outstanding || 0);
+
+            const secondaryOutstanding =
+                Number(secondaryData.total_outstanding || 0);
+
+            const totalCollected =
+                primaryCollected +
+                secondaryCollected;
+
+            const totalOutstanding =
+                primaryOutstanding +
+                secondaryOutstanding;
+
+            // =================================================
+            // MAIN KPI
+            // =================================================
+            document.getElementById('totalCollected').textContent =
+                formatCurrency(totalCollected);
+
+            document.getElementById('pendingFees').textContent =
+                formatCurrency(totalOutstanding);
+
+            // =================================================
+            // PRIMARY SCHOOL
+            // =================================================
+            document.getElementById('primaryCollected').textContent =
+                formatCurrency(primaryCollected);
+
+            document.getElementById('primaryTotal').textContent =
+                formatCurrency(primaryCollected);
+
+            document.getElementById('primaryCollectedStat').textContent =
+                formatCurrency(primaryCollected);
+
+            document.getElementById('primaryPending').textContent =
+                formatCurrency(primaryOutstanding);
+
+            document.getElementById('primaryStudentCount').textContent =
+                Number(primaryData.total_students || 0).toLocaleString();
+
+            // =================================================
+            // SECONDARY SCHOOL
+            // =================================================
+            document.getElementById('secondaryCollected').textContent =
+                formatCurrency(secondaryCollected);
+
+            document.getElementById('secondaryTotal').textContent =
+                formatCurrency(secondaryCollected);
+
+            document.getElementById('secondaryCollectedStat').textContent =
+                formatCurrency(secondaryCollected);
+
+            document.getElementById('secondaryPending').textContent =
+                formatCurrency(secondaryOutstanding);
+
+            document.getElementById('secondaryStudentCount').textContent =
+                Number(secondaryData.total_students || 0).toLocaleString();
+
+            console.log('====================================');
+            console.log('FINANCE DATA LOADED');
+            console.log('Primary collected:', primaryCollected);
+            console.log('Secondary collected:', secondaryCollected);
+            console.log('Total collected:', totalCollected);
+            console.log('Total outstanding:', totalOutstanding);
+            console.log('====================================');
+
+        } catch (error) {
+            console.error(
+                'ERROR LOADING FINANCE DATA:',
+                error
+            );
+
+            // Keep the dashboard usable even if one API request fails.
+            document.getElementById('totalCollected').textContent =
+                'SLL 0.00';
+
+            document.getElementById('pendingFees').textContent =
+                'SLL 0.00';
+
+            console.error(
+                'Finance summary could not be loaded.'
+            );
+        }
+    }
+
+    // =========================================================
+    // START
+    // =========================================================
+    loadFinanceData();
+</script>
 </body>
 
 </html>

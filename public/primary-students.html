@@ -465,47 +465,358 @@
     <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
 <script>
-    const token = sessionStorage.getItem('authToken');
-    const userData = sessionStorage.getItem('user');
-    if (!token || !userData) { window.location.href = '/login.html'; }
+   const token = sessionStorage.getItem('authToken');
+const userData = sessionStorage.getItem('user');
 
-    let user;
-    try { user = JSON.parse(userData); } catch (error) { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+if (!token || !userData) {
+    window.location.href = '/login.html';
+}
 
-    const role = user?.role_name || '';
-    const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
+let user;
 
-    if (userRoleForAccess.includes('manager-secondary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
-    if (userRoleForAccess.includes('finance officer (secondary)')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
-    if (userRoleForAccess.includes('teacher - secondary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+try {
+    user = JSON.parse(userData);
+} catch (error) {
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('user');
+    window.location.href = '/login.html';
+}
 
-    const allowedRoles = ['manager-primary', 'admin', 'proprietor'];
-    const hasAccess = allowedRoles.some(r => userRoleForAccess.includes(r));
-    if (!hasAccess) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+// ============================================================
+// ROLE AND SECTOR
+// ============================================================
+// 1 = Proprietor
+// 2 = Administrator
+// 3 = Finance
+// 4 = Teacher
+// 5 = Student
+// 6 = Manager
+//
+// sector = primary / secondary
+// ============================================================
 
-    document.getElementById('userRole').textContent = role;
-    document.getElementById('userRoleLabel').textContent = '';
+const roleId = Number(user?.role_id);
+const role = user?.role_name || '';
+const sector = String(user?.sector || '').trim().toLowerCase();
 
-    // ============================================================
-    // HELPER FUNCTIONS
-    // ============================================================
-    function previewPhoto(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const preview = document.getElementById('photoPreview'); const img = document.getElementById('photoPreviewImg'); if (img && preview) { img.src = e.target.result; preview.style.display = 'block'; } }; reader.readAsDataURL(file); }
-    function showFileName(input, displayId) { const display = document.getElementById(displayId); if (display && input.files && input.files[0]) { display.textContent = '📎 ' + input.files[0].name; } }
-    function previewEditPhoto(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const img = document.getElementById('editPhotoImg'); if (img) img.src = e.target.result; }; reader.readAsDataURL(file); }
-    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
-    function escapeHtml(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
-    function display(value) { if (value === null || value === undefined || value === '') return 'Not provided'; return escapeHtml(String(value)); }
-    function formatDateOnly(value) { if (!value) return 'Not provided'; const date = new Date(value); if (Number.isNaN(date.getTime())) return 'Not provided'; return date.toLocaleDateString(); }
-    function formatDateForInput(value) { if (!value) return ''; if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value; const date = new Date(value); if (Number.isNaN(date.getTime())) return ''; return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
-    function field(label, value) { return `<div class="field"><span class="field-label">${escapeHtml(label)}</span><span class="field-value">${display(value)}</span></div>`; }
-    function closeModal() { document.getElementById('studentModal').style.display = 'none'; }
-    function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
-    function closeDocModal() { document.getElementById('docModal').style.display = 'none'; }
-    function closeDisciplineModal() { document.getElementById('disciplineModal').style.display = 'none'; }
-    function closeViewDisciplineModal() { document.getElementById('viewDisciplineModal').style.display = 'none'; }
+const userRoleForAccess = String(
+    user?.role_name || user?.role || ''
+).toLowerCase();
 
-    if (role === 'Proprietor') { const registerTab = document.getElementById('registerTab'); if (registerTab) registerTab.style.display = 'none'; }
+// ============================================================
+// ROLE FLAGS
+// ============================================================
 
+const isProprietor = roleId === 1;
+const isAdministrator = roleId === 2;
+const isFinance = roleId === 3;
+const isTeacher = roleId === 4;
+const isStudent = roleId === 5;
+const isManager = roleId === 6;
+
+// ============================================================
+// SECTOR FLAGS
+// ============================================================
+
+const isPrimary = sector === 'primary';
+const isSecondary = sector === 'secondary';
+
+// ============================================================
+// ROLE + SECTOR FLAGS
+// ============================================================
+
+const isPrimaryManager =
+    isManager && isPrimary;
+
+const isSecondaryManager =
+    isManager && isSecondary;
+
+const isPrimaryFinance =
+    isFinance && isPrimary;
+
+const isSecondaryFinance =
+    isFinance && isSecondary;
+
+const isPrimaryTeacher =
+    isTeacher && isPrimary;
+
+const isSecondaryTeacher =
+    isTeacher && isSecondary;
+
+// ============================================================
+// PRIMARY ACCESS CONTROL
+// ============================================================
+//
+// Allowed:
+//   Proprietor
+//   Administrator
+//   Primary Manager
+//
+// Denied:
+//   Secondary Manager
+//   Primary Finance
+//   Secondary Finance
+//   Primary Teacher
+//   Secondary Teacher
+//   Student
+//
+// The system uses role_id + sector.
+// ============================================================
+
+const hasAccess =
+    isProprietor ||
+    isAdministrator ||
+    isPrimaryManager;
+
+if (!hasAccess) {
+
+    console.error(
+        'PRIMARY STUDENTS ACCESS DENIED',
+        {
+            role_id: roleId,
+            role_name: role,
+            sector: sector,
+            user: user
+        }
+    );
+
+    alert('Access denied.');
+
+    window.location.href = 'dashboard.html';
+}
+
+// ============================================================
+// DISPLAY USER ROLE
+// ============================================================
+
+const userRoleElement =
+    document.getElementById('userRole');
+
+if (userRoleElement) {
+    userRoleElement.textContent = role;
+}
+
+const userRoleLabelElement =
+    document.getElementById('userRoleLabel');
+
+if (userRoleLabelElement) {
+    userRoleLabelElement.textContent = '';
+}
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+
+function previewPhoto(event) {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+
+        const preview =
+            document.getElementById('photoPreview');
+
+        const img =
+            document.getElementById('photoPreviewImg');
+
+        if (img && preview) {
+            img.src = e.target.result;
+            preview.style.display = 'block';
+        }
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function showFileName(input, displayId) {
+
+    const display =
+        document.getElementById(displayId);
+
+    if (
+        display &&
+        input.files &&
+        input.files[0]
+    ) {
+        display.textContent =
+            '📎 ' + input.files[0].name;
+    }
+}
+
+function previewEditPhoto(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+
+        const img =
+            document.getElementById('editPhotoImg');
+
+        if (img) {
+            img.src = e.target.result;
+        }
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function logout() {
+
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('user');
+
+    window.location.href = '/login.html';
+}
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function display(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ''
+    ) {
+        return 'Not provided';
+    }
+
+    return escapeHtml(String(value));
+}
+
+function formatDateOnly(value) {
+
+    if (!value) {
+        return 'Not provided';
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return 'Not provided';
+    }
+
+    return date.toLocaleDateString();
+}
+
+function formatDateForInput(value) {
+
+    if (!value) {
+        return '';
+    }
+
+    if (
+        typeof value === 'string' &&
+        /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ) {
+        return value;
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return '';
+    }
+
+    return `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+    ).padStart(2, '0')}-${String(
+        date.getDate()
+    ).padStart(2, '0')}`;
+}
+
+function field(label, value) {
+
+    return `
+        <div class="field">
+            <span class="field-label">
+                ${escapeHtml(label)}
+            </span>
+
+            <span class="field-value">
+                ${display(value)}
+            </span>
+        </div>
+    `;
+}
+
+function closeModal() {
+
+    const modal =
+        document.getElementById('studentModal');
+
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function closeEditModal() {
+
+    const modal =
+        document.getElementById('editModal');
+
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function closeDocModal() {
+
+    const modal =
+        document.getElementById('docModal');
+
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function closeDisciplineModal() {
+
+    const modal =
+        document.getElementById('disciplineModal');
+
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function closeViewDisciplineModal() {
+
+    const modal =
+        document.getElementById('viewDisciplineModal');
+
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// ============================================================
+// PROPRIETOR UI
+// ============================================================
+
+if (isProprietor) {
+
+    const registerTab =
+        document.getElementById('registerTab');
+
+    if (registerTab) {
+        registerTab.style.display = 'none';
+    }
+}
     async function loadAcademicYears() {
         try {
             const response = await fetch('/api/academic-years', { headers: { 'Authorization': `Bearer ${token}` } });
