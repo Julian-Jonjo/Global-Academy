@@ -121,7 +121,6 @@
             max-width: 1500px;
             margin: 25px auto;
             padding: 0 20px 80px;
-            /* Added padding for bottom logout */
             position: relative;
             z-index: 1;
             min-height: calc(100vh - 80px);
@@ -375,12 +374,30 @@
             padding: 10px 11px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
-            margin-bottom: 15px;
             outline: none;
         }
 
         .search-box:focus {
             border-color: #166534;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-container .search-box {
+            flex: 2;
+            min-width: 200px;
+        }
+
+        .filter-container select.search-box {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            cursor: pointer;
         }
 
         /* =========================================================
@@ -506,6 +523,15 @@
 
             .card {
                 padding: 17px;
+            }
+
+            .filter-container {
+                flex-direction: column;
+            }
+
+            .filter-container .search-box {
+                flex: 1;
+                min-width: 100%;
             }
 
             .logout-bottom {
@@ -643,7 +669,15 @@
                 <span id="teacherDirectoryCount" style="font-size:13px;color:#6b7280;">0 Teachers</span>
             </div>
 
-            <input id="teacherSearch" class="search-box" placeholder="Search teacher, staff ID, section, department or subject..." oninput="filterDirectory()">
+            <div class="filter-container">
+                <input id="teacherSearch" class="search-box" placeholder="Search teacher, staff ID, section, department or subject..." oninput="filterDirectory()">
+                
+                <select id="sectorFilter" class="search-box" onchange="filterDirectory()">
+                    <option value="">All Sectors</option>
+                    <option value="primary">Primary</option>
+                    <option value="secondary">Secondary</option>
+                </select>
+            </div>
 
             <div class="table-wrapper">
                 <table>
@@ -796,37 +830,42 @@
                 document.getElementById('userRoleLabel').textContent = '';
 
                 const profileData = await apiRequest('/teachers/me');
+                console.log('Profile data received:', profileData);
+
                 if (!profileData) return;
 
-                currentTeacher = profileData.teacher || null;
+                // The backend returns the teacher object directly
+                currentTeacher = profileData;
 
-                if (profileData.user) {
-                    document.getElementById('userRole').textContent = profileData.user.role_name || 'Teacher';
+                // Update user role from the response if available
+                if (profileData.role_name) {
+                    document.getElementById('userRole').textContent = profileData.role_name;
+                } else if (user?.role_name) {
+                    document.getElementById('userRole').textContent = user.role_name;
                 }
 
                 if (!currentTeacher) {
                     throw new Error('Teacher profile was not returned by the server.');
                 }
 
+                // Get current academic year
                 academicYear = await apiRequest('/teachers/academic-year/current');
                 if (!academicYear) {
                     throw new Error('Current academic year could not be loaded.');
                 }
 
-                const assignmentData = await apiRequest(`/teachers/assignments?academic_year_id=${encodeURIComponent(academicYear.academic_year_id)}`);
+                // Get assignments for this specific teacher using the secondary-assignments endpoint
+                const assignmentData = await apiRequest(`/teachers/${currentTeacher.teacher_id}/secondary-assignments`);
                 myAssignments = Array.isArray(assignmentData) ? assignmentData : [];
 
-                const directoryData = await apiRequest('/teachers/directory');
-                if (directoryData && directoryData.teachers) {
-                    teacherDirectory = directoryData.teachers;
-                } else {
-                    teacherDirectory = Array.isArray(directoryData) ? directoryData : [];
-                }
+                // Use the existing /teachers endpoint for directory
+                const directoryData = await apiRequest('/teachers');
+                teacherDirectory = Array.isArray(directoryData) ? directoryData : [];
 
                 renderProfile();
                 renderSummary();
                 renderAssignments();
-                renderDirectory(teacherDirectory);
+                filterDirectory();
 
             } catch (error) {
                 console.error('TEACHER DASHBOARD ERROR:', error);
@@ -867,7 +906,7 @@
         ========================================================= */
 
         function renderSummary() {
-            const subjects = new Set(myAssignments.map(a => a.subject_id).filter(id => id !== null && id !== undefined));
+            const subjects = new Set(myAssignments.map(a => a.classes?.subject_id).filter(id => id !== null && id !== undefined));
             const classes = new Set(myAssignments.map(a => a.class_id).filter(id => id !== null && id !== undefined));
 
             document.getElementById('subjectCount').textContent = subjects.size;
@@ -904,19 +943,19 @@
             }
 
             container.innerHTML = myAssignments.map(assignment => {
-                const subject = assignment.subjects || {};
                 const classData = assignment.classes || {};
-                const department = subject.departments || {};
                 const className = `${classData.class_name || ''} ${classData.arm || ''}`.trim();
-                const section = classData.school_section || subject.school_level || currentTeacher?.school_section || '';
+                const section = classData.school_section || currentTeacher?.school_section || '';
+
+                // Subject name might be in the class data or we need to fetch it
+                const subjectName = classData.subject_name || classData.class_name || 'Subject';
 
                 return `
                     <div class="assignment-card">
                         <div class="assignment-section">${getSectionBadge(section)}</div>
-                        <h4>${esc(subject.subject_name || '-')}</h4>
-                        <p><strong>Subject Code:</strong> ${esc(subject.subject_code || '-')}</p>
-                        <p><strong>Department:</strong> ${esc(department.department_name || '-')}</p>
+                        <h4>${esc(subjectName)}</h4>
                         <p><strong>Class:</strong> <span class="badge">${esc(className || '-')}</span></p>
+                        <p><strong>Section:</strong> ${getSectionBadge(section)}</p>
                     </div>
                 `;
             }).join('');
@@ -929,21 +968,30 @@
         function renderDirectory(list) {
             const table = document.getElementById('teacherDirectoryTable');
 
-            if (!list || !list.length) {
-                table.innerHTML = `<tr><td colspan="8" class="empty">No teachers found in your section.</td></tr>`;
+            // Filter out the current logged-in teacher
+            const filteredList = list.filter(teacher => {
+                // Skip if this teacher is the current logged-in user
+                if (currentTeacher && teacher.teacher_id === currentTeacher.teacher_id) {
+                    return false;
+                }
+                return true;
+            });
+
+            if (!filteredList || !filteredList.length) {
+                table.innerHTML = `<tr><td colspan="8" class="empty">No other teachers found in your section.</td></tr>`;
                 return;
             }
 
-            document.getElementById('teacherDirectoryCount').textContent = `${list.length} Teacher${list.length === 1 ? '' : 's'}`;
+            document.getElementById('teacherDirectoryCount').textContent = `${filteredList.length} Teacher${filteredList.length === 1 ? '' : 's'}`;
 
-            table.innerHTML = list.map(teacher => {
+            table.innerHTML = filteredList.map(teacher => {
                 const name = [teacher.first_name, teacher.middle_name, teacher.last_name]
                     .filter(Boolean).join(' ');
 
                 return `
                     <tr>
-                        <td><strong>${esc(teacher.staff_number || '-')}</strong> ${teacher.isHOD ? ' 👑' : ''} ${teacher.isClassMaster ? ' 🎯' : ''}</td>
-                        <td>${esc(name || '-')}<br><small style="color:#6b7280;font-size:11px;">${esc(teacher.role || 'Teacher')}</small></td>
+                        <td><strong>${esc(teacher.staff_number || '-')}</strong></td>
+                        <td>${esc(name || '-')}<br><small style="color:#6b7280;font-size:11px;">${esc(teacher.employment_type || 'Teacher')}</small></td>
                         <td>${getSectionBadge(teacher.school_section)}</td>
                         <td>${esc(teacher.department || '-')}</td>
                         <td>${esc(teacher.subjects || '-')}</td>
@@ -961,24 +1009,44 @@
 
         function filterDirectory() {
             const query = document.getElementById('teacherSearch').value.toLowerCase().trim();
+            const sectorFilter = document.getElementById('sectorFilter').value.toLowerCase().trim();
 
-            const filtered = teacherDirectory.filter(teacher => {
-                const name = [teacher.first_name, teacher.middle_name, teacher.last_name]
-                    .filter(Boolean).join(' ').toLowerCase();
-                const staffId = String(teacher.staff_number || '').toLowerCase();
-                const phone = String(teacher.phone || '').toLowerCase();
-                const email = String(teacher.email || '').toLowerCase();
-                const section = String(teacher.school_section || '').toLowerCase();
-                const employment = String(teacher.employment_type || '').toLowerCase();
-
-                return !query ||
-                    name.includes(query) ||
-                    staffId.includes(query) ||
-                    phone.includes(query) ||
-                    email.includes(query) ||
-                    section.includes(query) ||
-                    employment.includes(query);
+            // First, filter out the current teacher
+            let filtered = teacherDirectory.filter(teacher => {
+                // Skip current teacher
+                if (currentTeacher && teacher.teacher_id === currentTeacher.teacher_id) {
+                    return false;
+                }
+                return true;
             });
+
+            // Apply sector filter
+            if (sectorFilter) {
+                filtered = filtered.filter(teacher => {
+                    const section = String(teacher.school_section || '').toLowerCase();
+                    return section === sectorFilter;
+                });
+            }
+
+            // Apply search filter
+            if (query) {
+                filtered = filtered.filter(teacher => {
+                    const name = [teacher.first_name, teacher.middle_name, teacher.last_name]
+                        .filter(Boolean).join(' ').toLowerCase();
+                    const staffId = String(teacher.staff_number || '').toLowerCase();
+                    const phone = String(teacher.phone || '').toLowerCase();
+                    const email = String(teacher.email || '').toLowerCase();
+                    const section = String(teacher.school_section || '').toLowerCase();
+                    const employment = String(teacher.employment_type || '').toLowerCase();
+
+                    return name.includes(query) ||
+                        staffId.includes(query) ||
+                        phone.includes(query) ||
+                        email.includes(query) ||
+                        section.includes(query) ||
+                        employment.includes(query);
+                });
+            }
 
             renderDirectory(filtered);
         }

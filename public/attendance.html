@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Attendance</title>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); z-index: 0; }
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; }
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+        .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-title h2 { margin: 0 0 6px 0; color: #1f2937; }
+        .page-title p { margin: 0; color: #6b7280; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        
+        /* BOOKSHELF STYLES */
+        .sector-section { margin-bottom: 30px; }
+        .sector-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px 20px; border-radius: 8px; }
+        .sector-header.primary { background: #dcfce7; border-left: 4px solid #166534; }
+        .sector-header.secondary { background: #dbeafe; border-left: 4px solid #1a3c6e; }
+        .sector-header h3 { margin: 0; font-size: 18px; }
+        .sector-count { font-size: 14px; font-weight: bold; }
+        .classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+        
+        .book {
+            background: linear-gradient(135deg, #1a3c6e 0%, #0f2647 100%);
+            border: 2px solid #d4af37;
+            border-radius: 8px 12px 12px 8px;
+            padding: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .book:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .book::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 3px; background: #d4af37; }
+        .book-school { font-size: 10px; text-align: center; letter-spacing: 1px; text-transform: uppercase; margin-top: 15px; opacity: 0.8; }
+        .book-class { font-size: 20px; font-weight: bold; text-align: center; margin: 10px 0; }
+        .book-year { font-size: 12px; text-align: center; color: #d4af37; }
+        .book-master { font-size: 12px; text-align: center; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
+        
+        .empty { text-align: center; padding: 30px; color: #6b7280; }
+        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        /* REGISTER VIEW */
+        #register-view { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+        .action-bar { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-back { background: #6b7280; color: white; }
+        .btn-print { background: #1a3c6e; color: white; }
+
+        .register-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1a3c6e; padding-bottom: 10px; }
+        .register-header h2 { margin: 0; color: #1a3c6e; }
+        .register-header p { margin: 5px 0; font-size: 14px; }
+
+        table { border-collapse: collapse; width: 100%; font-size: 12px; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
+        th { background-color: #f0f0f0; position: sticky; top: 0; z-index: 10; }
+        
+        .day-col { width: 25px; cursor: pointer; font-weight: bold; }
+        .day-col.present { background-color: #d4edda; color: #155724; }
+        .day-col.absent { background-color: #f8d7da; color: #721c24; }
+        
+        .ind-summary { font-weight: bold; background-color: #fff3cd; }
+        .summary-row td { background-color: #e2e3e5; font-weight: bold; }
+        .total-student-row td { background-color: #d1e7dd; font-weight: bold; }
+        .average-row td { background-color: #cfe2ff; font-weight: bold; }
+        .week-stamp { font-size: 9px; font-weight: normal; color: #333; margin-top: 2px; }
+
+        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; } .user-info { text-align: left; } .classes-grid { grid-template-columns: 1fr; } }
+        
+        @media print {
+            body { background: white; }
+            .header, .page-title, .action-bar, .logout-bottom { display: none !important; }
+            .container { padding: 0; max-width: 100%; }
+            #bookshelf-view { display: none !important; }
+            #register-view { display: block !important; box-shadow: none; padding: 0; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>Attendance Registers</p>
+            </div>
+        </div>
+        <div id="userInfo" class="user-info"></div>
+    </header>
+
+    <main class="container">
+        <!-- BOOKSHELF VIEW -->
+        <div id="bookshelf-view">
+            <div class="page-title">
+                <div>
+                    <h2>Attendance Registers</h2>
+                    <p>Select a class register to take attendance.</p>
+                </div>
+                <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+            </div>
+
+            <!-- PRIMARY SECTOR -->
+            <div class="sector-section">
+                <div class="sector-header primary">
+                    <h3>🏫 Primary School</h3>
+                    <span class="sector-count" id="primaryCount">0 Classes</span>
+                </div>
+                <div class="classes-grid" id="primaryClasses">
+                    <div class="empty">Loading Primary classes...</div>
+                </div>
+            </div>
+
+            <!-- SECONDARY SECTOR -->
+            <div class="sector-section">
+                <div class="sector-header secondary">
+                    <h3>🎓 Secondary School</h3>
+                    <span class="sector-count" id="secondaryCount">0 Classes</span>
+                </div>
+                <div class="classes-grid" id="secondaryClasses">
+                    <div class="empty">Loading Secondary classes...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REGISTER VIEW -->
+        <div id="register-view">
+            <div class="action-bar">
+                <button class="btn btn-back" onclick="goBackToShelf()">← Back to Bookshelf</button>
+                <button class="btn btn-print" onclick="window.print()">Print Register</button>
+            </div>
+
+            <div class="register-header">
+                <h2 id="reg-title">Class Attendance Register</h2>
+                <p id="reg-meta">Class Master: - | Sector: -</p>
+            </div>
+
+            <table id="attendance-table">
+                <thead id="table-head"></thead>
+                <tbody id="table-body"></tbody>
+                <tfoot id="table-foot"></tfoot>
+            </table>
+        </div>
+
+    </main>
+
+    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
+
+<script>
+    // ==========================================
+    // AUTH & SESSION
+    // ==========================================
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
+
+    const user = JSON.parse(userData);
+    document.getElementById('userInfo').textContent = `${user.full_name || 'User'} (${user.role_name})`;
+
+    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+    // ==========================================
+    // GLOBAL DATA STORES
+    // ==========================================
+    let teacherMap = {};
+    let currentClassId = null;
+    let currentStudents = [];
+
+    // ==========================================
+    // FETCH DATA FROM YOUR EXISTING BACKEND
+    // ==========================================
+    async function loadTeachers() {
+        try {
+            const response = await fetch('/api/teachers', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (response.ok) {
+                const teachers = await response.json();
+                (teachers || []).forEach(t => {
+                    teacherMap[t.teacher_id || t.id] = `${t.first_name || ''} ${t.last_name || ''}`.trim() || t.full_name || t.name || 'Teacher';
+                });
+            }
+        } catch (e) { console.log('Could not load teachers'); }
+    }
+
+    async function loadBookshelf() {
+        try {
+            await loadTeachers();
+
+            // Fetch classes
+            const classesResponse = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!classesResponse.ok) throw new Error('Failed to load classes');
+            const classes = await classesResponse.json();
+
+            // Split classes by sector based on your existing structure
+            const primaryClasses = (classes || []).filter(c => ['Nursery', 'Primary'].includes(c.school_section));
+            const secondaryClasses = (classes || []).filter(c => ['JSS', 'SSS', 'Secondary'].includes(c.school_section));
+
+            document.getElementById('primaryCount').textContent = `${primaryClasses.length} Classes`;
+            document.getElementById('secondaryCount').textContent = `${secondaryClasses.length} Classes`;
+
+            renderBooks('primaryClasses', primaryClasses);
+            renderBooks('secondaryClasses', secondaryClasses);
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('primaryClasses').innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`;
+            document.getElementById('secondaryClasses').innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    // RENDER BOOKSHELF
+    function renderBooks(containerId, classes) {
+        const container = document.getElementById(containerId);
+        if (!classes || classes.length === 0) {
+            container.innerHTML = '<div class="empty">No classes available.</div>';
+            return;
+        }
+
+        container.innerHTML = classes.map(cls => {
+            let masterName = 'Not assigned';
+            if (cls.class_master_id) {
+                masterName = teacherMap[cls.class_master_id] || 'Not assigned';
+            } else if (cls.class_master) {
+                masterName = cls.class_master;
+            }
+
+            return `
+                <div class="book" onclick="openBook(${cls.class_id}, '${escapeHtml(cls.class_name || '')}${cls.arm ? ' ' + escapeHtml(cls.arm) : ''}', '${escapeHtml(cls.school_section)}')">
+                    <div class="book-school">GLOBAL EDUCATION ACADEMY</div>
+                    <div class="book-class">${escapeHtml(cls.class_name || 'Unnamed Class')} ${cls.arm ? escapeHtml(cls.arm) : ''}</div>
+                    <div class="book-year">Academic Year: ${escapeHtml(cls.academic_year || '2026/2027')}</div>
+                    <div class="book-master">Class Master:<br><b>${escapeHtml(masterName)}</b></div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ==========================================
+    // OPEN REGISTER & FETCH STUDENTS
+    // ==========================================
+    async function openBook(classId, className, sector) {
+        currentClassId = classId;
+        
+        document.getElementById('bookshelf-view').style.display = 'none';
+        document.getElementById('register-view').style.display = 'block';
+
+        let masterName = 'Not assigned';
+        // Try to fetch the specific class master from the classes endpoint if you have it
+        // Otherwise, just show generic info for now
+        document.getElementById('reg-title').innerText = className + " - Attendance Register";
+        document.getElementById('reg-meta').innerText = `Sector: ${sector}`;
+
+        try {
+            // Fetch students for this class
+            const response = await fetch(`/api/students?class_id=${classId}`, { 
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } 
+            });
+            
+            if (!response.ok) throw new Error('Failed to load students');
+            const students = await response.json();
+            currentStudents = students || [];
+
+            if (currentStudents.length === 0) {
+                document.getElementById('table-head').innerHTML = '';
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="30" style="padding:20px;">No active students found in this class.</td></tr>';
+                document.getElementById('table-foot').innerHTML = '';
+                return;
+            }
+
+            renderRegisterGrid(currentStudents);
+        } catch (error) {
+            console.error('Error fetching students:', error);
+            document.getElementById('table-body').innerHTML = `<tr><td colspan="30" style="padding:20px;">Error: ${escapeHtml(error.message)}</td></tr>`;
+        }
+    }
+
+    function goBackToShelf() {
+        document.getElementById('register-view').style.display = 'none';
+        document.getElementById('bookshelf-view').style.display = 'block';
+        loadBookshelf();
+    }
+
+    // ==========================================
+    // RENDER ATTENDANCE GRID
+    // ==========================================
+    function renderRegisterGrid(students) {
+        const thead = document.getElementById('table-head');
+        const tbody = document.getElementById('table-body');
+        const tfoot = document.getElementById('table-foot');
+
+        const weekStamps = ["01/09/26 - 05/09/26", "08/09/26 - 12/09/26", "15/09/26 - 19/09/26", "22/09/26 - 26/09/26"];
+
+        let headers = `<tr>
+                            <th rowspan="2" style="width: 30px;">No.</th>
+                            <th rowspan="2" style="text-align: left;">NAME</th>
+                            <th rowspan="2" class="ind-summary" style="width: 45px;">Prsnt</th>
+                            <th rowspan="2" class="ind-summary" style="width: 45px;">Absnt</th>`;
+        for(let w = 1; w <= 4; w++) {
+            headers += `<th colspan="6">${w}${w===1?'st':w===2?'nd':w===3?'rd':'th'} WEEK<div class="week-stamp">${weekStamps[w-1]}</div></th>`;
+        }
+        headers += `</tr><tr>`;
+        for(let w = 1; w <= 4; w++) {
+            headers += `<th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>`;
+        }
+        headers += `</tr>`;
+        thead.innerHTML = headers;
+
+        tbody.innerHTML = '';
+        students.forEach((student, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td style="text-align: left;">${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</td>
+                    <td class="ind-summary ind-pres">-</td>
+                    <td class="ind-summary ind-abs">-</td>
+                    ${Array(24).fill('<td class="day-col" onclick="toggleAttendance(this)"></td>').join('')}
+                </tr>`;
+        });
+
+        let dailyB = `<tr class="summary-row"><td colspan="2" style="text-align: left;">Boys Present</td><td colspan="2"></td>`;
+        let dailyG = `<tr class="summary-row"><td colspan="2" style="text-align: left;">Girls Present</td><td colspan="2"></td>`;
+        let dailyT = `<tr class="summary-row"><td colspan="2" style="text-align: left;">Class Total</td><td colspan="2"></td>`;
+
+        let weeklyB = `<tr class="total-student-row"><td colspan="2" style="text-align: left;">Week Boys</td><td colspan="2"></td>`;
+        let weeklyG = `<tr class="total-student-row"><td colspan="2" style="text-align: left;">Week Girls</td><td colspan="2"></td>`;
+        let weeklyT = `<tr class="total-student-row"><td colspan="2" style="text-align: left;">Week Total</td><td colspan="2"></td>`;
+        let weeklyA = `<tr class="average-row"><td colspan="2" style="text-align: left;">Week Avg %</td><td colspan="2"></td>`;
+
+        for(let w = 0; w < 4; w++) {
+            for(let d = 0; d < 6; d++) {
+                dailyB += `<td class="sum-boys-w${w}"></td>`;
+                dailyG += `<td class="sum-girls-w${w}"></td>`;
+                dailyT += `<td class="sum-total-w${w}"></td>`;
+            }
+            weeklyB += `<td colspan="6" class="week-boys-w${w}">0</td>`;
+            weeklyG += `<td colspan="6" class="week-girls-w${w}">0</td>`;
+            weeklyT += `<td colspan="6" class="week-total-w${w}">0</td>`;
+            weeklyA += `<td colspan="6" class="week-avg-w${w}">0%</td>`;
+        }
+
+        tfoot.innerHTML = dailyB + dailyG + dailyT + weeklyB + weeklyG + weeklyT + weeklyA;
+    }
+
+    // ==========================================
+    // MARK & CALCULATE (Frontend only for now)
+    // ==========================================
+    function toggleAttendance(cell) {
+        if (cell.classList.contains('present')) {
+            cell.classList.remove('present'); cell.classList.add('absent'); cell.innerText = 'X';
+        } else if (cell.classList.contains('absent')) {
+            cell.classList.remove('absent'); cell.innerText = '';
+        } else {
+            cell.classList.add('present'); cell.innerText = '✓';
+        }
+        updateTotals();
+    }
+
+    function updateTotals() {
+        const rows = document.querySelectorAll('#table-body tr');
+        rows.forEach((row, rowIndex) => {
+            const cells = row.querySelectorAll('.day-col');
+            let indPresent = 0, indAbsent = 0;
+            let weekBoys = [0,0,0,0];
+            let weekGirls = [0,0,0,0];
+
+            cells.forEach((cell, colIndex) => {
+                let week = Math.floor(colIndex / 6);
+                if (cell.classList.contains('present')) {
+                    indPresent++;
+                    if (currentStudents[rowIndex] && currentStudents[rowIndex].gender === 'Boy') { weekBoys[week]++; }
+                    else { weekGirls[week]++; }
+                } else if (cell.classList.contains('absent')) {
+                    indAbsent++;
+                }
+            });
+
+            row.querySelector('.ind-pres').innerText = indPresent;
+            row.querySelector('.ind-abs').innerText = indAbsent;
+
+            for(let w=0; w<4; w++) {
+                document.querySelector(`.week-boys-w${w}`).innerText = weekBoys[w];
+                document.querySelector(`.week-girls-w${w}`).innerText = weekGirls[w];
+                document.querySelector(`.week-total-w${w}`).innerText = weekBoys[w] + weekGirls[w];
+                
+                let totalWeekStudents = currentStudents.length * 6;
+                let weekTotal = weekBoys[w] + weekGirls[w];
+                document.querySelector(`.week-avg-w${w}`).innerText = totalWeekStudents > 0 ? Math.round((weekTotal / totalWeekStudents) * 100) + '%' : '0%';
+            }
+        });
+    }
+
+    // INITIALIZE
+    window.onload = loadBookshelf;
+</script>
+
+</body>
+</html>

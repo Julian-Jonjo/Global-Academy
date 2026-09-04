@@ -16,26 +16,33 @@
         .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
         .header-title h1 { margin: 0; font-size: 18px; }
         .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
-        .user-info { text-align: right; font-size: 13px; color: white; }
-        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .user-info { display: flex; align-items: center; gap: 15px; font-size: 13px; color: white; }
+        .user-info .logout-link { color: #fca5a5; cursor: pointer; text-decoration: underline; font-weight: bold; font-size: 12px; }
+        .user-info .logout-link:hover { color: #f87171; }
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 40px; position: relative; z-index: 1; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         .page-header h2 { margin: 0 0 6px 0; color: #1f2937; }
         .page-header p { margin: 0; color: #6b7280; }
+        .page-header .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .primary-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .primary-btn:hover { background: #0f2a4a; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+        .back-btn:hover { background: #4b5563; }
         .nav { display: flex; flex-wrap: wrap; gap: 5px; background: white; padding: 8px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); margin-bottom: 20px; }
         .nav a { text-decoration: none; color: #4b5563; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; }
         .nav a.active { background: #1a3c6e; color: white; }
         .nav a:hover { background: #f3f4f6; }
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .summary-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); border-left: 4px solid #1a3c6e; }
         .summary-label { font-size: 11px; text-transform: uppercase; color: #6b7280; font-weight: bold; margin-bottom: 8px; }
         .summary-number { font-size: 26px; font-weight: bold; color: #111827; }
         .card { background: white; border-radius: 10px; padding: 22px; box-shadow: 0 3px 15px rgba(0,0,0,0.07); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
         .card-header h3 { margin: 0; font-size: 18px; }
-        .filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; margin-bottom: 15px; }
+        .filters { display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 15px; }
         .filters input, .filters select { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
         .reset-btn { background: #e5e7eb; color: #374151; border: none; border-radius: 6px; padding: 10px 14px; cursor: pointer; font-weight: bold; }
+        .reset-btn:hover { background: #d1d5db; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1100px; }
         th { background: #f9fafb; text-align: left; padding: 12px 10px; font-size: 11px; text-transform: uppercase; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
@@ -48,12 +55,60 @@
         .action-group { display: flex; gap: 5px; flex-wrap: wrap; }
         .action-btn { border: none; border-radius: 5px; padding: 7px 10px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .view-btn { background: #1f2937; color: white; }
+        .view-btn:hover { background: #111827; }
         .edit-btn { background: #dbeafe; color: #1e40af; }
+        .edit-btn:hover { background: #bfdbfe; }
         .assign-btn { background: #dcfce7; color: #166534; }
+        .assign-btn:hover { background: #bbf7d0; }
         .empty { text-align: center; padding: 30px; color: #6b7280; }
+        .loading { text-align: center; padding: 30px; color: #6b7280; }
         .error { text-align: center; padding: 30px; color: #b91c1c; }
-        .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; } .filters { grid-template-columns: 1fr; } }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 20px;
+            overflow: auto;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            margin: 40px auto;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { margin: 0; color: #1f2937; }
+        .modal-close { border: none; background: none; font-size: 28px; cursor: pointer; color: #6b7280; }
+        .modal-close:hover { color: #111827; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full { grid-column: 1/-1; }
+        .form-group label { font-size: 12px; font-weight: bold; color: #374151; margin-bottom: 4px; }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
+        .form-group textarea { resize: vertical; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
+        .cancel-btn { background: #e5e7eb; color: #374151; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .cancel-btn:hover { background: #d1d5db; }
+        .save-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        .save-btn:hover { background: #0f2a4a; }
+        .message { padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; }
+        .message-success { background: #dcfce7; color: #166534; display: block; }
+        .message-error { background: #fee2e2; color: #991b1b; display: block; }
+
+        @media (max-width: 700px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .filters { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .user-info { width: 100%; justify-content: space-between; }
+            .page-header .btn-group { width: 100%; }
+            .page-header .btn-group .btn { flex: 1; }
+            .summary-grid { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 
@@ -69,7 +124,10 @@
                 <p>Teacher Management</p>
             </div>
         </div>
-        <div id="userInfo" class="user-info"></div>
+        <div class="user-info">
+            <span id="userDisplay"></span>
+            <span class="logout-link" onclick="logout()">Logout</span>
+        </div>
     </header>
 
     <main class="container">
@@ -78,7 +136,10 @@
                 <h2>Secondary Teachers</h2>
                 <p>Manage Secondary School teachers and subject assignments.</p>
             </div>
-            <button class="primary-btn" onclick="openTeacherModal()">+ Register Teacher</button>
+            <div class="btn-group">
+                <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+                <button class="primary-btn" onclick="openTeacherModal()">+ Register Teacher</button>
+            </div>
         </div>
 
         <nav class="nav">
@@ -92,6 +153,7 @@
         <section class="summary-grid">
             <div class="summary-card"><div class="summary-label">Total Teachers</div><div id="totalTeachers" class="summary-number">0</div></div>
             <div class="summary-card"><div class="summary-label">Permanent</div><div id="permanentTeachers" class="summary-number">0</div></div>
+            <div class="summary-card"><div class="summary-label">Part Time</div><div id="partTimeTeachers" class="summary-number">0</div></div>
             <div class="summary-card"><div class="summary-label">Male</div><div id="maleTeachers" class="summary-number">0</div></div>
             <div class="summary-card"><div class="summary-label">Female</div><div id="femaleTeachers" class="summary-number">0</div></div>
         </section>
@@ -101,6 +163,8 @@
                 <h3>Secondary Teaching Staff</h3>
                 <span id="recordCount" style="font-size:13px;color:#6b7280;">0 Records</span>
             </div>
+
+            <div id="messageContainer" class="message"></div>
 
             <div class="filters">
                 <input type="text" id="searchInput" placeholder="Search by name or staff number..." oninput="filterTeachers()">
@@ -135,29 +199,65 @@
         </section>
     </main>
 
-    <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
-
+    <!-- =========================================================
+         MODAL: REGISTER/EDIT TEACHER
+    ========================================================= -->
     <div id="teacherModal" class="modal">
-        <div class="modal-content" style="background:white;max-width:600px;margin:40px auto;border-radius:10px;padding:25px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <h3 style="margin:0;">Register Secondary Teacher</h3>
-                <button onclick="closeTeacherModal()" style="border:none;background:none;font-size:24px;cursor:pointer;">&times;</button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Register Secondary Teacher</h3>
+                <button class="modal-close" onclick="closeTeacherModal()">&times;</button>
             </div>
+            <div id="teacherModalMessage" class="message"></div>
             <form id="teacherForm">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
-                    <div><label style="font-size:12px;font-weight:bold;">Staff Number *</label><input type="text" id="staff_number" required style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"></div>
-                    <div><label style="font-size:12px;font-weight:bold;">Gender</label><select id="gender" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"><option value="">Select gender</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
-                    <div><label style="font-size:12px;font-weight:bold;">First Name *</label><input type="text" id="first_name" required style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"></div>
-                    <div><label style="font-size:12px;font-weight:bold;">Middle Name</label><input type="text" id="middle_name" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"></div>
-                    <div><label style="font-size:12px;font-weight:bold;">Last Name *</label><input type="text" id="last_name" required style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"></div>
-                    <div><label style="font-size:12px;font-weight:bold;">Phone</label><input type="tel" id="phone" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"></div>
-                    <div><label style="font-size:12px;font-weight:bold;">Email</label><input type="email" id="email" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"></div>
-                    <div><label style="font-size:12px;font-weight:bold;">Employment Type</label><select id="employment_type" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"><option value="Permanent">Permanent</option><option value="Part Time">Part Time</option></select></div>
-                    <div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:bold;">Address</label><textarea id="address" rows="2" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;"></textarea></div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Staff Number *</label>
+                        <input type="text" id="staff_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="gender">
+                            <option value="">Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" id="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name</label>
+                        <input type="text" id="middle_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" id="last_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Employment Type</label>
+                        <select id="employment_type">
+                            <option value="Permanent">Permanent</option>
+                            <option value="Part Time">Part Time</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>Address</label>
+                        <textarea id="address" rows="2"></textarea>
+                    </div>
                 </div>
-                <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-                    <button type="button" onclick="closeTeacherModal()" style="background:#e5e7eb;color:#374151;border:none;border-radius:6px;padding:10px 18px;cursor:pointer;font-weight:bold;">Cancel</button>
-                    <button type="submit" style="background:#1a3c6e;color:white;border:none;border-radius:6px;padding:10px 20px;cursor:pointer;font-weight:bold;">Save Teacher</button>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" onclick="closeTeacherModal()">Cancel</button>
+                    <button type="submit" class="save-btn" id="saveTeacherBtn">Save Teacher</button>
                 </div>
             </form>
         </div>
@@ -221,8 +321,16 @@
         window.location.href = 'dashboard.html';
     }
 
-    document.getElementById('userInfo').textContent =
+    // =========================================================
+    // DISPLAY USER
+    // =========================================================
+
+    document.getElementById('userDisplay').textContent =
         `${user?.full_name || 'User'} (${role})`;
+
+    // =========================================================
+    // LOGOUT
+    // =========================================================
 
     function logout() {
         sessionStorage.removeItem('authToken');
@@ -230,9 +338,12 @@
         window.location.href = '/login.html';
     }
 
+    // =========================================================
+    // HTML ESCAPING
+    // =========================================================
+
     function escapeHtml(value) {
         if (value === null || value === undefined) return '';
-
         return String(value)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -241,13 +352,37 @@
             .replace(/'/g, '&#039;');
     }
 
+    // =========================================================
+    // SHOW MESSAGE
+    // =========================================================
+
+    function showMessage(container, message, type) {
+        const el = document.getElementById(container);
+        if (!el) return;
+        el.textContent = message;
+        el.className = 'message';
+        if (type === 'success') {
+            el.classList.add('message-success');
+        } else if (type === 'error') {
+            el.classList.add('message-error');
+        }
+        el.style.display = 'block';
+        setTimeout(() => {
+            el.style.display = 'none';
+        }, 5000);
+    }
+
+    // =========================================================
+    // DATA
+    // =========================================================
+
     let teachers = [];
     let assignments = [];
 
     async function loadAssignments() {
         try {
             const response = await fetch(
-                '/api/teachers/secondary-assignments/bulk?academic_year_id=1',
+                '/api/teachers/secondary-assignments?academic_year_id=1',
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -348,6 +483,11 @@
                 t => String(t.employment_type || '').toLowerCase() === 'permanent'
             ).length;
 
+        document.getElementById('partTimeTeachers').textContent =
+            teachers.filter(
+                t => String(t.employment_type || '').toLowerCase() === 'part time'
+            ).length;
+
         document.getElementById('maleTeachers').textContent =
             teachers.filter(
                 t => String(t.gender || '').toLowerCase() === 'male'
@@ -373,6 +513,7 @@
 
         table.innerHTML = list.map(teacher => {
 
+            const teacherId = teacher.teacher_id || teacher.id;
             const name =
                 [
                     teacher.first_name,
@@ -389,14 +530,10 @@
                 String(teacher.teacher_status || 'Active');
 
             const subjects =
-                getTeacherSubjects(
-                    teacher.teacher_id || teacher.id
-                );
+                getTeacherSubjects(teacherId);
 
             const classes =
-                getTeacherClasses(
-                    teacher.teacher_id || teacher.id
-                );
+                getTeacherClasses(teacherId);
 
             return `<tr>
                 <td><strong>${escapeHtml(teacher.staff_number || '-')}</strong></td>
@@ -406,11 +543,7 @@
                 <td>${escapeHtml(classes)}</td>
                 <td>${escapeHtml(teacher.phone || '-')}</td>
                 <td>
-                    <span class="status ${
-                        employment.toLowerCase().includes('permanent')
-                            ? 'status-permanent'
-                            : 'status-part-time'
-                    }">
+                    <span class="status ${employment.toLowerCase().includes('permanent') ? 'status-permanent' : 'status-part-time'}">
                         ${escapeHtml(employment)}
                     </span>
                 </td>
@@ -422,17 +555,17 @@
                 <td>
                     <div class="action-group">
                         <button class="action-btn view-btn"
-                            onclick="viewTeacher(${teacher.teacher_id || teacher.id})">
+                            onclick="viewTeacher(${teacherId})">
                             View
                         </button>
 
                         <button class="action-btn edit-btn"
-                            onclick="editTeacher(${teacher.teacher_id || teacher.id})">
+                            onclick="editTeacher(${teacherId})">
                             Edit
                         </button>
 
                         <button class="action-btn assign-btn"
-                            onclick="window.location.href='secondary-teacher-assignments.html?teacher_id=${teacher.teacher_id || teacher.id}'">
+                            onclick="window.location.href='secondary-teacher-assignments.html?teacher_id=${teacherId}'">
                             Assign
                         </button>
                     </div>
@@ -490,13 +623,23 @@
         renderTeachers();
     }
 
+    // =========================================================
+    // MODAL FUNCTIONS
+    // =========================================================
+
     function openTeacherModal() {
+        document.getElementById('modalTitle').textContent = 'Register Secondary Teacher';
+        document.getElementById('saveTeacherBtn').textContent = 'Save Teacher';
+        document.getElementById('teacherForm').reset();
+        document.getElementById('teacherForm').dataset.editId = '';
+        document.getElementById('teacherModalMessage').style.display = 'none';
         document.getElementById('teacherModal').style.display = 'block';
     }
 
     function closeTeacherModal() {
         document.getElementById('teacherModal').style.display = 'none';
         document.getElementById('teacherForm').reset();
+        document.getElementById('teacherForm').dataset.editId = '';
     }
 
     function viewTeacher(id) {
@@ -547,6 +690,9 @@
             return;
         }
 
+        document.getElementById('modalTitle').textContent = 'Edit Secondary Teacher';
+        document.getElementById('saveTeacherBtn').textContent = 'Update Teacher';
+
         document.getElementById('staff_number').value =
             teacher.staff_number || '';
 
@@ -575,9 +721,14 @@
             teacher.address || '';
 
         document.getElementById('teacherForm').dataset.editId = id;
+        document.getElementById('teacherModalMessage').style.display = 'none';
 
-        openTeacherModal();
+        document.getElementById('teacherModal').style.display = 'block';
     }
+
+    // =========================================================
+    // FORM SUBMIT
+    // =========================================================
 
     document.getElementById('teacherForm').addEventListener(
         'submit',
@@ -601,19 +752,19 @@
                     document.getElementById('last_name').value.trim(),
 
                 gender:
-                    document.getElementById('gender').value,
+                    document.getElementById('gender').value || null,
 
                 phone:
-                    document.getElementById('phone').value.trim(),
+                    document.getElementById('phone').value.trim() || null,
 
                 email:
-                    document.getElementById('email').value.trim(),
+                    document.getElementById('email').value.trim() || null,
 
                 address:
-                    document.getElementById('address').value.trim(),
+                    document.getElementById('address').value.trim() || null,
 
                 employment_type:
-                    document.getElementById('employment_type').value,
+                    document.getElementById('employment_type').value || 'Permanent',
 
                 teacher_status: 'Active',
 
@@ -645,40 +796,42 @@
 
                 if (!response.ok) {
                     throw new Error(
-                        result.message || 'Failed'
+                        result.message || 'Failed to save teacher'
                     );
                 }
 
-                alert(
-                    editId
-                        ? 'Teacher updated!'
-                        : 'Teacher registered!'
+                showMessage('teacherModalMessage',
+                    editId ? 'Teacher updated successfully!' : 'Teacher registered successfully!',
+                    'success'
                 );
 
-                closeTeacherModal();
-
-                this.dataset.editId = '';
-
-                await loadTeachers();
+                setTimeout(() => {
+                    closeTeacherModal();
+                    loadTeachers();
+                }, 1000);
 
             } catch (error) {
-                alert(error.message);
+                showMessage('teacherModalMessage', error.message, 'error');
             }
         }
     );
 
+    // =========================================================
+    // MODAL CLOSE ON OVERLAY CLICK
+    // =========================================================
+
     window.addEventListener('click', function(event) {
-        if (
-            event.target ===
-            document.getElementById('teacherModal')
-        ) {
+        if (event.target === document.getElementById('teacherModal')) {
             closeTeacherModal();
         }
     });
 
+    // =========================================================
+    // INITIALIZE
+    // =========================================================
+
     loadTeachers();
 </script>
-
 
 </body>
 

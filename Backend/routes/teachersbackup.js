@@ -1079,7 +1079,6 @@ router.post(
                 academic_year_id
             } = req.body;
 
-            console.log('Assign class request:', { teacher_id, class_id, academic_year_id });
 
             if (!teacher_id || !class_id) {
                 return res.status(400).json({
@@ -1087,6 +1086,7 @@ router.post(
                         'teacher_id and class_id are required.'
                 });
             }
+
 
             // ----------------------------------------------------
             // LOAD TEACHER
@@ -1098,28 +1098,34 @@ router.post(
             } = await supabase
                 .from('teachers')
                 .select(`
-                    teacher_id,
+                    id,
                     school_section
                 `)
-                .eq('teacher_id', teacher_id)
+                .eq('id', teacher_id)
                 .maybeSingle();
 
+
             if (teacherError) {
-                console.error('TEACHER LOOKUP ERROR:', teacherError);
                 return res.status(500).json({
-                    message: 'Failed to load teacher',
-                    error: teacherError.message
+                    message:
+                        'Failed to load teacher',
+                    error:
+                        teacherError.message
                 });
             }
+
 
             if (!teacher) {
                 return res.status(404).json({
-                    message: 'Teacher not found.'
+                    message:
+                        'Teacher not found.'
                 });
             }
 
+
             // ----------------------------------------------------
             // LOAD CLASS
+            // IMPORTANT: PRIMARY KEY IS class_id
             // ----------------------------------------------------
 
             const {
@@ -1138,376 +1144,223 @@ router.post(
                 .eq('class_id', class_id)
                 .maybeSingle();
 
+
             if (classError) {
-                console.error('CLASS LOOKUP ERROR:', classError);
                 return res.status(500).json({
-                    message: 'Failed to load class',
-                    error: classError.message
+                    message:
+                        'Failed to load class',
+                    error:
+                        classError.message
                 });
             }
+
 
             if (!classData) {
                 return res.status(404).json({
-                    message: 'Class not found.'
+                    message:
+                        'Class not found.'
                 });
             }
 
+
             if (!classData.is_active) {
                 return res.status(400).json({
-                    message: 'Cannot assign a teacher to an inactive class.'
+                    message:
+                        'Cannot assign a teacher to an inactive class.'
                 });
             }
+
 
             // ----------------------------------------------------
             // CHECK TEACHER / CLASS SECTOR
             // ----------------------------------------------------
 
-            const teacherSector = getSectorFromSchoolSection(teacher.school_section);
-            const classSector = getSectorFromSchoolSection(classData.school_section);
+            const teacherSector =
+                getSectorFromSchoolSection(
+                    teacher.school_section
+                );
+
+            const classSector =
+                getSectorFromSchoolSection(
+                    classData.school_section
+                );
+
 
             if (!teacherSector || !classSector) {
                 return res.status(400).json({
-                    message: 'Teacher or class has an invalid school section.'
+                    message:
+                        'Teacher or class has an invalid school section.'
                 });
             }
 
+
             if (teacherSector !== classSector) {
                 return res.status(400).json({
-                    message: 'A teacher cannot be assigned to a class in another school sector.'
+                    message:
+                        'A teacher cannot be assigned to a class in another school sector.'
                 });
             }
+
 
             // ----------------------------------------------------
             // MANAGER SECTOR SECURITY
             // ----------------------------------------------------
 
             if (getRoleId(req.user) === MANAGER) {
-                const managerSector = getSector(req.user);
-                if (managerSector !== teacherSector || managerSector !== classSector) {
+
+                const managerSector =
+                    getSector(req.user);
+
+                if (
+                    managerSector !== teacherSector ||
+                    managerSector !== classSector
+                ) {
                     return res.status(403).json({
-                        message: 'Access denied. You can only assign teachers within your own school sector.'
+                        message:
+                            'Access denied. You can only assign teachers within your own school sector.'
                     });
                 }
             }
+
 
             // ----------------------------------------------------
             // ACADEMIC YEAR
             // ----------------------------------------------------
 
-            let finalAcademicYearId = academic_year_id || classData.academic_year_id || null;
+            let finalAcademicYearId =
+                academic_year_id ||
+                classData.academic_year_id ||
+                null;
+
 
             if (!finalAcademicYearId) {
-                const { data: currentYear, error: yearError } = await supabase
+
+                const {
+                    data: currentYear,
+                    error: yearError
+                } = await supabase
                     .from('academic_years')
-                    .select('academic_year_id')
+                    .select('id')
                     .eq('is_current', true)
                     .maybeSingle();
 
+
                 if (yearError) {
-                    console.error('ACADEMIC YEAR ERROR:', yearError);
                     return res.status(500).json({
-                        message: 'Failed to load current academic year',
-                        error: yearError.message
+                        message:
+                            'Failed to load current academic year',
+                        error:
+                            yearError.message
                     });
                 }
 
+
                 if (currentYear) {
-                    finalAcademicYearId = currentYear.academic_year_id;
+                    finalAcademicYearId =
+                        currentYear.id;
                 }
             }
+
 
             // ----------------------------------------------------
             // PREVENT DUPLICATE ASSIGNMENT
             // ----------------------------------------------------
 
-            const { data: existingAssignment, error: duplicateError } = await supabase
-                .from('primary_class_teachers')
-                .select('assignment_id')
+            let duplicateQuery = supabase
+                .from('teacher_class_assignments')
+                .select('id')
                 .eq('teacher_id', teacher_id)
                 .eq('class_id', class_id);
 
-            if (duplicateError) {
-                console.error('DUPLICATE CHECK ERROR:', duplicateError);
-                return res.status(500).json({
-                    message: 'Failed to check existing assignment',
-                    error: duplicateError.message
-                });
+
+            if (finalAcademicYearId) {
+                duplicateQuery =
+                    duplicateQuery.eq(
+                        'academic_year_id',
+                        finalAcademicYearId
+                    );
             }
 
-            if (existingAssignment && existingAssignment.length > 0) {
-                return res.status(409).json({
-                    message: 'This teacher is already assigned to this class.'
-                });
-            }
-
-            // ----------------------------------------------------
-            // CREATE ASSIGNMENT
-            // ----------------------------------------------------
-
-            const insertData = {
-                teacher_id: teacher_id,
-                class_id: class_id,
-                academic_year_id: finalAcademicYearId,
-                role: 'Class Master',
-                assigned_date: new Date().toISOString().split('T')[0],
-                created_at: new Date().toISOString()
-            };
-
-            console.log('Inserting assignment:', insertData);
-
-            const { data, error } = await supabase
-                .from('primary_class_teachers')
-                .insert([insertData])
-                .select()
-                .single();
-
-            if (error) {
-                console.error('ASSIGNMENT INSERT ERROR:', error);
-                return res.status(500).json({
-                    message: 'Failed to assign teacher to class',
-                    error: error.message
-                });
-            }
-
-            res.status(201).json({
-                message: 'Teacher assigned to class successfully.',
-                assignment: data
-            });
-
-        } catch (error) {
-            console.error('ASSIGN CLASS EXCEPTION:', error);
-            res.status(500).json({
-                message: 'Server error',
-                error: error.message
-            });
-        }
-    }
-);
-
-// ============================================================
-// CREATE SECONDARY ASSIGNMENT
-// ASSIGN TEACHER TO SUBJECT AND CLASS
-// ============================================================
-
-router.post(
-    '/assignments',
-    authenticateToken,
-    requireRoles(
-        PROPRIETOR,
-        ADMINISTRATOR,
-        MANAGER
-    ),
-    async (req, res) => {
-
-        try {
 
             const {
-                teacher_id,
-                subject_id,
-                class_id,
-                academic_year_id
-            } = req.body;
+                data: existingAssignment,
+                error: duplicateError
+            } = await duplicateQuery.maybeSingle();
 
-            console.log('Secondary assignment request:', { teacher_id, subject_id, class_id, academic_year_id });
-
-            if (!teacher_id || !subject_id || !class_id) {
-                return res.status(400).json({
-                    message: 'teacher_id, subject_id and class_id are required.'
-                });
-            }
-
-            // ----------------------------------------------------
-            // LOAD TEACHER
-            // ----------------------------------------------------
-
-            const { data: teacher, error: teacherError } = await supabase
-                .from('teachers')
-                .select('teacher_id, school_section')
-                .eq('teacher_id', teacher_id)
-                .maybeSingle();
-
-            if (teacherError) {
-                console.error('TEACHER LOOKUP ERROR:', teacherError);
-                return res.status(500).json({
-                    message: 'Failed to load teacher',
-                    error: teacherError.message
-                });
-            }
-
-            if (!teacher) {
-                return res.status(404).json({
-                    message: 'Teacher not found.'
-                });
-            }
-
-            // ----------------------------------------------------
-            // LOAD CLASS
-            // ----------------------------------------------------
-
-            const { data: classData, error: classError } = await supabase
-                .from('classes')
-                .select('class_id, school_section, is_active')
-                .eq('class_id', class_id)
-                .maybeSingle();
-
-            if (classError) {
-                console.error('CLASS LOOKUP ERROR:', classError);
-                return res.status(500).json({
-                    message: 'Failed to load class',
-                    error: classError.message
-                });
-            }
-
-            if (!classData) {
-                return res.status(404).json({
-                    message: 'Class not found.'
-                });
-            }
-
-            if (!classData.is_active) {
-                return res.status(400).json({
-                    message: 'Cannot assign to an inactive class.'
-                });
-            }
-
-            // ----------------------------------------------------
-            // LOAD SUBJECT
-            // ----------------------------------------------------
-
-            const { data: subject, error: subjectError } = await supabase
-                .from('subjects')
-                .select('subject_id, subject_name, is_active')
-                .eq('subject_id', subject_id)
-                .maybeSingle();
-
-            if (subjectError) {
-                console.error('SUBJECT LOOKUP ERROR:', subjectError);
-                return res.status(500).json({
-                    message: 'Failed to load subject',
-                    error: subjectError.message
-                });
-            }
-
-            if (!subject) {
-                return res.status(404).json({
-                    message: 'Subject not found.'
-                });
-            }
-
-            if (!subject.is_active) {
-                return res.status(400).json({
-                    message: 'Cannot assign to an inactive subject.'
-                });
-            }
-
-            // ----------------------------------------------------
-            // CHECK SECTOR
-            // ----------------------------------------------------
-
-            const teacherSector = getSectorFromSchoolSection(teacher.school_section);
-            const classSector = getSectorFromSchoolSection(classData.school_section);
-
-            if (teacherSector !== classSector) {
-                return res.status(400).json({
-                    message: 'Teacher and class must be in the same school sector.'
-                });
-            }
-
-            // ----------------------------------------------------
-            // ACADEMIC YEAR
-            // ----------------------------------------------------
-
-            let finalAcademicYearId = academic_year_id || null;
-
-            if (!finalAcademicYearId) {
-                const { data: currentYear, error: yearError } = await supabase
-                    .from('academic_years')
-                    .select('academic_year_id')
-                    .eq('is_current', true)
-                    .maybeSingle();
-
-                if (yearError) {
-                    console.error('ACADEMIC YEAR ERROR:', yearError);
-                    return res.status(500).json({
-                        message: 'Failed to load current academic year',
-                        error: yearError.message
-                    });
-                }
-
-                if (currentYear) {
-                    finalAcademicYearId = currentYear.academic_year_id;
-                }
-            }
-
-            // ----------------------------------------------------
-            // PREVENT DUPLICATE ASSIGNMENT
-            // ----------------------------------------------------
-
-            const { data: existingAssignment, error: duplicateError } = await supabase
-                .from('class_subjects')
-                .select('class_subject_id')
-                .eq('teacher_id', teacher_id)
-                .eq('subject_id', subject_id)
-                .eq('class_id', class_id)
-                .eq('academic_year_id', finalAcademicYearId)
-                .maybeSingle();
 
             if (duplicateError) {
-                console.error('DUPLICATE CHECK ERROR:', duplicateError);
                 return res.status(500).json({
-                    message: 'Failed to check existing assignment',
-                    error: duplicateError.message
+                    message:
+                        'Failed to check existing assignment',
+                    error:
+                        duplicateError.message
                 });
             }
+
 
             if (existingAssignment) {
                 return res.status(409).json({
-                    message: 'This teacher is already assigned to this subject and class.'
+                    message:
+                        'This teacher is already assigned to this class.'
                 });
             }
+
 
             // ----------------------------------------------------
             // CREATE ASSIGNMENT
             // ----------------------------------------------------
 
-            const insertData = {
-                teacher_id: teacher_id,
-                subject_id: subject_id,
-                class_id: class_id,
-                academic_year_id: finalAcademicYearId,
-                created_at: new Date().toISOString()
-            };
-
-            console.log('Inserting Secondary assignment:', insertData);
-
-            const { data, error } = await supabase
-                .from('class_subjects')
-                .insert([insertData])
+            const {
+                data,
+                error
+            } = await supabase
+                .from('teacher_class_assignments')
+                .insert([{
+                    teacher_id,
+                    class_id,
+                    academic_year_id:
+                        finalAcademicYearId,
+                    assigned_by:
+                        req.user.user_id || null
+                }])
                 .select()
                 .single();
 
+
             if (error) {
-                console.error('ASSIGNMENT INSERT ERROR:', error);
+                console.error(
+                    'TEACHER CLASS ASSIGNMENT ERROR:',
+                    error
+                );
+
                 return res.status(500).json({
-                    message: 'Failed to assign teacher to subject and class',
+                    message:
+                        'Failed to assign teacher to class',
                     error: error.message
                 });
             }
 
+
             res.status(201).json({
-                message: 'Teacher assigned to subject and class successfully.',
+                message:
+                    'Teacher assigned to class successfully.',
                 assignment: data
             });
 
         } catch (error) {
-            console.error('SECONDARY ASSIGNMENT EXCEPTION:', error);
+
+            console.error(
+                'ASSIGN CLASS EXCEPTION:',
+                error
+            );
+
             res.status(500).json({
-                message: 'Server error',
-                error: error.message
+                message: 'Server error'
             });
         }
     }
 );
+
 
 // ============================================================
 // PRIMARY CLASS ASSIGNMENTS
@@ -1525,18 +1378,26 @@ router.get(
 
         try {
 
-            if (getRoleId(req.user) === MANAGER && getSector(req.user) !== 'primary') {
+            if (
+                getRoleId(req.user) === MANAGER &&
+                getSector(req.user) !== 'primary'
+            ) {
                 return res.status(403).json({
-                    message: 'Access denied. Primary sector only.'
+                    message:
+                        'Access denied. Primary sector only.'
                 });
             }
 
-            const { data, error } = await supabase
-                .from('primary_class_teachers')
+
+            const {
+                data,
+                error
+            } = await supabase
+                .from('teacher_class_assignments')
                 .select(`
                     *,
                     teachers (
-                        teacher_id,
+                        id,
                         staff_number,
                         first_name,
                         middle_name,
@@ -1552,24 +1413,51 @@ router.get(
                     )
                 `);
 
+
             if (error) {
-                console.error('PRIMARY ASSIGNMENTS ERROR:', error);
+                console.error(
+                    'PRIMARY ASSIGNMENTS ERROR:',
+                    error
+                );
+
                 return res.status(500).json({
-                    message: 'Failed to load primary assignments',
+                    message:
+                        'Failed to load primary assignments',
                     error: error.message
                 });
             }
 
-            res.json(data || []);
+
+            const filtered =
+                (data || []).filter(item => {
+
+                    const section =
+                        item.classes?.school_section;
+
+                    return PRIMARY_SECTIONS.some(
+                        allowed =>
+                            normalize(allowed) ===
+                            normalize(section)
+                    );
+                });
+
+
+            res.json(filtered);
 
         } catch (error) {
-            console.error('PRIMARY ASSIGNMENTS EXCEPTION:', error);
+
+            console.error(
+                'PRIMARY ASSIGNMENTS EXCEPTION:',
+                error
+            );
+
             res.status(500).json({
                 message: 'Server error'
             });
         }
     }
 );
+
 
 // ============================================================
 // SECONDARY ASSIGNMENTS - BULK
@@ -1598,32 +1486,30 @@ router.get(
             }
 
 
-            const { data, error } = await supabase
-    .from('class_subjects')
-    .select(`
-        *,
-        teachers (
-            teacher_id,
-            staff_number,
-            first_name,
-            middle_name,
-            last_name,
-            teacher_status,
-            school_section
-        ),
-        classes (
-            class_id,
-            class_name,
-            arm,
-            school_section
-        ),
-        subjects (
-            subject_id,
-            subject_name,
-            subject_code,
-            department_id
-        )
-    `);
+            const {
+                data,
+                error
+            } = await supabase
+                .from('teacher_class_assignments')
+                .select(`
+                    *,
+                    teachers (
+                        id,
+                        staff_number,
+                        first_name,
+                        middle_name,
+                        last_name,
+                        teacher_status,
+                        school_section
+                    ),
+                    classes (
+                        class_id,
+                        class_name,
+                        arm,
+                        school_section
+                    )
+                `);
+
 
             if (error) {
                 console.error(
@@ -1697,32 +1583,30 @@ router.get(
             }
 
 
-            const { data, error } = await supabase
-    .from('class_subjects')
-    .select(`
-        *,
-        teachers (
-            teacher_id,
-            staff_number,
-            first_name,
-            middle_name,
-            last_name,
-            teacher_status,
-            school_section
-        ),
-        classes (
-            class_id,
-            class_name,
-            arm,
-            school_section
-        ),
-        subjects (
-            subject_id,
-            subject_name,
-            subject_code,
-            department_id
-        )
-    `);
+            const {
+                data,
+                error
+            } = await supabase
+                .from('teacher_class_assignments')
+                .select(`
+                    *,
+                    teachers (
+                        id,
+                        staff_number,
+                        first_name,
+                        middle_name,
+                        last_name,
+                        teacher_status,
+                        school_section
+                    ),
+                    classes (
+                        class_id,
+                        class_name,
+                        arm,
+                        school_section
+                    )
+                `);
+
 
             if (error) {
                 console.error(
@@ -1797,10 +1681,10 @@ router.get(
             } = await supabase
                 .from('teachers')
                 .select(`
-                    teacher_id,
+                    id,
                     school_section
                 `)
-                .eq('teacher_id', teacherId)
+                .eq('id', teacherId)
                 .maybeSingle();
 
 
@@ -1932,7 +1816,7 @@ router.get(
                 .select(`
                     *,
                     teachers (
-                        teacher_id,
+                        id,
                         staff_number,
                         first_name,
                         middle_name,
@@ -2103,14 +1987,14 @@ router.get(
     async (req, res) => {
 
         try {
-            console.log('=== /me endpoint called ===');
-            console.log('req.user:', req.user);
-            console.log('req.user.teacher_id:', req.user?.teacher_id);
 
-            // For testing, manually use teacher_id = 14
-            const testTeacherId = 14;
-            
-            console.log('Looking for teacher with teacher_id:', testTeacherId);
+            if (!req.user.teacher_id) {
+                return res.status(404).json({
+                    message:
+                        'No teacher record is linked to this account.'
+                });
+            }
+
 
             const {
                 data,
@@ -2118,38 +2002,48 @@ router.get(
             } = await supabase
                 .from('teachers')
                 .select('*')
-                .eq('teacher_id', testTeacherId)
+                .eq('id', req.user.teacher_id)
                 .maybeSingle();
 
-            console.log('Query result - data:', data);
-            console.log('Query result - error:', error);
 
             if (error) {
-                console.error('MY TEACHER ERROR:', error);
+                console.error(
+                    'MY TEACHER ERROR:',
+                    error
+                );
+
                 return res.status(500).json({
-                    message: 'Failed to load teacher profile',
+                    message:
+                        'Failed to load teacher profile',
                     error: error.message
                 });
             }
 
+
             if (!data) {
-                console.log('No teacher found');
                 return res.status(404).json({
-                    message: 'Teacher profile not found.'
+                    message:
+                        'Teacher profile not found.'
                 });
             }
 
-            console.log('Teacher found:', data);
+
             res.json(data);
 
         } catch (error) {
-            console.error('MY TEACHER EXCEPTION:', error);
+
+            console.error(
+                'MY TEACHER EXCEPTION:',
+                error
+            );
+
             res.status(500).json({
                 message: 'Server error'
             });
         }
     }
 );
+
 
 // ============================================================
 // CREATE TEACHER
@@ -2256,7 +2150,7 @@ router.put(
             } = await supabase
                 .from('teachers')
                 .select('*')
-                .eq('teacher_id', teacherId)
+                .eq('id', teacherId)
                 .maybeSingle();
 
 
@@ -2322,7 +2216,7 @@ router.put(
             } = await supabase
                 .from('teachers')
                 .update(updateData)
-                .eq('teacher_id', teacherId)
+                .eq('id', teacherId)
                 .select()
                 .single();
 
@@ -2388,10 +2282,10 @@ router.delete(
             } = await supabase
                 .from('teachers')
                 .select(`
-                    teacher_id,
+                    id,
                     school_section
                 `)
-                .eq('teacher_id', teacherId)
+                .eq('id', teacherId)
                 .maybeSingle();
 
 
@@ -2432,7 +2326,7 @@ router.delete(
             } = await supabase
                 .from('teachers')
                 .delete()
-                .eq('teacher_id', teacherId);
+                .eq('id', teacherId);
 
 
             if (error) {
@@ -2492,7 +2386,7 @@ router.get(
             } = await supabase
                 .from('teachers')
                 .select('*')
-                .eq('teacher_id', teacherId)
+                .eq('id', teacherId)
                 .maybeSingle();
 
 

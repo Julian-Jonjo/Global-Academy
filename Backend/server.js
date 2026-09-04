@@ -27,7 +27,7 @@ const paymentRoutes = require('./routes/payments');
 
 const expenditureRoutes = require('./routes/expenditure');
 
-const teacherRoutes = require('./routes/teachers');
+const teacherRoutes = require('./routes/teachersbackup');
 
 // Teacher Portal temporarily disabled until its export is corrected
 // const teacherPortalRoutes = require('./routes/teacherPortal');
