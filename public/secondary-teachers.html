@@ -32,19 +32,19 @@
         .nav a { text-decoration: none; color: #4b5563; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; }
         .nav a.active { background: #1a3c6e; color: white; }
         .nav a:hover { background: #f3f4f6; }
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .summary-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); border-left: 4px solid #1a3c6e; }
         .summary-label { font-size: 11px; text-transform: uppercase; color: #6b7280; font-weight: bold; margin-bottom: 8px; }
         .summary-number { font-size: 26px; font-weight: bold; color: #111827; }
         .card { background: white; border-radius: 10px; padding: 22px; box-shadow: 0 3px 15px rgba(0,0,0,0.07); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
         .card-header h3 { margin: 0; font-size: 18px; }
-        .filters { display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 15px; }
+        .filters { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 15px; }
         .filters input, .filters select { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
         .reset-btn { background: #e5e7eb; color: #374151; border: none; border-radius: 6px; padding: 10px 14px; cursor: pointer; font-weight: bold; }
         .reset-btn:hover { background: #d1d5db; }
         .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1400px; }
         th { background: #f9fafb; text-align: left; padding: 12px 10px; font-size: 11px; text-transform: uppercase; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
         td { padding: 12px 10px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
         tr:hover td { background: #f9fafb; }
@@ -52,6 +52,8 @@
         .status-permanent { background: #dcfce7; color: #166534; }
         .status-part-time { background: #dbeafe; color: #1e40af; }
         .status-active { background: #dcfce7; color: #166534; }
+        .status-master { background: #fef3c7; color: #92400e; }
+        .status-hod { background: #dcfce7; color: #166534; }
         .action-group { display: flex; gap: 5px; flex-wrap: wrap; }
         .action-btn { border: none; border-radius: 5px; padding: 7px 10px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .view-btn { background: #1f2937; color: white; }
@@ -63,24 +65,8 @@
         .empty { text-align: center; padding: 30px; color: #6b7280; }
         .loading { text-align: center; padding: 30px; color: #6b7280; }
         .error { text-align: center; padding: 30px; color: #b91c1c; }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.55);
-            padding: 20px;
-            overflow: auto;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            max-width: 600px;
-            margin: 40px auto;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); padding: 20px; overflow: auto; z-index: 1000; }
+        .modal-content { background: white; max-width: 600px; margin: 40px auto; border-radius: 10px; padding: 25px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-header h3 { margin: 0; color: #1f2937; }
         .modal-close { border: none; background: none; font-size: 28px; cursor: pointer; color: #6b7280; }
@@ -134,7 +120,7 @@
         <div class="page-header">
             <div>
                 <h2>Secondary Teachers</h2>
-                <p>Manage Secondary School teachers and subject assignments.</p>
+                <p>Manage Secondary School teachers, subjects, class masters, and departments.</p>
             </div>
             <div class="btn-group">
                 <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
@@ -152,6 +138,10 @@
 
         <section class="summary-grid">
             <div class="summary-card"><div class="summary-label">Total Teachers</div><div id="totalTeachers" class="summary-number">0</div></div>
+            <div class="summary-card"><div class="summary-label">Subjects</div><div id="totalSubjects" class="summary-number">0</div></div>
+            <div class="summary-card"><div class="summary-label">Classes</div><div id="totalClasses" class="summary-number">0</div></div>
+            <div class="summary-card"><div class="summary-label">Class Masters</div><div id="totalClassMasters" class="summary-number">0</div></div>
+            <div class="summary-card"><div class="summary-label">HODs</div><div id="totalHODs" class="summary-number">0</div></div>
             <div class="summary-card"><div class="summary-label">Permanent</div><div id="permanentTeachers" class="summary-number">0</div></div>
             <div class="summary-card"><div class="summary-label">Part Time</div><div id="partTimeTeachers" class="summary-number">0</div></div>
             <div class="summary-card"><div class="summary-label">Male</div><div id="maleTeachers" class="summary-number">0</div></div>
@@ -168,8 +158,22 @@
 
             <div class="filters">
                 <input type="text" id="searchInput" placeholder="Search by name or staff number..." oninput="filterTeachers()">
+                <select id="subjectFilter" onchange="filterTeachers()">
+                    <option value="">All Subjects</option>
+                </select>
+                <select id="classFilter" onchange="filterTeachers()">
+                    <option value="">All Classes</option>
+                </select>
+                <select id="departmentFilter" onchange="filterTeachers()">
+                    <option value="">All Departments</option>
+                </select>
+                <select id="masterFilter" onchange="filterTeachers()">
+                    <option value="">All Roles</option>
+                    <option value="Class Master">Class Master</option>
+                    <option value="HOD">HOD</option>
+                </select>
                 <select id="statusFilter" onchange="filterTeachers()">
-                    <option value="">All Employment Types</option>
+                    <option value="">All Employment</option>
                     <option value="Permanent">Permanent</option>
                     <option value="Part Time">Part Time</option>
                 </select>
@@ -182,9 +186,11 @@
                         <tr>
                             <th>Staff ID</th>
                             <th>Teacher Name</th>
-                            <th>Gender</th>
+                            <th>Class Master Of</th>
+                            <th>Department / HOD</th>
                             <th>Subjects</th>
                             <th>Classes</th>
+                            <th>Gender</th>
                             <th>Phone</th>
                             <th>Employment</th>
                             <th>Status</th>
@@ -192,16 +198,14 @@
                         </tr>
                     </thead>
                     <tbody id="teacherTable">
-                        <tr><td colspan="9" class="loading">Loading teachers...</td></tr>
+                        <tr><td colspan="11" class="loading">Loading teachers...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
 
-    <!-- =========================================================
-         MODAL: REGISTER/EDIT TEACHER
-    ========================================================= -->
+    <!-- TEACHER MODAL -->
     <div id="teacherModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -211,49 +215,15 @@
             <div id="teacherModalMessage" class="message"></div>
             <form id="teacherForm">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Staff Number *</label>
-                        <input type="text" id="staff_number" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select id="gender">
-                            <option value="">Select gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>First Name *</label>
-                        <input type="text" id="first_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Middle Name</label>
-                        <input type="text" id="middle_name">
-                    </div>
-                    <div class="form-group">
-                        <label>Last Name *</label>
-                        <input type="text" id="last_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Phone</label>
-                        <input type="tel" id="phone">
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="email">
-                    </div>
-                    <div class="form-group">
-                        <label>Employment Type</label>
-                        <select id="employment_type">
-                            <option value="Permanent">Permanent</option>
-                            <option value="Part Time">Part Time</option>
-                        </select>
-                    </div>
-                    <div class="form-group full">
-                        <label>Address</label>
-                        <textarea id="address" rows="2"></textarea>
-                    </div>
+                    <div class="form-group"><label>Staff Number *</label><input type="text" id="staff_number" required></div>
+                    <div class="form-group"><label>Gender</label><select id="gender"><option value="">Select gender</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                    <div class="form-group"><label>First Name *</label><input type="text" id="first_name" required></div>
+                    <div class="form-group"><label>Middle Name</label><input type="text" id="middle_name"></div>
+                    <div class="form-group"><label>Last Name *</label><input type="text" id="last_name" required></div>
+                    <div class="form-group"><label>Phone</label><input type="tel" id="phone"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="email"></div>
+                    <div class="form-group"><label>Employment Type</label><select id="employment_type"><option value="Permanent">Permanent</option><option value="Part Time">Part Time</option></select></div>
+                    <div class="form-group full"><label>Address</label><textarea id="address" rows="2"></textarea></div>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="cancel-btn" onclick="closeTeacherModal()">Cancel</button>
@@ -266,308 +236,173 @@
 <script>
     const token = sessionStorage.getItem('authToken');
     const userData = sessionStorage.getItem('user');
-
-    if (!token || !userData) {
-        window.location.href = '/login.html';
-    }
+    if (!token || !userData) window.location.href = '/login.html';
 
     let user;
-
-    try {
-        user = JSON.parse(userData);
-    } catch (error) {
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('user');
-        window.location.href = '/login.html';
-    }
-
-    // =========================================================
-    // UPDATED ROLE SYSTEM
-    // =========================================================
+    try { user = JSON.parse(userData); } catch (error) { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
 
     const roleId = Number(user?.role_id);
     const role = user?.role_name || '';
     const sector = String(user?.sector || '').toLowerCase().trim();
-
-    // Role IDs:
-    // 1 = Proprietor
-    // 2 = Administrator
-    // 3 = Finance Officer
-    // 4 = Teacher
-    // 5 = Student
-    // 6 = Manager
-
-    // =========================================================
-    // ACCESS CONTROL
-    // =========================================================
-
     const isProprietor = roleId === 1;
     const isAdministrator = roleId === 2;
     const isManager = roleId === 6;
-
-    // Proprietor and Administrator have system-wide access.
     const hasGlobalAccess = isProprietor || isAdministrator;
+    const hasSecondaryManagerAccess = isManager && sector === 'secondary';
+    const hasAccess = hasGlobalAccess || hasSecondaryManagerAccess;
 
-    // Manager can access this page only when assigned to Secondary.
-    const hasSecondaryManagerAccess =
-        isManager && sector === 'secondary';
+    if (!hasAccess) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
 
-    // Everyone else is denied.
-    const hasAccess =
-        hasGlobalAccess || hasSecondaryManagerAccess;
+    document.getElementById('userDisplay').textContent = `${user?.full_name || 'User'} (${role})`;
 
-    if (!hasAccess) {
-        alert('Access denied.');
-        window.location.href = 'dashboard.html';
-    }
-
-    // =========================================================
-    // DISPLAY USER
-    // =========================================================
-
-    document.getElementById('userDisplay').textContent =
-        `${user?.full_name || 'User'} (${role})`;
-
-    // =========================================================
-    // LOGOUT
-    // =========================================================
-
-    function logout() {
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('user');
-        window.location.href = '/login.html';
-    }
-
-    // =========================================================
-    // HTML ESCAPING
-    // =========================================================
-
-    function escapeHtml(value) {
-        if (value === null || value === undefined) return '';
-        return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    // =========================================================
-    // SHOW MESSAGE
-    // =========================================================
-
-    function showMessage(container, message, type) {
-        const el = document.getElementById(container);
-        if (!el) return;
-        el.textContent = message;
-        el.className = 'message';
-        if (type === 'success') {
-            el.classList.add('message-success');
-        } else if (type === 'error') {
-            el.classList.add('message-error');
-        }
-        el.style.display = 'block';
-        setTimeout(() => {
-            el.style.display = 'none';
-        }, 5000);
-    }
-
-    // =========================================================
-    // DATA
-    // =========================================================
+    function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
+    function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
     let teachers = [];
-    let assignments = [];
+    let subjectAssignments = [];
+    let classMasters = [];
+    let hodAssignments = [];
+    let subjectsSet = new Set();
+    let classesSet = new Set();
+    let departmentsSet = new Set();
 
-    async function loadAssignments() {
+    async function loadSecondaryData() {
         try {
-            const response = await fetch(
-                '/api/teachers/secondary-assignments?academic_year_id=1',
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                }
-            );
-
-            if (!response.ok) return;
-
+            const response = await fetch('/api/teachers/secondary-teachers-data', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error('Failed to load data');
             const data = await response.json();
-            assignments = Array.isArray(data) ? data : [];
-
-        } catch (error) {
-            console.error('Assignments error:', error);
-            assignments = [];
-        }
+            subjectAssignments = data.subjectAssignments || [];
+            classMasters = data.classMasters || [];
+            hodAssignments = data.hodAssignments || [];
+        } catch (error) { console.error('Data load error:', error); }
     }
 
     async function loadTeachers() {
         const table = document.getElementById('teacherTable');
-
         try {
-            const response = await fetch('/api/teachers', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json'
-                }
-            });
+            await loadSecondaryData();
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
+            const response = await fetch('/api/teachers', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
 
             teachers = (Array.isArray(data) ? data : []).filter(t => {
-                const section =
-                    String(t.school_section || '').toLowerCase();
-
-                return section.includes('secondary') ||
-                    section.includes('jss') ||
-                    section.includes('sss');
+                const section = String(t.school_section || '').toLowerCase();
+                return section.includes('secondary') || section.includes('jss') || section.includes('sss');
             });
 
-            await loadAssignments();
+            // Populate sets for filters
+            subjectsSet = new Set();
+            classesSet = new Set();
+            departmentsSet = new Set();
+            
+            subjectAssignments.forEach(a => {
+                if (a.subjects?.subject_name) subjectsSet.add(a.subjects.subject_name);
+                if (a.classes?.class_name) classesSet.add(`${a.classes.class_name}${a.classes.arm ? ' ' + a.classes.arm : ''}`);
+                if (a.subjects?.department_id && a.subjects?.department_name) departmentsSet.add(a.subjects.department_name);
+            });
+            classMasters.forEach(a => {
+                if (a.classes?.class_name) classesSet.add(`${a.classes.class_name}${a.classes.arm ? ' ' + a.classes.arm : ''}`);
+            });
+            hodAssignments.forEach(a => {
+                if (a.departments?.department_name) departmentsSet.add(a.departments.department_name);
+            });
+
+            populateFilters();
             updateSummary();
             renderTeachers();
-
         } catch (error) {
-            table.innerHTML =
-                `<tr><td colspan="9" class="error">Error: ${escapeHtml(error.message)}</td></tr>`;
+            table.innerHTML = `<tr><td colspan="11" class="error">Error: ${escapeHtml(error.message)}</td></tr>`;
         }
     }
 
+    function populateFilters() {
+        const subjectSelect = document.getElementById('subjectFilter');
+        const classSelect = document.getElementById('classFilter');
+        const departmentSelect = document.getElementById('departmentFilter');
+        
+        subjectSelect.innerHTML = '<option value="">All Subjects</option>';
+        subjectsSet.forEach(subject => subjectSelect.add(new Option(subject, subject)));
+
+        classSelect.innerHTML = '<option value="">All Classes</option>';
+        classesSet.forEach(className => classSelect.add(new Option(className, className)));
+
+        departmentSelect.innerHTML = '<option value="">All Departments</option>';
+        departmentsSet.forEach(dept => departmentSelect.add(new Option(dept, dept)));
+    }
+
+    function getClassMasterOf(teacherId) {
+        const master = classMasters.find(a => String(a.teacher_id) === String(teacherId));
+        if (!master) return '-';
+        return `${master.classes?.class_name || ''}${master.classes?.arm ? ' ' + master.classes.arm : ''}`.trim();
+    }
+
+    function getTeacherHOD(teacherId) {
+        const hod = hodAssignments.find(a => String(a.teacher_id) === String(teacherId));
+        if (!hod) return '-';
+        return `${hod.departments?.department_name || 'Department'}`;
+    }
+
     function getTeacherSubjects(teacherId) {
-        const teacherAssignments =
-            assignments.filter(
-                a => String(a.teacher_id) === String(teacherId)
-            );
-
-        const subjects = new Set();
-
-        teacherAssignments.forEach(a => {
-            if (a.subjects?.subject_name) {
-                subjects.add(a.subjects.subject_name);
-            }
-        });
-
-        return subjects.size ? [...subjects].join(', ') : '-';
+        const names = subjectAssignments
+            .filter(a => String(a.teacher_id) === String(teacherId))
+            .map(a => a.subjects?.subject_name)
+            .filter(Boolean);
+        return names.length ? [...new Set(names)].join(', ') : '-';
     }
 
     function getTeacherClasses(teacherId) {
-        const teacherAssignments =
-            assignments.filter(
-                a => String(a.teacher_id) === String(teacherId)
-            );
-
-        const classes = new Set();
-
-        teacherAssignments.forEach(a => {
-            if (a.classes?.class_name) {
-                classes.add(
-                    `${a.classes.class_name}${a.classes.arm ? ' ' + a.classes.arm : ''}`
-                );
-            }
-        });
-
-        return classes.size ? [...classes].join(', ') : '-';
+        const names = subjectAssignments
+            .filter(a => String(a.teacher_id) === String(teacherId))
+            .map(a => `${a.classes?.class_name || ''}${a.classes?.arm ? ' ' + a.classes.arm : ''}`)
+            .filter(Boolean);
+        return names.length ? [...new Set(names)].join(', ') : '-';
     }
 
     function updateSummary() {
-        document.getElementById('totalTeachers').textContent =
-            teachers.length;
-
-        document.getElementById('permanentTeachers').textContent =
-            teachers.filter(
-                t => String(t.employment_type || '').toLowerCase() === 'permanent'
-            ).length;
-
-        document.getElementById('partTimeTeachers').textContent =
-            teachers.filter(
-                t => String(t.employment_type || '').toLowerCase() === 'part time'
-            ).length;
-
-        document.getElementById('maleTeachers').textContent =
-            teachers.filter(
-                t => String(t.gender || '').toLowerCase() === 'male'
-            ).length;
-
-        document.getElementById('femaleTeachers').textContent =
-            teachers.filter(
-                t => String(t.gender || '').toLowerCase() === 'female'
-            ).length;
+        document.getElementById('totalTeachers').textContent = teachers.length;
+        document.getElementById('totalSubjects').textContent = subjectsSet.size;
+        document.getElementById('totalClasses').textContent = classesSet.size;
+        document.getElementById('totalClassMasters').textContent = classMasters.length;
+        document.getElementById('totalHODs').textContent = hodAssignments.length;
+        document.getElementById('permanentTeachers').textContent = teachers.filter(t => String(t.employment_type || '').toLowerCase() === 'permanent').length;
+        document.getElementById('partTimeTeachers').textContent = teachers.filter(t => String(t.employment_type || '').toLowerCase() === 'part time').length;
+        document.getElementById('maleTeachers').textContent = teachers.filter(t => String(t.gender || '').toLowerCase() === 'male').length;
+        document.getElementById('femaleTeachers').textContent = teachers.filter(t => String(t.gender || '').toLowerCase() === 'female').length;
     }
 
     function renderTeachers(list = teachers) {
         const table = document.getElementById('teacherTable');
-
-        document.getElementById('recordCount').textContent =
-            `${list.length} Record${list.length === 1 ? '' : 's'}`;
-
-        if (!list.length) {
-            table.innerHTML =
-                '<tr><td colspan="9" class="empty">No Secondary teachers found.</td></tr>';
-            return;
-        }
+        document.getElementById('recordCount').textContent = `${list.length} Record${list.length === 1 ? '' : 's'}`;
+        if (!list.length) { table.innerHTML = '<tr><td colspan="11" class="empty">No Secondary teachers found.</td></tr>'; return; }
 
         table.innerHTML = list.map(teacher => {
-
             const teacherId = teacher.teacher_id || teacher.id;
-            const name =
-                [
-                    teacher.first_name,
-                    teacher.middle_name,
-                    teacher.last_name
-                ]
-                .filter(Boolean)
-                .join(' ');
-
-            const employment =
-                String(teacher.employment_type || '-');
-
-            const status =
-                String(teacher.teacher_status || 'Active');
-
-            const subjects =
-                getTeacherSubjects(teacherId);
-
-            const classes =
-                getTeacherClasses(teacherId);
+            const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ');
+            const employment = String(teacher.employment_type || '-');
+            const status = String(teacher.teacher_status || 'Active');
+            const classMaster = getClassMasterOf(teacherId);
+            const hod = getTeacherHOD(teacherId);
+            const subjects = getTeacherSubjects(teacherId);
+            const classes = getTeacherClasses(teacherId);
+            const isHOD = hod !== '-';
 
             return `<tr>
                 <td><strong>${escapeHtml(teacher.staff_number || '-')}</strong></td>
                 <td>${escapeHtml(name || '-')}</td>
-                <td>${escapeHtml(teacher.gender || '-')}</td>
+                <td>${classMaster !== '-' ? `<span class="status status-master">${escapeHtml(classMaster)}</span>` : '-'}</td>
+                <td>${isHOD ? `<span class="status status-hod">${escapeHtml(hod)}</span>` : '-'}</td>
                 <td>${escapeHtml(subjects)}</td>
                 <td>${escapeHtml(classes)}</td>
+                <td>${escapeHtml(teacher.gender || '-')}</td>
                 <td>${escapeHtml(teacher.phone || '-')}</td>
-                <td>
-                    <span class="status ${employment.toLowerCase().includes('permanent') ? 'status-permanent' : 'status-part-time'}">
-                        ${escapeHtml(employment)}
-                    </span>
-                </td>
-                <td>
-                    <span class="status status-active">
-                        ${escapeHtml(status)}
-                    </span>
-                </td>
+                <td><span class="status ${employment.toLowerCase().includes('permanent') ? 'status-permanent' : 'status-part-time'}">${escapeHtml(employment)}</span></td>
+                <td><span class="status status-active">${escapeHtml(status)}</span></td>
                 <td>
                     <div class="action-group">
-                        <button class="action-btn view-btn"
-                            onclick="viewTeacher(${teacherId})">
-                            View
-                        </button>
-
-                        <button class="action-btn edit-btn"
-                            onclick="editTeacher(${teacherId})">
-                            Edit
-                        </button>
-
-                        <button class="action-btn assign-btn"
-                            onclick="window.location.href='secondary-teacher-assignments.html?teacher_id=${teacherId}'">
-                            Assign
-                        </button>
+                        <button class="action-btn view-btn" onclick="viewTeacher(${teacherId})">View</button>
+                        <button class="action-btn edit-btn" onclick="editTeacher(${teacherId})">Edit</button>
+                        <button class="action-btn assign-btn" onclick="window.location.href='secondary-teacher-assignments.html?teacher_id=${teacherId}'">Assign</button>
                     </div>
                 </td>
             </tr>`;
@@ -575,43 +410,34 @@
     }
 
     function filterTeachers() {
-        const search =
-            document.getElementById('searchInput')
-                .value
-                .toLowerCase()
-                .trim();
-
-        const statusFilter =
-            document.getElementById('statusFilter').value;
+        const search = document.getElementById('searchInput').value.toLowerCase().trim();
+        const subjectFilter = document.getElementById('subjectFilter').value;
+        const classFilter = document.getElementById('classFilter').value;
+        const departmentFilter = document.getElementById('departmentFilter').value;
+        const masterFilter = document.getElementById('masterFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
 
         const filtered = teachers.filter(teacher => {
+            const teacherId = teacher.teacher_id || teacher.id;
+            const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ').toLowerCase();
+            const staffNumber = String(teacher.staff_number || '').toLowerCase();
+            const employmentType = String(teacher.employment_type || '');
+            
+            const matchesSearch = !search || name.includes(search) || staffNumber.includes(search);
+            const matchesStatus = !statusFilter || employmentType === statusFilter;
+            
+            const teacherSubjects = getTeacherSubjects(teacherId);
+            const teacherClasses = getTeacherClasses(teacherId);
+            const teacherDept = getTeacherHOD(teacherId);
+            const isMaster = getClassMasterOf(teacherId) !== '-';
+            const isHOD = teacherDept !== '-';
+            
+            const matchesSubject = !subjectFilter || teacherSubjects.toLowerCase().includes(subjectFilter.toLowerCase());
+            const matchesClass = !classFilter || teacherClasses.toLowerCase().includes(classFilter.toLowerCase());
+            const matchesDept = !departmentFilter || teacherDept.toLowerCase().includes(departmentFilter.toLowerCase());
+            const matchesRole = !masterFilter || (masterFilter === 'Class Master' && isMaster) || (masterFilter === 'HOD' && isHOD);
 
-            const name =
-                [
-                    teacher.first_name,
-                    teacher.middle_name,
-                    teacher.last_name
-                ]
-                .filter(Boolean)
-                .join(' ')
-                .toLowerCase();
-
-            const staffNumber =
-                String(teacher.staff_number || '').toLowerCase();
-
-            const employmentType =
-                String(teacher.employment_type || '');
-
-            const matchesSearch =
-                !search ||
-                name.includes(search) ||
-                staffNumber.includes(search);
-
-            const matchesStatus =
-                !statusFilter ||
-                employmentType === statusFilter;
-
-            return matchesSearch && matchesStatus;
+            return matchesSearch && matchesStatus && matchesSubject && matchesClass && matchesDept && matchesRole;
         });
 
         renderTeachers(filtered);
@@ -619,14 +445,15 @@
 
     function resetFilters() {
         document.getElementById('searchInput').value = '';
+        document.getElementById('subjectFilter').value = '';
+        document.getElementById('classFilter').value = '';
+        document.getElementById('departmentFilter').value = '';
+        document.getElementById('masterFilter').value = '';
         document.getElementById('statusFilter').value = '';
         renderTeachers();
     }
 
-    // =========================================================
-    // MODAL FUNCTIONS
-    // =========================================================
-
+    // Modal logic unchanged
     function openTeacherModal() {
         document.getElementById('modalTitle').textContent = 'Register Secondary Teacher';
         document.getElementById('saveTeacherBtn').textContent = 'Save Teacher';
@@ -643,192 +470,76 @@
     }
 
     function viewTeacher(id) {
-        const teacher =
-            teachers.find(
-                t => String(t.teacher_id || t.id) === String(id)
-            );
-
-        if (!teacher) {
-            alert('Teacher not found.');
-            return;
-        }
-
-        const name =
-            [
-                teacher.first_name,
-                teacher.middle_name,
-                teacher.last_name
-            ]
-            .filter(Boolean)
-            .join(' ');
-
-        const subjects = getTeacherSubjects(id);
-        const classes = getTeacherClasses(id);
-
-        alert(
-            `Teacher: ${name}\n` +
-            `Staff Number: ${teacher.staff_number}\n` +
-            `Gender: ${teacher.gender}\n` +
-            `Phone: ${teacher.phone}\n` +
-            `Email: ${teacher.email}\n` +
-            `Employment: ${teacher.employment_type}\n` +
-            `Status: ${teacher.teacher_status}\n` +
-            `Subjects: ${subjects}\n` +
-            `Classes: ${classes}\n` +
-            `Address: ${teacher.address || '-'}`
-        );
+        const teacher = teachers.find(t => String(t.teacher_id || t.id) === String(id));
+        if (!teacher) { alert('Teacher not found.'); return; }
+        const name = [teacher.first_name, teacher.middle_name, teacher.last_name].filter(Boolean).join(' ');
+        alert(`Teacher: ${name}\nStaff Number: ${teacher.staff_number}\nGender: ${teacher.gender}\nPhone: ${teacher.phone}\nEmail: ${teacher.email}\nEmployment: ${teacher.employment_type}\nStatus: ${teacher.teacher_status}\nClass Master Of: ${getClassMasterOf(id)}\nHOD of: ${getTeacherHOD(id)}\nSubjects: ${getTeacherSubjects(id)}\nClasses: ${getTeacherClasses(id)}\nAddress: ${teacher.address || '-'}`);
     }
 
     function editTeacher(id) {
-        const teacher =
-            teachers.find(
-                t => String(t.teacher_id || t.id) === String(id)
-            );
-
-        if (!teacher) {
-            alert('Teacher not found.');
-            return;
-        }
-
+        const teacher = teachers.find(t => String(t.teacher_id || t.id) === String(id));
+        if (!teacher) { alert('Teacher not found.'); return; }
         document.getElementById('modalTitle').textContent = 'Edit Secondary Teacher';
         document.getElementById('saveTeacherBtn').textContent = 'Update Teacher';
-
-        document.getElementById('staff_number').value =
-            teacher.staff_number || '';
-
-        document.getElementById('first_name').value =
-            teacher.first_name || '';
-
-        document.getElementById('middle_name').value =
-            teacher.middle_name || '';
-
-        document.getElementById('last_name').value =
-            teacher.last_name || '';
-
-        document.getElementById('gender').value =
-            teacher.gender || '';
-
-        document.getElementById('phone').value =
-            teacher.phone || '';
-
-        document.getElementById('email').value =
-            teacher.email || '';
-
-        document.getElementById('employment_type').value =
-            teacher.employment_type || 'Permanent';
-
-        document.getElementById('address').value =
-            teacher.address || '';
-
+        document.getElementById('staff_number').value = teacher.staff_number || '';
+        document.getElementById('first_name').value = teacher.first_name || '';
+        document.getElementById('middle_name').value = teacher.middle_name || '';
+        document.getElementById('last_name').value = teacher.last_name || '';
+        document.getElementById('gender').value = teacher.gender || '';
+        document.getElementById('phone').value = teacher.phone || '';
+        document.getElementById('email').value = teacher.email || '';
+        document.getElementById('employment_type').value = teacher.employment_type || 'Permanent';
+        document.getElementById('address').value = teacher.address || '';
         document.getElementById('teacherForm').dataset.editId = id;
         document.getElementById('teacherModalMessage').style.display = 'none';
-
         document.getElementById('teacherModal').style.display = 'block';
     }
 
-    // =========================================================
-    // FORM SUBMIT
-    // =========================================================
-
-    document.getElementById('teacherForm').addEventListener(
-        'submit',
-        async function(event) {
-
-            event.preventDefault();
-
-            const editId = this.dataset.editId;
-
-            const payload = {
-                staff_number:
-                    document.getElementById('staff_number').value.trim(),
-
-                first_name:
-                    document.getElementById('first_name').value.trim(),
-
-                middle_name:
-                    document.getElementById('middle_name').value.trim(),
-
-                last_name:
-                    document.getElementById('last_name').value.trim(),
-
-                gender:
-                    document.getElementById('gender').value || null,
-
-                phone:
-                    document.getElementById('phone').value.trim() || null,
-
-                email:
-                    document.getElementById('email').value.trim() || null,
-
-                address:
-                    document.getElementById('address').value.trim() || null,
-
-                employment_type:
-                    document.getElementById('employment_type').value || 'Permanent',
-
-                teacher_status: 'Active',
-
-                school_section: 'Secondary'
-            };
-
-            try {
-
-                const url =
-                    editId
-                        ? `/api/teachers/${editId}`
-                        : '/api/teachers';
-
-                const method =
-                    editId ? 'PUT' : 'POST';
-
-                const response = await fetch(url, {
-                    method,
-
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(
-                        result.message || 'Failed to save teacher'
-                    );
-                }
-
-                showMessage('teacherModalMessage',
-                    editId ? 'Teacher updated successfully!' : 'Teacher registered successfully!',
-                    'success'
-                );
-
-                setTimeout(() => {
-                    closeTeacherModal();
-                    loadTeachers();
-                }, 1000);
-
-            } catch (error) {
-                showMessage('teacherModalMessage', error.message, 'error');
-            }
-        }
-    );
-
-    // =========================================================
-    // MODAL CLOSE ON OVERLAY CLICK
-    // =========================================================
-
-    window.addEventListener('click', function(event) {
-        if (event.target === document.getElementById('teacherModal')) {
-            closeTeacherModal();
-        }
+    document.getElementById('teacherForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const editId = this.dataset.editId;
+        const payload = {
+            staff_number: document.getElementById('staff_number').value.trim(),
+            first_name: document.getElementById('first_name').value.trim(),
+            middle_name: document.getElementById('middle_name').value.trim(),
+            last_name: document.getElementById('last_name').value.trim(),
+            gender: document.getElementById('gender').value || null,
+            phone: document.getElementById('phone').value.trim() || null,
+            email: document.getElementById('email').value.trim() || null,
+            address: document.getElementById('address').value.trim() || null,
+            employment_type: document.getElementById('employment_type').value || 'Permanent',
+            teacher_status: 'Active',
+            school_section: 'Secondary'
+        };
+        try {
+            const url = editId ? `/api/teachers/${editId}` : '/api/teachers';
+            const method = editId ? 'PUT' : 'POST';
+            const response = await fetch(url, {
+                method,
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed to save teacher');
+            showMessage('teacherModalMessage', editId ? 'Teacher updated!' : 'Teacher registered!', 'success');
+            setTimeout(() => { closeTeacherModal(); loadTeachers(); }, 1000);
+        } catch (error) { showMessage('teacherModalMessage', error.message, 'error'); }
     });
 
-    // =========================================================
-    // INITIALIZE
-    // =========================================================
+    function showMessage(container, message, type) {
+        const el = document.getElementById(container);
+        if (!el) return;
+        el.textContent = message;
+        el.className = 'message';
+        if (type === 'success') el.classList.add('message-success');
+        if (type === 'error') el.classList.add('message-error');
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    window.addEventListener('click', function(event) {
+        if (event.target === document.getElementById('teacherModal')) closeTeacherModal();
+    });
 
     loadTeachers();
 </script>

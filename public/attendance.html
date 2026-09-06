@@ -60,6 +60,7 @@
         .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-back { background: #6b7280; color: white; }
         .btn-print { background: #1a3c6e; color: white; }
+        .btn-save { background: #166534; color: white; }
 
         .register-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1a3c6e; padding-bottom: 10px; }
         .register-header h2 { margin: 0; color: #1a3c6e; }
@@ -85,8 +86,9 @@
             body { background: white; }
             .header, .page-title, .action-bar, .logout-bottom { display: none !important; }
             .container { padding: 0; max-width: 100%; }
-            #bookshelf-view { display: none !important; }
+            #bookshelf-view { display: block !important; }
             #register-view { display: block !important; box-shadow: none; padding: 0; }
+            .sector-section, .book { page-break-inside: avoid; }
             table { page-break-inside: auto; }
             tr { page-break-inside: avoid; page-break-after: auto; }
         }
@@ -116,11 +118,11 @@
                     <h2>Attendance Registers</h2>
                     <p>Select a class register to take attendance.</p>
                 </div>
-                <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+                <button class="back-btn" onclick="window.location.href='teachers-dashboard.html'">← Back to Dashboard</button>
             </div>
 
             <!-- PRIMARY SECTOR -->
-            <div class="sector-section">
+            <div class="sector-section" id="primary-section" style="display: none;">
                 <div class="sector-header primary">
                     <h3>🏫 Primary School</h3>
                     <span class="sector-count" id="primaryCount">0 Classes</span>
@@ -131,7 +133,7 @@
             </div>
 
             <!-- SECONDARY SECTOR -->
-            <div class="sector-section">
+            <div class="sector-section" id="secondary-section" style="display: none;">
                 <div class="sector-header secondary">
                     <h3>🎓 Secondary School</h3>
                     <span class="sector-count" id="secondaryCount">0 Classes</span>
@@ -147,6 +149,7 @@
             <div class="action-bar">
                 <button class="btn btn-back" onclick="goBackToShelf()">← Back to Bookshelf</button>
                 <button class="btn btn-print" onclick="window.print()">Print Register</button>
+                <button class="btn btn-save" onclick="saveAttendance()">Save Attendance</button>
             </div>
 
             <div class="register-header">
@@ -174,6 +177,9 @@
     if (!token || !userData) { window.location.href = '/login.html'; }
 
     const user = JSON.parse(userData);
+    const roleId = Number(user.role_id || 0); // 4 = Teacher, 2 = Admin, 6 = Manager, 1 = Proprietor
+    const userSector = String(user.sector || '').toLowerCase();
+
     document.getElementById('userInfo').textContent = `${user.full_name || 'User'} (${user.role_name})`;
 
     function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
@@ -182,43 +188,129 @@
     // ==========================================
     // GLOBAL DATA STORES
     // ==========================================
-    let teacherMap = {};
+    let teacherMap = {}; 
+    let classMasterMap = {}; // Maps class_id -> Class Master Full Name
     let currentClassId = null;
     let currentStudents = [];
+    let classNames = {};
+    let attendanceRecords = {};
+    let allStudentsLoaded = [];
 
     // ==========================================
-    // FETCH DATA FROM YOUR EXISTING BACKEND
+    // FETCH TEACHERS (To get teacher names)
     // ==========================================
     async function loadTeachers() {
-        try {
-            const response = await fetch('/api/teachers', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-            if (response.ok) {
-                const teachers = await response.json();
-                (teachers || []).forEach(t => {
-                    teacherMap[t.teacher_id || t.id] = `${t.first_name || ''} ${t.last_name || ''}`.trim() || t.full_name || t.name || 'Teacher';
-                });
-            }
-        } catch (e) { console.log('Could not load teachers'); }
+        const response = await fetch('/api/teachers', { 
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } 
+        });
+        if (response.ok) {
+            const teachers = await response.json();
+            (teachers || []).forEach(t => {
+                const fullName = `${t.first_name || ''} ${t.middle_name || ''} ${t.last_name || ''}`.trim();
+                teacherMap[t.teacher_id || t.id] = fullName || 'Teacher';
+            });
+        }
     }
 
+       // ==========================================
+    // FETCH CLASS MASTERS (EXACT SAME AS secondary-teachers.html)
+    // ==========================================
+    async function loadClassMasters() {
+        try {
+            // 1. PRIMARY: Use primary-class-assignments (only role = 'Class Master')
+            const primaryResp = await fetch('/api/teachers/primary-class-assignments', { 
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } 
+            });
+            if (primaryResp.ok) {
+                const primaryAssignments = await primaryResp.json();
+                (primaryAssignments || []).forEach(assign => {
+                    if (assign.role === 'Class Master' && assign.classes?.class_id) {
+                        const teacherId = assign.teacher_id;
+                        classMasterMap[assign.classes.class_id] = teacherMap[teacherId] || 'Unassigned';
+                    }
+                });
+            }
+
+            // 2. SECONDARY: Use secondary-teachers-data (EXACTLY like secondary-teachers.html)
+            // We ONLY take data.classMasters, NOT subjectAssignments or hodAssignments!
+            const secondaryResp = await fetch('/api/teachers/secondary-teachers-data', { 
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } 
+            });
+            if (secondaryResp.ok) {
+                const secondaryData = await secondaryResp.json(); // THIS IS AN OBJECT! NOT AN ARRAY!
+                const secondaryClassMasters = secondaryData.classMasters || []; // ACCESS .classMasters!
+                
+                (secondaryClassMasters || []).forEach(assign => {
+                    if (assign.classes?.class_id) {
+                        const teacherId = assign.teacher_id;
+                        classMasterMap[assign.classes.class_id] = teacherMap[teacherId] || 'Unassigned';
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error loading class masters:', error);
+        }
+    }
+
+    // ==========================================
+    // FETCH ALL STUDENTS (Filter on Frontend)
+    // ==========================================
+    async function fetchAllStudents() {
+        const response = await fetch('/api/students', { 
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } 
+        });
+        if (!response.ok) throw new Error('Failed to load students');
+        return await response.json();
+    }
+
+    // ==========================================
+    // LOAD BOOKSHELF
+    // ==========================================
     async function loadBookshelf() {
         try {
             await loadTeachers();
+            await loadClassMasters(); // This ONLY loads class masters
 
-            // Fetch classes
-            const classesResponse = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-            if (!classesResponse.ok) throw new Error('Failed to load classes');
-            const classes = await classesResponse.json();
+            let classes = [];
 
-            // Split classes by sector based on your existing structure
+            // TEACHER: Only see their own classes
+            if (roleId === 4) {
+                const response = await fetch('/api/attendance/my-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                if (!response.ok) throw new Error('Failed to load your classes');
+                classes = await response.json();
+            } 
+            // MANAGER: See only their sector
+            else if (roleId === 6) {
+                const response = await fetch('/api/attendance/all-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                if (!response.ok) throw new Error('Failed to load classes');
+                const allClasses = await response.json();
+                classes = allClasses.filter(c => c.school_section.toLowerCase() === userSector);
+            } 
+            // ADMIN / PROPRIETOR: See all classes
+            else {
+                const response = await fetch('/api/attendance/all-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                if (!response.ok) throw new Error('Failed to load classes');
+                classes = await response.json();
+            }
+
+            // Split classes by sector
             const primaryClasses = (classes || []).filter(c => ['Nursery', 'Primary'].includes(c.school_section));
             const secondaryClasses = (classes || []).filter(c => ['JSS', 'SSS', 'Secondary'].includes(c.school_section));
 
-            document.getElementById('primaryCount').textContent = `${primaryClasses.length} Classes`;
-            document.getElementById('secondaryCount').textContent = `${secondaryClasses.length} Classes`;
+            const showPrimary = primaryClasses.length > 0;
+            const showSecondary = secondaryClasses.length > 0;
 
-            renderBooks('primaryClasses', primaryClasses);
-            renderBooks('secondaryClasses', secondaryClasses);
+            document.getElementById('primary-section').style.display = showPrimary ? 'block' : 'none';
+            document.getElementById('secondary-section').style.display = showSecondary ? 'block' : 'none';
+
+            if (showPrimary) {
+                document.getElementById('primaryCount').textContent = `${primaryClasses.length} Classes`;
+                renderBooks('primaryClasses', primaryClasses);
+            }
+            if (showSecondary) {
+                document.getElementById('secondaryCount').textContent = `${secondaryClasses.length} Classes`;
+                renderBooks('secondaryClasses', secondaryClasses);
+            }
         } catch (error) {
             console.error('Error:', error);
             document.getElementById('primaryClasses').innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`;
@@ -235,12 +327,9 @@
         }
 
         container.innerHTML = classes.map(cls => {
-            let masterName = 'Not assigned';
-            if (cls.class_master_id) {
-                masterName = teacherMap[cls.class_master_id] || 'Not assigned';
-            } else if (cls.class_master) {
-                masterName = cls.class_master;
-            }
+            // Use classMasterMap (ONLY Class Masters!)
+            let masterName = classMasterMap[cls.class_id] || 'Unassigned';
+            classNames[cls.class_id] = `${cls.class_name}${cls.arm ? ' ' + cls.arm : ''}`;
 
             return `
                 <div class="book" onclick="openBook(${cls.class_id}, '${escapeHtml(cls.class_name || '')}${cls.arm ? ' ' + escapeHtml(cls.arm) : ''}', '${escapeHtml(cls.school_section)}')">
@@ -262,21 +351,14 @@
         document.getElementById('bookshelf-view').style.display = 'none';
         document.getElementById('register-view').style.display = 'block';
 
-        let masterName = 'Not assigned';
-        // Try to fetch the specific class master from the classes endpoint if you have it
-        // Otherwise, just show generic info for now
+        // Show Class Master inside the Register header!
+        const masterName = classMasterMap[classId] || 'Unassigned';
         document.getElementById('reg-title').innerText = className + " - Attendance Register";
-        document.getElementById('reg-meta').innerText = `Sector: ${sector}`;
+        document.getElementById('reg-meta').innerText = `Class Master: ${masterName} | Sector: ${sector}`;
 
         try {
-            // Fetch students for this class
-            const response = await fetch(`/api/students?class_id=${classId}`, { 
-                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } 
-            });
-            
-            if (!response.ok) throw new Error('Failed to load students');
-            const students = await response.json();
-            currentStudents = students || [];
+            allStudentsLoaded = await fetchAllStudents();
+            currentStudents = allStudentsLoaded.filter(s => Number(s.class_id) === Number(classId));
 
             if (currentStudents.length === 0) {
                 document.getElementById('table-head').innerHTML = '';
@@ -286,6 +368,7 @@
             }
 
             renderRegisterGrid(currentStudents);
+            loadSavedAttendance();
         } catch (error) {
             console.error('Error fetching students:', error);
             document.getElementById('table-body').innerHTML = `<tr><td colspan="30" style="padding:20px;">Error: ${escapeHtml(error.message)}</td></tr>`;
@@ -360,7 +443,7 @@
     }
 
     // ==========================================
-    // MARK & CALCULATE (Frontend only for now)
+    // MARK & CALCULATE (Frontend)
     // ==========================================
     function toggleAttendance(cell) {
         if (cell.classList.contains('present')) {
@@ -405,6 +488,102 @@
                 document.querySelector(`.week-avg-w${w}`).innerText = totalWeekStudents > 0 ? Math.round((weekTotal / totalWeekStudents) * 100) + '%' : '0%';
             }
         });
+    }
+
+    // ==========================================
+    // LOAD SAVED ATTENDANCE
+    // ==========================================
+    async function loadSavedAttendance() {
+        const days = [];
+        for(let w = 0; w < 4; w++) {
+            for(let d = 0; d < 6; d++) {
+                days.push(`2026-09-${(w*6+d+1).toString().padStart(2, '0')}`);
+            }
+        }
+
+        try {
+            const response = await fetch(`/api/attendance?class_id=${currentClassId}&date=${days[0]}`, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            const savedData = await response.json();
+
+            attendanceRecords = {};
+            (savedData || []).forEach(rec => {
+                if (!attendanceRecords[rec.attendance_date]) attendanceRecords[rec.attendance_date] = {};
+                attendanceRecords[rec.attendance_date][rec.student_id] = rec.status;
+            });
+
+            const rows = document.querySelectorAll('#table-body tr');
+            rows.forEach((row, rowIndex) => {
+                const cells = row.querySelectorAll('.day-col');
+                const studentId = currentStudents[rowIndex]?.student_id;
+
+                cells.forEach((cell, colIndex) => {
+                    const date = days[colIndex];
+                    if (attendanceRecords[date]?.[studentId]) {
+                        const status = attendanceRecords[date][studentId];
+                        if (status === 'Present') {
+                            cell.classList.add('present'); cell.innerText = '✓';
+                        } else if (status === 'Absent') {
+                            cell.classList.add('absent'); cell.innerText = 'X';
+                        }
+                    }
+                });
+            });
+
+            updateTotals();
+        } catch (error) {
+            console.error('Error loading saved attendance:', error);
+        }
+    }
+
+    // ==========================================
+    // SAVE ATTENDANCE (Bulk)
+    // ==========================================
+    async function saveAttendance() {
+        const days = [];
+        for(let w = 0; w < 4; w++) {
+            for(let d = 0; d < 6; d++) {
+                days.push(`2026-09-${(w*6+d+1).toString().padStart(2, '0')}`);
+            }
+        }
+
+        const records = [];
+        const rows = document.querySelectorAll('#table-body tr');
+        rows.forEach((row, rowIndex) => {
+            const cells = row.querySelectorAll('.day-col');
+            const studentId = currentStudents[rowIndex]?.student_id;
+            if (!studentId) return;
+
+            cells.forEach((cell, colIndex) => {
+                const date = days[colIndex];
+                let status = null;
+                if (cell.classList.contains('present')) status = 'Present';
+                if (cell.classList.contains('absent')) status = 'Absent';
+
+                if (status) {
+                    records.push({ student_id: studentId, status });
+                }
+            });
+        });
+
+        if (!records.length) {
+            alert('No attendance marks to save.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/attendance/bulk', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ class_id: currentClassId, attendance_date: days[0], records })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Failed to save');
+            alert('Attendance saved successfully!');
+        } catch (error) {
+            alert(error.message);
+        }
     }
 
     // INITIALIZE
