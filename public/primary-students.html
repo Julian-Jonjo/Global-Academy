@@ -162,7 +162,7 @@
                 <h2>Student Management</h2>
                 <p>Manage student records, academic information, attendance, documents, and discipline.</p>
             </div>
-            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+            <button class="back-btn" onclick="window.location.href='students.html'">← Back</button>
         </div>
 
         <div class="tabs">
@@ -845,29 +845,31 @@ if (isProprietor) {
         } catch (error) {}
     }
 
+    // ✅ FIXED: Uses isPrimaryManager or isAdministrator
     async function openRegistrationTab(button) {
-    if (role !== 'Manager-Primary' && role !== 'Administrator') { 
-        alert('You do not have permission to register students.'); 
-        return; 
+        if (!isPrimaryManager && !isAdministrator) {
+            alert('You do not have permission to register students.');
+            return;
+        }
+
+        openTab('registration', button);
+        const container = document.getElementById('registrationContainer');
+        if (container.dataset.loaded === 'true') {
+            attachFormListener();
+            return;
+        }
+        container.innerHTML = '<div class="module-placeholder"><h3>Loading Student Registration</h3><p>Please wait...</p></div>';
+        try {
+            const response = await fetch('./students-registration.html');
+            if (!response.ok) throw new Error(`Unable to load registration form. HTTP ${response.status}`);
+            const html = await response.text();
+            container.innerHTML = html;
+            container.dataset.loaded = 'true';
+            setTimeout(() => { loadClasses(); attachFormListener(); }, 200);
+        } catch (error) {
+            container.innerHTML = `<div class="error-message"><strong>Unable to load registration form</strong><br><br>${escapeHtml(error.message)}</div>`;
+        }
     }
-    openTab('registration', button);
-    const container = document.getElementById('registrationContainer');
-    if (container.dataset.loaded === 'true') { 
-        attachFormListener(); 
-        return; 
-    }
-    container.innerHTML = '<div class="module-placeholder"><h3>Loading Student Registration</h3><p>Please wait...</p></div>';
-    try {
-        const response = await fetch('./students-registration.html');
-        if (!response.ok) throw new Error(`Unable to load registration form. HTTP ${response.status}`);
-        const html = await response.text();
-        container.innerHTML = html;
-        container.dataset.loaded = 'true';
-        setTimeout(() => { loadClasses(); attachFormListener(); }, 200);
-    } catch (error) {
-        container.innerHTML = `<div class="error-message"><strong>Unable to load registration form</strong><br><br>${escapeHtml(error.message)}</div>`;
-    }
-}
 
     function attachFormListener() {
         const form = document.getElementById('studentForm');
@@ -1093,7 +1095,7 @@ if (isProprietor) {
             <div style="display:flex;justify-content:space-between;align-items:flex-start;grid-column:1/-1;margin-bottom:5px;">
                 ${photoHtml}
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    ${(role === 'Administrator' || role === 'Manager-Primary') ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
+                    ${(isAdministrator || isPrimaryManager) ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
                     <button class="btn doc-btn" onclick="viewDocuments(${Number(student.student_id)})">📂 Documents</button>
                     <button class="btn discipline-btn" onclick="viewStudentDisciplineRecords(${Number(student.student_id)})">⚖️ Discipline</button>
                 </div>
@@ -1133,8 +1135,9 @@ if (isProprietor) {
         document.getElementById('studentModal').style.display = 'block';
     }
 
+    // ✅ FIXED: Uses isPrimaryManager or isAdministrator
     async function reviewStudent(studentId) {
-        if (role !== 'Administrator' && role !== 'Manager-Primary') { alert('Access denied.'); return; }
+        if (!isPrimaryManager && !isAdministrator) { alert('Access denied.'); return; }
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
         await loadEditClasses();
@@ -1194,8 +1197,9 @@ if (isProprietor) {
         document.getElementById('editModal').style.display = 'block';
     }
 
+    // ✅ FIXED: Uses isPrimaryManager or isAdministrator
     async function editStudent(studentId) {
-        if (role !== 'Administrator' && role !== 'Manager-Primary') { alert('Access denied.'); return; }
+        if (!isPrimaryManager && !isAdministrator) { alert('Access denied.'); return; }
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
         await loadEditClasses();
@@ -1257,9 +1261,10 @@ if (isProprietor) {
         } catch (error) { classSelect.innerHTML = '<option value="">Unable to load classes</option>'; }
     }
 
+    // ✅ FIXED: Uses isPrimaryManager or isAdministrator
     document.getElementById('editStudentForm').addEventListener('submit', async function(event) {
         event.preventDefault();
-        if (role !== 'Administrator' && role !== 'Manager-Primary') { alert('Access denied.'); return; }
+        if (!isPrimaryManager && !isAdministrator) { alert('Access denied.'); return; }
         const studentId = document.getElementById('editStudentId').value;
         const formData = new FormData();
         formData.append('admission_number', document.getElementById('editAdmissionNumber').value.trim());

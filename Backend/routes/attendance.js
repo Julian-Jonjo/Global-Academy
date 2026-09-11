@@ -158,23 +158,26 @@ router.get(
 // GET ATTENDANCE FOR A CLASS ON A SPECIFIC DATE
 // ============================================================
 
+// ============================================================
+// GET ATTENDANCE FOR A CLASS (Fetch all records for the class)
+// ============================================================
+
 router.get(
     '/',
     authenticateToken,
     requireRoles(...ATTENDANCE_VIEW_ROLES),
     async (req, res) => {
         try {
-            const { class_id, date } = req.query;
+            const { class_id } = req.query;
 
-            if (!class_id || !date) {
-                return res.status(400).json({ message: 'class_id and date are required.' });
+            if (!class_id) {
+                return res.status(400).json({ message: 'class_id is required.' });
             }
 
             const { data, error } = await supabase
                 .from('attendance')
                 .select('*')
-                .eq('class_id', class_id)
-                .eq('attendance_date', date);
+                .eq('class_id', class_id);
 
             if (error) {
                 console.error('ATTENDANCE FETCH ERROR:', error);
@@ -188,7 +191,6 @@ router.get(
         }
     }
 );
-
 // ============================================================
 // SAVE ATTENDANCE FOR MULTIPLE STUDENTS (Bulk Upsert)
 // ============================================================
@@ -206,14 +208,25 @@ router.post(
                 return res.status(400).json({ message: 'class_id, attendance_date, and records array are required.' });
             }
 
+            // 🛑 SECURITY: 24-Hour Lock Check
+            const requestedDate = new Date(attendance_date + 'T00:00:00');
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            if (requestedDate < twentyFourHoursAgo) {
+                return res.status(403).json({ 
+                    message: 'This record is locked. Attendance becomes non-editable 24 hours after it was first saved.' 
+                });
+            }
+
             const user = req.user;
+            const now = new Date().toISOString();
+
             const insertData = records.map(rec => ({
                 student_id: rec.student_id,
                 class_id: class_id,
                 attendance_date: attendance_date,
                 status: rec.status, // 'Present' or 'Absent'
                 recorded_by: user.user_id || null,
-                created_at: new Date().toISOString()
+                created_at: now
             }));
 
             // Upsert: updates existing records or inserts new ones
@@ -227,7 +240,7 @@ router.post(
                 return res.status(500).json({ message: 'Failed to save attendance', error: error.message });
             }
 
-            res.json({ message: 'Attendance saved successfully.', data: data });
+            res.json({ message: 'Attendance saved successfully. Records are locked for 24 hours.', data: data });
         } catch (error) {
             console.error('ATTENDANCE SAVE EXCEPTION:', error);
             res.status(500).json({ message: 'Server error' });
@@ -249,6 +262,15 @@ router.delete(
 
             if (!student_id || !attendance_date) {
                 return res.status(400).json({ message: 'student_id and attendance_date are required.' });
+            }
+
+            // 🛑 SECURITY: 24-Hour Lock Check
+            const requestedDate = new Date(attendance_date + 'T00:00:00');
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            if (requestedDate < twentyFourHoursAgo) {
+                return res.status(403).json({ 
+                    message: 'This record is locked. Attendance becomes non-editable 24 hours after it was first saved.' 
+                });
             }
 
             const { error } = await supabase

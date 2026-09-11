@@ -12,12 +12,7 @@ const router = express.Router();
 // ROLE DEFINITIONS
 // ============================================================
 
-// Protected system-level roles.
-// These roles appear in the Users list but are NOT assignable
-// through normal user creation/editing.
 const PROTECTED_ROLE_IDS = [1, 2];
-
-// Normal roles that can be assigned to users.
 const ASSIGNABLE_ROLE_IDS = [3, 4, 5, 6];
 
 // ============================================================
@@ -36,6 +31,49 @@ async function getRoleName(roleId) {
 
     return role.role_name;
 }
+
+// ============================================================
+// GET AVAILABLE PEOPLE (For User Creation)
+// ============================================================
+router.get('/available-people', authenticateToken, requireRoles(1, 2, 6), async (req, res) => {
+    try {
+        const { role, sector } = req.query;
+
+        if (!role || !sector) {
+            return res.status(400).json({ message: 'role and sector are required.' });
+        }
+
+        // Fetch Teachers
+        if (role === '4' || role === 'teacher') {
+            const { data, error } = await supabase
+                .from('teachers')
+                .select('teacher_id, first_name, last_name, staff_number, school_section')
+                .eq('school_section', sector)
+                .eq('teacher_status', 'Active');
+
+            if (error) throw error;
+            return res.json(data || []);
+        }
+
+        // Fetch Managers
+        if (role === '6' || role === 'manager') {
+            const { data, error } = await supabase
+                .from('users')
+                .select('user_id, full_name, sector, role_id')
+                .eq('role_id', 6)
+                .eq('sector', sector)
+                .not('full_name', 'is', null);
+
+            if (error) throw error;
+            return res.json(data || []);
+        }
+
+        res.json([]);
+    } catch (error) {
+        console.error('AVAILABLE PEOPLE ERROR:', error);
+        res.status(500).json({ message: 'Failed to load available people' });
+    }
+});
 
 // ============================================================
 // GET: All Users
@@ -58,6 +96,8 @@ router.get(
                     last_login,
                     role_id,
                     sector,
+                    teacher_id,
+                    manager_id,
                     user_roles!inner (
                         role_id,
                         role_name
@@ -77,17 +117,16 @@ router.get(
                 last_login: u.last_login,
                 role_id: u.role_id,
                 role_name: u.user_roles?.role_name || 'No Role',
-                sector: u.sector || 'primary'
+                sector: u.sector || 'primary',
+                teacher_id: u.teacher_id || null,
+                manager_id: u.manager_id || null
             }));
 
             res.json(result);
 
         } catch (error) {
             console.error('Error loading users:', error);
-
-            res.status(500).json({
-                message: error.message
-            });
+            res.status(500).json({ message: error.message });
         }
     }
 );
@@ -104,9 +143,7 @@ router.get(
             const userId = parseInt(req.params.id);
 
             if (isNaN(userId)) {
-                return res.status(400).json({
-                    message: 'Invalid user ID'
-                });
+                return res.status(400).json({ message: 'Invalid user ID' });
             }
 
             const { data: user, error } = await supabase
@@ -121,6 +158,8 @@ router.get(
                     last_login,
                     role_id,
                     sector,
+                    teacher_id,
+                    manager_id,
                     user_roles!inner (
                         role_id,
                         role_name
@@ -130,9 +169,7 @@ router.get(
                 .single();
 
             if (error || !user) {
-                return res.status(404).json({
-                    message: 'User not found'
-                });
+                return res.status(404).json({ message: 'User not found' });
             }
 
             res.json({
@@ -145,15 +182,14 @@ router.get(
                 last_login: user.last_login,
                 role_id: user.role_id,
                 role_name: user.user_roles?.role_name || 'No Role',
-                sector: user.sector || 'primary'
+                sector: user.sector || 'primary',
+                teacher_id: user.teacher_id || null,
+                manager_id: user.manager_id || null
             });
 
         } catch (error) {
             console.error('Error loading user:', error);
-
-            res.status(500).json({
-                message: error.message
-            });
+            res.status(500).json({ message: error.message });
         }
     }
 );
@@ -174,16 +210,14 @@ router.post(
                 password,
                 role_id,
                 is_active,
-                sector
+                sector,
+                teacher_id,
+                manager_id
             } = req.body;
 
-            // ----------------------------------------------------
-            // Validate required fields
-            // ----------------------------------------------------
             if (!username || !full_name || !password || !role_id) {
                 return res.status(400).json({
-                    message:
-                        'Username, full name, password, and role are required'
+                    message: 'Username, full name, password, and role are required'
                 });
             }
 
@@ -196,35 +230,21 @@ router.post(
             const parsedRoleId = parseInt(role_id);
 
             if (isNaN(parsedRoleId)) {
-                return res.status(400).json({
-                    message: 'Invalid role ID'
-                });
+                return res.status(400).json({ message: 'Invalid role ID' });
             }
 
-            // ----------------------------------------------------
-            // Prevent creation of Proprietor / Administrator
-            // through the normal Add User API
-            // ----------------------------------------------------
             if (PROTECTED_ROLE_IDS.includes(parsedRoleId)) {
                 return res.status(403).json({
-                    message:
-                        'Proprietor and Administrator accounts cannot be created through normal user registration.'
+                    message: 'Proprietor and Administrator accounts cannot be created through normal user registration.'
                 });
             }
 
-            // ----------------------------------------------------
-            // Only allow the four normal roles
-            // ----------------------------------------------------
             if (!ASSIGNABLE_ROLE_IDS.includes(parsedRoleId)) {
                 return res.status(400).json({
-                    message:
-                        'Invalid role. Users may only be assigned Manager, Finance Officer, Teacher, or Student.'
+                    message: 'Invalid role. Users may only be assigned Manager, Finance Officer, Teacher, or Student.'
                 });
             }
 
-            // ----------------------------------------------------
-            // Verify role actually exists
-            // ----------------------------------------------------
             const { data: role, error: roleError } = await supabase
                 .from('user_roles')
                 .select('role_id, role_name')
@@ -232,14 +252,9 @@ router.post(
                 .single();
 
             if (roleError || !role) {
-                return res.status(400).json({
-                    message: 'Selected role does not exist'
-                });
+                return res.status(400).json({ message: 'Selected role does not exist' });
             }
 
-            // ----------------------------------------------------
-            // Check username
-            // ----------------------------------------------------
             const { data: existingUser, error: existingUserError } =
                 await supabase
                     .from('users')
@@ -248,73 +263,55 @@ router.post(
                     .maybeSingle();
 
             if (existingUserError) {
-                console.error(
-                    'Username check error:',
-                    existingUserError
-                );
-
-                return res.status(500).json({
-                    message: 'Failed to check username'
-                });
+                console.error('Username check error:', existingUserError);
+                return res.status(500).json({ message: 'Failed to check username' });
             }
 
             if (existingUser) {
-                return res.status(409).json({
-                    message: 'Username already exists'
-                });
+                return res.status(409).json({ message: 'Username already exists' });
             }
 
-            // ----------------------------------------------------
-            // Hash password
-            // ----------------------------------------------------
             const passwordHash = await bcrypt.hash(password, 10);
 
-            // ----------------------------------------------------
-            // Sector validation
-            // ----------------------------------------------------
             const allowedSectors = ['primary', 'secondary'];
-
-            const selectedSector = allowedSectors.includes(
-                String(sector || '').toLowerCase()
-            )
+            const selectedSector = allowedSectors.includes(String(sector || '').toLowerCase())
                 ? String(sector).toLowerCase()
                 : 'primary';
 
-            // ----------------------------------------------------
-            // Create user
-            // ----------------------------------------------------
+            const insertData = {
+                username: username.trim(),
+                full_name: full_name.trim(),
+                email: email ? email.trim() : null,
+                password_hash: passwordHash,
+                role_id: parsedRoleId,
+                is_active: is_active !== false,
+                sector: selectedSector,
+                created_at: new Date().toISOString()
+            };
+
+            // Link teacher_id if creating a teacher
+            if (parsedRoleId === 4 && teacher_id) {
+                insertData.teacher_id = Number(teacher_id);
+            }
+
+            // Link manager_id if creating a manager
+            if (parsedRoleId === 6 && manager_id) {
+                insertData.manager_id = Number(manager_id);
+            }
+
             const { data: user, error } = await supabase
                 .from('users')
-                .insert([
-                    {
-                        username: username.trim(),
-                        full_name: full_name.trim(),
-                        email: email ? email.trim() : null,
-                        password_hash: passwordHash,
-                        role_id: parsedRoleId,
-                        is_active: is_active !== false,
-                        sector: selectedSector,
-                        created_at: new Date().toISOString()
-                    }
-                ])
+                .insert([insertData])
                 .select()
                 .single();
 
             if (error) {
-                console.error(
-                    'User creation error:',
-                    error
-                );
-
+                console.error('User creation error:', error);
                 return res.status(500).json({
-                    message:
-                        'Failed to create user: ' + error.message
+                    message: 'Failed to create user: ' + error.message
                 });
             }
 
-            // ----------------------------------------------------
-            // Return created user
-            // ----------------------------------------------------
             res.status(201).json({
                 message: 'User created successfully',
 
@@ -326,19 +323,15 @@ router.post(
                     is_active: user.is_active,
                     role_id: user.role_id,
                     role_name: role.role_name,
-                    sector: user.sector || 'primary'
+                    sector: user.sector || 'primary',
+                    teacher_id: user.teacher_id || null,
+                    manager_id: user.manager_id || null
                 }
             });
 
         } catch (error) {
-            console.error(
-                'User creation error:',
-                error
-            );
-
-            res.status(500).json({
-                message: error.message
-            });
+            console.error('User creation error:', error);
+            res.status(500).json({ message: error.message });
         }
     }
 );
@@ -355,9 +348,7 @@ router.put(
             const userId = parseInt(req.params.id);
 
             if (isNaN(userId)) {
-                return res.status(400).json({
-                    message: 'Invalid user ID'
-                });
+                return res.status(400).json({ message: 'Invalid user ID' });
             }
 
             const {
@@ -367,12 +358,11 @@ router.put(
                 password,
                 role_id,
                 is_active,
-                sector
+                sector,
+                teacher_id,
+                manager_id
             } = req.body;
 
-            // ----------------------------------------------------
-            // Get existing user first
-            // ----------------------------------------------------
             const { data: existingUser, error: existingUserError } =
                 await supabase
                     .from('users')
@@ -384,204 +374,123 @@ router.put(
                         password_hash,
                         role_id,
                         is_active,
-                        sector
+                        sector,
+                        teacher_id,
+                        manager_id
                     `)
                     .eq('user_id', userId)
                     .single();
 
             if (existingUserError || !existingUser) {
-                return res.status(404).json({
-                    message: 'User not found'
-                });
+                return res.status(404).json({ message: 'User not found' });
             }
 
             const currentRoleId = Number(existingUser.role_id);
+            const isProtectedAccount = PROTECTED_ROLE_IDS.includes(currentRoleId);
 
-            // ----------------------------------------------------
-            // Determine whether this is a protected account
-            // ----------------------------------------------------
-            const isProtectedAccount =
-                PROTECTED_ROLE_IDS.includes(currentRoleId);
-
-            // ----------------------------------------------------
-            // Build update object WITHOUT destroying fields
-            // that were not supplied.
-            // ----------------------------------------------------
             const updateData = {};
 
-            // Username
             if (username !== undefined) {
                 if (!String(username).trim()) {
-                    return res.status(400).json({
-                        message: 'Username cannot be empty'
-                    });
+                    return res.status(400).json({ message: 'Username cannot be empty' });
                 }
-
                 updateData.username = String(username).trim();
             }
 
-            // Full name
             if (full_name !== undefined) {
                 if (!String(full_name).trim()) {
-                    return res.status(400).json({
-                        message: 'Full name cannot be empty'
-                    });
+                    return res.status(400).json({ message: 'Full name cannot be empty' });
                 }
-
                 updateData.full_name = String(full_name).trim();
             }
 
-            // Email
             if (email !== undefined) {
-                updateData.email = email
-                    ? String(email).trim()
-                    : null;
+                updateData.email = email ? String(email).trim() : null;
             }
 
-            // ----------------------------------------------------
-            // ROLE HANDLING
-            // ----------------------------------------------------
             if (role_id !== undefined && role_id !== null && role_id !== '') {
-
                 const newRoleId = parseInt(role_id);
 
                 if (isNaN(newRoleId)) {
-                    return res.status(400).json({
-                        message: 'Invalid role ID'
-                    });
+                    return res.status(400).json({ message: 'Invalid role ID' });
                 }
 
-                // Existing Proprietor/Administrator:
-                // role cannot be changed.
                 if (isProtectedAccount) {
-
                     if (newRoleId !== currentRoleId) {
                         return res.status(403).json({
-                            message:
-                                'The Proprietor and Administrator roles are protected and cannot be changed.'
+                            message: 'The Proprietor and Administrator roles are protected and cannot be changed.'
                         });
                     }
-
-                    // Keep original protected role
                     updateData.role_id = currentRoleId;
-
                 } else {
-
-                    // Normal user can only use normal roles
                     if (!ASSIGNABLE_ROLE_IDS.includes(newRoleId)) {
                         return res.status(403).json({
-                            message:
-                                'Users may only be assigned Manager, Finance Officer, Teacher, or Student.'
+                            message: 'Users may only be assigned Manager, Finance Officer, Teacher, or Student.'
                         });
                     }
-
-                    // Verify role exists
-                    const { data: role, error: roleError } =
-                        await supabase
-                            .from('user_roles')
-                            .select('role_id')
-                            .eq('role_id', newRoleId)
-                            .single();
+                    const { data: role, error: roleError } = await supabase
+                        .from('user_roles')
+                        .select('role_id')
+                        .eq('role_id', newRoleId)
+                        .single();
 
                     if (roleError || !role) {
-                        return res.status(400).json({
-                            message: 'Selected role does not exist'
-                        });
+                        return res.status(400).json({ message: 'Selected role does not exist' });
                     }
 
                     updateData.role_id = newRoleId;
                 }
-
             } else {
-
-                // If no role was supplied, KEEP current role.
                 updateData.role_id = currentRoleId;
             }
 
-            // ----------------------------------------------------
-            // Status
-            // ----------------------------------------------------
             if (is_active !== undefined) {
-                updateData.is_active =
-                    is_active === true ||
-                    is_active === 'true';
+                updateData.is_active = is_active === true || is_active === 'true';
             }
 
-            // ----------------------------------------------------
-            // Sector
-            // ----------------------------------------------------
             if (sector !== undefined) {
-
-                const allowedSectors = [
-                    'primary',
-                    'secondary'
-                ];
-
-                const selectedSector =
-                    String(sector).toLowerCase();
+                const allowedSectors = ['primary', 'secondary'];
+                const selectedSector = String(sector).toLowerCase();
 
                 if (!allowedSectors.includes(selectedSector)) {
-                    return res.status(400).json({
-                        message:
-                            'Invalid sector. Sector must be primary or secondary.'
-                    });
+                    return res.status(400).json({ message: 'Invalid sector. Sector must be primary or secondary.' });
                 }
 
                 updateData.sector = selectedSector;
             }
 
-            // ----------------------------------------------------
-            // Password
-            // ----------------------------------------------------
-            if (password !== undefined && password !== null && password !== '') {
-
-                if (password.length < 6) {
-                    return res.status(400).json({
-                        message:
-                            'Password must be at least 6 characters'
-                    });
-                }
-
-                updateData.password_hash =
-                    await bcrypt.hash(password, 10);
+            // Link teacher_id
+            if (teacher_id !== undefined) {
+                updateData.teacher_id = teacher_id ? Number(teacher_id) : null;
             }
 
-            // ----------------------------------------------------
-            // Updated timestamp
-            // ----------------------------------------------------
-            updateData.updated_at =
-                new Date().toISOString();
+            // Link manager_id
+            if (manager_id !== undefined) {
+                updateData.manager_id = manager_id ? Number(manager_id) : null;
+            }
 
-            // ----------------------------------------------------
-            // Prevent duplicate username
-            // ----------------------------------------------------
-            if (
-                updateData.username &&
-                updateData.username !== existingUser.username
-            ) {
+            if (password !== undefined && password !== null && password !== '') {
+                if (password.length < 6) {
+                    return res.status(400).json({ message: 'Password must be at least 6 characters' });
+                }
+                updateData.password_hash = await bcrypt.hash(password, 10);
+            }
 
-                const { data: duplicateUser } =
-                    await supabase
-                        .from('users')
-                        .select('user_id')
-                        .eq(
-                            'username',
-                            updateData.username
-                        )
-                        .neq('user_id', userId)
-                        .maybeSingle();
+            updateData.updated_at = new Date().toISOString();
+
+            if (updateData.username && updateData.username !== existingUser.username) {
+                const { data: duplicateUser } = await supabase
+                    .from('users')
+                    .select('user_id')
+                    .eq('username', updateData.username)
+                    .neq('user_id', userId)
+                    .maybeSingle();
 
                 if (duplicateUser) {
-                    return res.status(409).json({
-                        message:
-                            'Username already exists'
-                    });
+                    return res.status(409).json({ message: 'Username already exists' });
                 }
             }
 
-            // ----------------------------------------------------
-            // Update user
-            // ----------------------------------------------------
             const { data: user, error } = await supabase
                 .from('users')
                 .update(updateData)
@@ -590,31 +499,16 @@ router.put(
                 .single();
 
             if (error || !user) {
-
-                console.error(
-                    'User update error:',
-                    error
-                );
-
+                console.error('User update error:', error);
                 return res.status(500).json({
-                    message:
-                        'Failed to update user: ' +
-                        (error?.message || 'Unknown error')
+                    message: 'Failed to update user: ' + (error?.message || 'Unknown error')
                 });
             }
 
-            // ----------------------------------------------------
-            // Get role name
-            // ----------------------------------------------------
-            const roleName =
-                await getRoleName(user.role_id);
+            const roleName = await getRoleName(user.role_id);
 
-            // ----------------------------------------------------
-            // Return updated user
-            // ----------------------------------------------------
             res.json({
                 message: 'User updated successfully',
-
                 user: {
                     user_id: user.user_id,
                     username: user.username,
@@ -623,20 +517,15 @@ router.put(
                     is_active: user.is_active,
                     role_id: user.role_id,
                     role_name: roleName,
-                    sector: user.sector || 'primary'
+                    sector: user.sector || 'primary',
+                    teacher_id: user.teacher_id || null,
+                    manager_id: user.manager_id || null
                 }
             });
 
         } catch (error) {
-
-            console.error(
-                'User update error:',
-                error
-            );
-
-            res.status(500).json({
-                message: error.message
-            });
+            console.error('User update error:', error);
+            res.status(500).json({ message: error.message });
         }
     }
 );
@@ -653,44 +542,23 @@ router.delete(
             const userId = parseInt(req.params.id);
 
             if (isNaN(userId)) {
-                return res.status(400).json({
-                    message: 'Invalid user ID'
-                });
+                return res.status(400).json({ message: 'Invalid user ID' });
             }
 
-            // ----------------------------------------------------
-            // Prevent deleting yourself
-            // ----------------------------------------------------
             if (userId === req.user.user_id) {
-                return res.status(403).json({
-                    message:
-                        'You cannot delete your own account'
-                });
+                return res.status(403).json({ message: 'You cannot delete your own account' });
             }
 
-            // ----------------------------------------------------
-            // Check if user exists
-            // ----------------------------------------------------
-            const { data: existingUser, error: userError } =
-                await supabase
-                    .from('users')
-                    .select(`
-                        user_id,
-                        username,
-                        role_id
-                    `)
-                    .eq('user_id', userId)
-                    .single();
+            const { data: existingUser, error: userError } = await supabase
+                .from('users')
+                .select('user_id, username, role_id')
+                .eq('user_id', userId)
+                .single();
 
             if (userError || !existingUser) {
-                return res.status(404).json({
-                    message: 'User not found'
-                });
+                return res.status(404).json({ message: 'User not found' });
             }
 
-            // ----------------------------------------------------
-            // Delete user
-            // ----------------------------------------------------
             const { error } = await supabase
                 .from('users')
                 .delete()
@@ -700,20 +568,11 @@ router.delete(
                 throw error;
             }
 
-            res.json({
-                message: 'User deleted successfully'
-            });
+            res.json({ message: 'User deleted successfully' });
 
         } catch (error) {
-
-            console.error(
-                'User delete error:',
-                error
-            );
-
-            res.status(500).json({
-                message: error.message
-            });
+            console.error('User delete error:', error);
+            res.status(500).json({ message: error.message });
         }
     }
 );

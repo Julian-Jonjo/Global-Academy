@@ -12,7 +12,6 @@ const supabase = require('./Config/db');
 // ============================================================
 // ROUTES
 // ============================================================
-
 const authRoutes = require('./routes/auth');
 
 const studentRoutes = require('./routes/students');
@@ -35,9 +34,14 @@ const attendanceRoutes = require('./routes/attendance');
 // const teacherPortalRoutes = require('./routes/teacherPortal');
 
 const academicYearRoutes = require('./routes/academic-years');
+
 const userRoutes = require('./routes/users');
+
 const roleRoutes = require('./routes/roles');
+
 const permissionRoutes = require('./routes/permissions');
+
+const resultRoutes = require('./routes/results');
 
 
 // ============================================================
@@ -135,6 +139,7 @@ app.use(
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
+app.use('/api/results', resultRoutes);
 
 // ============================================================
 // ROOT API

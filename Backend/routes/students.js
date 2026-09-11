@@ -538,21 +538,20 @@ router.get(
                             guardian,
 
                         guardian_name:
-                            guardian
-                                ? [
-                                    guardian.first_name,
-                                    guardian.middle_name,
-                                    guardian.last_name
-                                ]
-                                    .filter(Boolean)
-                                    .join(' ')
-                                : null,
+                guardian?.full_name || null,
+
+                 guardian_relationship:
+                guardian?.relationship || null,
+
 
                         guardian_phone:
                             guardian?.phone || null,
 
                         guardian_email:
-                            guardian?.email || null
+                            guardian?.email || null,
+
+                             guardian_address:
+                guardian?.address || null,
                     };
                 });
 

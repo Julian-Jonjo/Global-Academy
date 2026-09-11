@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Results</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; }
+        .header { background: #1a3c6e; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header button { background: white; color: #1a3c6e; border: none; padding: 8px 15px; cursor: pointer; font-weight: bold; }
+        .container { max-width: 1500px; margin: 20px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        select, button { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; }
+        button { background: #1a3c6e; color: white; cursor: pointer; font-weight: bold; }
+        .section-title { font-size: 18px; margin: 20px 0 10px; color: #1a3c6e; font-weight: bold; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 12px; }
+        th { background: #1a3c6e; color: white; }
+        input[type="number"] { width: 60px; padding: 5px; text-align: center; }
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        .save-btn { background: #16a34a; color: white; }
+        .print-btn { background: #d4af37; color: #1a3c6e; }
+        .student-name { text-align: left; font-weight: bold; }
+        .no-photo { width: 100px; height: 120px; border: 2px solid #ddd; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #9ca3af; }
+        .student-photo { width: 100px; height: 120px; border: 2px solid #1a3c6e; object-fit: cover; display: block; }
+        .student-info { display: grid; grid-template-columns: 130px 1fr 1fr 1fr 1fr; gap: 10px; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; align-items: center; font-size: 13px; }
+        .student-info div span { color: #6b7280; font-weight: bold; display: block; font-size: 10px; }
+        .signature-section { margin-top: 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; text-align: center; }
+        .signature-section div { border-top: 1px solid #333; padding-top: 5px; font-size: 12px; font-weight: bold; }
+
+        @media print {
+            body { background: white; }
+            .header, .card, .btn-row { display: none !important; }
+            .container { padding: 0; }
+            #reportSheet { width: 100%; min-height: auto; box-shadow: none; border: none; padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h1>GLOBAL EDUCATION ACADEMY</h1>
+        <p style="font-size: 12px; color: #a0c4ff;">Results Management</p>
+    </div>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+
+    <!-- CONTROLS (Grade Entry & Report Card) -->
+    <div class="card" id="controlsCard">
+        <h3>Select Class & Term</h3>
+        <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+            <select id="classSelect" onchange="onClassChange()">
+                <option value="">Select Class</option>
+            </select>
+            <select id="subjectSelect" onchange="onSubjectChange()">
+                <option value="">Select Subject</option>
+            </select>
+            <select id="termSelect" onchange="loadView()">
+                <option value="1">Term 1</option>
+                <option value="2">Term 2</option>
+                <option value="3">Term 3</option>
+            </select>
+            <button class="print-btn" onclick="printPage()">🖨️ Print Report Card</button>
+            <button class="save-btn" onclick="saveGrades()">💾 Save Grades</button>
+        </div>
+    </div>
+
+    <!-- TEACHER GRADE ENTRY VIEW -->
+    <div class="card" id="gradeEntryView" style="display: none;">
+        <div class="section-title">Grade Entry (Test & Exam)</div>
+        <table id="gradeEntryTable">
+            <thead>
+                <tr>
+                    <th class="student-name">Student Name</th>
+                    <th colspan="2">Term 1</th>
+                    <th colspan="2">Term 2</th>
+                    <th colspan="2">Term 3</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>Test</th><th>Exam</th>
+                    <th>Test</th><th>Exam</th>
+                    <th>Test</th><th>Exam</th>
+                </tr>
+            </thead>
+            <tbody id="gradeEntryBody"></tbody>
+        </table>
+        <div class="btn-row">
+            <button class="save-btn" onclick="saveGrades()">💾 Save All Grades</button>
+        </div>
+    </div>
+
+    <!-- FULL REPORT CARD (For Class Masters/Admin/Manager) -->
+    <div id="reportSheet" style="display: none; width: 297mm; min-height: 210mm; background: white; margin: 0 auto; padding: 10mm; box-shadow: 0 0 20px rgba(0,0,0,0.2); border: 2px solid #1a3c6e; page-break-after: always;">
+        <div class="school-header" style="text-align: center; border-bottom: 3px solid #1a3c6e; padding-bottom: 10px; margin-bottom: 10px;">
+            <h1 style="color: #1a3c6e; font-size: 26px; margin-bottom: 5px;">GLOBAL EDUCATION ACADEMY</h1>
+            <h2 style="color: #d4af37; font-size: 18px; font-weight: 600;">STUDENT ACADEMIC REPORT CARD</h2>
+            <p style="font-size: 12px;">Academic Year: 2026 / 2027</p>
+        </div>
+
+        <div class="student-info">
+            <div id="photoContainer">
+                <div class="no-photo" id="noPhoto">👤</div>
+                <img class="student-photo" id="studentPhoto" style="display: none;" alt="Student Photo">
+            </div>
+            <div><span>STUDENT NAME:</span> <strong id="studentName">-</strong></div>
+            <div><span>AGE:</span> <strong id="studentAge">-</strong></div>
+            <div><span>CLASS:</span> <strong id="studentClass">-</strong></div>
+            <div><span>CLASS MASTER:</span> <strong id="studentClassMaster">-</strong></div>
+        </div>
+
+        <div id="reportTableContainer"></div>
+
+        <div class="signature-section">
+            <div>Class Master's Signature</div>
+            <div>Head Teacher's Signature</div>
+            <div>Parent/Guardian's Signature</div>
+        </div>
+    </div>
+
+    <!-- PENDING EDITS (For Managers only) -->
+    <div class="card" id="pendingEditsView" style="display: none;">
+        <div class="section-title">Pending Grade Edit Requests</div>
+        <table>
+            <thead><tr><th>Teacher</th><th>Student</th><th>Subject</th><th>Term</th><th>Test</th><th>Exam</th><th>Action</th></tr></thead>
+            <tbody id="pendingEditsBody"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    const token = sessionStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user');
+    if (!token || !userData) window.location.href = '/login.html';
+
+    const user = JSON.parse(userData);
+    const roleId = Number(user.role_id || 0);
+    const isTeacher = roleId === 4;
+    const isManager = roleId === 6;
+    const isAdmin = roleId === 1 || roleId === 2;
+
+    let selectedClassId = null;
+    let selectedSubjectId = null;
+    let teacherAssignments = [];
+    let allSubjects = [];
+    let currentStudents = [];
+    let allResults = [];
+
+    function logout() {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    async function loadClasses() {
+        const classSelect = document.getElementById('classSelect');
+        const subjectSelect = document.getElementById('subjectSelect');
+
+        if (isTeacher) {
+            const response = await fetch('/api/results/my-assignments', { headers: { 'Authorization': `Bearer ${token}` } });
+            teacherAssignments = await response.json();
+
+            // Unique classes
+            const classMap = new Map();
+            teacherAssignments.forEach(item => {
+                if (item.classes) classMap.set(item.classes.class_id, item.classes);
+            });
+            const classes = Array.from(classMap.values());
+            classes.forEach(cls => {
+                let option = document.createElement('option');
+                option.value = cls.class_id;
+                option.textContent = `${cls.class_name} ${cls.arm || ''}`;
+                classSelect.appendChild(option);
+            });
+
+            if (classes.length > 0) {
+                selectedClassId = classes[0].class_id;
+                classSelect.value = selectedClassId;
+                onClassChange();
+            }
+        } else {
+            // Class Master / Admin / Manager
+            const classMasterResponse = await fetch('/api/results/my-class', { headers: { 'Authorization': `Bearer ${token}` } });
+            const classMasterClass = await classMasterResponse.json();
+
+            if (classMasterClass && classMasterClass.class_id) {
+                classSelect.innerHTML = `<option value="${classMasterClass.class_id}">${classMasterClass.class_name} ${classMasterClass.arm || ''}</option>`;
+                selectedClassId = classMasterClass.class_id;
+                classSelect.value = selectedClassId;
+                onClassChange();
+            } else {
+                const response = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}` } });
+                const classes = await response.json();
+                classes.forEach(cls => {
+                    let option = document.createElement('option');
+                    option.value = cls.class_id;
+                    option.textContent = `${cls.class_name} ${cls.arm || ''}`;
+                    classSelect.appendChild(option);
+                });
+                if (classes.length > 0) {
+                    selectedClassId = classes[0].class_id;
+                    classSelect.value = selectedClassId;
+                    onClassChange();
+                }
+            }
+        }
+    }
+
+    async function onClassChange() {
+        selectedClassId = document.getElementById('classSelect').value;
+        if (!selectedClassId) return;
+
+        const subjectSelect = document.getElementById('subjectSelect');
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+
+        if (isTeacher) {
+            // Filter assignments for this class
+            const assignments = teacherAssignments.filter(a => a.class_id == selectedClassId);
+            assignments.forEach(item => {
+                let option = document.createElement('option');
+                option.value = item.subject_id;
+                option.textContent = item.subjects?.subject_name || 'Subject';
+                subjectSelect.appendChild(option);
+            });
+            if (assignments.length > 0) {
+                selectedSubjectId = assignments[0].subject_id;
+                subjectSelect.value = selectedSubjectId;
+                loadGradeEntryView();
+            }
+        } else {
+            // Full report: Load all subjects
+            const response = await fetch(`/api/results/subjects/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const subjects = await response.json();
+            subjects.forEach(item => {
+                let option = document.createElement('option');
+                option.value = item.subject_id;
+                option.textContent = item.subjects?.subject_name || 'Subject';
+                subjectSelect.appendChild(option);
+            });
+            subjectSelect.style.display = 'none'; // Hide subject selection for class master/admin
+            loadFullReportView();
+        }
+
+        // Load students
+        const studentsResp = await fetch(`/api/results/students/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        currentStudents = await studentsResp.json();
+    }
+
+    function onSubjectChange() {
+        selectedSubjectId = document.getElementById('subjectSelect').value;
+        if (selectedSubjectId) loadGradeEntryView();
+    }
+
+    async function loadGradeEntryView() {
+        document.getElementById('gradeEntryView').style.display = 'block';
+        document.getElementById('reportSheet').style.display = 'none';
+        document.getElementById('pendingEditsView').style.display = 'none';
+
+        if (!selectedClassId || !selectedSubjectId) return;
+
+        // Fetch grades for all 3 terms
+        const resultsResp = await fetch(`/api/results/all/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        allResults = await resultsResp.json();
+
+        const body = document.getElementById('gradeEntryBody');
+        body.innerHTML = '';
+
+        currentStudents.forEach(student => {
+            let row = `<tr><td class="student-name">${student.first_name} ${student.last_name}</td>`;
+            for (let term = 1; term <= 3; term++) {
+                const result = allResults.find(r => r.student_id == student.student_id && r.subject_id == selectedSubjectId && r.term == term);
+                const test = result?.test_score || 0;
+                const exam = result?.exam_score || 0;
+                row += `<td><input type="number" id="test_${student.student_id}_${term}" value="${test}" min="0" max="40"></td>`;
+                row += `<td><input type="number" id="exam_${student.student_id}_${term}" value="${exam}" min="0" max="60"></td>`;
+            }
+            row += `</tr>`;
+            body.innerHTML += row;
+        });
+    }
+
+    async function saveGrades() {
+        if (!selectedClassId || !selectedSubjectId) return;
+        const records = [];
+
+        currentStudents.forEach(student => {
+            for (let term = 1; term <= 3; term++) {
+                const test = Number(document.getElementById(`test_${student.student_id}_${term}`).value) || 0;
+                const exam = Number(document.getElementById(`exam_${student.student_id}_${term}`).value) || 0;
+                if (test > 0 || exam > 0) {
+                    records.push({ student_id: student.student_id, term: term, test_score: test, exam_score: exam });
+                }
+            }
+        });
+
+        const response = await fetch('/api/results/save', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ class_id: selectedClassId, subject_id: selectedSubjectId, term: 0, records })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Grades saved!');
+        } else {
+            alert(data.message || 'Failed to save grades');
+        }
+    }
+
+    async function loadFullReportView() {
+        document.getElementById('gradeEntryView').style.display = 'none';
+        document.getElementById('pendingEditsView').style.display = 'none';
+        document.getElementById('reportSheet').style.display = 'block';
+
+        // Load all results
+        const resultsResp = await fetch(`/api/results/all/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        allResults = await resultsResp.json();
+
+        const studentSelect = document.getElementById('studentSelect');
+        if (!studentSelect) {
+            // Create student selector for report view
+            const controls = document.getElementById('controlsCard');
+            let select = document.createElement('select');
+            select.id = 'studentSelect';
+            select.onchange = renderReportCard;
+            currentStudents.forEach(student => {
+                let option = document.createElement('option');
+                option.value = student.student_id;
+                option.textContent = `${student.first_name} ${student.last_name}`;
+                select.appendChild(option);
+            });
+            controls.appendChild(select);
+        }
+
+        renderReportCard();
+    }
+
+    async function renderReportCard() {
+        const studentId = document.getElementById('studentSelect').value;
+        if (!studentId) return;
+
+        const student = currentStudents.find(s => s.student_id == studentId);
+        const detailsResp = await fetch(`/api/results/student/${studentId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const details = await detailsResp.json();
+
+        document.getElementById('studentName').innerText = `${student.first_name} ${student.last_name}`;
+        document.getElementById('studentAge').innerText = calculateAge(details.date_of_birth);
+        document.getElementById('studentClass').innerText = document.getElementById('classSelect').selectedOptions[0].textContent;
+        
+        if (details.photo_url) {
+            document.getElementById('studentPhoto').src = details.photo_url;
+            document.getElementById('studentPhoto').style.display = 'block';
+            document.getElementById('noPhoto').style.display = 'none';
+        } else {
+            document.getElementById('studentPhoto').style.display = 'none';
+            document.getElementById('noPhoto').style.display = 'flex';
+        }
+
+        const container = document.getElementById('reportTableContainer');
+        let html = `<table><thead><tr>
+            <th rowspan="2" style="text-align:left;">SUBJECT</th>
+            <th colspan="4">TERM 1</th>
+            <th colspan="4">TERM 2</th>
+            <th colspan="4">TERM 3</th>
+            <th colspan="2">YEARLY</th>
+        </tr><tr>
+            <th>T</th><th>E</th><th>A</th><th>P</th>
+            <th>T</th><th>E</th><th>A</th><th>P</th>
+            <th>T</th><th>E</th><th>A</th><th>P</th>
+            <th>A</th><th>P</th>
+        </tr></thead><tbody>`;
+
+        // Build per subject
+        const subjectsResp = await fetch(`/api/results/subjects/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const subjects = await subjectsResp.json();
+        subjects.sort((a, b) => (a.subjects?.subject_name || '').localeCompare(b.subjects?.subject_name || ''));
+
+        let term1Totals = 0, term2Totals = 0, term3Totals = 0, count = 0;
+
+        subjects.forEach(subject => {
+            const sId = subject.subject_id;
+            const t1 = allResults.find(r => r.student_id == studentId && r.subject_id == sId && r.term == 1);
+            const t2 = allResults.find(r => r.student_id == studentId && r.subject_id == sId && r.term == 2);
+            const t3 = allResults.find(r => r.student_id == studentId && r.subject_id == sId && r.term == 3);
+
+            const t1T = t1?.test_score || 0;
+            const t1E = t1?.exam_score || 0;
+            const t1A = t1T + t1E;
+            const t2T = t2?.test_score || 0;
+            const t2E = t2?.exam_score || 0;
+            const t2A = t2T + t2E;
+            const t3T = t3?.test_score || 0;
+            const t3E = t3?.exam_score || 0;
+            const t3A = t3T + t3E;
+            const yearlyA = ((t1A + t2A + t3A) / 3).toFixed(2);
+
+            term1Totals += t1A;
+            term2Totals += t2A;
+            term3Totals += t3A;
+            count++;
+
+            html += `<tr>
+                <td style="text-align:left;">${subject.subjects?.subject_name}</td>
+                <td>${t1T}</td><td>${t1E}</td><td>${t1A}</td><td>-</td>
+                <td>${t2T}</td><td>${t2E}</td><td>${t2A}</td><td>-</td>
+                <td>${t3T}</td><td>${t3E}</td><td>${t3A}</td><td>-</td>
+                <td>${yearlyA}</td><td>-</td>
+            </tr>`;
+        });
+
+        const t1Avg = count > 0 ? (term1Totals / count).toFixed(2) : 0;
+        const t2Avg = count > 0 ? (term2Totals / count).toFixed(2) : 0;
+        const t3Avg = count > 0 ? (term3Totals / count).toFixed(2) : 0;
+        const yAvg = ((Number(t1Avg) + Number(t2Avg) + Number(t3Avg)) / 3).toFixed(2);
+
+        html += `<tr style="background:#f3f4f6; font-weight:bold;">
+            <td style="text-align:left;">OVERALL AVERAGE</td>
+            <td colspan="3">${t1Avg}</td><td>-</td>
+            <td colspan="3">${t2Avg}</td><td>-</td>
+            <td colspan="3">${t3Avg}</td><td>-</td>
+            <td>${yAvg}</td><td>-</td>
+        </tr>`;
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    function calculateAge(dob) {
+        if (!dob) return '-';
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+        return age;
+    }
+
+    function printPage() {
+        window.print();
+    }
+
+    loadClasses();
+</script>
+
+</body>
+</html>
