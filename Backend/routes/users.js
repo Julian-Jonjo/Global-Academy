@@ -55,19 +55,6 @@ router.get('/available-people', authenticateToken, requireRoles(1, 2, 6), async 
             return res.json(data || []);
         }
 
-        // Fetch Managers
-        if (role === '6' || role === 'manager') {
-            const { data, error } = await supabase
-                .from('users')
-                .select('user_id, full_name, sector, role_id')
-                .eq('role_id', 6)
-                .eq('sector', sector)
-                .not('full_name', 'is', null);
-
-            if (error) throw error;
-            return res.json(data || []);
-        }
-
         res.json([]);
     } catch (error) {
         console.error('AVAILABLE PEOPLE ERROR:', error);
@@ -97,7 +84,6 @@ router.get(
                     role_id,
                     sector,
                     teacher_id,
-                    manager_id,
                     user_roles!inner (
                         role_id,
                         role_name
@@ -118,8 +104,7 @@ router.get(
                 role_id: u.role_id,
                 role_name: u.user_roles?.role_name || 'No Role',
                 sector: u.sector || 'primary',
-                teacher_id: u.teacher_id || null,
-                manager_id: u.manager_id || null
+                teacher_id: u.teacher_id || null
             }));
 
             res.json(result);
@@ -159,7 +144,6 @@ router.get(
                     role_id,
                     sector,
                     teacher_id,
-                    manager_id,
                     user_roles!inner (
                         role_id,
                         role_name
@@ -183,8 +167,7 @@ router.get(
                 role_id: user.role_id,
                 role_name: user.user_roles?.role_name || 'No Role',
                 sector: user.sector || 'primary',
-                teacher_id: user.teacher_id || null,
-                manager_id: user.manager_id || null
+                teacher_id: user.teacher_id || null
             });
 
         } catch (error) {
@@ -211,8 +194,7 @@ router.post(
                 role_id,
                 is_active,
                 sector,
-                teacher_id,
-                manager_id
+                teacher_id
             } = req.body;
 
             if (!username || !full_name || !password || !role_id) {
@@ -294,11 +276,6 @@ router.post(
                 insertData.teacher_id = Number(teacher_id);
             }
 
-            // Link manager_id if creating a manager
-            if (parsedRoleId === 6 && manager_id) {
-                insertData.manager_id = Number(manager_id);
-            }
-
             const { data: user, error } = await supabase
                 .from('users')
                 .insert([insertData])
@@ -324,8 +301,7 @@ router.post(
                     role_id: user.role_id,
                     role_name: role.role_name,
                     sector: user.sector || 'primary',
-                    teacher_id: user.teacher_id || null,
-                    manager_id: user.manager_id || null
+                    teacher_id: user.teacher_id || null
                 }
             });
 
@@ -359,8 +335,7 @@ router.put(
                 role_id,
                 is_active,
                 sector,
-                teacher_id,
-                manager_id
+                teacher_id
             } = req.body;
 
             const { data: existingUser, error: existingUserError } =
@@ -375,8 +350,7 @@ router.put(
                         role_id,
                         is_active,
                         sector,
-                        teacher_id,
-                        manager_id
+                        teacher_id
                     `)
                     .eq('user_id', userId)
                     .single();
@@ -464,11 +438,6 @@ router.put(
                 updateData.teacher_id = teacher_id ? Number(teacher_id) : null;
             }
 
-            // Link manager_id
-            if (manager_id !== undefined) {
-                updateData.manager_id = manager_id ? Number(manager_id) : null;
-            }
-
             if (password !== undefined && password !== null && password !== '') {
                 if (password.length < 6) {
                     return res.status(400).json({ message: 'Password must be at least 6 characters' });
@@ -518,8 +487,7 @@ router.put(
                     role_id: user.role_id,
                     role_name: roleName,
                     sector: user.sector || 'primary',
-                    teacher_id: user.teacher_id || null,
-                    manager_id: user.manager_id || null
+                    teacher_id: user.teacher_id || null
                 }
             });
 
