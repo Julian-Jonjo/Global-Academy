@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Grade Entry</title>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; min-height: 100vh; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; position: relative; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 0; }
+
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; font-weight: 700; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; display: flex; align-items: center; gap: 15px; }
+        .user-info .role { display: block; font-weight: 600; font-size: 14px; }
+        .user-info .role-label { font-size: 11px; color: #a0c4ff; }
+        .logout-btn-header { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .logout-btn-header:hover { background: rgba(255,255,255,0.25); }
+
+        .container { max-width: 1200px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .page-header h2 { margin: 0 0 6px 0; color: #1f2937; }
+        .page-header p { margin: 0; color: #6b7280; }
+        .btn-group { display: flex; gap: 10px; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+        .back-btn:hover { background: #4b5563; }
+        .results-btn { background: #7c3aed; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .results-btn:hover { background: #6d28d9; }
+
+        .card { background: white; border-radius: 10px; padding: 22px; box-shadow: 0 3px 15px rgba(0,0,0,0.07); margin-bottom: 20px; }
+
+        .filters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field label { font-size: 12px; font-weight: bold; color: #4b5563; }
+        .form-field select { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; background: white; }
+        .form-field select:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26,60,110,0.1); }
+
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f9fafb; text-align: left; padding: 12px 10px; font-size: 12px; text-transform: uppercase; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
+        td { padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+        tr:hover td { background: #f9fafb; }
+
+        td input[type="number"] {
+            width: 90px;
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font: inherit;
+            text-align: center;
+        }
+        td input[type="number"]:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26,60,110,0.1); }
+        td.student-name { font-weight: 600; }
+
+        .save-btn { background: #16a34a; color: white; border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer; font-weight: bold; font-size: 15px; }
+        .save-btn:hover { background: #15803d; }
+        .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .message { padding: 14px; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 14px; }
+        .message-success { background: #dcfce7; color: #166534; display: block; }
+        .message-error { background: #fee2e2; color: #991b1b; display: block; }
+        .message-info { background: #dbeafe; color: #1e40af; display: block; }
+        .empty { text-align: center; padding: 40px; color: #6b7280; }
+
+        .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; gap: 10px; }
+        .hint { font-size: 12px; color: #6b7280; }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>Grade Entry</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <div>
+                <span class="role" id="userRole"></span>
+                <span class="role-label" id="userRoleLabel"></span>
+            </div>
+            <button class="logout-btn-header" onclick="logout()">🚪 Logout</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <div>
+                <h2>📝 Grade Entry</h2>
+                <p>Select a class, subject, and term to enter Test and Exam scores.</p>
+            </div>
+            <div class="btn-group">
+                <button class="back-btn" onclick="goBack()">← Back</button>
+                <button class="results-btn" onclick="window.location.href='results.html'">📄 View Results</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div id="message" class="message"></div>
+
+            <div class="filters">
+                <div class="form-field">
+                    <label>Class *</label>
+                    <select id="classSelect" onchange="onClassChange()"><option value="">Loading…</option></select>
+                </div>
+                <div class="form-field">
+                    <label>Subject *</label>
+                    <select id="subjectSelect" onchange="onSubjectChange()"><option value="">Select a class first</option></select>
+                </div>
+                <div class="form-field">
+                    <label>Term *</label>
+                    <select id="termSelect" onchange="onTermChange()"><option value="">Loading…</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div id="tableWrapper">
+                <div class="empty">Select a class, subject, and term to see students.</div>
+            </div>
+            <div class="actions-bar" id="actionsBar" style="display: none;">
+                <span class="hint">Enter Test and Exam scores (0–100) for each student.</span>
+                <button class="save-btn" id="saveBtn" onclick="saveGrades()">Save Grades</button>
+            </div>
+        </div>
+    </main>
+
+<script>
+    const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user') || localStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
+
+    let user = null;
+    try { user = JSON.parse(userData); }
+    catch (e) {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    const roleId = Number(user.role_id);
+    const ROLE_PROPRIETOR = 1, ROLE_ADMINISTRATOR = 2, ROLE_MANAGER = 6, ROLE_TEACHER = 4;
+
+    const allowed = [ROLE_PROPRIETOR, ROLE_ADMINISTRATOR, ROLE_MANAGER, ROLE_TEACHER];
+    if (!allowed.includes(roleId)) {
+        alert('Access denied.');
+        window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('userRole').textContent = user.full_name || 'User';
+    document.getElementById('userRoleLabel').textContent = user.role_name || '';
+
+    function logout() {
+        sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user');
+        localStorage.removeItem('authToken'); localStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    function goBack() {
+        if (roleId === ROLE_TEACHER) window.location.href = 'teachers-dashboard.html';
+        else window.location.href = 'dashboard.html';
+    }
+
+    function escapeHtml(v) {
+        if (v === null || v === undefined) return '';
+        return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    function showMessage(text, kind) {
+        const el = document.getElementById('message');
+        el.textContent = text;
+        el.className = 'message ' + (kind === 'error' ? 'message-error' : kind === 'info' ? 'message-info' : 'message-success');
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    let classes = [];
+    let myAssignments = [];
+    let subjects = [];
+    let terms = [];
+    let students = [];
+    let existingResults = [];
+
+    // ==========================================
+    // INIT
+    // ==========================================
+    async function loadInitial() {
+        try {
+            const tRes = await fetch('/api/terms', { headers: { 'Authorization': `Bearer ${token}` } });
+            terms = tRes.ok ? await tRes.json() : [];
+            const termSel = document.getElementById('termSelect');
+            termSel.innerHTML = '';
+            terms.forEach(t => {
+                const o = document.createElement('option');
+                o.value = t.term_id;
+                o.textContent = t.term_name;
+                termSel.appendChild(o);
+            });
+            const currentTerm = terms.find(t => t.is_current) || terms[0];
+            if (currentTerm) termSel.value = currentTerm.term_id;
+
+            await loadClasses();
+        } catch (err) {
+            showMessage('Failed to load page: ' + err.message, 'error');
+        }
+    }
+
+    async function loadClasses() {
+        const classSel = document.getElementById('classSelect');
+        classSel.innerHTML = '<option value="">Loading…</option>';
+
+        if (roleId === ROLE_TEACHER) {
+            const aRes = await fetch('/api/results/my-assignments', { headers: { 'Authorization': `Bearer ${token}` } });
+            myAssignments = aRes.ok ? await aRes.json() : [];
+
+            const map = new Map();
+            myAssignments.forEach(a => {
+                if (a.classes?.class_id) {
+                    map.set(a.classes.class_id, {
+                        class_id: a.classes.class_id,
+                        class_name: a.classes.class_name,
+                        arm: a.classes.arm
+                    });
+                }
+            });
+
+            const mRes = await fetch('/api/results/my-class', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (mRes.ok) {
+                const myClass = await mRes.json();
+                if (myClass?.class_id) {
+                    map.set(myClass.class_id, {
+                        class_id: myClass.class_id,
+                        class_name: myClass.class_name,
+                        arm: myClass.arm
+                    });
+                }
+            }
+
+            classes = Array.from(map.values());
+        } else {
+            const cRes = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}` } });
+            classes = cRes.ok ? await cRes.json() : [];
+        }
+
+        classSel.innerHTML = '<option value="">Select a class</option>';
+        classes.forEach(c => {
+            const o = document.createElement('option');
+            o.value = c.class_id;
+            o.textContent = `${c.class_name}${c.arm ? ' ' + c.arm : ''}`;
+            classSel.appendChild(o);
+        });
+    }
+
+    // ==========================================
+    // CHANGE HANDLERS
+    // ==========================================
+    async function onClassChange() {
+        const classId = document.getElementById('classSelect').value;
+        const subjSel = document.getElementById('subjectSelect');
+        subjSel.innerHTML = '<option value="">Loading…</option>';
+
+        resetTable();
+
+        if (!classId) {
+            subjSel.innerHTML = '<option value="">Select a class first</option>';
+            return;
+        }
+
+        if (roleId === ROLE_TEACHER) {
+            const list = myAssignments
+                .filter(a => Number(a.class_id) === Number(classId))
+                .map(a => ({
+                    subject_id: a.subject_id,
+                    subject_name: a.subjects?.subject_name || 'Subject'
+                }));
+
+            const uniq = new Map();
+            list.forEach(s => uniq.set(s.subject_id, s));
+            subjects = Array.from(uniq.values());
+
+            const mRes = await fetch('/api/results/my-class', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (mRes.ok) {
+                const myClass = await mRes.json();
+                if (myClass?.class_id && Number(myClass.class_id) === Number(classId)) {
+                    const allRes = await fetch(`/api/results/subjects/${classId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (allRes.ok) {
+                        const allSubs = await allRes.json();
+                        allSubs.forEach(s => {
+                            if (!uniq.has(s.subject_id)) {
+                                uniq.set(s.subject_id, {
+                                    subject_id: s.subject_id,
+                                    subject_name: s.subjects?.subject_name || 'Subject'
+                                });
+                            }
+                        });
+                        subjects = Array.from(uniq.values());
+                    }
+                }
+            }
+        } else {
+            const sRes = await fetch(`/api/results/subjects/${classId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const list = sRes.ok ? await sRes.json() : [];
+            const uniq = new Map();
+            list.forEach(s => {
+                uniq.set(s.subject_id, {
+                    subject_id: s.subject_id,
+                    subject_name: s.subjects?.subject_name || 'Subject'
+                });
+            });
+            subjects = Array.from(uniq.values());
+        }
+
+        subjSel.innerHTML = '<option value="">Select a subject</option>';
+        subjects.forEach(s => {
+            const o = document.createElement('option');
+            o.value = s.subject_id;
+            o.textContent = s.subject_name;
+            subjSel.appendChild(o);
+        });
+    }
+
+    async function onSubjectChange() {
+        resetTable();
+        await loadGrid();
+    }
+
+    async function onTermChange() {
+        resetTable();
+        await loadGrid();
+    }
+
+    function resetTable() {
+        document.getElementById('tableWrapper').innerHTML = '<div class="empty">Select a class, subject, and term to see students.</div>';
+        document.getElementById('actionsBar').style.display = 'none';
+    }
+
+    // ==========================================
+    // LOAD GRID
+    // ==========================================
+    async function loadGrid() {
+        const classId = document.getElementById('classSelect').value;
+        const subjectId = document.getElementById('subjectSelect').value;
+        const termId = document.getElementById('termSelect').value;
+
+        if (!classId || !subjectId || !termId) return;
+
+        const wrapper = document.getElementById('tableWrapper');
+        wrapper.innerHTML = '<div class="empty">Loading students…</div>';
+
+        try {
+            const sRes = await fetch(`/api/results/students/${classId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!sRes.ok) throw new Error('Failed to load students');
+            students = await sRes.json();
+
+            const rRes = await fetch(`/api/results/subject/${classId}/${subjectId}/${termId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            existingResults = rRes.ok ? await rRes.json() : [];
+
+            const existingByStudent = new Map();
+            existingResults.forEach(r => existingByStudent.set(Number(r.student_id), r));
+
+            if (!students.length) {
+                wrapper.innerHTML = '<div class="empty">No active students in this class.</div>';
+                return;
+            }
+
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th style="width:50px;">#</th>
+                        <th>Student Name</th>
+                        <th style="width:120px;">Test Score</th>
+                        <th style="width:120px;">Exam Score</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            students.forEach((s, i) => {
+                const ex = existingByStudent.get(Number(s.student_id));
+                const t = ex?.test_score ?? '';
+                const e = ex?.exam_score ?? '';
+
+                html += `<tr data-student-id="${s.student_id}">
+                    <td>${i + 1}</td>
+                    <td class="student-name">${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</td>
+                    <td><input type="number" min="0" max="100" class="test-input" value="${t}"></td>
+                    <td><input type="number" min="0" max="100" class="exam-input" value="${e}"></td>
+                </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            wrapper.innerHTML = html;
+
+            document.getElementById('actionsBar').style.display = 'flex';
+        } catch (err) {
+            wrapper.innerHTML = `<div class="empty">Error: ${escapeHtml(err.message)}</div>`;
+        }
+    }
+
+    // ==========================================
+    // SAVE
+    // ==========================================
+    async function saveGrades() {
+        const classId = document.getElementById('classSelect').value;
+        const subjectId = document.getElementById('subjectSelect').value;
+        const termId = document.getElementById('termSelect').value;
+
+        if (!classId || !subjectId || !termId) {
+            showMessage('Select a class, subject, and term.', 'error');
+            return;
+        }
+
+        const rows = document.querySelectorAll('#tableWrapper tbody tr');
+        const records = [];
+
+        rows.forEach(row => {
+            const studentId = Number(row.dataset.studentId);
+            const tRaw = row.querySelector('.test-input').value;
+            const eRaw = row.querySelector('.exam-input').value;
+
+            if (tRaw === '' && eRaw === '') return;
+
+            records.push({
+                student_id: studentId,
+                test_score: Number(tRaw) || 0,
+                exam_score: Number(eRaw) || 0
+            });
+        });
+
+        if (!records.length) {
+            showMessage('No scores entered yet.', 'error');
+            return;
+        }
+
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving…';
+
+        try {
+            const res = await fetch('/api/results/save', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    class_id: Number(classId),
+                    subject_id: Number(subjectId),
+                    term: Number(termId),
+                    records
+                })
+            });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.message || 'Failed to save');
+
+            showMessage(result.message || 'Grades saved successfully.', 'success');
+            await loadGrid();
+        } catch (err) {
+            showMessage(err.message, 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Grades';
+        }
+    }
+
+    loadInitial();
+</script>
+
+</body>
+</html>

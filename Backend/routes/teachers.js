@@ -409,9 +409,16 @@ router.get(
 // PUBLIC ROUTE
 // ============================================================
 
+const applyUpload = upload.fields([
+    { name: 'photo', maxCount: 1 },
+    { name: 'id_card', maxCount: 1 },
+    { name: 'application_letter', maxCount: 1 },
+    { name: 'certificates', maxCount: 20 }
+]);
+
 router.post(
     '/apply',
-    upload.single('application_document'),
+    applyUpload,
     async (req, res) => {
 
         try {
@@ -423,53 +430,47 @@ router.post(
                 middle_name,
                 last_name,
                 gender,
-                date_of_birth,
                 phone,
                 email,
                 address,
-                qualification,
-                specialization,
-                years_experience,
-                previous_school,
                 school_section,
-                department,
-                subject,
-                class_name,
-                notes
+                employment_type
             } = body;
 
-            if (
-                !first_name ||
-                !last_name ||
-                !school_section
-            ) {
+            if (!first_name || !last_name || !school_section) {
                 return res.status(400).json({
-                    message:
-                        'First name, last name and school section are required.'
+                    message: 'First name, last name and school section are required.'
                 });
             }
 
-
-            const sector =
-                getSectorFromSchoolSection(
-                    school_section
-                );
+            const sector = getSectorFromSchoolSection(school_section);
 
             if (!sector) {
                 return res.status(400).json({
-                    message:
-                        'Invalid school section.'
+                    message: 'Invalid school section.'
                 });
             }
 
+            const files = req.files || {};
 
-            let applicationDocument = null;
+            const photoUrl = files.photo && files.photo[0]
+                ? `/uploads/teacher-applications/${files.photo[0].filename}`
+                : null;
 
-            if (req.file) {
-                applicationDocument =
-                    `/uploads/teacher-applications/${req.file.filename}`;
-            }
+            const idCardUrl = files.id_card && files.id_card[0]
+                ? `/uploads/teacher-applications/${files.id_card[0].filename}`
+                : null;
 
+            const applicationLetterUrl = files.application_letter && files.application_letter[0]
+                ? `/uploads/teacher-applications/${files.application_letter[0].filename}`
+                : null;
+
+            const certificateFiles = files.certificates || [];
+            const certificatesUrl = certificateFiles.length
+                ? certificateFiles
+                    .map(f => `/uploads/teacher-applications/${f.filename}`)
+                    .join(',')
+                : null;
 
             const { data, error } = await supabase
                 .from('teacher_applications')
@@ -478,58 +479,39 @@ router.post(
                     middle_name: middle_name || null,
                     last_name,
                     gender: gender || null,
-                    date_of_birth: date_of_birth || null,
                     phone: phone || null,
                     email: email || null,
                     address: address || null,
-                    qualification: qualification || null,
-                    specialization: specialization || null,
-                    years_experience: years_experience || null,
-                    previous_school: previous_school || null,
                     school_section,
-                    department: department || null,
-                    subject: subject || null,
-                    class_name: class_name || null,
-                    notes: notes || null,
-                    application_document: applicationDocument,
-                    application_status: 'Pending'
+                    employment_type: employment_type || 'Permanent',
+                    id_card_url: idCardUrl,
+                    application_letter_url: applicationLetterUrl,
+                    certificates_url: certificatesUrl,
+                    photo_url: photoUrl,
+                    status: 'Pending'
                 }])
                 .select()
                 .single();
 
             if (error) {
-                console.error(
-                    'TEACHER APPLICATION ERROR:',
-                    error
-                );
-
+                console.error('TEACHER APPLICATION ERROR:', error);
                 return res.status(500).json({
-                    message:
-                        'Failed to submit teacher application',
+                    message: 'Failed to submit teacher application',
                     error: error.message
                 });
             }
 
             res.status(201).json({
-                message:
-                    'Teacher application submitted successfully.',
+                message: 'Teacher application submitted successfully.',
                 application: data
             });
 
         } catch (error) {
-
-            console.error(
-                'TEACHER APPLICATION EXCEPTION:',
-                error
-            );
-
-            res.status(500).json({
-                message: 'Server error'
-            });
+            console.error('TEACHER APPLICATION EXCEPTION:', error);
+            res.status(500).json({ message: 'Server error' });
         }
     }
 );
-
 
 // ============================================================
 // GET TEACHER APPLICATIONS

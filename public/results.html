@@ -1,450 +1,681 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Education Academy | Results</title>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; }
-        .header { background: #1a3c6e; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .header button { background: white; color: #1a3c6e; border: none; padding: 8px 15px; cursor: pointer; font-weight: bold; }
-        .container { max-width: 1500px; margin: 20px auto; padding: 0 20px; }
-        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        select, button { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; }
-        button { background: #1a3c6e; color: white; cursor: pointer; font-weight: bold; }
-        .section-title { font-size: 18px; margin: 20px 0 10px; color: #1a3c6e; font-weight: bold; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 12px; }
-        th { background: #1a3c6e; color: white; }
-        input[type="number"] { width: 60px; padding: 5px; text-align: center; }
-        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
-        .save-btn { background: #16a34a; color: white; }
-        .print-btn { background: #d4af37; color: #1a3c6e; }
-        .student-name { text-align: left; font-weight: bold; }
-        .no-photo { width: 100px; height: 120px; border: 2px solid #ddd; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #9ca3af; }
-        .student-photo { width: 100px; height: 120px; border: 2px solid #1a3c6e; object-fit: cover; display: block; }
-        .student-info { display: grid; grid-template-columns: 130px 1fr 1fr 1fr 1fr; gap: 10px; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; align-items: center; font-size: 13px; }
-        .student-info div span { color: #6b7280; font-weight: bold; display: block; font-size: 10px; }
-        .signature-section { margin-top: 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; text-align: center; }
-        .signature-section div { border-top: 1px solid #333; padding-top: 5px; font-size: 12px; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; min-height: 100vh; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; position: relative; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 0; }
+
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; font-weight: 700; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; display: flex; align-items: center; gap: 15px; }
+        .user-info .role { display: block; font-weight: 600; font-size: 14px; }
+        .user-info .role-label { font-size: 11px; color: #a0c4ff; }
+        .logout-btn-header { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .logout-btn-header:hover { background: rgba(255,255,255,0.25); }
+
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .page-header h2 { margin: 0 0 6px 0; color: #1f2937; }
+        .page-header p { margin: 0; color: #6b7280; }
+        .btn-group { display: flex; gap: 10px; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .back-btn:hover { background: #4b5563; }
+        .grades-btn { background: #7c3aed; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .grades-btn:hover { background: #6d28d9; }
+
+        .card { background: white; border-radius: 10px; padding: 22px; box-shadow: 0 3px 15px rgba(0,0,0,0.07); margin-bottom: 20px; }
+
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field label { font-size: 12px; font-weight: bold; color: #4b5563; }
+        .form-field select { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; background: white; }
+        .form-field select:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26,60,110,0.1); }
+
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f9fafb; text-align: left; padding: 12px 10px; font-size: 12px; text-transform: uppercase; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
+        td { padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+        tr:hover td { background: #f9fafb; }
+
+        .btn { border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn:hover { opacity: 0.9; }
+        .view-btn { background: #1a3c6e; color: white; }
+
+        .message { padding: 14px; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 14px; }
+        .message-success { background: #dcfce7; color: #166534; display: block; }
+        .message-error { background: #fee2e2; color: #991b1b; display: block; }
+        .empty { text-align: center; padding: 40px; color: #6b7280; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; overflow-y: auto; padding: 20px; }
+        .modal.open { display: block; }
+
+        .report-card {
+            background: white;
+            width: 1120px;
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 18px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .report-toolbar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px; }
+        .print-btn { background: #16a34a; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+        .close-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; }
+
+        /* Compact letterhead */
+        .rc-letterhead {
+            display: grid;
+            grid-template-columns: 55px 1fr 100px;
+            gap: 15px;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #1a3c6e;
+            margin-bottom: 10px;
+        }
+        .rc-lh-logo { width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; }
+        .rc-lh-logo img { width: 100%; height: 100%; object-fit: contain; }
+        .rc-lh-center { text-align: center; line-height: 1.15; }
+        .rc-lh-center h1 { font-size: 18px; color: #1a3c6e; letter-spacing: 1px; margin-bottom: 2px; font-weight: 800; }
+        .rc-lh-center .sub { font-size: 11px; color: #4b5563; }
+        .rc-lh-center .sub strong { color: #1a3c6e; }
+        .rc-lh-photo {
+            width: 85px;
+            height: 100px;
+            border: 1.5px solid #1a3c6e;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f3f4f6;
+            font-size: 10px;
+            color: #6b7280;
+        }
+        .rc-lh-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+        .rc-info-strip {
+            display: grid;
+            grid-template-columns: 1.2fr 1.2fr 1fr 1fr;
+            gap: 6px 16px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            padding: 6px 10px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+        .rc-info-strip .item { display: flex; gap: 5px; }
+        .rc-info-strip .item .label { font-weight: bold; color: #4b5563; }
+        .rc-info-strip .item .value { color: #111827; }
+
+        .rc-title {
+            text-align: center;
+            margin: 8px 0;
+            font-size: 13px;
+            font-weight: bold;
+            color: #1a3c6e;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .rc-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-bottom: 12px; }
+        .rc-table th, .rc-table td { border: 1px solid #b8c0cc; padding: 4px 5px; text-align: center; }
+        .rc-table th { background: #1a3c6e; color: white; font-weight: bold; font-size: 10.5px; letter-spacing: 0.3px; }
+        .rc-table th.sub { background: #2f5588; font-size: 10px; }
+        .rc-table td.subject-name { text-align: left; font-weight: 600; color: #1f2937; padding-left: 8px; }
+        .rc-table tr:nth-child(even) td { background: #f9fafb; }
+        .rc-table td.pos { font-weight: bold; color: #166534; }
+        .rc-table td.avg { font-weight: bold; color: #1a3c6e; background: #eef2ff; }
+
+        .rc-bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .term-block { border: 1px solid #1a3c6e; border-radius: 5px; padding: 8px 10px; font-size: 11.5px; }
+        .term-block h4 { color: #1a3c6e; font-size: 12px; margin-bottom: 5px; padding-bottom: 3px; border-bottom: 1px solid #d1d5db; letter-spacing: 0.3px; text-transform: uppercase; }
+        .term-block .row { display: flex; justify-content: space-between; padding: 2px 0; }
+        .term-block .row .label { font-weight: bold; color: #4b5563; }
+        .term-block .comment-box { margin-top: 6px; }
+        .term-block .comment-box .label { font-weight: bold; color: #4b5563; font-size: 10.5px; margin-bottom: 3px; display: block; }
+        .term-block .comment-box textarea {
+            width: 100%;
+            min-height: 44px;
+            padding: 5px;
+            font-size: 11.5px;
+            font-family: inherit;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .term-block .comment-box .comment-text {
+            padding: 5px;
+            background: #f9fafb;
+            border-radius: 4px;
+            font-style: italic;
+            font-size: 11.5px;
+            min-height: 32px;
+            color: #374151;
+        }
+        .term-block .save-comment {
+            margin-top: 5px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 10.5px;
+            font-weight: bold;
+        }
+
+        .rc-verdict { border: 1px solid #1a3c6e; border-radius: 5px; padding: 8px 10px; font-size: 11.5px; }
+        .rc-verdict h4 { color: #1a3c6e; font-size: 12px; margin-bottom: 5px; letter-spacing: 0.3px; text-transform: uppercase; }
+        .rc-verdict textarea {
+            width: 100%;
+            min-height: 40px;
+            padding: 5px;
+            font-size: 11.5px;
+            font-family: inherit;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .rc-verdict .comment-text {
+            padding: 5px;
+            background: #f9fafb;
+            border-radius: 4px;
+            font-style: italic;
+            font-size: 11.5px;
+            min-height: 28px;
+            color: #374151;
+        }
+        .rc-verdict .save-comment {
+            margin-top: 5px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
 
         @media print {
-            body { background: white; }
-            .header, .card, .btn-row { display: none !important; }
-            .container { padding: 0; }
-            #reportSheet { width: 100%; min-height: auto; box-shadow: none; border: none; padding: 0; margin: 0; }
+            body::before { display: none; }
+            .header, .container, .logout-btn-header { display: none !important; }
+            .modal { position: static; background: white; padding: 0; overflow: visible; }
+            .report-card { box-shadow: none; margin: 0; width: 100%; max-width: 100%; padding: 10px; border-radius: 0; }
+            .report-toolbar { display: none; }
+            @page { size: A4 landscape; margin: 6mm; }
         }
     </style>
 </head>
+
 <body>
 
-<div class="header">
-    <div>
-        <h1>GLOBAL EDUCATION ACADEMY</h1>
-        <p style="font-size: 12px; color: #a0c4ff;">Results Management</p>
-    </div>
-    <button onclick="logout()">Logout</button>
-</div>
-
-<div class="container">
-
-    <!-- CONTROLS (Grade Entry & Report Card) -->
-    <div class="card" id="controlsCard">
-        <h3>Select Class & Term</h3>
-        <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
-            <select id="classSelect" onchange="onClassChange()">
-                <option value="">Select Class</option>
-            </select>
-            <select id="subjectSelect" onchange="onSubjectChange()">
-                <option value="">Select Subject</option>
-            </select>
-            <select id="termSelect" onchange="loadView()">
-                <option value="1">Term 1</option>
-                <option value="2">Term 2</option>
-                <option value="3">Term 3</option>
-            </select>
-            <button class="print-btn" onclick="printPage()">🖨️ Print Report Card</button>
-            <button class="save-btn" onclick="saveGrades()">💾 Save Grades</button>
-        </div>
-    </div>
-
-    <!-- TEACHER GRADE ENTRY VIEW -->
-    <div class="card" id="gradeEntryView" style="display: none;">
-        <div class="section-title">Grade Entry (Test & Exam)</div>
-        <table id="gradeEntryTable">
-            <thead>
-                <tr>
-                    <th class="student-name">Student Name</th>
-                    <th colspan="2">Term 1</th>
-                    <th colspan="2">Term 2</th>
-                    <th colspan="2">Term 3</th>
-                </tr>
-                <tr>
-                    <th></th>
-                    <th>Test</th><th>Exam</th>
-                    <th>Test</th><th>Exam</th>
-                    <th>Test</th><th>Exam</th>
-                </tr>
-            </thead>
-            <tbody id="gradeEntryBody"></tbody>
-        </table>
-        <div class="btn-row">
-            <button class="save-btn" onclick="saveGrades()">💾 Save All Grades</button>
-        </div>
-    </div>
-
-    <!-- FULL REPORT CARD (For Class Masters/Admin/Manager) -->
-    <div id="reportSheet" style="display: none; width: 297mm; min-height: 210mm; background: white; margin: 0 auto; padding: 10mm; box-shadow: 0 0 20px rgba(0,0,0,0.2); border: 2px solid #1a3c6e; page-break-after: always;">
-        <div class="school-header" style="text-align: center; border-bottom: 3px solid #1a3c6e; padding-bottom: 10px; margin-bottom: 10px;">
-            <h1 style="color: #1a3c6e; font-size: 26px; margin-bottom: 5px;">GLOBAL EDUCATION ACADEMY</h1>
-            <h2 style="color: #d4af37; font-size: 18px; font-weight: 600;">STUDENT ACADEMIC REPORT CARD</h2>
-            <p style="font-size: 12px;">Academic Year: 2026 / 2027</p>
-        </div>
-
-        <div class="student-info">
-            <div id="photoContainer">
-                <div class="no-photo" id="noPhoto">👤</div>
-                <img class="student-photo" id="studentPhoto" style="display: none;" alt="Student Photo">
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
             </div>
-            <div><span>STUDENT NAME:</span> <strong id="studentName">-</strong></div>
-            <div><span>AGE:</span> <strong id="studentAge">-</strong></div>
-            <div><span>CLASS:</span> <strong id="studentClass">-</strong></div>
-            <div><span>CLASS MASTER:</span> <strong id="studentClassMaster">-</strong></div>
+            <div class="header-title">
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>Results</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <div>
+                <span class="role" id="userRole"></span>
+                <span class="role-label" id="userRoleLabel"></span>
+            </div>
+            <button class="logout-btn-header" onclick="logout()">🚪 Logout</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <div>
+                <h2>📄 Results</h2>
+                <p>Select a class to see its students, then click View to open a report card.</p>
+            </div>
+            <div class="btn-group">
+                <button class="back-btn" onclick="goBack()">← Back</button>
+                <button class="grades-btn" onclick="window.location.href='grades.html'">📝 Grade Entry</button>
+            </div>
         </div>
 
-        <div id="reportTableContainer"></div>
+        <div class="card">
+            <div id="message" class="message"></div>
+            <div class="filters">
+                <div class="form-field">
+                    <label>Class *</label>
+                    <select id="classSelect" onchange="onClassChange()"><option value="">Loading…</option></select>
+                </div>
+            </div>
+        </div>
 
-        <div class="signature-section">
-            <div>Class Master's Signature</div>
-            <div>Head Teacher's Signature</div>
-            <div>Parent/Guardian's Signature</div>
+        <div class="card">
+            <div id="studentsWrapper">
+                <div class="empty">Select a class to see students.</div>
+            </div>
+        </div>
+    </main>
+
+    <div id="reportModal" class="modal">
+        <div class="report-card" id="reportCardContent">
+            <div class="report-toolbar">
+                <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+                <button class="close-btn" onclick="closeReport()">✕ Close</button>
+            </div>
+            <div id="reportBody">
+                <div class="empty">Loading report…</div>
+            </div>
         </div>
     </div>
-
-    <!-- PENDING EDITS (For Managers only) -->
-    <div class="card" id="pendingEditsView" style="display: none;">
-        <div class="section-title">Pending Grade Edit Requests</div>
-        <table>
-            <thead><tr><th>Teacher</th><th>Student</th><th>Subject</th><th>Term</th><th>Test</th><th>Exam</th><th>Action</th></tr></thead>
-            <tbody id="pendingEditsBody"></tbody>
-        </table>
-    </div>
-
-</div>
 
 <script>
-    const token = sessionStorage.getItem('authToken');
-    const userData = sessionStorage.getItem('user');
-    if (!token || !userData) window.location.href = '/login.html';
+    const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user') || localStorage.getItem('user');
+    if (!token || !userData) { window.location.href = '/login.html'; }
 
-    const user = JSON.parse(userData);
-    const roleId = Number(user.role_id || 0);
-    const isTeacher = roleId === 4;
-    const isManager = roleId === 6;
-    const isAdmin = roleId === 1 || roleId === 2;
-
-    let selectedClassId = null;
-    let selectedSubjectId = null;
-    let teacherAssignments = [];
-    let allSubjects = [];
-    let currentStudents = [];
-    let allResults = [];
-
-    function logout() {
+    let user = null;
+    try { user = JSON.parse(userData); }
+    catch (e) {
         sessionStorage.removeItem('authToken');
         sessionStorage.removeItem('user');
         window.location.href = '/login.html';
     }
 
+    const roleId = Number(user.role_id);
+    const ROLE_PROPRIETOR = 1, ROLE_ADMINISTRATOR = 2, ROLE_MANAGER = 6, ROLE_TEACHER = 4;
+
+    const allowed = [ROLE_PROPRIETOR, ROLE_ADMINISTRATOR, ROLE_MANAGER, ROLE_TEACHER];
+    if (!allowed.includes(roleId)) {
+        alert('Access denied.');
+        window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('userRole').textContent = user.full_name || 'User';
+    document.getElementById('userRoleLabel').textContent = user.role_name || '';
+
+    function logout() {
+        sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user');
+        localStorage.removeItem('authToken'); localStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    function goBack() {
+        if (roleId === ROLE_TEACHER) window.location.href = 'teachers-dashboard.html';
+        else window.location.href = 'dashboard.html';
+    }
+
+    function escapeHtml(v) {
+        if (v === null || v === undefined) return '';
+        return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    function showMessage(text, kind) {
+        const el = document.getElementById('message');
+        el.textContent = text;
+        el.className = 'message ' + (kind === 'error' ? 'message-error' : 'message-success');
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    let classes = [];
+    let currentAcademicYearId = null;
+    let isClassMasterOfSelectedClass = false;
+
+    // ==========================================
+    // INIT
+    // ==========================================
+    async function loadInitial() {
+        try {
+            const tRes = await fetch('/api/terms', { headers: { 'Authorization': `Bearer ${token}` } });
+            const terms = tRes.ok ? await tRes.json() : [];
+            const currentTerm = terms.find(t => t.is_current) || terms[0];
+            currentAcademicYearId = currentTerm?.academic_year_id || 1;
+        } catch (e) { /* ignore */ }
+
+        await loadClasses();
+    }
+
     async function loadClasses() {
-        const classSelect = document.getElementById('classSelect');
-        const subjectSelect = document.getElementById('subjectSelect');
+        const classSel = document.getElementById('classSelect');
+        classSel.innerHTML = '<option value="">Loading…</option>';
 
-        if (isTeacher) {
-            const response = await fetch('/api/results/my-assignments', { headers: { 'Authorization': `Bearer ${token}` } });
-            teacherAssignments = await response.json();
-
-            // Unique classes
-            const classMap = new Map();
-            teacherAssignments.forEach(item => {
-                if (item.classes) classMap.set(item.classes.class_id, item.classes);
-            });
-            const classes = Array.from(classMap.values());
-            classes.forEach(cls => {
-                let option = document.createElement('option');
-                option.value = cls.class_id;
-                option.textContent = `${cls.class_name} ${cls.arm || ''}`;
-                classSelect.appendChild(option);
-            });
-
-            if (classes.length > 0) {
-                selectedClassId = classes[0].class_id;
-                classSelect.value = selectedClassId;
-                onClassChange();
-            }
+        if (roleId === ROLE_TEACHER) {
+            // Teachers may only see classes where they are the class master.
+            const mRes = await fetch('/api/results/my-classes', { headers: { 'Authorization': `Bearer ${token}` } });
+            classes = mRes.ok ? await mRes.json() : [];
         } else {
-            // Class Master / Admin / Manager
-            const classMasterResponse = await fetch('/api/results/my-class', { headers: { 'Authorization': `Bearer ${token}` } });
-            const classMasterClass = await classMasterResponse.json();
-
-            if (classMasterClass && classMasterClass.class_id) {
-                classSelect.innerHTML = `<option value="${classMasterClass.class_id}">${classMasterClass.class_name} ${classMasterClass.arm || ''}</option>`;
-                selectedClassId = classMasterClass.class_id;
-                classSelect.value = selectedClassId;
-                onClassChange();
-            } else {
-                const response = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}` } });
-                const classes = await response.json();
-                classes.forEach(cls => {
-                    let option = document.createElement('option');
-                    option.value = cls.class_id;
-                    option.textContent = `${cls.class_name} ${cls.arm || ''}`;
-                    classSelect.appendChild(option);
-                });
-                if (classes.length > 0) {
-                    selectedClassId = classes[0].class_id;
-                    classSelect.value = selectedClassId;
-                    onClassChange();
-                }
-            }
+            const cRes = await fetch('/api/classes', { headers: { 'Authorization': `Bearer ${token}` } });
+            classes = cRes.ok ? await cRes.json() : [];
         }
+
+        if (!classes.length) {
+            classSel.innerHTML = '<option value="">No classes available</option>';
+            document.getElementById('studentsWrapper').innerHTML = '<div class="empty">You are not assigned as a class master to any class.</div>';
+            return;
+        }
+
+        classSel.innerHTML = '<option value="">Select a class</option>';
+        classes.forEach(c => {
+            const o = document.createElement('option');
+            o.value = c.class_id;
+            o.textContent = `${c.class_name}${c.arm ? ' ' + c.arm : ''}`;
+            classSel.appendChild(o);
+        });
     }
 
+    // ==========================================
+    // LOAD STUDENTS FOR A CLASS
+    // ==========================================
     async function onClassChange() {
-        selectedClassId = document.getElementById('classSelect').value;
-        if (!selectedClassId) return;
+        const classId = document.getElementById('classSelect').value;
+        const wrapper = document.getElementById('studentsWrapper');
+        isClassMasterOfSelectedClass = false;
 
-        const subjectSelect = document.getElementById('subjectSelect');
-        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-
-        if (isTeacher) {
-            // Filter assignments for this class
-            const assignments = teacherAssignments.filter(a => a.class_id == selectedClassId);
-            assignments.forEach(item => {
-                let option = document.createElement('option');
-                option.value = item.subject_id;
-                option.textContent = item.subjects?.subject_name || 'Subject';
-                subjectSelect.appendChild(option);
-            });
-            if (assignments.length > 0) {
-                selectedSubjectId = assignments[0].subject_id;
-                subjectSelect.value = selectedSubjectId;
-                loadGradeEntryView();
-            }
-        } else {
-            // Full report: Load all subjects
-            const response = await fetch(`/api/results/subjects/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-            const subjects = await response.json();
-            subjects.forEach(item => {
-                let option = document.createElement('option');
-                option.value = item.subject_id;
-                option.textContent = item.subjects?.subject_name || 'Subject';
-                subjectSelect.appendChild(option);
-            });
-            subjectSelect.style.display = 'none'; // Hide subject selection for class master/admin
-            loadFullReportView();
+        if (!classId) {
+            wrapper.innerHTML = '<div class="empty">Select a class to see students.</div>';
+            return;
         }
 
-        // Load students
-        const studentsResp = await fetch(`/api/results/students/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-        currentStudents = await studentsResp.json();
-    }
+        // For teachers, the class list already only contains their classes.
+        if (roleId === ROLE_TEACHER) {
+            isClassMasterOfSelectedClass = classes.some(c => Number(c.class_id) === Number(classId));
+        }
 
-    function onSubjectChange() {
-        selectedSubjectId = document.getElementById('subjectSelect').value;
-        if (selectedSubjectId) loadGradeEntryView();
-    }
+        wrapper.innerHTML = '<div class="empty">Loading students…</div>';
 
-    async function loadGradeEntryView() {
-        document.getElementById('gradeEntryView').style.display = 'block';
-        document.getElementById('reportSheet').style.display = 'none';
-        document.getElementById('pendingEditsView').style.display = 'none';
+        try {
+            const sRes = await fetch(`/api/results/students/${classId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!sRes.ok) throw new Error('Failed to load students');
+            const students = await sRes.json();
 
-        if (!selectedClassId || !selectedSubjectId) return;
-
-        // Fetch grades for all 3 terms
-        const resultsResp = await fetch(`/api/results/all/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-        allResults = await resultsResp.json();
-
-        const body = document.getElementById('gradeEntryBody');
-        body.innerHTML = '';
-
-        currentStudents.forEach(student => {
-            let row = `<tr><td class="student-name">${student.first_name} ${student.last_name}</td>`;
-            for (let term = 1; term <= 3; term++) {
-                const result = allResults.find(r => r.student_id == student.student_id && r.subject_id == selectedSubjectId && r.term == term);
-                const test = result?.test_score || 0;
-                const exam = result?.exam_score || 0;
-                row += `<td><input type="number" id="test_${student.student_id}_${term}" value="${test}" min="0" max="40"></td>`;
-                row += `<td><input type="number" id="exam_${student.student_id}_${term}" value="${exam}" min="0" max="60"></td>`;
+            if (!students.length) {
+                wrapper.innerHTML = '<div class="empty">No active students in this class.</div>';
+                return;
             }
-            row += `</tr>`;
-            body.innerHTML += row;
-        });
+
+            let html = `<div class="table-wrapper"><table>
+                <thead>
+                    <tr>
+                        <th style="width:60px;">#</th>
+                        <th>Admission</th>
+                        <th>Student Name</th>
+                        <th style="width:80px;">Gender</th>
+                        <th style="width:100px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            students.forEach((s, i) => {
+                html += `<tr>
+                    <td>${i + 1}</td>
+                    <td>${escapeHtml(s.admission_number || '—')}</td>
+                    <td>${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</td>
+                    <td>${escapeHtml(s.gender || '—')}</td>
+                    <td><button class="btn view-btn" onclick="openReport(${s.student_id})">👁️ View</button></td>
+                </tr>`;
+            });
+
+            html += `</tbody></table></div>`;
+            wrapper.innerHTML = html;
+        } catch (err) {
+            wrapper.innerHTML = `<div class="empty">Error: ${escapeHtml(err.message)}</div>`;
+        }
     }
 
-    async function saveGrades() {
-        if (!selectedClassId || !selectedSubjectId) return;
-        const records = [];
+    // ==========================================
+    // OPEN REPORT
+    // ==========================================
+    async function openReport(studentId) {
+        document.getElementById('reportModal').classList.add('open');
+        document.getElementById('reportBody').innerHTML = '<div class="empty">Loading report…</div>';
 
-        currentStudents.forEach(student => {
-            for (let term = 1; term <= 3; term++) {
-                const test = Number(document.getElementById(`test_${student.student_id}_${term}`).value) || 0;
-                const exam = Number(document.getElementById(`exam_${student.student_id}_${term}`).value) || 0;
-                if (test > 0 || exam > 0) {
-                    records.push({ student_id: student.student_id, term: term, test_score: test, exam_score: exam });
+        try {
+            const res = await fetch(`/api/results/report/${studentId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Failed to load report');
+
+            let classSubjects = [];
+            try {
+                const csRes = await fetch(`/api/results/subjects/${data.student.class_id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (csRes.ok) {
+                    const raw = await csRes.json();
+                    const map = new Map();
+                    raw.forEach(r => {
+                        if (r.subject_id && r.subjects?.subject_name) {
+                            map.set(Number(r.subject_id), r.subjects.subject_name);
+                        }
+                    });
+                    classSubjects = Array.from(map.entries()).map(([id, name]) => ({ subject_id: id, subject_name: name }));
                 }
+            } catch (e) { /* ignore */ }
+
+            renderReport(data, classSubjects);
+        } catch (err) {
+            document.getElementById('reportBody').innerHTML = `<div class="empty">Error: ${escapeHtml(err.message)}</div>`;
+        }
+    }
+
+    function closeReport() {
+        document.getElementById('reportModal').classList.remove('open');
+        document.getElementById('reportBody').innerHTML = '';
+    }
+
+    // ==========================================
+    // RENDER REPORT CARD
+    // ==========================================
+    function renderReport(report, classSubjects) {
+        const s = report.student;
+        const terms = report.terms || [];
+        const fullName = [s.first_name, s.middle_name, s.last_name].filter(Boolean).join(' ');
+        const age = computeAge(s.date_of_birth);
+
+        const photoHtml = s.photo_url
+            ? `<img src="${escapeHtml(s.photo_url)}" alt="Photo">`
+            : 'No Photo';
+
+        let html = `
+            <div class="rc-letterhead">
+                <div class="rc-lh-logo"><img src="/images/logo.png" alt="Logo" onerror="this.style.display='none';"></div>
+                <div class="rc-lh-center">
+                    <h1>GLOBAL EDUCATION ACADEMY</h1>
+                    <div class="sub"><strong>${escapeHtml(s.school_section || '')} Section</strong></div>
+                    <div class="sub">Academic Year: ${escapeHtml(report.academic_year || '—')}</div>
+                </div>
+                <div class="rc-lh-photo">${photoHtml}</div>
+            </div>
+
+            <div class="rc-info-strip">
+                <div class="item"><span class="label">Name:</span><span class="value">${escapeHtml(fullName)}</span></div>
+                <div class="item"><span class="label">Class:</span><span class="value">${escapeHtml(s.class_name || '—')}${s.arm ? ' ' + escapeHtml(s.arm) : ''}</span></div>
+                <div class="item"><span class="label">Adm. No:</span><span class="value">${escapeHtml(s.admission_number || '—')}</span></div>
+                <div class="item"><span class="label">Age:</span><span class="value">${age !== null ? age : '—'}</span></div>
+            </div>
+
+            <div class="rc-title">Termly Report Card</div>
+        `;
+
+        const perTermBySubject = new Map();
+        terms.forEach((t, ti) => {
+            (t.subjects || []).forEach(sub => {
+                const id = Number(sub.subject_id);
+                if (!perTermBySubject.has(id)) perTermBySubject.set(id, {});
+                perTermBySubject.get(id)[ti] = sub;
+            });
+        });
+
+        const subjectRowsMap = new Map();
+        (classSubjects || []).forEach(cs => {
+            subjectRowsMap.set(Number(cs.subject_id), cs.subject_name);
+        });
+        perTermBySubject.forEach((_, id) => {
+            if (!subjectRowsMap.has(id)) {
+                const anyName = Object.values(perTermBySubject.get(id))[0]?.subject_name || 'Subject';
+                subjectRowsMap.set(id, anyName);
             }
         });
 
-        const response = await fetch('/api/results/save', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ class_id: selectedClassId, subject_id: selectedSubjectId, term: 0, records })
-        });
+        const subjectList = Array.from(subjectRowsMap.entries())
+            .map(([id, name]) => ({ subject_id: id, subject_name: name }))
+            .sort((a, b) => a.subject_name.localeCompare(b.subject_name));
 
-        const data = await response.json();
-        if (response.ok) {
-            alert('Grades saved!');
+        html += `<table class="rc-table">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="text-align:left;width:22%;">Subject</th>
+                    <th colspan="4">Term 1</th>
+                    <th colspan="4">Term 2</th>
+                    <th colspan="4">Term 3</th>
+                </tr>
+                <tr>
+                    <th class="sub">Test</th><th class="sub">Exam</th><th class="sub">Avg</th><th class="sub">Pos</th>
+                    <th class="sub">Test</th><th class="sub">Exam</th><th class="sub">Avg</th><th class="sub">Pos</th>
+                    <th class="sub">Test</th><th class="sub">Exam</th><th class="sub">Avg</th><th class="sub">Pos</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        if (!subjectList.length) {
+            html += `<tr><td colspan="13" style="text-align:center;padding:16px;color:#6b7280;">No subjects assigned to this class.</td></tr>`;
         } else {
-            alert(data.message || 'Failed to save grades');
-        }
-    }
-
-    async function loadFullReportView() {
-        document.getElementById('gradeEntryView').style.display = 'none';
-        document.getElementById('pendingEditsView').style.display = 'none';
-        document.getElementById('reportSheet').style.display = 'block';
-
-        // Load all results
-        const resultsResp = await fetch(`/api/results/all/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-        allResults = await resultsResp.json();
-
-        const studentSelect = document.getElementById('studentSelect');
-        if (!studentSelect) {
-            // Create student selector for report view
-            const controls = document.getElementById('controlsCard');
-            let select = document.createElement('select');
-            select.id = 'studentSelect';
-            select.onchange = renderReportCard;
-            currentStudents.forEach(student => {
-                let option = document.createElement('option');
-                option.value = student.student_id;
-                option.textContent = `${student.first_name} ${student.last_name}`;
-                select.appendChild(option);
+            subjectList.forEach(sub => {
+                const perTerm = perTermBySubject.get(sub.subject_id) || {};
+                html += `<tr><td class="subject-name">${escapeHtml(sub.subject_name)}</td>`;
+                for (let ti = 0; ti < 3; ti++) {
+                    const row = perTerm[ti];
+                    if (row) {
+                        const avg = ((row.test_score || 0) + (row.exam_score || 0)) / 2;
+                        html += `<td>${row.test_score ?? '—'}</td>
+                                 <td>${row.exam_score ?? '—'}</td>
+                                 <td class="avg">${avg.toFixed(1)}</td>
+                                 <td class="pos">${row.position || '—'}${row.class_size ? '/' + row.class_size : ''}</td>`;
+                    } else {
+                        html += `<td>—</td><td>—</td><td>—</td><td>—</td>`;
+                    }
+                }
+                html += `</tr>`;
             });
-            controls.appendChild(select);
         }
-
-        renderReportCard();
-    }
-
-    async function renderReportCard() {
-        const studentId = document.getElementById('studentSelect').value;
-        if (!studentId) return;
-
-        const student = currentStudents.find(s => s.student_id == studentId);
-        const detailsResp = await fetch(`/api/results/student/${studentId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-        const details = await detailsResp.json();
-
-        document.getElementById('studentName').innerText = `${student.first_name} ${student.last_name}`;
-        document.getElementById('studentAge').innerText = calculateAge(details.date_of_birth);
-        document.getElementById('studentClass').innerText = document.getElementById('classSelect').selectedOptions[0].textContent;
-        
-        if (details.photo_url) {
-            document.getElementById('studentPhoto').src = details.photo_url;
-            document.getElementById('studentPhoto').style.display = 'block';
-            document.getElementById('noPhoto').style.display = 'none';
-        } else {
-            document.getElementById('studentPhoto').style.display = 'none';
-            document.getElementById('noPhoto').style.display = 'flex';
-        }
-
-        const container = document.getElementById('reportTableContainer');
-        let html = `<table><thead><tr>
-            <th rowspan="2" style="text-align:left;">SUBJECT</th>
-            <th colspan="4">TERM 1</th>
-            <th colspan="4">TERM 2</th>
-            <th colspan="4">TERM 3</th>
-            <th colspan="2">YEARLY</th>
-        </tr><tr>
-            <th>T</th><th>E</th><th>A</th><th>P</th>
-            <th>T</th><th>E</th><th>A</th><th>P</th>
-            <th>T</th><th>E</th><th>A</th><th>P</th>
-            <th>A</th><th>P</th>
-        </tr></thead><tbody>`;
-
-        // Build per subject
-        const subjectsResp = await fetch(`/api/results/subjects/${selectedClassId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-        const subjects = await subjectsResp.json();
-        subjects.sort((a, b) => (a.subjects?.subject_name || '').localeCompare(b.subjects?.subject_name || ''));
-
-        let term1Totals = 0, term2Totals = 0, term3Totals = 0, count = 0;
-
-        subjects.forEach(subject => {
-            const sId = subject.subject_id;
-            const t1 = allResults.find(r => r.student_id == studentId && r.subject_id == sId && r.term == 1);
-            const t2 = allResults.find(r => r.student_id == studentId && r.subject_id == sId && r.term == 2);
-            const t3 = allResults.find(r => r.student_id == studentId && r.subject_id == sId && r.term == 3);
-
-            const t1T = t1?.test_score || 0;
-            const t1E = t1?.exam_score || 0;
-            const t1A = t1T + t1E;
-            const t2T = t2?.test_score || 0;
-            const t2E = t2?.exam_score || 0;
-            const t2A = t2T + t2E;
-            const t3T = t3?.test_score || 0;
-            const t3E = t3?.exam_score || 0;
-            const t3A = t3T + t3E;
-            const yearlyA = ((t1A + t2A + t3A) / 3).toFixed(2);
-
-            term1Totals += t1A;
-            term2Totals += t2A;
-            term3Totals += t3A;
-            count++;
-
-            html += `<tr>
-                <td style="text-align:left;">${subject.subjects?.subject_name}</td>
-                <td>${t1T}</td><td>${t1E}</td><td>${t1A}</td><td>-</td>
-                <td>${t2T}</td><td>${t2E}</td><td>${t2A}</td><td>-</td>
-                <td>${t3T}</td><td>${t3E}</td><td>${t3A}</td><td>-</td>
-                <td>${yearlyA}</td><td>-</td>
-            </tr>`;
-        });
-
-        const t1Avg = count > 0 ? (term1Totals / count).toFixed(2) : 0;
-        const t2Avg = count > 0 ? (term2Totals / count).toFixed(2) : 0;
-        const t3Avg = count > 0 ? (term3Totals / count).toFixed(2) : 0;
-        const yAvg = ((Number(t1Avg) + Number(t2Avg) + Number(t3Avg)) / 3).toFixed(2);
-
-        html += `<tr style="background:#f3f4f6; font-weight:bold;">
-            <td style="text-align:left;">OVERALL AVERAGE</td>
-            <td colspan="3">${t1Avg}</td><td>-</td>
-            <td colspan="3">${t2Avg}</td><td>-</td>
-            <td colspan="3">${t3Avg}</td><td>-</td>
-            <td>${yAvg}</td><td>-</td>
-        </tr>`;
 
         html += `</tbody></table>`;
-        container.innerHTML = html;
+
+        html += `<div class="rc-bottom">`;
+        const canEditComment = (roleId === ROLE_TEACHER && isClassMasterOfSelectedClass);
+
+        terms.forEach((t) => {
+            const att = t.attendance || { present: 0, absent: 0, percentage: 0 };
+            const comment = t.term_comment || '';
+
+            html += `<div class="term-block">
+                <h4>${escapeHtml(t.term_name)}</h4>
+                <div class="row"><span class="label">Attendance:</span><span>${att.present} / ${att.present + att.absent} (${att.percentage}%)</span></div>
+                <div class="row"><span class="label">Position in Class:</span><span>${t.class_position || '—'}${t.class_size ? '/' + t.class_size : ''}</span></div>
+                <div class="comment-box">
+                    <span class="label">Class Master's Comment:</span>`;
+
+            if (canEditComment) {
+                html += `<textarea id="termComment-${t.term_id}" placeholder="Write a comment…">${escapeHtml(comment)}</textarea>
+                         <button class="save-comment" onclick="saveTermComment(${s.student_id}, ${t.term_id})">Save</button>`;
+            } else {
+                html += `<div class="comment-text">${comment ? escapeHtml(comment) : '<em>No comment yet.</em>'}</div>`;
+            }
+
+            html += `</div></div>`;
+        });
+
+        html += `</div>`;
+
+        const canEditVerdict = (roleId === ROLE_MANAGER);
+        const verdict = report.year_comment || '';
+
+        html += `<div class="rc-verdict">
+            <h4>End of Year — Manager's Verdict</h4>`;
+
+        if (canEditVerdict) {
+            html += `<textarea id="yearComment" placeholder="e.g. Promoted / To repeat">${escapeHtml(verdict)}</textarea>
+                     <button class="save-comment" onclick="saveYearComment(${s.student_id})">Save</button>`;
+        } else {
+            html += `<div class="comment-text">${verdict ? escapeHtml(verdict) : '<em>Not yet decided.</em>'}</div>`;
+        }
+
+        html += `</div>`;
+
+        document.getElementById('reportBody').innerHTML = html;
     }
 
-    function calculateAge(dob) {
-        if (!dob) return '-';
-        const birthDate = new Date(dob);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+    function computeAge(dob) {
+        if (!dob) return null;
+        const birth = new Date(dob);
+        if (Number.isNaN(birth.getTime())) return null;
+        const now = new Date();
+        let age = now.getFullYear() - birth.getFullYear();
+        const m = now.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
         return age;
     }
 
-    function printPage() {
-        window.print();
+    async function saveTermComment(studentId, termId) {
+        const el = document.getElementById(`termComment-${termId}`);
+        if (!el) return;
+        const comment = el.value.trim();
+
+        try {
+            const res = await fetch('/api/results/term-comment', {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: studentId, term_id: termId, comment })
+            });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.message || 'Failed to save');
+            showMessage('Comment saved.', 'success');
+        } catch (err) {
+            showMessage(err.message, 'error');
+        }
     }
 
-    loadClasses();
+    async function saveYearComment(studentId) {
+        const el = document.getElementById('yearComment');
+        if (!el) return;
+        const comment = el.value.trim();
+
+        if (!currentAcademicYearId) {
+            showMessage('Academic year not known.', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/results/year-comment', {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: studentId, academic_year_id: currentAcademicYearId, comment })
+            });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.message || 'Failed to save');
+            showMessage('Verdict saved.', 'success');
+        } catch (err) {
+            showMessage(err.message, 'error');
+        }
+    }
+
+    document.getElementById('reportModal').addEventListener('click', function (e) {
+        if (e.target === this) closeReport();
+    });
+
+    loadInitial();
 </script>
 
 </body>
