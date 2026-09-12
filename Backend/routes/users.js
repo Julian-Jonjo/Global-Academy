@@ -45,16 +45,27 @@ router.get('/available-people', authenticateToken, requireRoles(1, 2, 6), async 
 
         // Fetch Teachers
         if (role === '4' || role === 'teacher') {
-            const { data, error } = await supabase
-                .from('teachers')
-                .select('teacher_id, first_name, last_name, staff_number, school_section')
-                .eq('school_section', sector)
-                .eq('teacher_status', 'Active');
+    // Normalize the sector so 'primary', 'Primary', 'PRIMARY' all match.
+    const normalizedSector = String(sector || '').trim().toLowerCase();
 
-            if (error) throw error;
-            return res.json(data || []);
-        }
+    let allowedSections;
+    if (normalizedSector === 'primary') {
+        allowedSections = ['Primary', 'Nursery'];
+    } else if (normalizedSector === 'secondary') {
+        allowedSections = ['Secondary', 'JSS', 'SSS'];
+    } else {
+        return res.json([]);
+    }
 
+    const { data, error } = await supabase
+        .from('teachers')
+        .select('teacher_id, first_name, last_name, staff_number, school_section')
+        .in('school_section', allowedSections)
+        .eq('teacher_status', 'Active');
+
+    if (error) throw error;
+    return res.json(data || []);
+}
         res.json([]);
     } catch (error) {
         console.error('AVAILABLE PEOPLE ERROR:', error);

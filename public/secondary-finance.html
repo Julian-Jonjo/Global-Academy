@@ -602,6 +602,15 @@
             margin-bottom: 15px;
         }
 
+        .success-message {
+            color: #166534;
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
         .logout-bottom {
             position: fixed;
             bottom: 20px;
@@ -701,10 +710,6 @@
 
 <body>
 
-    <!-- =========================================================
-         HEADER
-    ========================================================= -->
-
     <header class="header">
 
         <div class="header-left">
@@ -725,25 +730,12 @@
         </div>
 
         <div class="user-info">
-
-            <span
-                class="role"
-                id="userRole"
-            ></span>
-
-            <span
-                class="role-label"
-                id="userRoleLabel"
-            ></span>
-
+            <span class="role" id="userRole"></span>
+            <span class="role-label" id="userRoleLabel"></span>
         </div>
 
     </header>
 
-
-    <!-- =========================================================
-         MAIN
-    ========================================================= -->
 
     <main class="container">
 
@@ -751,7 +743,6 @@
 
             <div>
                 <h2>🎓 Secondary School Finance Dashboard</h2>
-
                 <p>
                     Manage fees, student balances, payments and
                     financial records for Secondary School.
@@ -770,10 +761,6 @@
 
         <div id="roleBadgeContainer"></div>
 
-
-        <!-- =====================================================
-             APPROVAL BANNER
-        ====================================================== -->
 
         <div
             id="approvalBanner"
@@ -799,10 +786,6 @@
 
         </div>
 
-
-        <!-- =====================================================
-             TABS
-        ====================================================== -->
 
         <div class="tabs">
 
@@ -837,10 +820,6 @@
         </div>
 
 
-        <!-- =====================================================
-             OVERVIEW TAB
-        ====================================================== -->
-
         <section
             id="overview"
             class="tab-content active"
@@ -862,6 +841,7 @@
             </div>
 
             <div id="overviewMessage"></div>
+
 
             <div class="summary-grid">
 
@@ -964,13 +944,7 @@
             </div>
 
 
-            <!--
-                Record Payment is intentionally NOT included here.
-                It is added dynamically only for Secondary Finance.
-            -->
-
             <div
-                id="overviewActionContainer"
                 style="
                     margin-top:20px;
                     display:flex;
@@ -983,17 +957,18 @@
                     id="overviewRecordPaymentBtn"
                     class="btn payment-btn"
                     onclick="openRecordPayment()"
-                    style="display:none;"
                 >
                     💳 Record Payment
                 </button>
 
                 <button
                     class="btn view-btn"
-                    onclick="openTab(
-                        'students',
-                        document.querySelector('.tabs').children[1]
-                    )"
+                    onclick="
+                        openTab(
+                            'students',
+                            document.querySelectorAll('.tab-button')[1]
+                        )
+                    "
                 >
                     👨‍🎓 View All Students
                 </button>
@@ -1002,10 +977,6 @@
 
         </section>
 
-
-        <!-- =====================================================
-             STUDENTS TAB
-        ====================================================== -->
 
         <section
             id="students"
@@ -1116,10 +1087,6 @@
         </section>
 
 
-        <!-- =====================================================
-             PAYMENTS TAB
-        ====================================================== -->
-
         <section
             id="payments"
             class="tab-content"
@@ -1135,16 +1102,10 @@
                     0 Payments
                 </span>
 
-                <!--
-                    Only Secondary Finance Officer sees this.
-                    JavaScript controls visibility.
-                -->
-
                 <button
-                    id="paymentsRecordButton"
+                    id="paymentTabRecordBtn"
                     class="btn payment-btn"
                     onclick="openRecordPayment()"
-                    style="display:none;"
                 >
                     + Record Payment
                 </button>
@@ -1186,7 +1147,6 @@
                     </option>
                 </select>
 
-
                 <select
                     id="paymentStatusFilter"
                     onchange="applyPaymentFilters()"
@@ -1208,13 +1168,11 @@
                     </option>
                 </select>
 
-
                 <input
                     type="date"
                     id="paymentDateFilter"
                     onchange="applyPaymentFilters()"
                 >
-
 
                 <button
                     class="refresh-btn"
@@ -1239,6 +1197,7 @@
                             <th>Date</th>
                             <th>Admission</th>
                             <th>Student</th>
+                            <th>Fee</th>
                             <th>Amount</th>
                             <th>Method</th>
                             <th>Status</th>
@@ -1251,7 +1210,7 @@
 
                         <tr>
                             <td
-                                colspan="7"
+                                colspan="8"
                                 class="empty"
                             >
                                 Loading payments...
@@ -1266,10 +1225,6 @@
 
         </section>
 
-
-        <!-- =====================================================
-             APPROVALS TAB
-        ====================================================== -->
 
         <section
             id="approvals"
@@ -1305,6 +1260,7 @@
                     id="approvalStatusFilter"
                     onchange="applyApprovalFilters()"
                 >
+
                     <option value="">
                         All Statuses
                     </option>
@@ -1320,6 +1276,7 @@
                     <option value="Rejected">
                         Rejected
                     </option>
+
                 </select>
 
             </div>
@@ -1371,10 +1328,6 @@
         🚪 Logout
     </button>
 
-
-    <!-- =========================================================
-         MODAL: RECORD PAYMENT
-    ========================================================== -->
 
     <div
         id="paymentModal"
@@ -1470,8 +1423,7 @@
                                 min-height:60px;
                             "
                         >
-                            Search and select a student to
-                            view outstanding fees.
+                            Search and select a student to view outstanding fees.
                         </div>
 
                     </div>
@@ -1487,6 +1439,7 @@
                             type="number"
                             id="paymentAmount"
                             step="0.01"
+                            min="0.01"
                             required
                             placeholder="Enter amount"
                         >
@@ -1618,21 +1571,20 @@
     </div>
 
 
-    <!-- =========================================================
-         MODAL: APPROVAL ACTION
-    ========================================================== -->
-
     <div
         id="approvalModal"
         class="modal"
     >
 
-        <div class="modal-content">
+        <div
+            class="modal-content"
+            style="max-width:700px;"
+        >
 
             <div class="modal-header">
 
                 <h2>
-                    ✅ Review & Approve
+                    🔎 Review Approval
                 </h2>
 
                 <button
@@ -1644,43 +1596,52 @@
 
             </div>
 
+
             <div id="approvalDetails"></div>
 
-            <div class="form-grid">
 
-                <div class="form-field full">
+            <div class="form-field">
 
-                    <label>
-                        Review Notes / Rejection Reason
-                    </label>
+                <label>
+                    Approval / Rejection Notes
+                </label>
 
-                    <textarea
-                        id="approvalNotes"
-                        placeholder="Add review notes..."
-                    ></textarea>
+                <textarea
+                    id="approvalNotes"
+                    placeholder="Enter notes. A reason is required when rejecting."
+                ></textarea>
 
-                </div>
+            </div>
 
 
-                <div class="form-actions">
+            <div
+                class="form-actions"
+                style="margin-top:20px;"
+            >
 
-                    <button
-                        type="button"
-                        class="btn reject-btn"
-                        onclick="submitApprovalDecision('reject')"
-                    >
-                        ❌ Reject
-                    </button>
+                <button
+                    type="button"
+                    class="btn close-btn"
+                    onclick="closeModal('approvalModal')"
+                >
+                    Cancel
+                </button>
 
-                    <button
-                        type="button"
-                        class="btn approve-btn"
-                        onclick="submitApprovalDecision('approve')"
-                    >
-                        ✅ Approve
-                    </button>
+                <button
+                    type="button"
+                    class="btn reject-btn"
+                    onclick="submitApprovalDecision('reject')"
+                >
+                    Reject
+                </button>
 
-                </div>
+                <button
+                    type="button"
+                    class="btn approve-btn"
+                    onclick="submitApprovalDecision('approve')"
+                >
+                    Approve
+                </button>
 
             </div>
 
@@ -1690,9 +1651,16 @@
 
 
 <script>
+/* =========================================================
+   GLOBAL CONFIGURATION
+========================================================= */
+
+const ACADEMIC_YEAR = '2026/2027';
+const FINANCE_SECTOR = 'secondary';
+
 
 /* =========================================================
-   AUTHENTICATION & ROLE
+   AUTHENTICATION
 ========================================================= */
 
 const token = sessionStorage.getItem('authToken');
@@ -1702,195 +1670,113 @@ if (!token || !userData) {
     window.location.href = '/login.html';
 }
 
-let user;
+let user = null;
 
 try {
     user = JSON.parse(userData);
 } catch (error) {
-
     sessionStorage.removeItem('authToken');
     sessionStorage.removeItem('user');
-
     window.location.href = '/login.html';
 }
 
 
 /* =========================================================
-   ROLE AND SECTOR
+   AUTHORITATIVE ROLE + SECTOR
+   role_id:
+   1 = Proprietor
+   2 = Administrator
+   3 = Finance
+   4 = Teacher
+   5 = Student
+   6 = Manager
 ========================================================= */
 
-// 1 = Proprietor
-// 2 = Administrator
-// 3 = Finance
-// 4 = Teacher
-// 5 = Student
-// 6 = Manager
-
 const roleId = Number(user?.role_id);
-
-const role =
-    user?.role_name ||
-    user?.role ||
-    '';
-
-const sector =
-    String(
-        user?.sector || ''
-    )
+const sector = String(user?.sector || '')
     .trim()
     .toLowerCase();
 
-const userRole =
-    String(
-        user?.role_name ||
-        user?.role ||
-        ''
-    )
-    .toLowerCase();
+
+const isSecondaryFinanceOfficer =
+    roleId === 3 &&
+    sector === 'secondary';
 
 
-/* =========================================================
-   ROLE DETECTION
-========================================================= */
+const isSecondaryManager =
+    roleId === 6 &&
+    sector === 'secondary';
 
-const isFinanceOfficer =
-    roleId === 3;
-
-const isManager =
-    roleId === 6;
 
 const isProprietor =
     roleId === 1;
+
 
 const isAdmin =
     roleId === 2;
 
 
-/* =========================================================
-   SECTOR DETECTION
-========================================================= */
-
-const isPrimary =
-    sector === 'primary';
-
-const isSecondary =
-    sector === 'secondary';
-
-
-/* =========================================================
-   ROLE + SECTOR
-========================================================= */
-
-const isPrimaryManager =
-    isManager &&
-    isPrimary;
-
-const isSecondaryManager =
-    isManager &&
-    isSecondary;
-
-const isPrimaryFinance =
-    isFinanceOfficer &&
-    isPrimary;
-
-const isSecondaryFinance =
-    isFinanceOfficer &&
-    isSecondary;
-
-
-/* =========================================================
-   SECONDARY FINANCE ACCESS
-========================================================= */
-
 const isAllowed =
-    isProprietor ||
-    isAdmin ||
+    isSecondaryFinanceOfficer ||
     isSecondaryManager ||
-    isSecondaryFinance;
+    isAdmin ||
+    isProprietor;
+
+
+const isViewOnly =
+    isSecondaryManager ||
+    isAdmin ||
+    isProprietor;
+
+
+const canRecordPayment =
+    isSecondaryFinanceOfficer;
+
+
+const canEditPayment =
+    isSecondaryFinanceOfficer;
+
+
+const canDeletePayment =
+    isSecondaryFinanceOfficer;
+
+
+const canApprove =
+    isAdmin ||
+    isProprietor;
+
 
 if (!isAllowed) {
-
-    console.error(
-        'SECONDARY FINANCE ACCESS DENIED',
-        {
-            role_id: roleId,
-            role_name: role,
-            sector: sector,
-            user: user
-        }
-    );
 
     alert(
         'You do not have permission to access Secondary School Finance.'
     );
 
-    window.location.href =
-        'dashboard.html';
+    window.location.href = 'dashboard.html';
 }
 
 
 /* =========================================================
-   VIEW-ONLY
+   DISPLAY ROLE
 ========================================================= */
 
-// IMPORTANT:
-// Secondary Manager is VIEW ONLY.
-//
-// Therefore:
-// Manager = false
-// Finance Officer = true
-//
-// Proprietor/Admin are also view only.
+let displayRole = user?.role_name || 'User';
 
-const isViewOnly =
-    isProprietor ||
-    isAdmin ||
-    isSecondaryManager;
-
-
-/* =========================================================
-   PERMISSIONS
-========================================================= */
-
-// ONLY SECONDARY FINANCE OFFICER
-// can edit or record payments.
-
-const canEdit =
-    isSecondaryFinance;
-
-const canRecordPayment =
-    isSecondaryFinance;
-
-
-// Only Proprietor/Admin can approve.
-
-const canApprove =
-    isProprietor ||
-    isAdmin;
-
-
-/* =========================================================
-   DISPLAY USER
-========================================================= */
-
-const userRoleElement =
-    document.getElementById('userRole');
-
-if (userRoleElement) {
-
-    userRoleElement.textContent =
-        role || 'User';
+if (isSecondaryFinanceOfficer) {
+    displayRole = 'Finance Officer';
+} else if (isSecondaryManager) {
+    displayRole = 'Manager';
+} else if (isAdmin) {
+    displayRole = 'Administrator';
+} else if (isProprietor) {
+    displayRole = 'Proprietor';
 }
 
 
-const userRoleLabelElement =
-    document.getElementById('userRoleLabel');
+document.getElementById('userRole').textContent = displayRole;
 
-if (userRoleLabelElement) {
-
-    userRoleLabelElement.textContent =
-        'Secondary School Finance';
-}
+document.getElementById('userRoleLabel').textContent =
+    'Secondary School Finance';
 
 
 /* =========================================================
@@ -1898,319 +1784,120 @@ if (userRoleLabelElement) {
 ========================================================= */
 
 const badgeContainer =
-    document.getElementById(
-        'roleBadgeContainer'
-    );
-
-if (badgeContainer) {
-
-    let badgeClass =
-        'viewer';
-
-    let badgeText =
-        'View-Only Access';
+    document.getElementById('roleBadgeContainer');
 
 
-    if (isProprietor) {
-
-        badgeClass =
-            'proprietor';
-
-        badgeText =
-            '👑 Proprietor (View-Only)';
-
-    } else if (isAdmin) {
-
-        badgeClass =
-            'admin';
-
-        badgeText =
-            '⚙️ Administrator (View-Only)';
-
-    } else if (isSecondaryManager) {
-
-        badgeClass =
-            'manager';
-
-        badgeText =
-            '📋 Manager (View-Only)';
-
-    } else if (isSecondaryFinance) {
-
-        badgeClass =
-            'finance';
-
-        badgeText =
-            '💰 Finance Officer';
-    }
+let badgeClass = 'viewer';
+let badgeText = '👁️ View-Only Access';
 
 
-    badgeContainer.innerHTML =
-        `<span class="role-badge ${badgeClass}">${badgeText}</span>`;
+if (isProprietor) {
+    badgeClass = 'proprietor';
+    badgeText = '👑 Proprietor';
+} else if (isAdmin) {
+    badgeClass = 'admin';
+    badgeText = '⚙️ Administrator';
+} else if (isSecondaryManager) {
+    badgeClass = 'manager';
+    badgeText = '📋 Secondary Manager';
+} else if (isSecondaryFinanceOfficer) {
+    badgeClass = 'finance';
+    badgeText = '💰 Secondary Finance Officer';
 }
+
+
+badgeContainer.innerHTML =
+    `<span class="role-badge ${badgeClass}">
+        ${badgeText}
+    </span>`;
 
 
 /* =========================================================
-   APPLY ROLE-BASED UI
+   HIDE PAYMENT BUTTONS FOR VIEW-ONLY USERS
 ========================================================= */
 
-function applyFinancePermissions() {
+function applyPermissionUI() {
 
-    /*
-       SECONDARY MANAGER:
+    const paymentButtons =
+        document.querySelectorAll('.payment-btn');
 
-       Can:
-         - View overview
-         - View students
-         - View payments
-         - View approvals
-
-       Cannot:
-         - Record payment
-         - Edit student fees
-         - Approve/reject payments
-    */
-
-
-    const overviewRecordButton =
-        document.getElementById(
-            'overviewRecordPaymentBtn'
-        );
-
-    const paymentsRecordButton =
-        document.getElementById(
-            'paymentsRecordButton'
-        );
-
-
-    /*
-       Only Secondary Finance Officer
-       gets Record Payment buttons.
-    */
-
-    if (isSecondaryFinance) {
-
-        if (overviewRecordButton) {
-            overviewRecordButton.style.display =
-                'inline-block';
-        }
-
-        if (paymentsRecordButton) {
-            paymentsRecordButton.style.display =
-                'inline-block';
-        }
-
-    } else {
-
-        if (overviewRecordButton) {
-            overviewRecordButton.style.display =
-                'none';
-        }
-
-        if (paymentsRecordButton) {
-            paymentsRecordButton.style.display =
-                'none';
-        }
-    }
+    paymentButtons.forEach(button => {
+        button.style.display =
+            canRecordPayment ? '' : 'none';
+    });
 }
+
+
+document.addEventListener(
+    'DOMContentLoaded',
+    applyPermissionUI
+);
 
 
 /* =========================================================
-   TAB SYSTEM
+   GLOBAL DATA
 ========================================================= */
 
-function openTab(tabId, button) {
+let students = [];
+let filteredStudents = [];
 
-    /*
-       Prevent Manager from opening any
-       editing/payment-recording tab if
-       another part of the page attempts it.
-    */
+let approvals = [];
+let filteredApprovals = [];
 
-    if (
-        isSecondaryManager &&
-        (
-            tabId === 'edit' ||
-            tabId === 'record-payment' ||
-            tabId === 'recordPayment'
-        )
-    ) {
+let payments = [];
+let filteredPayments = [];
 
-        alert(
-            'Secondary Manager has view-only access.'
-        );
+let allSecondaryStudents = [];
 
-        return;
-    }
+let searchTimeout = null;
 
-
-    document
-        .querySelectorAll('.tab-content')
-        .forEach(tab => {
-
-            tab.classList.remove('active');
-        });
-
-
-    document
-        .querySelectorAll('.tab-button')
-        .forEach(btn => {
-
-            btn.classList.remove('active');
-        });
-
-
-    const tab =
-        document.getElementById(tabId);
-
-    if (tab) {
-
-        tab.classList.add('active');
-    }
-
-
-    if (button) {
-
-        button.classList.add('active');
-    }
-}
-
-
-/* =========================================================
-   SWITCH TO APPROVALS
-========================================================= */
-
-function switchToApprovals() {
-
-    const buttons =
-        document.querySelectorAll(
-            '.tab-button'
-        );
-
-    openTab(
-        'approvals',
-        buttons[3]
-    );
-
-    loadApprovals();
-}
-
-
-/* =========================================================
-   MODAL HELPERS
-========================================================= */
-
-function closeModal(id) {
-
-    const modal =
-        document.getElementById(id);
-
-    if (modal) {
-
-        modal.style.display =
-            'none';
-    }
-}
-
-
-/* =========================================================
-   RECORD PAYMENT
-========================================================= */
-
-async function openRecordPayment() {
-
-    /*
-       ONLY Secondary Finance Officer
-       is permitted to record payments.
-    */
-
-    if (!canRecordPayment) {
-
-        alert(
-            'Secondary Manager has view-only access. Only the Secondary Finance Officer can record payments.'
-        );
-
-        return;
-    }
-
-
-    await populatePaymentDropdowns();
-
-
-    const modal =
-        document.getElementById(
-            'paymentModal'
-        );
-
-    if (modal) {
-
-        modal.style.display =
-            'block';
-    }
-}
+let currentApprovalId = null;
+let currentApprovalType = null;
 
 
 /* =========================================================
    API HELPER
 ========================================================= */
 
-async function apiRequest(
-    url,
-    options = {}
-) {
+async function apiRequest(url, options = {}) {
 
-    const response =
-        await fetch(
-            url,
-            {
-                ...options,
-
-                headers: {
-                    'Content-Type':
-                        'application/json',
-
-                    ...(options.headers || {}),
-
-                    'Authorization':
-                        `Bearer ${token}`
-                }
-            }
-        );
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+            'Authorization': `Bearer ${token}`
+        }
+    });
 
 
     let data = null;
 
     try {
-
-        data =
-            await response.json();
-
+        data = await response.json();
     } catch (error) {
-
-        data =
-            null;
+        data = null;
     }
 
 
     if (response.status === 401) {
 
-        sessionStorage.removeItem(
-            'authToken'
-        );
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
 
-        sessionStorage.removeItem(
-            'user'
-        );
-
-        window.location.href =
-            '/login.html';
-
+        window.location.href = '/login.html';
         return null;
     }
 
 
-    if (!response.ok) {
+    if (response.status === 403) {
+        throw new Error(
+            data?.message || 'Access denied.'
+        );
+    }
 
+
+    if (!response.ok) {
         throw new Error(
             data?.message ||
             `Request failed with status ${response.status}`
@@ -2228,8 +1915,7 @@ async function apiRequest(
 
 function formatCurrency(value) {
 
-    const num =
-        Number(value || 0);
+    const num = Number(value || 0);
 
     return 'Le' +
         num.toLocaleString(
@@ -2269,63 +1955,134 @@ function escapeHTML(value) {
 
 function formatDate(value) {
 
-    if (!value) {
-        return '—';
-    }
+    if (!value) return '—';
 
-    try {
+    const date = new Date(value);
 
-        const d =
-            new Date(value);
+    if (isNaN(date.getTime())) return '—';
 
-        if (isNaN(d.getTime())) {
-            return '—';
-        }
-
-        return d.toLocaleDateString();
-
-    } catch (error) {
-
-        return '—';
-    }
+    return date.toLocaleDateString();
 }
 
 
 /* =========================================================
-   LOAD SECONDARY STUDENTS
+   TAB SYSTEM
+========================================================= */
+
+function openTab(tabId, button) {
+
+    document
+        .querySelectorAll('.tab-content')
+        .forEach(tab => tab.classList.remove('active'));
+
+    document
+        .querySelectorAll('.tab-button')
+        .forEach(btn => btn.classList.remove('active'));
+
+
+    const tab = document.getElementById(tabId);
+
+    if (tab) tab.classList.add('active');
+
+    if (button) button.classList.add('active');
+
+
+    if (tabId === 'payments') {
+        loadPaymentHistory();
+    }
+
+    if (tabId === 'approvals') {
+        loadApprovals();
+    }
+}
+
+
+function switchToApprovals() {
+
+    const buttons =
+        document.querySelectorAll('.tab-button');
+
+    openTab('approvals', buttons[3]);
+
+    loadApprovals();
+}
+
+
+/* =========================================================
+   MODAL HELPERS
+========================================================= */
+
+function closeModal(id) {
+
+    const modal = document.getElementById(id);
+
+    if (modal) modal.style.display = 'none';
+}
+
+
+window.addEventListener('click', function(event) {
+
+    const paymentModal =
+        document.getElementById('paymentModal');
+
+    const approvalModal =
+        document.getElementById('approvalModal');
+
+
+    if (event.target === paymentModal) {
+        paymentModal.style.display = 'none';
+    }
+
+    if (event.target === approvalModal) {
+        approvalModal.style.display = 'none';
+    }
+});
+
+
+/* =========================================================
+   OPEN RECORD PAYMENT
+========================================================= */
+
+async function openRecordPayment() {
+
+    if (!canRecordPayment) {
+        alert(
+            'Only the Secondary Finance Officer can record payments.'
+        );
+        return;
+    }
+
+
+    await populatePaymentStudents();
+
+    document.getElementById('paymentModal').style.display = 'block';
+}
+
+
+/* =========================================================
+   LOAD SECONDARY STUDENTS WITH FINANCE DATA
 ========================================================= */
 
 async function loadStudents() {
 
     const table =
-        document.getElementById(
-            'studentTable'
-        );
+        document.getElementById('studentTable');
 
     table.innerHTML =
         `<tr>
-            <td
-                colspan="8"
-                class="empty"
-            >
+            <td colspan="8" class="empty">
                 Loading Secondary School students...
             </td>
         </tr>`;
 
-
-    document
-        .getElementById(
-            'studentMessage'
-        )
-        .innerHTML = '';
+    document.getElementById('studentMessage').innerHTML = '';
 
 
     try {
 
-        const data =
-            await apiRequest(
-                '/api/payments/students?sector=secondary&academic_year=2026/2027'
-            );
+        const data = await apiRequest(
+            `/api/payments/students?sector=secondary&academic_year=${encodeURIComponent(ACADEMIC_YEAR)}`
+        );
 
 
         students =
@@ -2334,58 +2091,13 @@ async function loadStudents() {
                 : [];
 
 
-        if (students.length === 0) {
-
-            const fallbackData =
-                await apiRequest(
-                    '/api/students?status=Active'
-                );
+        console.log(
+            'SECONDARY FINANCE STUDENTS:',
+            students
+        );
 
 
-            const allStudents =
-                Array.isArray(fallbackData)
-                    ? fallbackData
-                    : (
-                        fallbackData?.students ||
-                        []
-                    );
-
-
-            students =
-                allStudents.filter(
-                    student => {
-
-                        const studentSector =
-                            String(
-                                student.sector ||
-                                student.school_section ||
-                                ''
-                            )
-                            .trim()
-                            .toLowerCase();
-
-
-                        return (
-                            studentSector ===
-                                'secondary' ||
-
-                            studentSector ===
-                                'secondary school' ||
-
-                            studentSector ===
-                                'jss' ||
-
-                            studentSector ===
-                                'sss'
-                        );
-                    }
-                );
-        }
-
-
-        filteredStudents =
-            [...students];
-
+        filteredStudents = [...students];
 
         populateClassFilter();
 
@@ -2394,29 +2106,22 @@ async function loadStudents() {
     } catch (error) {
 
         console.error(
-            'SECONDARY STUDENTS ERROR:',
+            'SECONDARY FINANCE STUDENTS ERROR:',
             error
         );
 
 
-        document
-            .getElementById(
-                'studentMessage'
-            )
-            .innerHTML =
+        document.getElementById('studentMessage').innerHTML =
             `<div class="error-message">
-                ${display(error.message)}
+                ${escapeHTML(error.message)}
             </div>`;
 
 
         table.innerHTML =
             `<tr>
-                <td
-                    colspan="8"
-                    class="empty"
-                >
+                <td colspan="8" class="empty">
                     Error loading students:
-                    ${display(error.message)}
+                    ${escapeHTML(error.message)}
                 </td>
             </tr>`;
     }
@@ -2430,65 +2135,37 @@ async function loadStudents() {
 function populateClassFilter() {
 
     const select =
-        document.getElementById(
-            'studentClass'
-        );
+        document.getElementById('studentClass');
 
-    const previousValue =
-        select.value;
+    const previousValue = select.value;
 
-
-    const classSet =
-        new Set();
+    const classes = new Set();
 
 
-    students.forEach(
-        student => {
-
-            if (student.class_name) {
-
-                classSet.add(
-                    student.class_name
-                );
-            }
+    students.forEach(student => {
+        if (student.class_name) {
+            classes.add(student.class_name);
         }
-    );
+    });
 
 
     select.innerHTML =
         '<option value="">All Classes</option>';
 
 
-    [...classSet]
-        .sort()
-        .forEach(
-            className => {
+    [...classes].sort().forEach(className => {
 
-                const option =
-                    document.createElement(
-                        'option'
-                    );
+        const option = document.createElement('option');
 
-                option.value =
-                    className;
+        option.value = className;
+        option.textContent = className;
 
-                option.textContent =
-                    className;
-
-                select.appendChild(
-                    option
-                );
-            }
-        );
+        select.appendChild(option);
+    });
 
 
-    if (
-        [...classSet]
-            .includes(previousValue)
-    ) {
-
-        select.value =
-            previousValue;
+    if ([...classes].includes(previousValue)) {
+        select.value = previousValue;
     }
 }
 
@@ -2501,120 +2178,83 @@ function applyStudentFilters() {
 
     const search =
         document
-            .getElementById(
-                'studentSearch'
-            )
+            .getElementById('studentSearch')
             .value
             .trim()
             .toLowerCase();
 
-
     const className =
         document
-            .getElementById(
-                'studentClass'
-            )
+            .getElementById('studentClass')
             .value;
-
 
     const status =
         document
-            .getElementById(
-                'studentFinanceStatus'
-            )
+            .getElementById('studentFinanceStatus')
             .value;
 
 
     filteredStudents =
-        students.filter(
-            student => {
+        students.filter(student => {
 
-                const fullName =
-                    [
-                        student.first_name,
-                        student.middle_name,
-                        student.last_name
-                    ]
-                    .filter(Boolean)
-                    .join(' ')
+            const fullName =
+                [
+                    student.first_name,
+                    student.middle_name,
+                    student.last_name
+                ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+
+            const studentName =
+                String(student.student_name || '')
                     .toLowerCase();
 
 
-                const admission =
-                    String(
-                        student.admission_number ||
-                        ''
-                    )
+            const admission =
+                String(student.admission_number || '')
                     .toLowerCase();
 
 
-                const matchesSearch =
-                    !search ||
-                    fullName.includes(search) ||
-                    admission.includes(search);
+            const matchesSearch =
+                !search ||
+                fullName.includes(search) ||
+                studentName.includes(search) ||
+                admission.includes(search);
 
 
-                const matchesClass =
-                    !className ||
-                    student.class_name ===
-                        className;
+            const matchesClass =
+                !className ||
+                student.class_name === className;
 
 
-                const expected =
-                    Number(
-                        student.total_due ||
-                        0
-                    );
+            const expected = Number(student.total_due || 0);
+            const paid = Number(student.total_paid || 0);
+            const balance = Number(student.outstanding ?? (expected - paid));
 
 
-                const paid =
-                    Number(
-                        student.total_paid ||
-                        0
-                    );
+            let financeStatus = 'Unpaid';
 
 
-                const balance =
-                    Number(
-                        student.outstanding ||
-                        0
-                    );
-
-
-                let financeStatus =
-                    'Unpaid';
-
-
-                if (
-                    balance <= 0 &&
-                    expected > 0
-                ) {
-
-                    financeStatus =
-                        'Paid';
-
-                } else if (
-                    paid > 0
-                ) {
-
-                    financeStatus =
-                        'Partially Paid';
-                }
-
-
-                const matchesStatus =
-                    !status ||
-                    financeStatus ===
-                        status;
-
-
-                return (
-                    matchesSearch &&
-                    matchesClass &&
-                    matchesStatus
-                );
+            if (expected > 0 && balance <= 0) {
+                financeStatus = 'Paid';
+            } else if (paid > 0) {
+                financeStatus = 'Partially Paid';
             }
-        );
+
+
+            const matchesStatus =
+                !status || financeStatus === status;
+
+
+            return (
+                matchesSearch &&
+                matchesClass &&
+                matchesStatus
+            );
+        });
 
 
     renderStudents();
@@ -2628,20 +2268,12 @@ function applyStudentFilters() {
 function renderStudents() {
 
     const table =
-        document.getElementById(
-            'studentTable'
-        );
+        document.getElementById('studentTable');
 
 
-    document
-        .getElementById(
-            'studentCount'
-        )
-        .textContent =
+    document.getElementById('studentCount').textContent =
         `${filteredStudents.length} Student${
-            filteredStudents.length === 1
-                ? ''
-                : 's'
+            filteredStudents.length === 1 ? '' : 's'
         }`;
 
 
@@ -2649,10 +2281,7 @@ function renderStudents() {
 
         table.innerHTML =
             `<tr>
-                <td
-                    colspan="8"
-                    class="empty"
-                >
+                <td colspan="8" class="empty">
                     No Secondary School students found.
                 </td>
             </tr>`;
@@ -2661,183 +2290,97 @@ function renderStudents() {
     }
 
 
-    /*
-       Only Secondary Finance Officer
-       can edit student fees.
-    */
-
-    const showEditButton =
-        canEdit &&
-        !isViewOnly;
-
-
     table.innerHTML =
-        filteredStudents
-            .map(
-                student => {
+        filteredStudents.map(student => {
 
-                    const fullName =
-                        student.student_name ||
-                        [
-                            student.first_name,
-                            student.middle_name,
-                            student.last_name
-                        ]
-                        .filter(Boolean)
-                        .join(' ');
+            const fullName =
+                student.student_name ||
+                [
+                    student.first_name,
+                    student.middle_name,
+                    student.last_name
+                ]
+                .filter(Boolean)
+                .join(' ');
 
 
-                    const expected =
-                        Number(
-                            student.total_due ||
-                            0
-                        );
+            const expected = Number(student.total_due || 0);
+            const paid = Number(student.total_paid || 0);
+            const balance = Number(student.outstanding ?? (expected - paid));
 
 
-                    const paid =
-                        Number(
-                            student.total_paid ||
-                            0
-                        );
+            let statusText = 'Unpaid';
+            let statusClass = 'unpaid';
 
 
-                    const balance =
-                        Number(
-                            student.outstanding ||
-                            0
-                        );
+            if (expected > 0 && balance <= 0) {
+                statusText = 'Paid';
+                statusClass = 'paid';
+            } else if (paid > 0 && balance > 0) {
+                statusText = 'Partially Paid';
+                statusClass = 'partially-paid';
+            }
 
 
-                    let statusText =
-                        'Unpaid';
-
-                    let statusClass =
-                        'unpaid';
-
-
-                    if (
-                        balance <= 0 &&
-                        expected > 0
-                    ) {
-
-                        statusText =
-                            'Paid';
-
-                        statusClass =
-                            'paid';
-
-                    } else if (
-                        paid > 0 &&
-                        balance > 0
-                    ) {
-
-                        statusText =
-                            'Partially Paid';
-
-                        statusClass =
-                            'partially-paid';
-
-                    } else if (
-                        paid > 0 &&
-                        balance <= 0
-                    ) {
-
-                        statusText =
-                            'Paid';
-
-                        statusClass =
-                            'paid';
-                    }
+            let actions =
+                `<button
+                    class="btn view-btn"
+                    onclick="viewStudentFinance(${Number(student.student_id)})"
+                >
+                    View
+                </button>`;
 
 
-                    return `
-                        <tr>
+            if (canEditPayment) {
 
-                            <td>
-                                ${display(
-                                    student.admission_number
-                                )}
-                            </td>
+                actions +=
+                    ` <button
+                        class="btn edit-btn"
+                        onclick="editStudentFees(${Number(student.student_id)})"
+                    >
+                        Edit
+                    </button>`;
+            }
 
-                            <td>
-                                <strong>
-                                    ${display(fullName)}
-                                </strong>
-                            </td>
 
-                            <td>
-                                ${display(
-                                    student.class_name
-                                )}
-
-                                ${
-                                    student.arm
-                                        ? ` — ${display(student.arm)}`
-                                        : ''
-                                }
-                            </td>
-
-                            <td>
-                                ${formatCurrency(
-                                    expected
-                                )}
-                            </td>
-
-                            <td>
-                                ${formatCurrency(
-                                    paid
-                                )}
-                            </td>
-
-                            <td>
-                                <strong>
-                                    ${formatCurrency(
-                                        balance
-                                    )}
-                                </strong>
-                            </td>
-
-                            <td>
-                                <span
-                                    class="status ${statusClass}"
-                                >
-                                    ${statusText}
-                                </span>
-                            </td>
-
-                            <td>
-
-                                <button
-                                    class="btn view-btn"
-                                    onclick="viewStudentFinance(
-                                        ${Number(student.student_id)}
-                                    )"
-                                >
-                                    View
-                                </button>
-
-                                ${
-                                    showEditButton
-                                        ? `
-                                            <button
-                                                class="btn edit-btn"
-                                                onclick="editStudentFees(
-                                                    ${Number(student.student_id)}
-                                                )"
-                                            >
-                                                Edit
-                                            </button>
-                                        `
-                                        : ''
-                                }
-
-                            </td>
-
-                        </tr>
-                    `;
-                }
-            )
-            .join('');
+            return `
+                <tr>
+                    <td>
+                        ${escapeHTML(display(student.admission_number))}
+                    </td>
+                    <td>
+                        <strong>
+                            ${escapeHTML(display(fullName))}
+                        </strong>
+                    </td>
+                    <td>
+                        ${escapeHTML(display(student.class_name))}
+                        ${student.arm && student.arm.trim() ? ` — ${escapeHTML(display(student.arm))}` : ''}
+                    </td>
+                    <td>
+                        <strong>
+                            ${formatCurrency(expected)}
+                        </strong>
+                    </td>
+                    <td>
+                        ${formatCurrency(paid)}
+                    </td>
+                    <td>
+                        <strong>
+                            ${formatCurrency(balance)}
+                        </strong>
+                    </td>
+                    <td>
+                        <span class="status ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </td>
+                    <td>
+                        ${actions}
+                    </td>
+                </tr>
+            `;
+        }).join('');
 }
 
 
@@ -2848,7 +2391,7 @@ function renderStudents() {
 function viewStudentFinance(studentId) {
 
     window.location.href =
-        `finance-student.html?studentId=${studentId}&sector=secondary`;
+        `finance-student.html?studentId=${encodeURIComponent(studentId)}&sector=secondary`;
 }
 
 
@@ -2858,88 +2401,78 @@ function viewStudentFinance(studentId) {
 
 function editStudentFees(studentId) {
 
-    /*
-       HARD FRONTEND BLOCK.
-
-       Even if something elsewhere calls this function,
-       a Secondary Manager cannot edit.
-    */
-
-    if (!canEdit) {
-
+    if (!canEditPayment) {
         alert(
-            'Secondary Manager has view-only access. You cannot edit student fees.'
+            'You do not have permission to edit student fees.'
         );
-
         return;
     }
 
 
     window.location.href =
-        `finance-student-edit.html?studentId=${studentId}&sector=secondary`;
+        `finance-student-edit.html?studentId=${encodeURIComponent(studentId)}&sector=secondary`;
 }
 
 
 /* =========================================================
-   PAYMENT DATA
+   LOAD STUDENTS FOR PAYMENT SEARCH
 ========================================================= */
 
-let searchTimeout = null;
+async function populatePaymentStudents() {
 
-let allSecondaryStudents = [];
-
-
-/* =========================================================
-   PAYMENT SETUP
-========================================================= */
-
-async function populatePaymentDropdowns() {
-
-    /*
-       NEVER allow a Manager to initialise
-       the payment-recording interface.
-    */
-
-    if (!canRecordPayment) {
-
-        console.warn(
-            'Payment interface blocked:',
-            {
-                role_id: roleId,
-                role_name: role,
-                sector: sector
-            }
-        );
-
-        return;
-    }
+    if (!canRecordPayment) return;
 
 
     try {
 
         const studentData =
-            await apiRequest(
-                '/api/students?status=Active'
-            );
+            await apiRequest('/api/students?status=Active');
 
 
         const allStudents =
             Array.isArray(studentData)
                 ? studentData
                 : (
-                    studentData?.students ||
-                    []
+                    Array.isArray(studentData?.students)
+                        ? studentData.students
+                        : []
                 );
 
 
         allSecondaryStudents =
-            allStudents.filter(
-                student => {
+            allStudents.filter(student => {
 
-                    const studentSector =
+                const studentSector =
+                    String(
+                        student.sector ||
+                        student.school_section ||
+                        ''
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                return (
+                    studentSector === 'secondary' ||
+                    studentSector === 'secondary school' ||
+                    studentSector === 'jss' ||
+                    studentSector === 'sss'
+                );
+            });
+
+
+        if (
+            allSecondaryStudents.length === 0 &&
+            students.length > 0
+        ) {
+
+            allSecondaryStudents =
+                students.filter(student => {
+
+                    const section =
                         String(
-                            student.sector ||
                             student.school_section ||
+                            student.sector ||
                             ''
                         )
                         .trim()
@@ -2947,618 +2480,399 @@ async function populatePaymentDropdowns() {
 
 
                     return (
-                        studentSector ===
-                            'secondary' ||
-
-                        studentSector ===
-                            'secondary school' ||
-
-                        studentSector ===
-                            'jss' ||
-
-                        studentSector ===
-                            'sss'
+                        section === 'secondary' ||
+                        section === 'jss' ||
+                        section === 'sss' ||
+                        section === 'secondary school'
                     );
-                }
-            );
+                });
+        }
 
 
         console.log(
-            '📊 Loaded students for search:',
+            'SECONDARY PAYMENT STUDENTS:',
             allSecondaryStudents.length
         );
 
 
-        const searchInput =
-            document.getElementById(
-                'studentSearchInput'
-            );
+        setupStudentSearch();
+
+    } catch (error) {
+
+        console.error(
+            'PAYMENT STUDENT LOAD ERROR:',
+            error
+        );
+
+        alert('Unable to load students: ' + error.message);
+    }
+}
 
 
-        const resultsContainer =
-            document.getElementById(
-                'studentSearchResults'
-            );
+/* =========================================================
+   SETUP STUDENT SEARCH
+========================================================= */
+
+function setupStudentSearch() {
+
+    const searchInput =
+        document.getElementById('studentSearchInput');
+
+    const resultsContainer =
+        document.getElementById('studentSearchResults');
 
 
-        if (
-            !searchInput ||
-            !resultsContainer
-        ) {
+    if (!searchInput || !resultsContainer) return;
 
-            console.error(
-                'Search elements not found'
-            );
+
+    if (searchInput.dataset.searchReady === 'true') return;
+
+    searchInput.dataset.searchReady = 'true';
+
+
+    searchInput.addEventListener('input', function() {
+
+        const searchTerm = this.value.trim();
+
+
+        if (!searchTerm) {
+
+            resultsContainer.style.display = 'none';
+
+            document.getElementById('selectedStudentId').value = '';
+
+            document.getElementById('selectedStudentName').textContent = '';
+
+            document.getElementById('feeSummary').innerHTML =
+                'Search and select a student to view outstanding fees.';
 
             return;
         }
 
 
-        const newSearch =
-            searchInput.cloneNode(
-                true
+        if (searchTimeout) clearTimeout(searchTimeout);
+
+
+        searchTimeout =
+            setTimeout(
+                () => performStudentSearch(searchTerm),
+                250
             );
+    });
+}
 
 
-        searchInput.parentNode.replaceChild(
-            newSearch,
-            searchInput
-        );
+/* =========================================================
+   STUDENT SEARCH
+========================================================= */
+
+function performStudentSearch(searchTerm) {
+
+    const resultsContainer =
+        document.getElementById('studentSearchResults');
+
+    const term = searchTerm.toLowerCase().trim();
 
 
-        newSearch.addEventListener(
-            'input',
-            function() {
-
-                const searchTerm =
-                    this.value.trim();
+    if (term.length < 2) {
+        resultsContainer.style.display = 'none';
+        return;
+    }
 
 
-                if (!searchTerm) {
+    const results =
+        allSecondaryStudents.filter(student => {
 
-                    resultsContainer.style.display =
-                        'none';
-
-                    document
-                        .getElementById(
-                            'selectedStudentId'
-                        )
-                        .value = '';
-
-                    document
-                        .getElementById(
-                            'selectedStudentName'
-                        )
-                        .textContent = '';
-
-                    document
-                        .getElementById(
-                            'feeSummary'
-                        )
-                        .innerHTML =
-                        'Search and select a student to view outstanding fees.';
-
-                    return;
-                }
+            const fullName =
+                student.student_name ||
+                [
+                    student.first_name,
+                    student.middle_name,
+                    student.last_name
+                ]
+                .filter(Boolean)
+                .join(' ');
 
 
-                if (searchTimeout) {
+            const nameMatch =
+                fullName.toLowerCase().includes(term);
 
-                    clearTimeout(
-                        searchTimeout
-                    );
-                }
-
-
-                searchTimeout =
-                    setTimeout(
-                        () => {
-
-                            performStudentSearch(
-                                searchTerm
-                            );
-
-                        },
-                        300
-                    );
-            }
-        );
-
-
-        document.addEventListener(
-            'click',
-            function(e) {
-
-                if (
-                    !e.target.closest(
-                        '#studentSearchInput'
-                    ) &&
-                    !e.target.closest(
-                        '#studentSearchResults'
-                    )
-                ) {
-
-                    resultsContainer.style.display =
-                        'none';
-                }
-            }
-        );
-
-
-        async function performStudentSearch(
-            searchTerm
-        ) {
-
-            const term =
-                searchTerm
+            const admissionMatch =
+                String(student.admission_number || '')
                     .toLowerCase()
-                    .trim();
+                    .includes(term);
 
 
-            if (term.length < 2) {
-
-                resultsContainer.style.display =
-                    'none';
-
-                return;
-            }
+            return nameMatch || admissionMatch;
+        });
 
 
-            const results =
-                allSecondaryStudents.filter(
-                    student => {
-
-                        const fullName =
-                            student.student_name ||
-                            [
-                                student.first_name,
-                                student.middle_name,
-                                student.last_name
-                            ]
-                            .filter(Boolean)
-                            .join(' ');
+    const displayResults = results.slice(0, 20);
 
 
-                        const nameMatch =
-                            fullName
-                                .toLowerCase()
-                                .includes(term);
+    if (!displayResults.length) {
+
+        resultsContainer.innerHTML =
+            `<div style="padding:10px;color:#6b7280;">
+                No students found.
+            </div>`;
+
+        resultsContainer.style.display = 'block';
+
+        return;
+    }
 
 
-                        const admissionMatch =
-                            (
-                                student.admission_number ||
-                                ''
-                            )
-                            .toLowerCase()
-                            .includes(term);
+    let html = '';
 
 
-                        return (
-                            nameMatch ||
-                            admissionMatch
-                        );
-                    }
-                );
+    displayResults.forEach(student => {
+
+        const fullName =
+            student.student_name ||
+            [
+                student.first_name,
+                student.middle_name,
+                student.last_name
+            ]
+            .filter(Boolean)
+            .join(' ');
 
 
-            const displayResults =
-                results.slice(0, 20);
+        html += `
+            <div
+                style="
+                    padding:10px 12px;
+                    cursor:pointer;
+                    border-bottom:1px solid #f1f1f1;
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                "
+                onmouseover="this.style.backgroundColor='#f3f4f6'"
+                onmouseout="this.style.backgroundColor='white'"
+                onclick="selectStudent(${Number(student.student_id)})"
+            >
+                <div>
+                    <strong>${escapeHTML(fullName)}</strong>
+                    <div style="font-size:12px;color:#6b7280;">
+                        ${escapeHTML(student.admission_number || 'No admission number')}
+                        -
+                        ${escapeHTML(student.class_name || 'No class')}
+                    </div>
+                </div>
+                <div style="font-size:12px;color:#1a3c6e;">
+                    Select →
+                </div>
+            </div>
+        `;
+    });
 
 
-            if (!displayResults.length) {
-
-                resultsContainer.innerHTML =
-                    '<div style="padding:10px;color:#6b7280;">No students found.</div>';
-
-                resultsContainer.style.display =
-                    'block';
-
-                return;
-            }
+    if (results.length > 20) {
+        html += `
+            <div style="padding:10px;color:#6b7280;font-style:italic;text-align:center;">
+                + ${results.length - 20} more results
+            </div>
+        `;
+    }
 
 
-            let html = '';
+    resultsContainer.innerHTML = html;
+
+    resultsContainer.style.display = 'block';
+}
 
 
-            displayResults.forEach(
-                student => {
+/* =========================================================
+   SELECT STUDENT
+========================================================= */
 
-                    const fullName =
-                        student.student_name ||
-                        [
-                            student.first_name,
-                            student.middle_name,
-                            student.last_name
-                        ]
-                        .filter(Boolean)
-                        .join(' ');
+window.selectStudent = async function(studentId) {
+
+    const student =
+        allSecondaryStudents.find(
+            item => Number(item.student_id) === Number(studentId)
+        );
 
 
-                    html += `
-                        <div
-                            class="search-result-item"
-                            style="
-                                padding:10px 12px;
-                                cursor:pointer;
-                                border-bottom:1px solid #f1f1f1;
-                                display:flex;
-                                justify-content:space-between;
-                                align-items:center;
-                            "
-                            onclick="selectStudent(
-                                ${student.student_id},
-                                '${String(fullName).replace(/'/g, "\\'")}',
-                                '${String(student.admission_number || '').replace(/'/g, "\\'")}'
-                            )"
-                        >
+    if (!student) {
+        alert('Student could not be found.');
+        return;
+    }
 
-                            <div>
 
-                                <strong>
-                                    ${fullName}
-                                </strong>
+    const fullName =
+        student.student_name ||
+        [
+            student.first_name,
+            student.middle_name,
+            student.last_name
+        ]
+        .filter(Boolean)
+        .join(' ');
 
-                                <div
-                                    style="
-                                        font-size:12px;
-                                        color:#6b7280;
-                                    "
-                                >
-                                    ${
-                                        student.admission_number ||
-                                        'No admission number'
-                                    }
-                                    -
-                                    ${
-                                        student.class_name ||
-                                        'No class'
-                                    }
-                                </div>
 
-                            </div>
+    document.getElementById('selectedStudentId').value = studentId;
 
-                            <div
-                                style="
-                                    font-size:12px;
-                                    color:#1a3c6e;
-                                "
-                            >
-                                Select →
-                            </div>
+    document.getElementById('selectedStudentName').textContent =
+        `✅ Selected: ${fullName} (${student.admission_number || 'No admission number'})`;
 
-                        </div>
-                    `;
-                }
+    document.getElementById('studentSearchInput').value = fullName;
+
+    document.getElementById('studentSearchResults').style.display = 'none';
+
+
+    await loadStudentFees(studentId);
+};
+
+
+/* =========================================================
+   LOAD STUDENT FEES
+========================================================= */
+
+async function loadStudentFees(studentId) {
+
+    const feeSummary =
+        document.getElementById('feeSummary');
+
+    if (!feeSummary) return;
+
+
+    feeSummary.innerHTML = 'Loading fee details...';
+
+
+    try {
+
+        const feeData =
+            await apiRequest(
+                `/api/payments/students?sector=secondary&academic_year=${encodeURIComponent(ACADEMIC_YEAR)}`
             );
 
 
-            if (results.length > 20) {
+        const student =
+            feeData?.students?.find(
+                item => Number(item.student_id) === Number(studentId)
+            );
+
+
+        if (!student) {
+
+            feeSummary.innerHTML =
+                `<div style="color:#6b7280;">
+                    No finance record found for this student.
+                    <br>
+                    <span style="font-size:12px;">
+                        Total Expected: ${formatCurrency(0)}
+                    </span>
+                </div>`;
+
+            return;
+        }
+
+
+        const totalExpected = Number(student.total_due || 0);
+        const totalPaid = Number(student.total_paid || 0);
+        const totalBalance = Number(student.outstanding ?? (totalExpected - totalPaid));
+
+
+        const feeDetails =
+            Array.isArray(student.fees) ? student.fees : [];
+
+
+        let html = `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div>
+                    <strong>Total Expected:</strong>
+                    ${formatCurrency(totalExpected)}
+                </div>
+                <div>
+                    <strong>Total Paid:</strong>
+                    ${formatCurrency(totalPaid)}
+                </div>
+                <div>
+                    <strong>Outstanding Balance:</strong>
+                    <span style="color:#dc2626;font-weight:bold;">
+                        ${formatCurrency(totalBalance)}
+                    </span>
+                </div>
+                <div>
+                    <strong>Payment Status:</strong>
+                    ${escapeHTML(
+                        student.payment_status ||
+                        (
+                            totalBalance <= 0 && totalExpected > 0
+                                ? 'Paid'
+                                : totalPaid > 0
+                                    ? 'Partially Paid'
+                                    : 'Unpaid'
+                        )
+                    )}
+                </div>
+            </div>
+            <hr style="margin:8px 0;">
+            <div style="max-height:180px;overflow-y:auto;font-size:12px;">
+        `;
+
+
+        if (!feeDetails.length) {
+
+            html += `
+                <div style="color:#6b7280;padding:8px 0;">
+                    No individual fee categories found.
+                </div>
+            `;
+
+        } else {
+
+            feeDetails.forEach(fee => {
+
+                const amountDue = Number(fee.amount_due || fee.expected || 0);
+                const amountPaid = Number(fee.amount_paid || fee.paid || 0);
+                const balance = Number(fee.balance ?? (amountDue - amountPaid));
+
+                const status = balance <= 0 ? '✅ Paid' : '⏳ Outstanding';
+
+                const feeName =
+                    fee.fee_types?.fee_name ||
+                    fee.fee_name ||
+                    'Fee';
+
 
                 html += `
                     <div
                         style="
-                            padding:10px;
-                            color:#6b7280;
-                            font-style:italic;
-                            text-align:center;
+                            display:grid;
+                            grid-template-columns:2fr 1fr 1fr 1fr;
+                            gap:8px;
+                            padding:6px 0;
+                            border-bottom:1px solid #f1f1f1;
+                            align-items:center;
                         "
                     >
-                        + ${results.length - 20}
-                        more results
+                        <span>${escapeHTML(feeName)}</span>
+                        <span>Due: ${formatCurrency(amountDue)}</span>
+                        <span>Balance: ${formatCurrency(balance)}</span>
+                        <span>${status}</span>
                     </div>
                 `;
-            }
-
-
-            resultsContainer.innerHTML =
-                html;
-
-            resultsContainer.style.display =
-                'block';
+            });
         }
 
 
-        window.selectStudent =
-            function(
-                studentId,
-                studentName,
-                admissionNumber
-            ) {
+        html += '</div>';
 
-                document
-                    .getElementById(
-                        'selectedStudentId'
-                    )
-                    .value =
-                    studentId;
-
-
-                document
-                    .getElementById(
-                        'selectedStudentName'
-                    )
-                    .textContent =
-                    `✅ Selected: ${studentName} (${admissionNumber})`;
-
-
-                document
-                    .getElementById(
-                        'studentSearchInput'
-                    )
-                    .value =
-                    studentName;
-
-
-                document
-                    .getElementById(
-                        'studentSearchResults'
-                    )
-                    .style.display =
-                    'none';
-
-
-                loadStudentFees(
-                    studentId
-                );
-            };
-
-
-        async function loadStudentFees(
-            studentId
-        ) {
-
-            const feeSummary =
-                document.getElementById(
-                    'feeSummary'
-                );
-
-
-            if (!feeSummary) {
-                return;
-            }
-
-
-            try {
-
-                const feeData =
-                    await apiRequest(
-                        '/api/payments/students?sector=secondary&academic_year=2026/2027'
-                    );
-
-
-                const student =
-                    feeData?.students?.find(
-                        s =>
-                            s.student_id ==
-                            studentId
-                    );
-
-
-                if (
-                    student &&
-                    student.fees &&
-                    student.fees.length > 0
-                ) {
-
-                    const totalBalance =
-                        student.outstanding ||
-                        0;
-
-
-                    const totalExpected =
-                        student.total_due ||
-                        0;
-
-
-                    const totalPaid =
-                        student.total_paid ||
-                        0;
-
-
-                    let html = `
-
-                        <div
-                            style="
-                                display:grid;
-                                grid-template-columns:1fr 1fr;
-                                gap:8px;
-                                margin-bottom:8px;
-                            "
-                        >
-
-                            <div>
-                                <strong>
-                                    Total Expected:
-                                </strong>
-                                ${formatCurrency(
-                                    totalExpected
-                                )}
-                            </div>
-
-                            <div>
-                                <strong>
-                                    Total Paid:
-                                </strong>
-                                ${formatCurrency(
-                                    totalPaid
-                                )}
-                            </div>
-
-                            <div>
-                                <strong>
-                                    Outstanding Balance:
-                                </strong>
-
-                                <span
-                                    style="
-                                        color:#dc2626;
-                                        font-weight:bold;
-                                    "
-                                >
-                                    ${formatCurrency(
-                                        totalBalance
-                                    )}
-                                </span>
-
-                            </div>
-
-                            <div>
-                                <strong>
-                                    Payment Status:
-                                </strong>
-
-                                ${
-                                    totalBalance <= 0 && totalExpected > 0
-                                        ? 'Paid'
-                                        : totalPaid > 0
-                                            ? 'Partially Paid'
-                                            : 'Unpaid'
-                                }
-
-                            </div>
-
-                        </div>
-
-                        <hr style="margin:8px 0;">
-
-                        <div
-                            style="
-                                max-height:150px;
-                                overflow-y:auto;
-                                font-size:12px;
-                            "
-                        >
-                    `;
-
-
-                    student.fees.forEach(
-                        fee => {
-
-                            const amountDue =
-                                Number(
-                                    fee.amount_due ||
-                                    fee.expected ||
-                                    0
-                                );
-
-                            const amountPaid =
-                                Number(
-                                    fee.amount_paid ||
-                                    fee.paid ||
-                                    0
-                                );
-
-                            const balance =
-                                Number(
-                                    fee.balance ??
-                                    (amountDue - amountPaid)
-                                );
-
-                            const status =
-                                balance <= 0
-                                    ? '✅ Paid'
-                                    : '⏳ Pending';
-
-                            const feeName =
-                                fee.fee_types?.fee_name ||
-                                fee.fee_name ||
-                                'Fee';
-
-
-                            html += `
-
-                                <div
-                                    style="
-                                        display:flex;
-                                        justify-content:space-between;
-                                        padding:4px 0;
-                                        border-bottom:1px solid #f1f1f1;
-                                    "
-                                >
-
-                                    <span>
-                                        ${feeName}
-                                    </span>
-
-                                    <span>
-                                        Balance:
-                                        ${formatCurrency(
-                                            balance
-                                        )}
-                                    </span>
-
-                                    <span
-                                        style="
-                                            font-size:11px;
-                                        "
-                                    >
-                                        ${status}
-                                    </span>
-
-                                </div>
-
-                            `;
-                        }
-                    );
-
-
-                    html +=
-                        '</div>';
-
-
-                    feeSummary.innerHTML =
-                        html;
-
-                } else {
-
-                    feeSummary.innerHTML = `
-
-                        <div
-                            style="
-                                color:#6b7280;
-                            "
-                        >
-                            No fees found for this student.
-
-                            <br>
-
-                            <span
-                                style="
-                                    font-size:12px;
-                                "
-                            >
-                                Total Expected:
-                                ${formatCurrency(0)}
-                            </span>
-
-                        </div>
-                    `;
-                }
-
-            } catch (error) {
-
-                console.error(
-                    'Error fetching student fees:',
-                    error
-                );
-
-                feeSummary.innerHTML =
-                    'Error loading fee details.';
-            }
-        }
+        feeSummary.innerHTML = html;
 
     } catch (error) {
 
-        console.error(
-            'PAYMENT SETUP ERROR:',
-            error
-        );
+        console.error('STUDENT FEE LOAD ERROR:', error);
 
-        alert(
-            'Unable to load students: ' +
-            error.message
-        );
+        feeSummary.innerHTML =
+            `<div class="error-message">
+                Error loading fee details:
+                ${escapeHTML(error.message)}
+            </div>`;
     }
 }
 
@@ -3572,155 +2886,46 @@ async function submitPayment(event) {
     event.preventDefault();
 
 
-    /*
-       HARD SECURITY/UI CHECK.
-
-       Secondary Manager can NEVER submit
-       a payment from this page.
-    */
-
     if (!canRecordPayment) {
-
-        alert(
-            'Secondary Manager has view-only access. Only the Secondary Finance Officer can record payments.'
-        );
-
-        return;
-    }
-
-
-    const studentIdInput =
-        document.getElementById(
-            'selectedStudentId'
-        );
-
-
-    const amountInput =
-        document.getElementById(
-            'paymentAmount'
-        );
-
-
-    const methodSelect =
-        document.getElementById(
-            'paymentMethod'
-        );
-
-
-    const slipInput =
-        document.getElementById(
-            'paymentSlip'
-        );
-
-
-    const refInput =
-        document.getElementById(
-            'paymentRef'
-        );
-
-
-    const yearInput =
-        document.getElementById(
-            'paymentYear'
-        );
-
-
-    const purposeInput =
-        document.getElementById(
-            'paymentNotes'
-        );
-
-
-    if (!studentIdInput) {
-
-        alert(
-            'Error: Student selection element not found. Please refresh the page.'
-        );
-
-        return;
-    }
-
-
-    if (
-        !amountInput ||
-        !methodSelect
-    ) {
-
-        alert(
-            'Error: Form elements not found. Please refresh the page.'
-        );
-
+        alert('Only the Secondary Finance Officer can record payments.');
         return;
     }
 
 
     const studentId =
-        studentIdInput.value;
-
+        document.getElementById('selectedStudentId').value;
 
     const amountPaid =
-        parseFloat(
-            amountInput.value
-        );
-
+        parseFloat(document.getElementById('paymentAmount').value);
 
     const paymentMethod =
-        methodSelect.value;
-
+        document.getElementById('paymentMethod').value;
 
     const paymentSlip =
-        slipInput
-            ? slipInput.value
-            : '';
-
+        document.getElementById('paymentSlip').value.trim();
 
     const bankRef =
-        refInput
-            ? refInput.value
-            : '';
-
+        document.getElementById('paymentRef').value.trim();
 
     const academicYear =
-        yearInput
-            ? yearInput.value
-            : '2026/2027';
-
+        document.getElementById('paymentYear').value.trim() || ACADEMIC_YEAR;
 
     const purpose =
-        purposeInput
-            ? purposeInput.value
-            : '';
+        document.getElementById('paymentNotes').value.trim();
 
 
     if (!studentId) {
-
-        alert(
-            'Please search and select a student.'
-        );
-
+        alert('Please search and select a student.');
         return;
     }
 
-
-    if (
-        !amountPaid ||
-        amountPaid <= 0
-    ) {
-
-        alert(
-            'Please enter a valid amount.'
-        );
-
+    if (!amountPaid || amountPaid <= 0) {
+        alert('Please enter a valid amount.');
         return;
     }
-
 
     if (!paymentMethod) {
-
-        alert(
-            'Please select a payment method.'
-        );
-
+        alert('Please select a payment method.');
         return;
     }
 
@@ -3729,141 +2934,130 @@ async function submitPayment(event) {
 
         const feeData =
             await apiRequest(
-                '/api/payments/students?sector=secondary&academic_year=2026/2027'
+                `/api/payments/students?sector=secondary&academic_year=${encodeURIComponent(academicYear)}`
             );
 
 
         const student =
             feeData?.students?.find(
-                s =>
-                    s.student_id ==
-                    studentId
+                item => Number(item.student_id) === Number(studentId)
             );
 
 
-        if (
-            !student ||
-            !student.fees ||
-            student.fees.length === 0
-        ) {
-
-            alert(
-                'This student has no fees to pay.'
-            );
-
+        if (!student) {
+            alert('This student could not be found in the Secondary Finance records.');
             return;
         }
 
 
+        const feeDetails =
+            Array.isArray(student.fees) ? student.fees : [];
+
+
         const pendingFees =
-            student.fees.filter(
-                fee => {
+            feeDetails
+                .map(fee => {
+
                     const amountDue = Number(fee.amount_due || fee.expected || 0);
-                    const amountPaid = Number(fee.amount_paid || fee.paid || 0);
-                    const balance = Number(fee.balance ?? (amountDue - amountPaid));
-                    return balance > 0;
-                }
-            );
+                    const amountPaidForFee = Number(fee.amount_paid || fee.paid || 0);
+                    const balance = Number(fee.balance ?? (amountDue - amountPaidForFee));
+
+                    return {
+                        ...fee,
+                        balance,
+                        student_fee_id: fee.student_fee_id
+                    };
+                })
+                .filter(fee => Number(fee.balance) > 0);
 
 
         if (!pendingFees.length) {
-
-            alert(
-                'This student has no outstanding fees. All fees are paid!'
-            );
-
+            alert('This student has no outstanding fees. All fees are paid!');
             return;
         }
 
 
         const totalOutstanding =
             pendingFees.reduce(
-                (sum, fee) => {
-                    const amountDue = Number(fee.amount_due || fee.expected || 0);
-                    const amountPaid = Number(fee.amount_paid || fee.paid || 0);
-                    const balance = Number(fee.balance ?? (amountDue - amountPaid));
-                    return sum + balance;
-                },
+                (sum, fee) => sum + Number(fee.balance || 0),
                 0
             );
 
 
-        if (
-            amountPaid >
-            totalOutstanding
-        ) {
+        if (amountPaid > totalOutstanding) {
 
-            if (
-                !confirm(
-                    `Amount (${formatCurrency(amountPaid)}) exceeds total outstanding (${formatCurrency(totalOutstanding)}). The excess will be recorded as overpayment. Continue?`
-                )
-            ) {
+            alert(
+                `The amount entered (${formatCurrency(amountPaid)}) exceeds the student's outstanding balance (${formatCurrency(totalOutstanding)}).\n\nPlease enter an amount not greater than the outstanding balance.`
+            );
 
-                return;
-            }
+            return;
         }
 
 
         pendingFees.sort(
             (a, b) =>
-                a.student_fee_id -
-                b.student_fee_id
+                Number(a.student_fee_id || 0) -
+                Number(b.student_fee_id || 0)
         );
 
 
-        let remainingAmount =
-            amountPaid;
-
+        let remainingAmount = amountPaid;
 
         const distribution = [];
 
 
-        for (
-            const fee
-            of pendingFees
-        ) {
+        for (const fee of pendingFees) {
 
-            if (
-                remainingAmount <= 0
-            ) {
-                break;
-            }
+            if (remainingAmount <= 0) break;
 
-            const amountDue = Number(fee.amount_due || fee.expected || 0);
-            const amountPaidForFee = Number(fee.amount_paid || fee.paid || 0);
-            const feeBalance = Number(fee.balance ?? (amountDue - amountPaidForFee));
-
+            const feeBalance = Number(fee.balance || 0);
 
             const amountToPay =
-                Math.min(
-                    remainingAmount,
-                    feeBalance
-                );
+                Math.min(remainingAmount, feeBalance);
 
 
-            if (
-                amountToPay > 0
-            ) {
+            if (amountToPay > 0) {
 
                 distribution.push({
-
-                    student_fee_id:
-                        fee.student_fee_id,
-
-                    amount:
-                        amountToPay,
-
+                    student_fee_id: fee.student_fee_id,
+                    amount: Number(amountToPay.toFixed(2)),
                     fee_name:
                         fee.fee_types?.fee_name ||
                         fee.fee_name ||
                         'Fee'
-
                 });
 
 
-                remainingAmount -= amountToPay;
+                remainingAmount =
+                    Number((remainingAmount - amountToPay).toFixed(2));
             }
         }
+
+
+        if (!distribution.length) {
+            alert('There is no outstanding fee available for this payment.');
+            return;
+        }
+
+
+        const studentName =
+            student.student_name ||
+            [
+                student.first_name,
+                student.middle_name,
+                student.last_name
+            ]
+            .filter(Boolean)
+            .join(' ');
+
+
+        const confirmation =
+            confirm(
+                `Record ${formatCurrency(amountPaid)} payment for ${studentName}?\n\nThe amount will be distributed automatically across the student's outstanding fees.`
+            );
+
+
+        if (!confirmation) return;
 
 
         let successCount = 0;
@@ -3871,10 +3065,7 @@ async function submitPayment(event) {
         const errors = [];
 
 
-        for (
-            const item
-            of distribution
-        ) {
+        for (const item of distribution) {
 
             try {
 
@@ -3883,189 +3074,91 @@ async function submitPayment(event) {
                         '/api/payments',
                         {
                             method: 'POST',
-
-                            body:
-                                JSON.stringify({
-
-                                    student_id:
-                                        studentId,
-
-                                    fee_id:
-                                        item.student_fee_id,
-
-                                    amount_paid:
-                                        item.amount,
-
-                                    payment_method:
-                                        paymentMethod,
-
-                                    payment_slip_number:
-                                        paymentSlip ||
-                                        null,
-
-                                    bank_reference:
-                                        bankRef ||
-                                        null,
-
-                                    purpose:
-                                        purpose ||
-                                        `Auto-distributed payment - ${item.fee_name}`,
-
-                                    notes:
-                                        null,
-
-                                    academic_year:
-                                        academicYear
-
-                                })
+                            body: JSON.stringify({
+                                student_id: Number(studentId),
+                                fee_id: Number(item.student_fee_id),
+                                amount_paid: item.amount,
+                                payment_method: paymentMethod,
+                                payment_slip_number: paymentSlip || null,
+                                bank_reference: bankRef || null,
+                                purpose: purpose || `Payment - ${item.fee_name}`,
+                                notes: null,
+                                academic_year: academicYear
+                            })
                         }
                     );
 
 
-                if (result) {
-
-                    successCount++;
-                }
+                if (result) successCount++;
 
             } catch (error) {
 
                 errors.push(
-                    `Failed to record payment for ${item.fee_name}: ${error.message}`
+                    `Failed for ${item.fee_name}: ${error.message}`
                 );
             }
         }
 
 
-        if (
-            remainingAmount > 0
-        ) {
+        if (errors.length > 0) {
 
             alert(
-                `All fees paid! Overpayment of ${formatCurrency(remainingAmount)} will be recorded as credit.`
-            );
-        }
-
-
-        if (
-            errors.length > 0
-        ) {
-
-            alert(
-                `Payment recorded with some issues:
-- ${successCount} payments successful
-- ${errors.length} issues:
-${errors.join('\n')}`
+                `Payment processing completed with issues.\n\nSuccessful: ${successCount}\nIssues: ${errors.length}\n\n${errors.join('\n')}`
             );
 
         } else {
 
             alert(
-                `✅ Payment of ${formatCurrency(amountPaid)} recorded successfully!
-Distributed across ${successCount} fee categories.`
+                `✅ Payment of ${formatCurrency(amountPaid)} recorded successfully!\n\nDistributed across ${successCount} fee categor${successCount === 1 ? 'y' : 'ies'}.`
             );
         }
 
 
-        closeModal(
-            'paymentModal'
-        );
+        closeModal('paymentModal');
+
+        document.getElementById('paymentForm').reset();
+
+        document.getElementById('paymentYear').value = ACADEMIC_YEAR;
+
+        document.getElementById('selectedStudentId').value = '';
+
+        document.getElementById('selectedStudentName').textContent = '';
+
+        document.getElementById('studentSearchResults').style.display = 'none';
+
+        document.getElementById('feeSummary').innerHTML =
+            'Search and select a student to view outstanding fees.';
+
+        document.getElementById('studentSearchInput').value = '';
 
 
-        document
-            .getElementById(
-                'paymentForm'
-            )
-            .reset();
-
-
-        const feeSummary =
-            document.getElementById(
-                'feeSummary'
-            );
-
-
-        if (feeSummary) {
-
-            feeSummary.innerHTML =
-                'Search and select a student to view outstanding fees.';
-        }
-
-
-        const selectedName =
-            document.getElementById(
-                'selectedStudentName'
-            );
-
-
-        if (selectedName) {
-
-            selectedName.textContent =
-                '';
-        }
-
-
-        const searchInput =
-            document.getElementById(
-                'studentSearchInput'
-            );
-
-
-        if (searchInput) {
-
-            searchInput.value =
-                '';
-        }
-
-
-        const studentIdHidden =
-            document.getElementById(
-                'selectedStudentId'
-            );
-
-
-        if (studentIdHidden) {
-
-            studentIdHidden.value =
-                '';
-        }
-
-
-        loadAllData();
+        await loadAllData();
 
     } catch (error) {
 
-        alert(
-            'Error recording payment: ' +
-            error.message
-        );
+        console.error('PAYMENT ERROR:', error);
 
-        console.error(
-            'Payment error:',
-            error
-        );
+        alert('Error recording payment: ' + error.message);
     }
 }
 
 
 /* =========================================================
-   APPROVALS
+   LOAD PAYMENT HISTORY
 ========================================================= */
 
-async function loadApprovals() {
+async function loadPaymentHistory() {
 
     const table =
-        document.getElementById(
-            'approvalTable'
-        );
+        document.getElementById('paymentTable');
+
+    if (!table) return;
 
 
     table.innerHTML =
         `<tr>
-            <td
-                colspan="6"
-                class="empty"
-            >
-                Loading approvals...
+            <td colspan="8" class="empty">
+                Loading payments...
             </td>
         </tr>`;
 
@@ -4074,19 +3167,311 @@ async function loadApprovals() {
 
         const data =
             await apiRequest(
-                '/api/approvals?sector=secondary'
+                `/api/payments?sector=secondary&academic_year=${encodeURIComponent(ACADEMIC_YEAR)}`
             );
+
+
+        payments =
+            Array.isArray(data?.payments)
+                ? data.payments
+                : [];
+
+
+        filteredPayments = [...payments];
+
+        renderPayments();
+
+    } catch (error) {
+
+        console.error('PAYMENT HISTORY ERROR:', error);
+
+
+        document.getElementById('paymentMessage').innerHTML =
+            `<div class="error-message">
+                ${escapeHTML(error.message)}
+            </div>`;
+
+
+        table.innerHTML =
+            `<tr>
+                <td colspan="8" class="empty">
+                    Error loading payments:
+                    ${escapeHTML(error.message)}
+                </td>
+            </tr>`;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT FILTERS
+========================================================= */
+
+function applyPaymentFilters() {
+
+    const search =
+        document.getElementById('paymentSearch')?.value.trim().toLowerCase() || '';
+
+    const method =
+        document.getElementById('paymentMethodFilter')?.value || '';
+
+    const status =
+        document.getElementById('paymentStatusFilter')?.value || '';
+
+    const date =
+        document.getElementById('paymentDateFilter')?.value || '';
+
+
+    filteredPayments =
+        payments.filter(payment => {
+
+            const studentName =
+                String(
+                    payment.student_name ||
+                    payment.students?.student_name ||
+                    ''
+                )
+                .toLowerCase();
+
+
+            const admission =
+                String(payment.admission_number || '')
+                    .toLowerCase();
+
+
+            const slip =
+                String(payment.payment_slip_number || '')
+                    .toLowerCase();
+
+
+            const matchesSearch =
+                !search ||
+                studentName.includes(search) ||
+                admission.includes(search) ||
+                slip.includes(search);
+
+
+            const paymentMethod =
+                String(payment.payment_method || '');
+
+
+            const matchesMethod =
+                !method || paymentMethod === method;
+
+
+            const paymentStatus =
+                String(
+                    payment.approval_status ||
+                    payment.status ||
+                    ''
+                )
+                .toLowerCase();
+
+
+            const matchesStatus =
+                !status || paymentStatus === status;
+
+
+            let matchesDate = true;
+
+
+            if (date && payment.created_at) {
+                matchesDate =
+                    String(payment.created_at).startsWith(date);
+            }
+
+
+            return (
+                matchesSearch &&
+                matchesMethod &&
+                matchesStatus &&
+                matchesDate
+            );
+        });
+
+
+    renderPayments();
+}
+
+
+/* =========================================================
+   RENDER PAYMENTS
+========================================================= */
+
+function renderPayments() {
+
+    const table =
+        document.getElementById('paymentTable');
+
+
+    document.getElementById('paymentCount').textContent =
+        `${filteredPayments.length} Payment${
+            filteredPayments.length === 1 ? '' : 's'
+        }`;
+
+
+    if (!filteredPayments.length) {
+
+        table.innerHTML =
+            `<tr>
+                <td colspan="8" class="empty">
+                    No payments found.
+                </td>
+            </tr>`;
+
+        return;
+    }
+
+
+    table.innerHTML =
+        filteredPayments.map(payment => {
+
+            const status =
+                String(
+                    payment.approval_status ||
+                    payment.status ||
+                    'Pending'
+                );
+
+
+            const statusLower = status.toLowerCase();
+
+
+            let statusClass = 'pending';
+
+            if (statusLower === 'approved') {
+                statusClass = 'approved';
+            } else if (statusLower === 'rejected') {
+                statusClass = 'rejected';
+            }
+
+
+            const studentName =
+                payment.student_name ||
+                [
+                    payment.first_name,
+                    payment.middle_name,
+                    payment.last_name
+                ]
+                .filter(Boolean)
+                .join(' ') ||
+                '—';
+
+
+            const feeName =
+                payment.fee_name ||
+                payment.student_fees?.fee_types?.fee_name ||
+                '—';
+
+
+            const amount =
+                Number(payment.amount_paid || 0);
+
+
+            return `
+                <tr>
+                    <td>
+                        ${formatDate(payment.created_at)}
+                    </td>
+                    <td>
+                        ${escapeHTML(display(payment.admission_number))}
+                    </td>
+                    <td>
+                        <strong>
+                            ${escapeHTML(studentName)}
+                        </strong>
+                    </td>
+                    <td>
+                        ${escapeHTML(feeName)}
+                    </td>
+                    <td>
+                        <strong>
+                            ${formatCurrency(amount)}
+                        </strong>
+                    </td>
+                    <td>
+                        ${escapeHTML(display(payment.payment_method))}
+                    </td>
+                    <td>
+                        <span class="status ${statusClass}">
+                            ${escapeHTML(status)}
+                        </span>
+                    </td>
+                    <td>
+                        ${
+                            canEditPayment
+                                ? `
+                                    <button
+                                        class="btn edit-btn"
+                                        onclick="editPayment(${Number(payment.payment_id)})"
+                                    >
+                                        Edit
+                                    </button>
+                                  `
+                                : ''
+                        }
+                    </td>
+                </tr>
+            `;
+        }).join('');
+}
+
+
+/* =========================================================
+   EDIT PAYMENT
+========================================================= */
+
+function editPayment(paymentId) {
+
+    if (!canEditPayment) {
+        alert('Only the Secondary Finance Officer can edit payments.');
+        return;
+    }
+
+
+    window.location.href =
+        `finance-payment-edit.html?paymentId=${encodeURIComponent(paymentId)}&sector=secondary`;
+}
+
+
+/* =========================================================
+   LOAD APPROVALS
+========================================================= */
+
+async function loadApprovals() {
+
+    const table =
+        document.getElementById('approvalTable');
+
+
+    table.innerHTML =
+        `<tr>
+            <td colspan="6" class="empty">
+                Loading approvals...
+            </td>
+        </tr>`;
+
+
+    document.getElementById('approvalMessage').innerHTML = '';
+
+
+    try {
+
+        const data =
+            await apiRequest('/api/approvals?sector=secondary');
 
 
         approvals =
             Array.isArray(data)
                 ? data
-                : [];
+                : (
+                    Array.isArray(data?.approvals)
+                        ? data.approvals
+                        : []
+                );
 
 
-        filteredApprovals =
-            [...approvals];
-
+        filteredApprovals = [...approvals];
 
         renderApprovals();
 
@@ -4094,74 +3479,38 @@ async function loadApprovals() {
         const pendingApprovals =
             approvals.filter(
                 approval =>
-                    approval.approval_status ===
-                    'Pending'
+                    String(approval.approval_status || '').toLowerCase() === 'pending'
             );
 
 
-        const pendingCount =
-            pendingApprovals.length;
+        const pendingCount = pendingApprovals.length;
 
 
-        document
-            .getElementById(
-                'pendingCount'
-            )
-            .textContent =
-            pendingCount;
+        document.getElementById('pendingCount').textContent = pendingCount;
 
+        document.getElementById('pendingCountBadge').textContent = pendingCount;
 
-        document
-            .getElementById(
-                'pendingCountBadge'
-            )
-            .textContent =
-            pendingCount;
+        document.getElementById('pendingChanges').textContent = pendingCount;
 
-
-        document
-            .getElementById(
-                'pendingChanges'
-            )
-            .textContent =
-            pendingCount;
-
-
-        document
-            .getElementById(
-                'approvalBanner'
-            )
-            .style.display =
-            pendingCount > 0
-                ? 'flex'
-                : 'none';
+        document.getElementById('approvalBanner').style.display =
+            pendingCount > 0 ? 'flex' : 'none';
 
     } catch (error) {
 
-        console.error(
-            'APPROVAL ERROR:',
-            error
-        );
+        console.error('APPROVAL ERROR:', error);
 
 
-        document
-            .getElementById(
-                'approvalMessage'
-            )
-            .innerHTML =
+        document.getElementById('approvalMessage').innerHTML =
             `<div class="error-message">
-                ${display(error.message)}
+                ${escapeHTML(error.message)}
             </div>`;
 
 
         table.innerHTML =
             `<tr>
-                <td
-                    colspan="6"
-                    class="empty"
-                >
+                <td colspan="6" class="empty">
                     Error loading approvals:
-                    ${display(error.message)}
+                    ${escapeHTML(error.message)}
                 </td>
             </tr>`;
     }
@@ -4175,19 +3524,14 @@ async function loadApprovals() {
 function applyApprovalFilters() {
 
     const status =
-        document
-            .getElementById(
-                'approvalStatusFilter'
-            )
-            .value;
+        document.getElementById('approvalStatusFilter').value;
 
 
     filteredApprovals =
         approvals.filter(
             approval =>
                 !status ||
-                approval.approval_status ===
-                    status
+                approval.approval_status === status
         );
 
 
@@ -4202,20 +3546,12 @@ function applyApprovalFilters() {
 function renderApprovals() {
 
     const table =
-        document.getElementById(
-            'approvalTable'
-        );
+        document.getElementById('approvalTable');
 
 
-    document
-        .getElementById(
-            'approvalCount'
-        )
-        .textContent =
+    document.getElementById('approvalCount').textContent =
         `${filteredApprovals.length} Item${
-            filteredApprovals.length === 1
-                ? ''
-                : 's'
+            filteredApprovals.length === 1 ? '' : 's'
         }`;
 
 
@@ -4223,10 +3559,7 @@ function renderApprovals() {
 
         table.innerHTML =
             `<tr>
-                <td
-                    colspan="6"
-                    class="empty"
-                >
+                <td colspan="6" class="empty">
                     No approvals found.
                 </td>
             </tr>`;
@@ -4236,371 +3569,226 @@ function renderApprovals() {
 
 
     table.innerHTML =
-        filteredApprovals
-            .map(
-                approval => {
+        filteredApprovals.map(approval => {
 
-                    const status =
-                        approval.approval_status ||
-                        'Pending';
+            const status =
+                approval.approval_status || 'Pending';
 
 
-                    const statusClass =
-                        status === 'Approved'
-                            ? 'approved'
-                            : status === 'Pending'
-                                ? 'pending'
-                                : 'rejected';
+            const statusClass =
+                status === 'Approved'
+                    ? 'approved'
+                    : status === 'Pending'
+                        ? 'pending'
+                        : 'rejected';
 
 
-                    let actionButtons =
-                        '';
+            let actionButtons = '';
 
 
-                    /*
-                       ONLY Proprietor and Administrator
-                       can approve/reject.
-                    */
+            if (canApprove && status === 'Pending') {
 
-                    if (
-                        canApprove &&
-                        status === 'Pending'
-                    ) {
-
-                        actionButtons =
-                            `<button
-                                class="btn approve-btn"
-                                onclick="
-                                    openApprovalModal(
-                                        '${approval.record_type}',
-                                        ${approval.approval_id}
-                                    )
-                                "
-                            >
-                                Review
-                            </button>`;
-                    }
+                actionButtons =
+                    `<button
+                        class="btn approve-btn"
+                        onclick="openApprovalModal(
+                            '${escapeHTML(approval.record_type || '')}',
+                            ${Number(approval.approval_id)}
+                        )"
+                    >
+                        Review
+                    </button>`;
+            }
 
 
-                    const details =
-                        approval.description ||
-                        approval.fee_name ||
-                        approval.record_type ||
-                        '—';
+            const details =
+                approval.description ||
+                approval.fee_name ||
+                approval.record_type ||
+                '—';
 
 
-                    return `
-                        <tr>
-
-                            <td>
-                                <strong>
-                                    ${display(
-                                        approval.record_type
-                                    )}
-                                </strong>
-                            </td>
-
-                            <td>
-                                ${display(details)}
-                            </td>
-
-                            <td>
-                                <strong>
-                                    ${formatCurrency(
-                                        approval.amount
-                                    )}
-                                </strong>
-                            </td>
-
-                            <td>
-
-                                <span
-                                    class="status ${statusClass}"
-                                >
-                                    ${status}
-                                </span>
-
-                            </td>
-
-                            <td>
-                                ${formatDate(
-                                    approval.created_at
-                                )}
-                            </td>
-
-                            <td>
-                                ${actionButtons}
-                            </td>
-
-                        </tr>
-                    `;
-                }
-            )
-            .join('');
+            return `
+                <tr>
+                    <td>
+                        <strong>
+                            ${escapeHTML(display(approval.record_type))}
+                        </strong>
+                    </td>
+                    <td>
+                        ${escapeHTML(display(details))}
+                    </td>
+                    <td>
+                        <strong>
+                            ${formatCurrency(approval.amount)}
+                        </strong>
+                    </td>
+                    <td>
+                        <span class="status ${statusClass}">
+                            ${escapeHTML(status)}
+                        </span>
+                    </td>
+                    <td>
+                        ${formatDate(approval.created_at)}
+                    </td>
+                    <td>
+                        ${actionButtons}
+                    </td>
+                </tr>
+            `;
+        }).join('');
 }
 
 
 /* =========================================================
-   APPROVAL MODAL
+   OPEN APPROVAL MODAL
 ========================================================= */
 
-let currentApprovalId = null;
-
-let currentApprovalType = null;
-
-
-function openApprovalModal(
-    type,
-    id
-) {
+function openApprovalModal(type, id) {
 
     if (!canApprove) {
-
-        alert(
-            'You do not have permission to approve items.'
-        );
-
+        alert('Only an Administrator or Proprietor can approve items.');
         return;
     }
 
 
-    currentApprovalType =
-        type;
-
-
-    currentApprovalId =
-        id;
+    currentApprovalType = type;
+    currentApprovalId = id;
 
 
     const approval =
         approvals.find(
-            item =>
-                item.approval_id ===
-                id
+            item => Number(item.approval_id) === Number(id)
         );
 
 
     let detailsHTML =
         `<div class="balance-box">
-
-            <div
-                style="
-                    display:grid;
-                    grid-template-columns:1fr 1fr;
-                    gap:10px;
-                "
-            >
-
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div>
                     <strong>Type:</strong>
-                    ${display(type)}
+                    ${escapeHTML(display(type))}
                 </div>
-
                 <div>
                     <strong>ID:</strong>
-                    ${display(id)}
+                    ${escapeHTML(display(id))}
                 </div>
-
                 ${
                     approval
                         ? `
                             <div>
                                 <strong>Amount:</strong>
-                                ${formatCurrency(
-                                    approval.amount
-                                )}
+                                ${formatCurrency(approval.amount)}
                             </div>
-                        `
+                          `
                         : ''
                 }
-
                 ${
                     approval
                         ? `
-                            <div
-                                style="
-                                    grid-column:1/-1;
-                                "
-                            >
-
-                                <strong>
-                                    Details:
-                                </strong>
-
-                                ${display(
+                            <div style="grid-column:1/-1;">
+                                <strong>Details:</strong>
+                                ${escapeHTML(
                                     approval.description ||
                                     approval.fee_name ||
                                     ''
                                 )}
-
                             </div>
-                        `
+                          `
                         : ''
                 }
-
             </div>
-
         </div>`;
 
 
-    document
-        .getElementById(
-            'approvalDetails'
-        )
-        .innerHTML =
+    document.getElementById('approvalDetails').innerHTML =
         detailsHTML;
 
+    document.getElementById('approvalNotes').value = '';
 
-    document
-        .getElementById(
-            'approvalNotes'
-        )
-        .value =
-        '';
-
-
-    document
-        .getElementById(
-            'approvalModal'
-        )
-        .style.display =
-        'block';
+    document.getElementById('approvalModal').style.display = 'block';
 }
 
 
 /* =========================================================
-   APPROVAL DECISION
+   SUBMIT APPROVAL DECISION
 ========================================================= */
 
-async function submitApprovalDecision(
-    decision
-) {
+async function submitApprovalDecision(decision) {
 
     if (!canApprove) {
-
-        alert(
-            'You do not have permission to approve or reject items.'
-        );
-
+        alert('You do not have permission to approve items.');
         return;
     }
 
 
-    if (!currentApprovalId) {
-        return;
-    }
+    if (!currentApprovalId) return;
 
 
     const notes =
-        document
-            .getElementById(
-                'approvalNotes'
-            )
-            .value
-            .trim();
+        document.getElementById('approvalNotes').value.trim();
 
 
-    if (
-        decision === 'reject' &&
-        !notes
-    ) {
+    if (decision === 'reject' && !notes) {
+        alert('Please provide a reason for rejection.');
+        return;
+    }
 
-        alert(
-            'Please provide a reason for rejection.'
+
+    const confirmation =
+        confirm(
+            decision === 'approve'
+                ? 'Are you sure you want to approve this request?'
+                : 'Are you sure you want to reject this request?'
         );
 
-        return;
-    }
 
-
-    if (
-        decision === 'reject' &&
-        !confirm(
-            'Are you sure you want to reject this request?'
-        )
-    ) {
-
-        return;
-    }
-
-
-    if (
-        decision === 'approve' &&
-        !confirm(
-            'Are you sure you want to approve this request?'
-        )
-    ) {
-
-        return;
-    }
+    if (!confirmation) return;
 
 
     try {
 
         const approval =
             approvals.find(
-                item =>
-                    item.approval_id ===
-                    currentApprovalId
+                item => Number(item.approval_id) === Number(currentApprovalId)
             );
 
 
         if (!approval) {
-
-            alert(
-                'Could not find the approval record.'
-            );
-
+            alert('Could not find the approval record.');
             return;
         }
 
 
         let url;
+        let body;
 
-        let body = {};
 
+        if (approval.record_type === 'Payment') {
 
-        if (
-            approval.record_type ===
-            'Payment'
-        ) {
+            if (decision === 'approve') {
 
-            if (
-                decision ===
-                'approve'
-            ) {
-
-                url =
-                    `/api/approvals/${approval.approval_id}/approve-payment`;
+                url = `/api/approvals/${approval.approval_id}/approve-payment`;
 
                 body = {
-                    approval_notes:
-                        notes ||
-                        'Payment approved'
+                    approval_notes: notes || 'Payment approved'
                 };
 
             } else {
 
-                url =
-                    `/api/approvals/${approval.approval_id}/reject-payment`;
+                url = `/api/approvals/${approval.approval_id}/reject-payment`;
 
                 body = {
-                    rejection_reason:
-                        notes ||
-                        'Payment rejected'
+                    rejection_reason: notes || 'Payment rejected'
                 };
             }
 
         } else {
 
-            url =
-                `/api/approvals/${approval.approval_id}/${decision}`;
+            url = `/api/approvals/${approval.approval_id}/${decision}`;
 
             body = {
-
-                approval_notes:
-                    notes ||
-                    `Reviewed and ${decision}d.`
+                approval_notes: notes || `Reviewed and ${decision}d.`
             };
         }
 
@@ -4610,9 +3798,7 @@ async function submitApprovalDecision(
                 url,
                 {
                     method: 'PUT',
-
-                    body:
-                        JSON.stringify(body)
+                    body: JSON.stringify(body)
                 }
             );
 
@@ -4621,24 +3807,15 @@ async function submitApprovalDecision(
 
             alert(
                 `Request ${
-                    decision === 'approve'
-                        ? 'approved'
-                        : 'rejected'
+                    decision === 'approve' ? 'approved' : 'rejected'
                 } successfully!`
             );
 
 
-            closeModal(
-                'approvalModal'
-            );
+            closeModal('approvalModal');
 
-
-            currentApprovalId =
-                null;
-
-
-            currentApprovalType =
-                null;
+            currentApprovalId = null;
+            currentApprovalType = null;
 
 
             await loadAllData();
@@ -4646,10 +3823,9 @@ async function submitApprovalDecision(
 
     } catch (error) {
 
-        alert(
-            'Error: ' +
-            error.message
-        );
+        console.error('APPROVAL DECISION ERROR:', error);
+
+        alert('Error: ' + error.message);
     }
 }
 
@@ -4664,338 +3840,35 @@ async function loadSummary() {
 
         const data =
             await apiRequest(
-                '/api/payments/summary?sector=secondary&academic_year=2026/2027'
+                `/api/payments/summary?sector=secondary&academic_year=${encodeURIComponent(ACADEMIC_YEAR)}`
             );
 
 
-        const summary =
-            data?.summary ||
-            {};
+        const summary = data?.summary || {};
 
 
-        document
-            .getElementById(
-                'totalExpected'
-            )
-            .textContent =
-            formatCurrency(
-                summary.total_expected
-            );
+        document.getElementById('totalExpected').textContent =
+            formatCurrency(summary.total_expected);
 
+        document.getElementById('totalCollected').textContent =
+            formatCurrency(summary.total_collected);
 
-        document
-            .getElementById(
-                'totalCollected'
-            )
-            .textContent =
-            formatCurrency(
-                summary.total_collected
-            );
+        document.getElementById('totalOutstanding').textContent =
+            formatCurrency(summary.total_outstanding);
 
-
-        document
-            .getElementById(
-                'totalOutstanding'
-            )
-            .textContent =
-            formatCurrency(
-                summary.total_outstanding
-            );
-
-
-        document
-            .getElementById(
-                'totalStudents'
-            )
-            .textContent =
-            summary.total_students ||
-            0;
+        document.getElementById('totalStudents').textContent =
+            summary.total_students || 0;
 
     } catch (error) {
 
-        console.error(
-            'SUMMARY ERROR:',
-            error
-        );
+        console.error('SUMMARY ERROR:', error);
 
 
-        document
-            .getElementById(
-                'overviewMessage'
-            )
-            .innerHTML =
+        document.getElementById('overviewMessage').innerHTML =
             `<div class="error-message">
-                ${display(error.message)}
+                ${escapeHTML(error.message)}
             </div>`;
     }
-}
-
-
-/* =========================================================
-   LOAD PAYMENT HISTORY
-========================================================= */
-
-async function loadPaymentHistory() {
-
-    const table =
-        document.getElementById(
-            'paymentTable'
-        );
-
-    if (!table) {
-        return;
-    }
-
-
-    table.innerHTML =
-        `<tr>
-            <td
-                colspan="7"
-                class="empty"
-            >
-                Loading payments...
-            </td>
-        </tr>`;
-
-
-    try {
-
-        const data =
-            await apiRequest(
-                '/api/payments?sector=secondary&academic_year=2026/2027'
-            );
-
-
-        console.log(
-            'SECONDARY PAYMENT HISTORY:',
-            data
-        );
-
-
-        const payments =
-            Array.isArray(data?.payments)
-                ? data.payments
-                : [];
-
-
-        if (!payments.length) {
-
-            table.innerHTML =
-                `<tr>
-                    <td
-                        colspan="7"
-                        class="empty"
-                    >
-                        No payment records found.
-                    </td>
-                </tr>`;
-
-            return;
-        }
-
-        // Group payments by payment_id to show bulk transactions
-        const groupedPayments = {};
-
-        payments.forEach(payment => {
-            const key = payment.payment_id || payment.id;
-            
-            if (!groupedPayments[key]) {
-                groupedPayments[key] = {
-                    payment_id: key,
-                    payment_date: payment.payment_date || payment.created_at,
-                    payment_method: payment.payment_method || 'N/A',
-                    payment_slip_number: payment.payment_slip_number || 'N/A',
-                    bank_reference: payment.bank_reference || 'N/A',
-                    approval_status: payment.approval_status || 'approved',
-                    total_amount: 0,
-                    // Get student info
-                    student_name: payment.student_name || '',
-                    admission_number: payment.admission_number || ''
-                };
-            }
-            
-            groupedPayments[key].total_amount += Number(payment.amount_paid || 0);
-        });
-
-        // Convert to array and sort by date (newest first)
-        const groupedPaymentList = Object.values(groupedPayments)
-            .sort((a, b) => new Date(b.payment_date) - new Date(a.payment_date));
-
-
-        document
-            .getElementById(
-                'paymentCount'
-            )
-            .textContent =
-            `${groupedPaymentList.length} Payment${groupedPaymentList.length === 1 ? '' : 's'}`;
-
-
-        table.innerHTML =
-            groupedPaymentList
-                .map(payment => {
-
-                    const status =
-                        String(
-                            payment.approval_status ||
-                            'Pending'
-                        );
-
-
-                    const statusLower =
-                        status.toLowerCase();
-
-
-                    let statusClass =
-                        'pending';
-
-
-                    if (
-                        statusLower ===
-                        'approved'
-                    ) {
-
-                        statusClass =
-                            'approved';
-
-                    } else if (
-                        statusLower ===
-                        'rejected'
-                    ) {
-
-                        statusClass =
-                            'rejected';
-                    }
-
-
-                    const studentName =
-                        payment.student_name ||
-                        '—';
-
-
-                    const admission =
-                        payment.admission_number ||
-                        '—';
-
-
-                    return `
-                        <tr>
-
-                            <td>
-                                ${formatDate(
-                                    payment.payment_date
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    display(admission)
-                                )}
-                            </td>
-
-                            <td>
-                                <strong>
-                                    ${escapeHTML(
-                                        display(studentName)
-                                    )}
-                                </strong>
-                            </td>
-
-                            <td>
-                                <strong>
-                                    ${formatCurrency(payment.total_amount)}
-                                </strong>
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    display(payment.payment_method)
-                                )}
-                            </td>
-
-                            <td>
-                                <span
-                                    class="status ${statusClass}"
-                                >
-                                    ${escapeHTML(status)}
-                                </span>
-                            </td>
-
-                            <td>
-                                <button
-                                    class="btn view-btn"
-                                    onclick="viewPayment(
-                                        ${Number(payment.payment_id)}
-                                    )"
-                                >
-                                    View
-                                </button>
-                            </td>
-
-                        </tr>
-                    `;
-                })
-                .join('');
-
-    } catch (error) {
-
-        console.error(
-            'PAYMENT HISTORY ERROR:',
-            error
-        );
-
-
-        document
-            .getElementById(
-                'paymentMessage'
-            )
-            .innerHTML =
-            `<div class="error-message">
-                ${display(error.message)}
-            </div>`;
-
-
-        table.innerHTML =
-            `<tr>
-                <td
-                    colspan="7"
-                    class="empty"
-                >
-                    Error loading payments:
-                    ${display(error.message)}
-                </td>
-            </tr>`;
-    }
-}
-
-/* =========================================================
-   PAYMENT FILTERS
-========================================================= */
-
-function applyPaymentFilters() {
-
-    /*
-       Kept as a safe placeholder for the existing payment
-       history interface. Filtering can be applied to the
-       loaded payment array if the existing implementation
-       contains local filtering.
-    */
-
-    loadPaymentHistory();
-}
-
-
-/* =========================================================
-   VIEW PAYMENT
-========================================================= */
-
-function viewPayment(paymentId) {
-
-    if (!paymentId) {
-        return;
-    }
-
-    window.location.href =
-        `finance-payment.html?paymentId=${paymentId}&sector=secondary`;
 }
 
 
@@ -5008,7 +3881,6 @@ async function loadAllData() {
     await Promise.all([
         loadSummary(),
         loadStudents(),
-        loadPaymentHistory(),
         loadApprovals()
     ]);
 }
@@ -5020,32 +3892,23 @@ async function loadAllData() {
 
 function logout() {
 
-    sessionStorage.removeItem(
-        'authToken'
-    );
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('user');
 
-    sessionStorage.removeItem(
-        'user'
-    );
-
-    window.location.href =
-        '/login.html';
+    window.location.href = '/login.html';
 }
 
 
 /* =========================================================
-   INITIALIZE ROLE-BASED UI
+   INITIALIZE
 ========================================================= */
 
-applyFinancePermissions();
+document.addEventListener('DOMContentLoaded', function() {
 
+    applyPermissionUI();
 
-/* =========================================================
-   INITIAL LOAD
-========================================================= */
-
-loadAllData();
-
+    loadAllData();
+});
 </script>
 
 </body>

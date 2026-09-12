@@ -255,7 +255,7 @@ router.get(
             const { data, error } = await supabase
                 .from('departments')
                 .select('*')
-                .order('department_name'); // FIXED: Uses department_name, not name
+                .order('department_name');
 
             if (error) {
                 console.error(
@@ -407,6 +407,12 @@ router.get(
 // ============================================================
 // TEACHER APPLICATION
 // PUBLIC ROUTE
+// ------------------------------------------------------------
+// Matches the actual `teacher_applications` table columns:
+//   first_name, middle_name, last_name, gender, phone, email,
+//   address, school_section, employment_type,
+//   id_card_url, application_letter_url, certificates_url,
+//   photo_url, status
 // ============================================================
 
 const applyUpload = upload.fields([
@@ -439,17 +445,24 @@ router.post(
 
             if (!first_name || !last_name || !school_section) {
                 return res.status(400).json({
-                    message: 'First name, last name and school section are required.'
+                    message:
+                        'First name, last name and school section are required.'
                 });
             }
 
-            const sector = getSectorFromSchoolSection(school_section);
+
+            const sector =
+                getSectorFromSchoolSection(
+                    school_section
+                );
 
             if (!sector) {
                 return res.status(400).json({
-                    message: 'Invalid school section.'
+                    message:
+                        'Invalid school section.'
                 });
             }
+
 
             const files = req.files || {};
 
@@ -461,16 +474,20 @@ router.post(
                 ? `/uploads/teacher-applications/${files.id_card[0].filename}`
                 : null;
 
-            const applicationLetterUrl = files.application_letter && files.application_letter[0]
-                ? `/uploads/teacher-applications/${files.application_letter[0].filename}`
-                : null;
+            const applicationLetterUrl =
+                files.application_letter && files.application_letter[0]
+                    ? `/uploads/teacher-applications/${files.application_letter[0].filename}`
+                    : null;
 
-            const certificateFiles = files.certificates || [];
+            const certificateFiles =
+                files.certificates || [];
+
             const certificatesUrl = certificateFiles.length
                 ? certificateFiles
                     .map(f => `/uploads/teacher-applications/${f.filename}`)
                     .join(',')
                 : null;
+
 
             const { data, error } = await supabase
                 .from('teacher_applications')
@@ -494,24 +511,38 @@ router.post(
                 .single();
 
             if (error) {
-                console.error('TEACHER APPLICATION ERROR:', error);
+                console.error(
+                    'TEACHER APPLICATION ERROR:',
+                    error
+                );
+
                 return res.status(500).json({
-                    message: 'Failed to submit teacher application',
+                    message:
+                        'Failed to submit teacher application',
                     error: error.message
                 });
             }
 
             res.status(201).json({
-                message: 'Teacher application submitted successfully.',
+                message:
+                    'Teacher application submitted successfully.',
                 application: data
             });
 
         } catch (error) {
-            console.error('TEACHER APPLICATION EXCEPTION:', error);
-            res.status(500).json({ message: 'Server error' });
+
+            console.error(
+                'TEACHER APPLICATION EXCEPTION:',
+                error
+            );
+
+            res.status(500).json({
+                message: 'Server error'
+            });
         }
     }
 );
+
 
 // ============================================================
 // GET TEACHER APPLICATIONS
@@ -598,8 +629,9 @@ router.get(
 
 
 // ============================================================
-// REVIEW APPLICATION
-// MANAGER / ADMINISTRATOR
+// SEND APPLICATION TO PROPRIETOR (Manager / Administrator)
+// ------------------------------------------------------------
+// Moves status from Pending to Manager_Reviewed.
 // ============================================================
 
 router.put(
@@ -617,8 +649,7 @@ router.put(
                 req.params.id;
 
             const {
-                review_notes,
-                application_status
+                review_notes
             } = req.body;
 
 
@@ -628,7 +659,7 @@ router.put(
             } = await supabase
                 .from('teacher_applications')
                 .select('*')
-                .eq('id', applicationId)
+                .eq('application_id', applicationId)
                 .maybeSingle();
 
 
@@ -669,26 +700,18 @@ router.put(
             }
 
 
-            const updateData = {};
-
+            const updateData = {
+                status: 'Manager_Reviewed',
+                reviewed_by:
+                    req.user.user_id || null,
+                reviewed_at:
+                    new Date().toISOString()
+            };
 
             if (review_notes !== undefined) {
-                updateData.review_notes =
+                updateData.rejection_reason =
                     review_notes;
             }
-
-
-            if (application_status !== undefined) {
-                updateData.application_status =
-                    application_status;
-            }
-
-
-            updateData.reviewed_by =
-                req.user.user_id || null;
-
-            updateData.reviewed_at =
-                new Date().toISOString();
 
 
             const {
@@ -697,7 +720,7 @@ router.put(
             } = await supabase
                 .from('teacher_applications')
                 .update(updateData)
-                .eq('id', applicationId)
+                .eq('application_id', applicationId)
                 .select()
                 .single();
 
@@ -718,7 +741,7 @@ router.put(
 
             res.json({
                 message:
-                    'Application reviewed successfully.',
+                    'Application sent to Proprietor for approval.',
                 application: data
             });
 
@@ -753,62 +776,146 @@ router.put(
 
         try {
 
-            const applicationId =
-                req.params.id;
+            const applicationId = req.params.id;
 
-
-            const {
-                data,
-                error
-            } = await supabase
+            // 1. Load the application.
+            const { data: application, error: applicationError } = await supabase
                 .from('teacher_applications')
-                .update({
-                    application_status:
-                        'Approved',
-                    approved_by:
-                        req.user.user_id || null,
-                    approved_at:
-                        new Date().toISOString()
-                })
-                .eq('id', applicationId)
-                .select()
-                .single();
+                .select('*')
+                .eq('application_id', applicationId)
+                .maybeSingle();
 
-
-            if (error) {
-                console.error(
-                    'APPLICATION APPROVE ERROR:',
-                    error
-                );
-
+            if (applicationError) {
+                console.error('APPLICATION LOOKUP ERROR:', applicationError);
                 return res.status(500).json({
-                    message:
-                        'Failed to approve application',
-                    error: error.message
+                    message: 'Failed to load application',
+                    error: applicationError.message
                 });
             }
 
+            if (!application) {
+                return res.status(404).json({
+                    message: 'Teacher application not found.'
+                });
+            }
+
+            if (application.status === 'Approved') {
+                return res.status(409).json({
+                    message: 'Application already approved.'
+                });
+            }
+
+            // 2. Duplicate check by email or phone.
+            if (application.email || application.phone) {
+                let dupQuery = supabase.from('teachers').select('teacher_id');
+                if (application.email && application.phone) {
+                    dupQuery = dupQuery.or(
+                        `email.eq.${application.email},phone.eq.${application.phone}`
+                    );
+                } else if (application.email) {
+                    dupQuery = dupQuery.eq('email', application.email);
+                } else {
+                    dupQuery = dupQuery.eq('phone', application.phone);
+                }
+
+                const { data: existingTeacher } = await dupQuery.maybeSingle();
+
+                if (existingTeacher) {
+                    return res.status(409).json({
+                        message: 'A teacher with the same email or phone already exists.'
+                    });
+                }
+            }
+
+            // 3. Generate staff number: GEA-P-### or GEA-S-###.
+            const isPrimarySection = ['Nursery', 'Primary'].includes(application.school_section);
+            const prefix = isPrimarySection ? 'GEA-P-' : 'GEA-S-';
+
+            const { data: existingNumbers, error: numbersError } = await supabase
+                .from('teachers')
+                .select('staff_number')
+                .like('staff_number', `${prefix}%`);
+
+            if (numbersError) {
+                console.error('STAFF NUMBER LOOKUP ERROR:', numbersError);
+                return res.status(500).json({
+                    message: 'Failed to generate staff number',
+                    error: numbersError.message
+                });
+            }
+
+            let maxSeq = 0;
+            (existingNumbers || []).forEach(row => {
+                const m = String(row.staff_number || '').match(/^GEA-[PS]-(\d+)$/);
+                if (m) {
+                    const n = Number(m[1]);
+                    if (!Number.isNaN(n) && n > maxSeq) maxSeq = n;
+                }
+            });
+
+            const staffNumber = `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;
+
+            // 4. Insert into teachers.
+            const teacherRow = {
+                staff_number: staffNumber,
+                first_name: application.first_name,
+                middle_name: application.middle_name || null,
+                last_name: application.last_name,
+                gender: application.gender || null,
+                phone: application.phone || null,
+                email: application.email || null,
+                address: application.address || null,
+                school_section: application.school_section,
+                employment_type: application.employment_type || 'Permanent',
+                teacher_status: 'Active'
+            };
+
+            const { data: newTeacher, error: teacherError } = await supabase
+                .from('teachers')
+                .insert([teacherRow])
+                .select()
+                .single();
+
+            if (teacherError) {
+                console.error('TEACHER INSERT ERROR:', teacherError);
+                return res.status(500).json({
+                    message: 'Failed to create teacher record',
+                    error: teacherError.message
+                });
+            }
+
+            // 5. Mark the application as Approved.
+            const { data: updatedApplication, error: updateError } = await supabase
+                .from('teacher_applications')
+                .update({
+                    status: 'Approved',
+                    approved_by: req.user.user_id || null,
+                    approved_at: new Date().toISOString()
+                })
+                .eq('application_id', applicationId)
+                .select()
+                .single();
+
+            if (updateError) {
+                console.error('APPLICATION APPROVE ERROR:', updateError);
+                return res.status(500).json({
+                    message: 'Teacher created, but failed to update application status.',
+                    error: updateError.message
+                });
+            }
 
             res.json({
-                message:
-                    'Teacher application approved successfully.',
-                application: data
+                message: 'Teacher approved and added to staff.',
+                application: updatedApplication,
+                teacher: newTeacher
             });
 
         } catch (error) {
-
-            console.error(
-                'APPLICATION APPROVE EXCEPTION:',
-                error
-            );
-
-            res.status(500).json({
-                message: 'Server error'
-            });
+            console.error('APPLICATION APPROVE EXCEPTION:', error);
+            res.status(500).json({ message: 'Server error' });
         }
     }
 );
-
 
 // ============================================================
 // REJECT APPLICATION
@@ -838,8 +945,8 @@ router.put(
                 error: applicationError
             } = await supabase
                 .from('teacher_applications')
-                .select(`id, school_section`)
-                .eq('id', applicationId)
+                .select(`application_id, school_section`)
+                .eq('application_id', applicationId)
                 .maybeSingle();
 
 
@@ -881,7 +988,7 @@ router.put(
             } = await supabase
                 .from('teacher_applications')
                 .update({
-                    application_status:
+                    status:
                         'Rejected',
                     rejection_reason:
                         rejection_reason || null,
@@ -890,7 +997,7 @@ router.put(
                     reviewed_at:
                         new Date().toISOString()
                 })
-                .eq('id', applicationId)
+                .eq('application_id', applicationId)
                 .select()
                 .single();
 
@@ -954,8 +1061,8 @@ router.delete(
                 error: lookupError
             } = await supabase
                 .from('teacher_applications')
-                .select('id, application_document')
-                .eq('id', applicationId)
+                .select('application_id, application_letter_url')
+                .eq('application_id', applicationId)
                 .maybeSingle();
 
 
@@ -982,7 +1089,7 @@ router.delete(
             } = await supabase
                 .from('teacher_applications')
                 .delete()
-                .eq('id', applicationId);
+                .eq('application_id', applicationId);
 
 
             if (error) {
@@ -1315,7 +1422,6 @@ router.post(
                 });
             }
 
-            // Fetch class
             const { data: classData } = await supabase
                 .from('classes')
                 .select('academic_year_id')
@@ -1336,10 +1442,9 @@ router.post(
                 created_at: new Date().toISOString()
             };
 
-            // Check if exists
             const { data: existing } = await supabase
                 .from('class_subjects')
-                .select('assignment_id')
+                .select('class_subject_id')
                 .eq('teacher_id', teacher_id)
                 .eq('class_id', class_id)
                 .eq('subject_id', subject_id)
@@ -1349,7 +1454,7 @@ router.post(
                 const { data, error } = await supabase
                     .from('class_subjects')
                     .update(insertData)
-                    .eq('assignment_id', existing.assignment_id)
+                    .eq('class_subject_id', existing.class_subject_id)
                     .select()
                     .single();
 
@@ -1395,7 +1500,6 @@ router.post(
                 });
             }
 
-            // Fetch class
             const { data: classData } = await supabase
                 .from('classes')
                 .select('academic_year_id')
@@ -1415,7 +1519,6 @@ router.post(
                 created_at: new Date().toISOString()
             };
 
-            // Check if exists
             const { data: existing } = await supabase
                 .from('secondary_class_masters')
                 .select('assignment_id')
@@ -1452,7 +1555,7 @@ router.post(
 
 
 // ============================================================
-// ASSIGN HEAD OF DEPARTMENT (Ready for Department Table)
+// ASSIGN HEAD OF DEPARTMENT
 // ============================================================
 
 router.post(
@@ -1473,7 +1576,6 @@ router.post(
                 });
             }
 
-            // If no school_section provided, we can attach to the department globally
             const insertData = {
                 teacher_id,
                 department_id,
@@ -1660,7 +1762,7 @@ router.get(
                 data,
                 error
             } = await supabase
-                .from('class_subjects') // CORRECT TABLE
+                .from('class_subjects')
                 .select(`
                     *,
                     teachers!teacher_id (
@@ -1762,7 +1864,7 @@ router.get(
                 data,
                 error
             } = await supabase
-                .from('class_subjects') // This has subjects!
+                .from('class_subjects')
                 .select(`
                     *,
                     teachers!teacher_id (
@@ -1854,7 +1956,7 @@ router.get(
                 data,
                 error
             } = await supabase
-                .from('primary_class_teachers') // CORRECT TABLE
+                .from('primary_class_teachers')
                 .select(`
                     *,
                     teachers!teacher_id (
@@ -2053,7 +2155,6 @@ router.get(
                 return res.status(404).json({ message: 'Teacher profile not found.' });
             }
 
-            // CORRECTED: Fetch primary and secondary assignments
             const { data: primaryClasses } = await supabase
                 .from('primary_class_teachers')
                 .select('*, classes!class_id ( class_id, class_name, arm, school_section )')
@@ -2402,7 +2503,6 @@ router.get(
     requireRoles(PROPRIETOR, ADMINISTRATOR, MANAGER),
     async (req, res) => {
         try {
-            // 1. Fetch all subject assignments
             const { data: subjectAssignments, error: subError } = await supabase
                 .from('class_subjects')
                 .select(`
@@ -2414,7 +2514,6 @@ router.get(
 
             if (subError) throw subError;
 
-            // 2. Fetch all class masters
             const { data: classMasters, error: cmError } = await supabase
                 .from('secondary_class_masters')
                 .select(`
@@ -2425,7 +2524,6 @@ router.get(
 
             if (cmError) throw cmError;
 
-            // 3. Fetch all HODs
             const { data: hodAssignments, error: hodError } = await supabase
                 .from('department_heads')
                 .select(`
@@ -2436,7 +2534,6 @@ router.get(
 
             if (hodError) throw hodError;
 
-            // 4. Return combined
             res.json({
                 subjectAssignments: subjectAssignments || [],
                 classMasters: classMasters || [],
@@ -2461,7 +2558,6 @@ router.get(
         try {
             const teacherId = req.params.teacherId;
 
-            // Fetch Primary Assignments (primary_class_teachers)
             const { data: primaryAssignments } = await supabase
                 .from('primary_class_teachers')
                 .select(`
@@ -2471,7 +2567,6 @@ router.get(
                 `)
                 .eq('teacher_id', teacherId);
 
-            // Fetch Secondary Class Master Assignments
             const { data: secondaryClassMasters } = await supabase
                 .from('secondary_class_masters')
                 .select(`
@@ -2480,7 +2575,6 @@ router.get(
                 `)
                 .eq('teacher_id', teacherId);
 
-            // Fetch Secondary Subject Assignments
             const { data: subjectAssignments } = await supabase
                 .from('class_subjects')
                 .select(`
@@ -2490,7 +2584,6 @@ router.get(
                 `)
                 .eq('teacher_id', teacherId);
 
-            // Fetch HOD Assignments
             const { data: hodAssignments } = await supabase
                 .from('department_heads')
                 .select(`
@@ -2499,7 +2592,6 @@ router.get(
                 `)
                 .eq('teacher_id', teacherId);
 
-            // Return all
             res.json({
                 primary_assignments: primaryAssignments || [],
                 secondary_class_master_assignments: secondaryClassMasters || [],
@@ -2515,7 +2607,7 @@ router.get(
 
 
 // ============================================================
-// TEACHER'S STUDENTS (Based on their assigned classes)
+// TEACHER'S STUDENTS
 // ============================================================
 
 router.get(
@@ -2526,7 +2618,6 @@ router.get(
         try {
             const teacherId = req.params.teacherId;
 
-            // 1. Get all classes this teacher is assigned to (Primary + Secondary)
             const { data: primaryAssignments } = await supabase
                 .from('primary_class_teachers')
                 .select('class_id')
@@ -2542,7 +2633,6 @@ router.get(
                 .select('class_id')
                 .eq('teacher_id', teacherId);
 
-            // Combine all unique class IDs
             const classIds = new Set([
                 ...(primaryAssignments || []).map(a => a.class_id),
                 ...(secondaryClassMasters || []).map(a => a.class_id),
@@ -2553,7 +2643,6 @@ router.get(
                 return res.json([]);
             }
 
-            // 2. Fetch all students in those classes
             const { data: students, error } = await supabase
                 .from('students')
                 .select(`
@@ -2578,7 +2667,6 @@ router.get(
 
 // ============================================================
 // GET SINGLE TEACHER
-// (THIS MUST BE THE LAST ROUTE BEFORE MODULE.EXPORTS)
 // ============================================================
 
 router.get(

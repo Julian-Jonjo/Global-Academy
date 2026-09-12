@@ -129,6 +129,12 @@
     function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
     function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
+    // ---------- Role flags ----------
+    const roleId = Number(user.role_id);
+    const isProprietor = roleId === 1;
+    const isAdmin = roleId === 2;
+    const isManager = roleId === 6;
+
     let currentTab = 'pending';
     let allApplications = [];
 
@@ -169,22 +175,24 @@
 
         table.innerHTML = filtered.map(app => {
             const name = [app.first_name, app.middle_name, app.last_name].filter(Boolean).join(' ');
-            const statusClass = app.status === 'Pending' ? 'status-pending' : app.status === 'Manager_Reviewed' ? 'status-reviewed' : app.status === 'Approved' ? 'status-approved' : 'status-rejected';
+            const statusClass = app.status === 'Pending' ? 'status-pending' :
+                                app.status === 'Manager_Reviewed' ? 'status-reviewed' :
+                                app.status === 'Approved' ? 'status-approved' : 'status-rejected';
             const date = app.created_at ? new Date(app.created_at).toLocaleDateString() : '-';
-            
+
             let actions = `<button class="action-btn view-btn" onclick="viewApplication(${app.application_id})">View</button>`;
-            
-            if (app.status === 'Pending' && (user.role_name === 'Manager-Primary' || user.role_name === 'Manager-Secondary' || user.role_name === 'Administrator')) {
+
+            if (app.status === 'Pending' && (isManager || isAdmin)) {
                 actions += `<button class="action-btn approve-btn" onclick="sendToProprietor(${app.application_id})">Send to Proprietor</button>`;
                 actions += `<button class="action-btn reject-btn" onclick="rejectApplication(${app.application_id})">Reject</button>`;
             }
-            
-            if (app.status === 'Manager_Reviewed' && (user.role_name === 'Proprietor' || user.role_name === 'Administrator')) {
+
+            if (app.status === 'Manager_Reviewed' && (isProprietor || isAdmin)) {
                 actions += `<button class="action-btn approve-btn" onclick="approveApplication(${app.application_id})">Approve</button>`;
                 actions += `<button class="action-btn reject-btn" onclick="rejectApplication(${app.application_id})">Reject</button>`;
             }
-            
-            if (app.status === 'Rejected' && (user.role_name === 'Proprietor' || user.role_name === 'Administrator')) {
+
+            if (app.status === 'Rejected' && (isProprietor || isAdmin)) {
                 actions += `<button class="action-btn delete-btn" onclick="deleteApplication(${app.application_id})">Delete</button>`;
             }
 
