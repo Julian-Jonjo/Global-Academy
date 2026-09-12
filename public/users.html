@@ -1052,44 +1052,67 @@
         // =========================================================
         // LOAD AVAILABLE PEOPLE (NEW!)
         // =========================================================
-        async function loadAvailablePeople() {
+         async function loadAvailablePeople() {
             const roleId = document.getElementById('userRoleSelect').value;
             const sector = document.getElementById('userSector').value;
             const personField = document.getElementById('personField');
             const personSelect = document.getElementById('userPersonSelect');
 
-            if (roleId === '4' || roleId === '6') {
-                personField.style.display = 'block';
-                personSelect.innerHTML = '<option value="">Loading...</option>';
-
-                const response = await fetch(`/api/users/available-people?role=${roleId}&sector=${sector}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const people = await response.json();
-                personSelect.innerHTML = '<option value="">-- Select Person --</option>';
-
-                if (roleId === '4') {
-                    people.forEach(person => {
-                        let option = document.createElement('option');
-                        option.value = person.teacher_id;
-                        option.textContent = `${person.first_name} ${person.last_name} (${person.staff_number})`;
-                        personSelect.appendChild(option);
-                    });
-                } else {
-                    people.forEach(person => {
-                        let option = document.createElement('option');
-                        option.value = person.user_id;
-                        option.textContent = person.full_name;
-                        personSelect.appendChild(option);
-                    });
-                }
-            } else {
+            // Only teachers have a linked row in `teachers`.
+            if (roleId !== '4') {
                 personField.style.display = 'none';
                 personSelect.innerHTML = '<option value="">-- Select Person --</option>';
+                return;
+            }
+
+            // A sector is required to look up teachers.
+            if (!sector) {
+                personField.style.display = 'none';
+                personSelect.innerHTML = '<option value="">-- Select Person --</option>';
+                return;
+            }
+
+            personField.style.display = 'block';
+            personSelect.innerHTML = '<option value="">Loading...</option>';
+
+            try {
+                const response = await fetch(
+                    `/api/users/available-people?role=4&sector=${encodeURIComponent(sector)}`,
+                    {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Request failed: ${response.status}`);
+                }
+
+                const people = await response.json();
+
+                personSelect.innerHTML = '<option value="">-- Select Person --</option>';
+
+                if (!Array.isArray(people) || people.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'No teachers available in this sector';
+                    option.disabled = true;
+                    personSelect.appendChild(option);
+                    return;
+                }
+
+                people.forEach(person => {
+                    const option = document.createElement('option');
+                    option.value = person.teacher_id;
+                    option.textContent =
+                        `${person.first_name} ${person.last_name} (${person.staff_number})`;
+                    personSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('AVAILABLE PEOPLE ERROR:', error);
+                personSelect.innerHTML = '<option value="">-- Failed to load teachers --</option>';
             }
         }
-
         // =========================================================
         // FILL PERSON DATA (NEW!)
         // =========================================================

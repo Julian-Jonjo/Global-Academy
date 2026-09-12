@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Term Settings</title>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #222; min-height: 100vh; background-image: url('/images/school-bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; position: relative; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(255,255,255,0.82); z-index: 0; }
+
+        .header { background: #1a3c6e; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; font-weight: 700; color: white; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; color: white; display: flex; align-items: center; gap: 15px; }
+        .user-info .role { display: block; font-weight: 600; font-size: 14px; }
+        .user-info .role-label { font-size: 11px; color: #a0c4ff; }
+        .logout-btn-header { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.3s; }
+        .logout-btn-header:hover { background: rgba(255,255,255,0.25); }
+
+        .container { max-width: 1000px; margin: 25px auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-header h2 { margin: 0 0 6px 0; color: #1f2937; }
+        .page-header p { margin: 0; color: #6b7280; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; transition: all 0.3s; }
+        .back-btn:hover { background: #4b5563; }
+
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 3px 15px rgba(0,0,0,0.08); }
+
+        .term-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr auto auto; gap: 12px; align-items: end; padding: 15px 0; border-bottom: 1px solid #e5e7eb; }
+        .term-row:last-child { border-bottom: none; }
+
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field label { font-size: 11px; font-weight: bold; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-field input[type="text"], .form-field input[type="date"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; font-family: inherit; }
+        .form-field input:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26,60,110,0.1); }
+
+        .current-flag { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-bottom: 6px; }
+        .current-flag label { font-size: 11px; font-weight: bold; color: #4b5563; text-transform: uppercase; }
+        .current-flag input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+
+        .save-btn { background: #1a3c6e; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .save-btn:hover { background: #0f2a4a; }
+        .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .save-btn.saved { background: #16a34a; }
+
+        .message { margin: 15px 0; padding: 12px; border-radius: 6px; display: none; font-size: 14px; }
+        .message-success { background: #dcfce7; color: #166534; display: block; }
+        .message-error { background: #fee2e2; color: #991b1b; display: block; }
+
+        .empty { text-align: center; padding: 40px; color: #6b7280; }
+
+        @media (max-width: 800px) {
+            .term-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>Global Education Academy</h1>
+                <p>Term Settings</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <div>
+                <span class="role" id="userRole"></span>
+                <span class="role-label" id="userRoleLabel"></span>
+            </div>
+            <button class="logout-btn-header" onclick="logout()">🚪 Logout</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <div>
+                <h2>📅 Term Settings</h2>
+                <p>Set start and end dates for each term. Changes apply to all attendance registers.</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+        </div>
+
+        <div class="card">
+            <div id="message" class="message"></div>
+            <div id="termsContainer">
+                <div class="empty">Loading terms...</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+        const userData = sessionStorage.getItem('user') || localStorage.getItem('user');
+
+        if (!token || !userData) { window.location.href = '/login.html'; }
+
+        let user = null;
+        try { user = JSON.parse(userData); }
+        catch (e) {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+
+        // ---- Admin-only gate ----
+        const roleId = Number(user?.role_id);
+        if (roleId !== 2) {
+            alert('Access denied. This page is for the Administrator only.');
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('userRole').textContent = user?.full_name || 'User';
+        document.getElementById('userRoleLabel').textContent = user?.role_name || '';
+
+        function logout() {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('user');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+
+        function escapeHtml(v) {
+            if (v === null || v === undefined) return '';
+            return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+        }
+
+        function showMessage(text, type) {
+            const el = document.getElementById('message');
+            el.textContent = text;
+            el.className = 'message ' + (type === 'error' ? 'message-error' : 'message-success');
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        let terms = [];
+
+        async function loadTerms() {
+            const container = document.getElementById('termsContainer');
+            container.innerHTML = '<div class="empty">Loading terms...</div>';
+            try {
+                const response = await fetch('/api/terms', {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+                });
+                if (!response.ok) throw new Error('Failed to load terms');
+                terms = await response.json();
+                renderTerms();
+            } catch (error) {
+                container.innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`;
+            }
+        }
+
+        function renderTerms() {
+            const container = document.getElementById('termsContainer');
+            if (!terms.length) {
+                container.innerHTML = '<div class="empty">No terms found.</div>';
+                return;
+            }
+
+            container.innerHTML = terms.map(t => `
+                <div class="term-row" data-term-id="${t.term_id}">
+                    <div class="form-field">
+                        <label>Term Name</label>
+                        <input type="text" data-field="term_name" value="${escapeHtml(t.term_name || '')}">
+                    </div>
+                    <div class="form-field">
+                        <label>Start Date</label>
+                        <input type="date" data-field="start_date" value="${escapeHtml(t.start_date || '')}">
+                    </div>
+                    <div class="form-field">
+                        <label>End Date</label>
+                        <input type="date" data-field="end_date" value="${escapeHtml(t.end_date || '')}">
+                    </div>
+                    <div class="current-flag">
+                        <label>Current</label>
+                        <input type="checkbox" data-field="is_current" ${t.is_current ? 'checked' : ''}>
+                    </div>
+                    <button class="save-btn" onclick="saveTerm(${t.term_id}, this)">Save</button>
+                </div>
+            `).join('');
+        }
+
+        async function saveTerm(termId, btnEl) {
+            const row = document.querySelector(`.term-row[data-term-id="${termId}"]`);
+            if (!row) return;
+
+            const term_name = row.querySelector('[data-field="term_name"]').value.trim();
+            const start_date = row.querySelector('[data-field="start_date"]').value;
+            const end_date = row.querySelector('[data-field="end_date"]').value;
+            const is_current = row.querySelector('[data-field="is_current"]').checked;
+
+            if (!term_name) return showMessage('Term name is required.', 'error');
+            if (!start_date || !end_date) return showMessage('Both start and end dates are required.', 'error');
+            if (start_date > end_date) return showMessage('Start date must be on or before end date.', 'error');
+
+            btnEl.disabled = true;
+            btnEl.textContent = 'Saving...';
+
+            try {
+                const response = await fetch(`/api/terms/${termId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ term_name, start_date, end_date, is_current })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Failed to save');
+
+                showMessage('Term saved.', 'success');
+
+                // Reload terms so is_current flags refresh across rows
+                await loadTerms();
+            } catch (error) {
+                showMessage(error.message, 'error');
+                btnEl.disabled = false;
+                btnEl.textContent = 'Save';
+            }
+        }
+
+        loadTerms();
+    </script>
+
+</body>
+</html>

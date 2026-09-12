@@ -43,6 +43,8 @@ const permissionRoutes = require('./routes/permissions');
 
 const resultRoutes = require('./routes/results');
 
+const termRoutes = require('./routes/terms');
+
 
 // ============================================================
 // AUTH MIDDLEWARE
@@ -140,6 +142,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/results', resultRoutes);
+app.use('/api/terms', termRoutes);
 
 // ============================================================
 // ROOT API

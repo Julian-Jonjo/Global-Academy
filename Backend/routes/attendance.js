@@ -29,7 +29,16 @@ const ATTENDANCE_WRITE_ROLES = [
 ];
 
 // ============================================================
-// HELPER: Get User's Sector
+// LOCK CONSTANTS
+// ------------------------------------------------------------
+// A saved attendance record becomes non-editable 72 hours
+// after it was FIRST saved (i.e. 72 hours after created_at).
+// ============================================================
+
+const LOCK_WINDOW_MS = 72 * 60 * 60 * 1000; // 72 hours
+
+// ============================================================
+// HELPERS
 // ============================================================
 
 function getSectorOfUser(user) {
@@ -42,8 +51,24 @@ function getAllowedSections(sector) {
     return [];
 }
 
+// Returns true if the record is locked (past the 72-hour window).
+// `createdAt` is the timestamp of the first save.
+function isLocked(createdAt) {
+    if (!createdAt) return false;
+    const created = new Date(createdAt).getTime();
+    if (Number.isNaN(created)) return false;
+    return (Date.now() - created) > LOCK_WINDOW_MS;
+}
+
 // ============================================================
 // GET TEACHER'S CLASSES ONLY (For Attendance Register)
+// ------------------------------------------------------------
+// A teacher only sees classes where they are the CLASS MASTER:
+//   - Primary:   every row in primary_class_teachers
+//   - Secondary: rows in secondary_class_masters
+//
+// Subject-teacher assignments (class_subjects) are deliberately
+// NOT included, because only class masters may mark attendance.
 // ============================================================
 
 router.get(
@@ -57,8 +82,8 @@ router.get(
                 return res.status(404).json({ message: 'Teacher profile not found.' });
             }
 
-            // 1. Fetch Primary Classes
-            const { data: primaryAssignments } = await supabase
+            // 1. Primary class teacher assignments
+            const { data: primaryAssignments, error: primaryError } = await supabase
                 .from('primary_class_teachers')
                 .select(`
                     class_id,
@@ -68,8 +93,12 @@ router.get(
                 `)
                 .eq('teacher_id', teacherId);
 
-            // 2. Fetch Secondary Class Master Classes
-            const { data: secondaryMasters } = await supabase
+            if (primaryError) {
+                console.error('PRIMARY ASSIGNMENTS ERROR:', primaryError);
+            }
+
+            // 2. Secondary class master assignments
+            const { data: secondaryMasters, error: secondaryError } = await supabase
                 .from('secondary_class_masters')
                 .select(`
                     class_id,
@@ -79,23 +108,15 @@ router.get(
                 `)
                 .eq('teacher_id', teacherId);
 
-            // 3. Fetch Secondary Subject Classes
-            const { data: subjectAssignments } = await supabase
-                .from('class_subjects')
-                .select(`
-                    class_id,
-                    classes!class_id (
-                        class_id, class_name, arm, school_section, academic_year_id
-                    )
-                `)
-                .eq('teacher_id', teacherId);
+            if (secondaryError) {
+                console.error('SECONDARY MASTERS ERROR:', secondaryError);
+            }
 
-            // Combine and deduplicate classes
+            // 3. Combine and deduplicate
             const classMap = new Map();
             [
                 ...(primaryAssignments || []),
-                ...(secondaryMasters || []),
-                ...(subjectAssignments || [])
+                ...(secondaryMasters || [])
             ].forEach(item => {
                 if (item.classes) {
                     classMap.set(item.classes.class_id, item.classes);
@@ -104,7 +125,6 @@ router.get(
 
             const myClasses = Array.from(classMap.values());
 
-            // 4. Return only the teacher's classes
             res.json(myClasses);
 
         } catch (error) {
@@ -115,7 +135,7 @@ router.get(
 );
 
 // ============================================================
-// GET ALL CLASSES (For Admin/Manager/Proprietor)
+// GET ALL CLASSES (For Admin / Manager / Proprietor)
 // ============================================================
 
 router.get(
@@ -155,11 +175,7 @@ router.get(
 );
 
 // ============================================================
-// GET ATTENDANCE FOR A CLASS ON A SPECIFIC DATE
-// ============================================================
-
-// ============================================================
-// GET ATTENDANCE FOR A CLASS (Fetch all records for the class)
+// GET ATTENDANCE FOR A CLASS
 // ============================================================
 
 router.get(
@@ -191,8 +207,14 @@ router.get(
         }
     }
 );
+
 // ============================================================
 // SAVE ATTENDANCE FOR MULTIPLE STUDENTS (Bulk Upsert)
+// ------------------------------------------------------------
+// The 72-hour lock is measured from created_at (first save).
+// If a record for (student_id, attendance_date) already exists
+// and is older than 72 hours, it is rejected. Otherwise the row
+// is upserted; created_at is preserved on update.
 // ============================================================
 
 router.post(
@@ -201,35 +223,68 @@ router.post(
     requireRoles(...ATTENDANCE_WRITE_ROLES),
     async (req, res) => {
         try {
-            const { class_id, attendance_date, records } = req.body; 
-            // records: [{ student_id, status }]
+            const { class_id, attendance_date, records } = req.body;
 
             if (!class_id || !attendance_date || !Array.isArray(records)) {
                 return res.status(400).json({ message: 'class_id, attendance_date, and records array are required.' });
             }
 
-            // 🛑 SECURITY: 24-Hour Lock Check
-            const requestedDate = new Date(attendance_date + 'T00:00:00');
-            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            if (requestedDate < twentyFourHoursAgo) {
-                return res.status(403).json({ 
-                    message: 'This record is locked. Attendance becomes non-editable 24 hours after it was first saved.' 
-                });
+            // Look up existing rows for this class/date so we can:
+            //   1. Enforce the 72-hour lock on each existing record.
+            //   2. Preserve the original created_at on update.
+            const studentIds = records.map(r => r.student_id);
+
+            const { data: existingRows, error: lookupError } = await supabase
+                .from('attendance')
+                .select('student_id, created_at')
+                .eq('class_id', class_id)
+                .eq('attendance_date', attendance_date)
+                .in('student_id', studentIds);
+
+            if (lookupError) {
+                console.error('ATTENDANCE LOOKUP ERROR:', lookupError);
+                return res.status(500).json({ message: 'Failed to verify existing attendance', error: lookupError.message });
+            }
+
+            const existingByStudent = new Map();
+            (existingRows || []).forEach(row => {
+                existingByStudent.set(row.student_id, row);
+            });
+
+            // Enforce lock on each existing record.
+            for (const rec of records) {
+                const existing = existingByStudent.get(rec.student_id);
+                if (existing && isLocked(existing.created_at)) {
+                    return res.status(403).json({
+                        message: 'This record is locked. Attendance becomes non-editable 72 hours after it was first saved.'
+                    });
+                }
             }
 
             const user = req.user;
             const now = new Date().toISOString();
 
-            const insertData = records.map(rec => ({
-                student_id: rec.student_id,
-                class_id: class_id,
-                attendance_date: attendance_date,
-                status: rec.status, // 'Present' or 'Absent'
-                recorded_by: user.user_id || null,
-                created_at: now
-            }));
+            // Build insert payload. For existing rows we omit created_at
+            // so the database keeps the original timestamp; for new rows
+            // we set it to now.
+            const insertData = records.map(rec => {
+                const existing = existingByStudent.get(rec.student_id);
 
-            // Upsert: updates existing records or inserts new ones
+                const row = {
+                    student_id: rec.student_id,
+                    class_id: class_id,
+                    attendance_date: attendance_date,
+                    status: rec.status,
+                    recorded_by: user.user_id || null
+                };
+
+                if (!existing) {
+                    row.created_at = now;
+                }
+
+                return row;
+            });
+
             const { data, error } = await supabase
                 .from('attendance')
                 .upsert(insertData, { onConflict: 'student_id, attendance_date' })
@@ -240,7 +295,7 @@ router.post(
                 return res.status(500).json({ message: 'Failed to save attendance', error: error.message });
             }
 
-            res.json({ message: 'Attendance saved successfully. Records are locked for 24 hours.', data: data });
+            res.json({ message: 'Attendance saved successfully. Records are locked for 72 hours.', data: data });
         } catch (error) {
             console.error('ATTENDANCE SAVE EXCEPTION:', error);
             res.status(500).json({ message: 'Server error' });
@@ -250,6 +305,8 @@ router.post(
 
 // ============================================================
 // DELETE / CLEAR ATTENDANCE FOR A SINGLE STUDENT ON A DATE
+// ------------------------------------------------------------
+// Same 72-hour lock rule as /bulk, measured from created_at.
 // ============================================================
 
 router.delete(
@@ -264,12 +321,22 @@ router.delete(
                 return res.status(400).json({ message: 'student_id and attendance_date are required.' });
             }
 
-            // 🛑 SECURITY: 24-Hour Lock Check
-            const requestedDate = new Date(attendance_date + 'T00:00:00');
-            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            if (requestedDate < twentyFourHoursAgo) {
-                return res.status(403).json({ 
-                    message: 'This record is locked. Attendance becomes non-editable 24 hours after it was first saved.' 
+            // Look up the existing record (if any) to check the lock.
+            const { data: existing, error: lookupError } = await supabase
+                .from('attendance')
+                .select('created_at')
+                .eq('student_id', student_id)
+                .eq('attendance_date', attendance_date)
+                .maybeSingle();
+
+            if (lookupError) {
+                console.error('ATTENDANCE DELETE LOOKUP ERROR:', lookupError);
+                return res.status(500).json({ message: 'Failed to verify attendance record', error: lookupError.message });
+            }
+
+            if (existing && isLocked(existing.created_at)) {
+                return res.status(403).json({
+                    message: 'This record is locked. Attendance becomes non-editable 72 hours after it was first saved.'
                 });
             }
 

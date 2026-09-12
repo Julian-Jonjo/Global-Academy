@@ -701,13 +701,24 @@
 
 
         // =====================================================
-        // PROPRIETOR / ADMINISTRATOR
+        // ADMINISTRATOR
         // =====================================================
 
-        if (
-            roleId === ROLE_PROPRIETOR ||
-            roleId === ROLE_ADMINISTRATOR
-        ) {
+        if (roleId === ROLE_ADMINISTRATOR) {
+
+            renderDashboard(
+                getAdministratorDashboard()
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // PROPRIETOR
+        // =====================================================
+
+        if (roleId === ROLE_PROPRIETOR) {
 
             renderDashboard(
                 getAdministrationDashboard()
@@ -912,6 +923,29 @@
 
             ]
         };
+    }
+
+
+    // =========================================================
+    // ADMINISTRATOR-ONLY DASHBOARD
+    // =========================================================
+    //
+    // Same cards as the administration dashboard, plus the
+    // Term Settings card which only the Administrator may see.
+    // =========================================================
+
+    function getAdministratorDashboard() {
+
+        const config = getAdministrationDashboard();
+
+        config.cards.push({
+            icon: '📅',
+            title: 'Term Settings',
+            desc: 'Set start and end dates for each term.',
+            link: 'terms-settings.html'
+        });
+
+        return config;
     }
 
 
