@@ -138,6 +138,16 @@ router.post('/save', authenticateToken, requireRoles(...WRITE_ROLES), async (req
         const user = req.user;
         const isClassMaster = await isClassMasterOf(user.teacher_id, class_id);
 
+        // Determine the class's school section to decide the save path.
+        const { data: classRow } = await supabase
+            .from('classes')
+            .select('school_section')
+            .eq('class_id', class_id)
+            .maybeSingle();
+
+        const classSection = String(classRow?.school_section || '').trim().toLowerCase();
+        const isPrimaryClass = ['nursery', 'primary'].includes(classSection);
+
         const insertData = records.map(r => ({
             student_id: r.student_id,
             class_id: class_id,
@@ -149,7 +159,10 @@ router.post('/save', authenticateToken, requireRoles(...WRITE_ROLES), async (req
             academic_year_id: 1
         }));
 
-        if (!isClassMaster && user.role_id === ROLE_IDS.TEACHER) {
+        // PRIMARY: any teacher assigned to the class saves directly.
+        // SECONDARY: only class masters save directly; other teachers go to
+        //            result_edit_requests for Manager approval.
+        if (!isPrimaryClass && !isClassMaster && user.role_id === ROLE_IDS.TEACHER) {
             const approvalRequests = records.map(r => ({
                 teacher_id: user.teacher_id,
                 class_id: class_id,
@@ -179,7 +192,6 @@ router.post('/save', authenticateToken, requireRoles(...WRITE_ROLES), async (req
         res.status(500).json({ message: 'Failed to save grades' });
     }
 });
-
 // ============================================================
 // 6. GET RESULTS FOR SUBJECT
 // ============================================================

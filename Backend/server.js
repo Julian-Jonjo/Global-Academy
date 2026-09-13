@@ -45,6 +45,7 @@ const resultRoutes = require('./routes/results');
 
 const termRoutes = require('./routes/terms');
 
+const holidayRoutes = require('./routes/holidays');
 
 // ============================================================
 // AUTH MIDDLEWARE
@@ -143,6 +144,7 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/results', resultRoutes);
 app.use('/api/terms', termRoutes);
+app.use('/api/holidays', holidayRoutes);
 
 // ============================================================
 // ROOT API

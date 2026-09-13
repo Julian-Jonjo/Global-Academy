@@ -225,28 +225,30 @@
             const aRes = await fetch('/api/results/my-assignments', { headers: { 'Authorization': `Bearer ${token}` } });
             myAssignments = aRes.ok ? await aRes.json() : [];
 
+            const mRes = await fetch('/api/results/my-classes', { headers: { 'Authorization': `Bearer ${token}` } });
+            const myClasses = mRes.ok ? await mRes.json() : [];
+
             const map = new Map();
+
             myAssignments.forEach(a => {
                 if (a.classes?.class_id) {
                     map.set(a.classes.class_id, {
                         class_id: a.classes.class_id,
                         class_name: a.classes.class_name,
-                        arm: a.classes.arm
+                        arm: a.classes.arm,
+                        school_section: a.classes.school_section || null
                     });
                 }
             });
 
-            const mRes = await fetch('/api/results/my-class', { headers: { 'Authorization': `Bearer ${token}` } });
-            if (mRes.ok) {
-                const myClass = await mRes.json();
-                if (myClass?.class_id) {
-                    map.set(myClass.class_id, {
-                        class_id: myClass.class_id,
-                        class_name: myClass.class_name,
-                        arm: myClass.arm
-                    });
-                }
-            }
+            myClasses.forEach(c => {
+                map.set(c.class_id, {
+                    class_id: c.class_id,
+                    class_name: c.class_name,
+                    arm: c.arm,
+                    school_section: c.school_section || null
+                });
+            });
 
             classes = Array.from(map.values());
         } else {
@@ -278,47 +280,53 @@
             return;
         }
 
-        if (roleId === ROLE_TEACHER) {
-            const list = myAssignments
-                .filter(a => Number(a.class_id) === Number(classId))
-                .map(a => ({
-                    subject_id: a.subject_id,
-                    subject_name: a.subjects?.subject_name || 'Subject'
-                }));
+        // Look up the school section from the cached classes list.
+        const selectedClass = classes.find(c => Number(c.class_id) === Number(classId));
+        const classSection = String(selectedClass?.school_section || '').trim().toLowerCase();
+        const isPrimaryClass = ['nursery', 'primary'].includes(classSection);
 
-            const uniq = new Map();
-            list.forEach(s => uniq.set(s.subject_id, s));
-            subjects = Array.from(uniq.values());
+        // Fetch all subjects of the class from class_subjects.
+        const allRes = await fetch(`/api/results/subjects/${classId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const allSubs = allRes.ok ? await allRes.json() : [];
 
-            const mRes = await fetch('/api/results/my-class', { headers: { 'Authorization': `Bearer ${token}` } });
-            if (mRes.ok) {
-                const myClass = await mRes.json();
-                if (myClass?.class_id && Number(myClass.class_id) === Number(classId)) {
-                    const allRes = await fetch(`/api/results/subjects/${classId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-                    if (allRes.ok) {
-                        const allSubs = await allRes.json();
-                        allSubs.forEach(s => {
-                            if (!uniq.has(s.subject_id)) {
-                                uniq.set(s.subject_id, {
-                                    subject_id: s.subject_id,
-                                    subject_name: s.subjects?.subject_name || 'Subject'
-                                });
-                            }
-                        });
-                        subjects = Array.from(uniq.values());
-                    }
-                }
-            }
-        } else {
-            const sRes = await fetch(`/api/results/subjects/${classId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-            const list = sRes.ok ? await sRes.json() : [];
-            const uniq = new Map();
-            list.forEach(s => {
+        const uniq = new Map();
+        allSubs.forEach(s => {
+            if (s.subject_id) {
                 uniq.set(s.subject_id, {
                     subject_id: s.subject_id,
                     subject_name: s.subjects?.subject_name || 'Subject'
                 });
-            });
+            }
+        });
+
+        if (roleId === ROLE_TEACHER && !isPrimaryClass) {
+            // SECONDARY: restrict to subjects this teacher is assigned to,
+            // plus all subjects if they are class master here.
+            const assignedIds = new Set(
+                myAssignments
+                    .filter(a => Number(a.class_id) === Number(classId))
+                    .map(a => Number(a.subject_id))
+            );
+
+            // A teacher is a class master here only if this class appears
+            // in their /my-classes list — which we already merged into `classes`.
+            const isMasterHere = classes.some(
+                c => Number(c.class_id) === Number(classId) && !c.subject_id
+            );
+
+            if (isMasterHere) {
+                subjects = Array.from(uniq.values());
+            } else {
+                const filtered = new Map();
+                uniq.forEach((v, k) => {
+                    if (assignedIds.has(Number(k))) {
+                        filtered.set(k, v);
+                    }
+                });
+                subjects = Array.from(filtered.values());
+            }
+        } else {
+            // PRIMARY teachers, and Managers/Admin/Proprietor: all subjects.
             subjects = Array.from(uniq.values());
         }
 

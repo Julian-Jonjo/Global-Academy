@@ -158,6 +158,45 @@
         .day-col.absent  { background-color: var(--absent-bg);  color: var(--absent-text); }
         .day-col:hover { background-color: #dbeafe; }
 
+        /* Day separator — the afternoon cell of each day */
+        .day-col.day-end {
+            border-right: 3px solid #64748b;
+        }
+
+        /* Holiday: merged band across M and A */
+        .day-col.holiday-cell {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            position: relative;
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 2px 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .day-col.holiday-cell::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(229, 231, 235, 0.6),
+                rgba(229, 231, 235, 0.6) 4px,
+                rgba(249, 250, 251, 0.6) 4px,
+                rgba(249, 250, 251, 0.6) 8px
+            );
+            z-index: -1;
+        }
+        .day-col.holiday-cell {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            vertical-align: middle;
+            text-align: center;
+        }
+
         .week-boundary { border-right: 3px solid var(--navy) !important; }
 
         .summary-row td { background: #f1f5f9; font-weight: 700; color: var(--navy); font-size: 11px; }
@@ -305,10 +344,29 @@
                 font-size: 10px;
                 padding: 1px 0;
             }
+            .print-reg-table .day-col.day-end {
+                border-right: 2.5px solid #000;
+            }
             .print-reg-table .day-col.present,
             .print-reg-table .day-col.absent {
                 background: #fff !important;
                 color: #000 !important;
+            }
+            .print-reg-table .day-col.holiday-cell {
+                writing-mode: vertical-rl;
+                text-orientation: mixed;
+                font-size: 7px;
+                letter-spacing: 0.3px;
+            }
+            .print-reg-table .day-col.holiday-cell::before {
+                background: repeating-linear-gradient(
+                    45deg,
+                    rgba(208, 208, 208, 0.5),
+                    rgba(208, 208, 208, 0.5) 2px,
+                    rgba(255, 255, 255, 0.5) 2px,
+                    rgba(255, 255, 255, 0.5) 4px
+                );
+                z-index: -1;
             }
             .print-reg-table .week-boundary {
                 border-right: 3px solid #000 !important;
@@ -474,6 +532,8 @@
     let canMark = false;
     let currentClassMasterName = '';
     let allClassesCache = [];
+    let holidaySet = new Set();
+    let holidayDescriptions = {};
 
     const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -716,6 +776,8 @@
                 await fetchClassMasterName(classId);
             }
 
+            await fetchHolidays();
+
             allStudentsLoaded = await fetchAllStudents();
             currentStudents = allStudentsLoaded.filter(s => Number(s.class_id) === Number(classId));
             renderRegisterGrid();
@@ -782,9 +844,11 @@
         let row3 = `<tr>`;
         for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
             for (let d = 0; d < DAYS_PER_WEEK; d++) {
-                const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < WEEKS_PER_BLOCK - 1);
+                const isLastDay = (d === DAYS_PER_WEEK - 1);
+                const dayEndClass = isLastDay ? ' day-end' : '';
+                const weekBoundary = isLastDay && (w < WEEKS_PER_BLOCK - 1) ? ' week-boundary' : '';
                 row3 += `<th class="session-header">M</th>`;
-                row3 += `<th class="session-header${isLastDay ? ' week-boundary' : ''}">A</th>`;
+                row3 += `<th class="session-header${dayEndClass}${weekBoundary}">A</th>`;
             }
         }
         row3 += `</tr>`;
@@ -805,13 +869,24 @@
             for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
                 for (let d = 0; d < DAYS_PER_WEEK; d++) {
                     const i = w * DAYS_PER_WEEK + d;
-                    const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < WEEKS_PER_BLOCK - 1);
-                    if (canMark) {
+                    const date = dateForIndex(i);
+                    const dateStr = toISODate(date);
+                    const isLastDay = (d === DAYS_PER_WEEK - 1);
+                    const dayEndClass = isLastDay ? ' day-end' : '';
+                    const weekBoundary = isLastDay && (w < WEEKS_PER_BLOCK - 1) ? ' week-boundary' : '';
+                    const isHoliday = holidaySet.has(dateStr);
+
+                    if (isHoliday) {
+                        if (index === 0) {
+                            const desc = escapeHtml(holidayDescriptions[dateStr] || 'Holiday');
+                            row += `<td class="day-col holiday-cell${dayEndClass}${weekBoundary}" colspan="2" rowspan="${currentStudents.length}" data-date-index="${i}" data-session="holiday" title="${desc}">${desc}</td>`;
+                        }
+                    } else if (canMark) {
                         row += `<td class="day-col" data-date-index="${i}" data-session="morning" onclick="toggleSession(this)"></td>`;
-                        row += `<td class="day-col${isLastDay ? ' week-boundary' : ''}" data-date-index="${i}" data-session="afternoon" onclick="toggleSession(this)"></td>`;
+                        row += `<td class="day-col${dayEndClass}${weekBoundary}" data-date-index="${i}" data-session="afternoon" onclick="toggleSession(this)"></td>`;
                     } else {
                         row += `<td class="day-col" data-date-index="${i}" data-session="morning" style="cursor: default;"></td>`;
-                        row += `<td class="day-col${isLastDay ? ' week-boundary' : ''}" data-date-index="${i}" data-session="afternoon" style="cursor: default;"></td>`;
+                        row += `<td class="day-col${dayEndClass}${weekBoundary}" data-date-index="${i}" data-session="afternoon" style="cursor: default;"></td>`;
                     }
                 }
             }
@@ -880,6 +955,11 @@
 
         if (dateStr > todayStr) {
             alert('⛔ This day is in the future. Attendance can only be marked for today or past days.');
+            return;
+        }
+
+        if (holidaySet.has(dateStr)) {
+            alert('🎉 This day is a holiday. Attendance cannot be marked.');
             return;
         }
 
@@ -1017,6 +1097,7 @@
             if (!currentTerm) return;
             if (rec.attendance_date < currentTerm.start_date) return;
             if (rec.attendance_date > currentTerm.end_date) return;
+            if (holidaySet.has(rec.attendance_date)) return;
 
             distinctDates.add(rec.attendance_date);
 
@@ -1105,31 +1186,52 @@
                 const studentId = currentStudents[rowIndex]?.student_id;
 
                 cells.forEach(cell => {
-                    cell.classList.remove('present', 'absent');
-                    cell.innerText = '';
-                    cell.style.pointerEvents = '';
-                    cell.style.opacity = '';
-
                     const dateIndex = Number(cell.dataset.dateIndex);
                     const session = cell.dataset.session;
+
+                    if (session === 'holiday') {
+                        cell.style.pointerEvents = 'none';
+                        cell.style.opacity = '0.5';
+                        return;
+                    }
+
+                    cell.classList.remove('present', 'absent');
+                    cell.innerText = '';
+                    cell.removeAttribute('title');
+                    cell.style.pointerEvents = '';
+                    cell.style.opacity = '';
 
                     const dayDate = dateForIndex(dateIndex);
                     const dateStr = toISODate(dayDate);
                     const todayStr = getTodayStringSL();
+                    const isHoliday = holidaySet.has(dateStr);
 
                     if (dateStr > todayStr) {
                         cell.style.pointerEvents = 'none';
                         cell.style.opacity = '0.5';
                     }
 
-                    const rec = attendanceRecords[dateStr]?.[studentId];
-                    if (rec && rec[session]) {
-                        if (rec[session] === 'Present') {
-                            cell.classList.add('present');
-                            cell.innerText = session === 'morning' ? '\\' : '/';
-                        } else if (rec[session] === 'Absent') {
-                            cell.classList.add('absent');
-                            cell.innerText = 'O';
+                    if (isHoliday) {
+                        cell.style.pointerEvents = 'none';
+                        cell.style.opacity = '0.5';
+                        cell.setAttribute('title', holidayDescriptions[dateStr] || 'Holiday');
+
+                        // Show the description in the left half of the merged band
+                        if (session === 'morning') {
+                            cell.innerText = holidayDescriptions[dateStr] || 'Holiday';
+                        } else {
+                            cell.innerText = '';
+                        }
+                    } else {
+                        const rec = attendanceRecords[dateStr]?.[studentId];
+                        if (rec && rec[session]) {
+                            if (rec[session] === 'Present') {
+                                cell.classList.add('present');
+                                cell.innerText = session === 'morning' ? '\\' : '/';
+                            } else if (rec[session] === 'Absent') {
+                                cell.classList.add('absent');
+                                cell.innerText = 'O';
+                            }
                         }
                     }
                 });
@@ -1161,6 +1263,7 @@
                 const dateStr = toISODate(dayDate);
                 const todayStr = getTodayStringSL();
                 if (dateStr > todayStr) return;
+                if (holidaySet.has(dateStr)) return;
 
                 let status = null;
                 if (cell.classList.contains('present')) status = 'Present';
@@ -1197,6 +1300,29 @@
             alert('Attendance saved successfully.');
             await loadSavedAttendance();
         } catch (error) { alert(error.message); }
+    }
+
+    // ==========================================
+    // FETCH HOLIDAYS
+    // ==========================================
+    async function fetchHolidays() {
+        holidaySet = new Set();
+        holidayDescriptions = {};
+        try {
+            const r = await fetch('/api/holidays', {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!r.ok) return;
+            const list = await r.json();
+            (list || []).forEach(h => {
+                if (h.holiday_date) {
+                    holidaySet.add(h.holiday_date);
+                    holidayDescriptions[h.holiday_date] = h.description || 'Holiday';
+                }
+            });
+        } catch (e) {
+            console.error('Error fetching holidays:', e);
+        }
     }
 
     // ==========================================
@@ -1352,9 +1478,11 @@
         html += `<tr>`;
         for (let w = 0; w < weeksInBlock; w++) {
             for (let d = 0; d < DAYS_PER_WEEK; d++) {
-                const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < weeksInBlock - 1);
+                const isLastDay = (d === DAYS_PER_WEEK - 1);
+                const dayEndClass = isLastDay ? ' day-end' : '';
+                const weekBoundary = isLastDay && (w < weeksInBlock - 1) ? ' week-boundary' : '';
                 html += `<th class="session-header">M</th>`;
-                html += `<th class="session-header${isLastDay ? ' week-boundary' : ''}">A</th>`;
+                html += `<th class="session-header${dayEndClass}${weekBoundary}">A</th>`;
             }
         }
         html += `</tr></thead>`;
@@ -1374,19 +1502,29 @@
                 for (let d = 0; d < DAYS_PER_WEEK; d++) {
                     const date = addDays(pageBlockStart, w * 7 + d);
                     const dateStr = toISODate(date);
-                    const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < weeksInBlock - 1);
+                    const isLastDay = (d === DAYS_PER_WEEK - 1);
+                    const dayEndClass = isLastDay ? ' day-end' : '';
+                    const weekBoundary = isLastDay && (w < weeksInBlock - 1) ? ' week-boundary' : '';
 
+                    const isHoliday = holidaySet.has(dateStr);
                     const rec = attendanceRecords[dateStr]?.[student.student_id] || {};
 
-                    let morningMark = '';
-                    let afternoonMark = '';
-                    if (rec.morning === 'Present') morningMark = '\\';
-                    else if (rec.morning === 'Absent') morningMark = 'O';
-                    if (rec.afternoon === 'Present') afternoonMark = '/';
-                    else if (rec.afternoon === 'Absent') afternoonMark = 'O';
+                    if (isHoliday) {
+                        if (index === 0) {
+                            const desc = escapeHtml(holidayDescriptions[dateStr] || 'Holiday');
+                            html += `<td class="day-col holiday-cell${dayEndClass}${weekBoundary}" colspan="2" rowspan="${currentStudents.length}">${desc}</td>`;
+                        }
+                    } else {
+                        let morningMark = '';
+                        let afternoonMark = '';
+                        if (rec.morning === 'Present') morningMark = '\\';
+                        else if (rec.morning === 'Absent') morningMark = 'O';
+                        if (rec.afternoon === 'Present') afternoonMark = '/';
+                        else if (rec.afternoon === 'Absent') afternoonMark = 'O';
 
-                    html += `<td class="day-col">${morningMark}</td>`;
-                    html += `<td class="day-col${isLastDay ? ' week-boundary' : ''}">${afternoonMark}</td>`;
+                        html += `<td class="day-col">${morningMark}</td>`;
+                        html += `<td class="day-col${dayEndClass}${weekBoundary}">${afternoonMark}</td>`;
+                    }
                 }
             }
             html += `</tr>`;
@@ -1401,13 +1539,16 @@
                 const date = addDays(pageBlockStart, w * 7 + d);
                 const dateStr = toISODate(date);
                 const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < weeksInBlock - 1);
+                const isHoliday = holidaySet.has(dateStr);
 
                 let mpCount = 0, apCount = 0;
-                currentStudents.forEach(s => {
-                    const rec = attendanceRecords[dateStr]?.[s.student_id];
-                    if (rec?.morning === 'Present') mpCount++;
-                    if (rec?.afternoon === 'Present') apCount++;
-                });
+                if (!isHoliday) {
+                    currentStudents.forEach(s => {
+                        const rec = attendanceRecords[dateStr]?.[s.student_id];
+                        if (rec?.morning === 'Present') mpCount++;
+                        if (rec?.afternoon === 'Present') apCount++;
+                    });
+                }
 
                 html += `<td>${mpCount}</td><td class="${isLastDay ? 'week-boundary' : ''}">${apCount}</td>`;
             }
@@ -1420,13 +1561,16 @@
                 const date = addDays(pageBlockStart, w * 7 + d);
                 const dateStr = toISODate(date);
                 const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < weeksInBlock - 1);
+                const isHoliday = holidaySet.has(dateStr);
 
                 let maCount = 0, aaCount = 0;
-                currentStudents.forEach(s => {
-                    const rec = attendanceRecords[dateStr]?.[s.student_id];
-                    if (rec?.morning === 'Absent') maCount++;
-                    if (rec?.afternoon === 'Absent') aaCount++;
-                });
+                if (!isHoliday) {
+                    currentStudents.forEach(s => {
+                        const rec = attendanceRecords[dateStr]?.[s.student_id];
+                        if (rec?.morning === 'Absent') maCount++;
+                        if (rec?.afternoon === 'Absent') aaCount++;
+                    });
+                }
 
                 html += `<td>${maCount}</td><td class="${isLastDay ? 'week-boundary' : ''}">${aaCount}</td>`;
             }
@@ -1448,6 +1592,8 @@
             for (let d = 0; d < DAYS_PER_WEEK; d++) {
                 const date = addDays(weekMon, d);
                 const dateStr = toISODate(date);
+                if (holidaySet.has(dateStr)) continue;
+
                 currentStudents.forEach(s => {
                     const rec = attendanceRecords[dateStr]?.[s.student_id];
                     if (rec?.morning === 'Present') tpM++;
@@ -1477,6 +1623,8 @@
             for (let d = 0; d < DAYS_PER_WEEK; d++) {
                 const date = addDays(weekMon, d);
                 const dateStr = toISODate(date);
+                if (holidaySet.has(dateStr)) continue;
+
                 currentStudents.forEach(s => {
                     const rec = attendanceRecords[dateStr]?.[s.student_id];
                     if (rec?.morning === 'Present') tp++;
