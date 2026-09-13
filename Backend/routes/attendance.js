@@ -71,6 +71,59 @@ function isLocked(createdAt) {
 // NOT included, because only class masters may mark attendance.
 // ============================================================
 
+// ============================================================
+// HELPER: attach class_master_name to a list of classes
+// ============================================================
+async function attachClassMasters(classes) {
+    if (!Array.isArray(classes) || classes.length === 0) return [];
+
+    const classIds = classes.map(c => c.class_id);
+
+    // Secondary masters for all classes
+    const { data: secRows } = await supabase
+        .from('secondary_class_masters')
+        .select(`
+            class_id,
+            teachers!teacher_id ( first_name, middle_name, last_name )
+        `)
+        .in('class_id', classIds);
+
+    // Primary masters for all classes
+    const { data: priRows } = await supabase
+        .from('primary_class_teachers')
+        .select(`
+            class_id,
+            teachers!teacher_id ( first_name, middle_name, last_name )
+        `)
+        .in('class_id', classIds);
+
+    const masterMap = new Map();
+
+    (secRows || []).forEach(row => {
+        if (row.teachers) {
+            const n = [row.teachers.first_name, row.teachers.middle_name, row.teachers.last_name]
+                .filter(Boolean).join(' ').trim();
+            if (n) masterMap.set(row.class_id, n);
+        }
+    });
+
+    (priRows || []).forEach(row => {
+        if (row.teachers && !masterMap.has(row.class_id)) {
+            const n = [row.teachers.first_name, row.teachers.middle_name, row.teachers.last_name]
+                .filter(Boolean).join(' ').trim();
+            if (n) masterMap.set(row.class_id, n);
+        }
+    });
+
+    return classes.map(c => ({
+        ...c,
+        class_master_name: masterMap.get(c.class_id) || null
+    }));
+}
+
+// ============================================================
+// GET TEACHER'S CLASSES ONLY
+// ============================================================
 router.get(
     '/my-classes',
     authenticateToken,
@@ -82,8 +135,7 @@ router.get(
                 return res.status(404).json({ message: 'Teacher profile not found.' });
             }
 
-            // 1. Primary class teacher assignments
-            const { data: primaryAssignments, error: primaryError } = await supabase
+            const { data: primaryAssignments } = await supabase
                 .from('primary_class_teachers')
                 .select(`
                     class_id,
@@ -93,12 +145,7 @@ router.get(
                 `)
                 .eq('teacher_id', teacherId);
 
-            if (primaryError) {
-                console.error('PRIMARY ASSIGNMENTS ERROR:', primaryError);
-            }
-
-            // 2. Secondary class master assignments
-            const { data: secondaryMasters, error: secondaryError } = await supabase
+            const { data: secondaryMasters } = await supabase
                 .from('secondary_class_masters')
                 .select(`
                     class_id,
@@ -108,11 +155,6 @@ router.get(
                 `)
                 .eq('teacher_id', teacherId);
 
-            if (secondaryError) {
-                console.error('SECONDARY MASTERS ERROR:', secondaryError);
-            }
-
-            // 3. Combine and deduplicate
             const classMap = new Map();
             [
                 ...(primaryAssignments || []),
@@ -123,7 +165,7 @@ router.get(
                 }
             });
 
-            const myClasses = Array.from(classMap.values());
+            const myClasses = await attachClassMasters(Array.from(classMap.values()));
 
             res.json(myClasses);
 
@@ -137,7 +179,6 @@ router.get(
 // ============================================================
 // GET ALL CLASSES (For Admin / Manager / Proprietor)
 // ============================================================
-
 router.get(
     '/all-classes',
     authenticateToken,
@@ -166,7 +207,10 @@ router.get(
             const { data, error } = await query;
             if (error) throw error;
 
-            res.json(data || []);
+            const withMasters = await attachClassMasters(data || []);
+
+            res.json(withMasters);
+
         } catch (error) {
             console.error('ALL CLASSES EXCEPTION:', error);
             res.status(500).json({ message: 'Failed to load classes' });
@@ -223,15 +267,21 @@ router.post(
     requireRoles(...ATTENDANCE_WRITE_ROLES),
     async (req, res) => {
         try {
-            const { class_id, attendance_date, records } = req.body;
+            const { class_id, attendance_date, session, records } = req.body;
 
-            if (!class_id || !attendance_date || !Array.isArray(records)) {
-                return res.status(400).json({ message: 'class_id, attendance_date, and records array are required.' });
+            if (!class_id || !attendance_date || !session || !Array.isArray(records)) {
+                return res.status(400).json({
+                    message: 'class_id, attendance_date, session, and records array are required.'
+                });
             }
 
-            // Look up existing rows for this class/date so we can:
-            //   1. Enforce the 72-hour lock on each existing record.
-            //   2. Preserve the original created_at on update.
+            if (!['morning', 'afternoon'].includes(session)) {
+                return res.status(400).json({
+                    message: 'session must be "morning" or "afternoon".'
+                });
+            }
+
+            // 1. Look up existing rows for this class/date/session
             const studentIds = records.map(r => r.student_id);
 
             const { data: existingRows, error: lookupError } = await supabase
@@ -239,11 +289,15 @@ router.post(
                 .select('student_id, created_at')
                 .eq('class_id', class_id)
                 .eq('attendance_date', attendance_date)
+                .eq('session', session)
                 .in('student_id', studentIds);
 
             if (lookupError) {
                 console.error('ATTENDANCE LOOKUP ERROR:', lookupError);
-                return res.status(500).json({ message: 'Failed to verify existing attendance', error: lookupError.message });
+                return res.status(500).json({
+                    message: 'Failed to verify existing attendance',
+                    error: lookupError.message
+                });
             }
 
             const existingByStudent = new Map();
@@ -251,7 +305,7 @@ router.post(
                 existingByStudent.set(row.student_id, row);
             });
 
-            // Enforce lock on each existing record.
+            // 2. Enforce 72-hour lock per existing record
             for (const rec of records) {
                 const existing = existingByStudent.get(rec.student_id);
                 if (existing && isLocked(existing.created_at)) {
@@ -264,9 +318,7 @@ router.post(
             const user = req.user;
             const now = new Date().toISOString();
 
-            // Build insert payload. For existing rows we omit created_at
-            // so the database keeps the original timestamp; for new rows
-            // we set it to now.
+            // 3. Build insert payload
             const insertData = records.map(rec => {
                 const existing = existingByStudent.get(rec.student_id);
 
@@ -274,6 +326,7 @@ router.post(
                     student_id: rec.student_id,
                     class_id: class_id,
                     attendance_date: attendance_date,
+                    session: session,
                     status: rec.status,
                     recorded_by: user.user_id || null
                 };
@@ -285,24 +338,33 @@ router.post(
                 return row;
             });
 
+            // 4. Upsert on (student_id, attendance_date, session)
             const { data, error } = await supabase
                 .from('attendance')
-                .upsert(insertData, { onConflict: 'student_id, attendance_date' })
+                .upsert(insertData, {
+                    onConflict: 'student_id, attendance_date, session'
+                })
                 .select();
 
             if (error) {
                 console.error('ATTENDANCE SAVE ERROR:', error);
-                return res.status(500).json({ message: 'Failed to save attendance', error: error.message });
+                return res.status(500).json({
+                    message: 'Failed to save attendance',
+                    error: error.message
+                });
             }
 
-            res.json({ message: 'Attendance saved successfully. Records are locked for 72 hours.', data: data });
+            res.json({
+                message: 'Attendance saved successfully. Records are locked for 72 hours.',
+                data: data
+            });
+
         } catch (error) {
             console.error('ATTENDANCE SAVE EXCEPTION:', error);
             res.status(500).json({ message: 'Server error' });
         }
     }
 );
-
 // ============================================================
 // DELETE / CLEAR ATTENDANCE FOR A SINGLE STUDENT ON A DATE
 // ------------------------------------------------------------
@@ -315,23 +377,34 @@ router.delete(
     requireRoles(...ATTENDANCE_WRITE_ROLES),
     async (req, res) => {
         try {
-            const { student_id, attendance_date } = req.query;
+            const { student_id, attendance_date, session } = req.query;
 
-            if (!student_id || !attendance_date) {
-                return res.status(400).json({ message: 'student_id and attendance_date are required.' });
+            if (!student_id || !attendance_date || !session) {
+                return res.status(400).json({
+                    message: 'student_id, attendance_date, and session are required.'
+                });
             }
 
-            // Look up the existing record (if any) to check the lock.
+            if (!['morning', 'afternoon'].includes(session)) {
+                return res.status(400).json({
+                    message: 'session must be "morning" or "afternoon".'
+                });
+            }
+
             const { data: existing, error: lookupError } = await supabase
                 .from('attendance')
                 .select('created_at')
                 .eq('student_id', student_id)
                 .eq('attendance_date', attendance_date)
+                .eq('session', session)
                 .maybeSingle();
 
             if (lookupError) {
                 console.error('ATTENDANCE DELETE LOOKUP ERROR:', lookupError);
-                return res.status(500).json({ message: 'Failed to verify attendance record', error: lookupError.message });
+                return res.status(500).json({
+                    message: 'Failed to verify attendance record',
+                    error: lookupError.message
+                });
             }
 
             if (existing && isLocked(existing.created_at)) {
@@ -344,16 +417,91 @@ router.delete(
                 .from('attendance')
                 .delete()
                 .eq('student_id', student_id)
-                .eq('attendance_date', attendance_date);
+                .eq('attendance_date', attendance_date)
+                .eq('session', session);
 
             if (error) {
                 console.error('ATTENDANCE DELETE ERROR:', error);
-                return res.status(500).json({ message: 'Failed to delete attendance', error: error.message });
+                return res.status(500).json({
+                    message: 'Failed to delete attendance',
+                    error: error.message
+                });
             }
 
             res.json({ message: 'Attendance cleared successfully.' });
         } catch (error) {
             console.error('ATTENDANCE DELETE EXCEPTION:', error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+);
+
+// ============================================================
+// GET CLASS MASTER (Name) FOR A CLASS
+// ------------------------------------------------------------
+// Lookup order:
+//   1. secondary_class_masters (secondary classes)
+//   2. primary_class_teachers  (primary classes)
+// Returns { class_master_name } or { class_master_name: null }.
+// ============================================================
+
+router.get(
+    '/class-master/:classId',
+    authenticateToken,
+    requireRoles(...ATTENDANCE_VIEW_ROLES),
+    async (req, res) => {
+        try {
+            const classId = Number(req.params.classId);
+            if (!Number.isInteger(classId)) {
+                return res.status(400).json({ message: 'Invalid class ID' });
+            }
+
+            // 1. Secondary
+            const { data: secRow, error: secErr } = await supabase
+                .from('secondary_class_masters')
+                .select(`
+                    teacher_id,
+                    teachers!teacher_id ( first_name, middle_name, last_name )
+                `)
+                .eq('class_id', classId)
+                .maybeSingle();
+
+            if (secErr) {
+                console.error('CLASS MASTER (SECONDARY) LOOKUP ERROR:', secErr);
+            }
+
+            if (secRow?.teachers) {
+                const t = secRow.teachers;
+                const name = [t.first_name, t.middle_name, t.last_name]
+                    .filter(Boolean).join(' ').trim();
+                if (name) return res.json({ class_master_name: name });
+            }
+
+            // 2. Primary
+            const { data: priRow, error: priErr } = await supabase
+                .from('primary_class_teachers')
+                .select(`
+                    teacher_id,
+                    teachers!teacher_id ( first_name, middle_name, last_name )
+                `)
+                .eq('class_id', classId)
+                .maybeSingle();
+
+            if (priErr) {
+                console.error('CLASS MASTER (PRIMARY) LOOKUP ERROR:', priErr);
+            }
+
+            if (priRow?.teachers) {
+                const t = priRow.teachers;
+                const name = [t.first_name, t.middle_name, t.last_name]
+                    .filter(Boolean).join(' ').trim();
+                if (name) return res.json({ class_master_name: name });
+            }
+
+            return res.json({ class_master_name: null });
+
+        } catch (error) {
+            console.error('CLASS MASTER EXCEPTION:', error);
             res.status(500).json({ message: 'Server error' });
         }
     }

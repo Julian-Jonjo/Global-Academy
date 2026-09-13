@@ -24,35 +24,35 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); }
 
-        .header { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .header { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .header-logo { width: 45px; height: 45px; border-radius: 10px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; }
+        .header-logo { width: 42px; height: 42px; border-radius: 10px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center; }
         .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
-        .header-title h1 { font-size: 20px; font-weight: 700; }
-        .header-title p { font-size: 12px; color: #a0c4ff; }
-        .user-info { text-align: right; font-size: 14px; background: rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 8px; }
+        .header-title h1 { font-size: 18px; font-weight: 700; }
+        .header-title p { font-size: 11px; color: #a0c4ff; }
+        .user-info { text-align: right; font-size: 13px; background: rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 8px; }
 
-        .container { max-width: 100%; margin: 25px auto; padding: 0 20px 80px; }
+        .container { max-width: 100%; margin: 20px auto; padding: 0 15px 60px; }
 
-        .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .page-title h2 { font-size: 26px; color: var(--navy); }
-        .page-title p { color: var(--light-text); }
-        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 10px 18px; cursor: pointer; font-weight: bold; text-decoration: none; }
+        .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .page-title h2 { font-size: 22px; color: var(--navy); }
+        .page-title p { color: var(--light-text); font-size: 13px; }
+        .back-btn { background: #6b7280; color: white; border: none; border-radius: 6px; padding: 9px 16px; cursor: pointer; font-weight: bold; }
         .back-btn:hover { background: #4b5563; }
 
-        .sector-section { margin-bottom: 30px; }
-        .sector-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px 20px; border-radius: 10px; }
+        .sector-section { margin-bottom: 25px; }
+        .sector-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 12px 18px; border-radius: 10px; }
         .sector-header.primary { background: #dcfce7; border-left: 5px solid #16a34a; }
         .sector-header.secondary { background: #dbeafe; border-left: 5px solid var(--navy-light); }
-        .sector-header h3 { font-size: 18px; margin: 0; }
-        .sector-count { font-size: 14px; font-weight: bold; }
-        .classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+        .sector-header h3 { font-size: 16px; margin: 0; }
+        .sector-count { font-size: 13px; font-weight: bold; }
+        .classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
 
         .book {
             background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
             border: 2px solid var(--gold);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 16px;
             color: white;
             cursor: pointer;
             transition: all 0.3s;
@@ -61,15 +61,17 @@
         }
         .book:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .book::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 3px; background: var(--gold); }
-        .book-school { font-size: 10px; text-align: center; letter-spacing: 1px; text-transform: uppercase; opacity: 0.8; margin-top: 10px; }
-        .book-class { font-size: 22px; font-weight: bold; text-align: center; margin: 15px 0; }
-        .book-year { font-size: 13px; text-align: center; color: var(--gold); }
+        .book-school { font-size: 10px; text-align: center; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9; margin-bottom: 4px; }
+        .book-subtitle { font-size: 11px; text-align: center; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+        .book-class { font-size: 20px; font-weight: bold; text-align: center; margin: 12px 0; }
+        .book-year { font-size: 11px; text-align: center; color: #cbd5e1; margin-bottom: 4px; }
+        .book-master { font-size: 11px; text-align: center; color: #cbd5e1; }
 
         #register-view { display: none; background: white; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
 
         .action-bar {
             background: white;
-            padding: 15px 20px;
+            padding: 12px 18px;
             border-bottom: 1px solid var(--border);
             border-radius: 10px 10px 0 0;
             display: flex;
@@ -78,32 +80,32 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        .action-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .action-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .action-right { display: flex; gap: 10px; }
-        .btn { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .btn { padding: 9px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 13px; }
         .btn:hover { transform: translateY(-2px); }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         .btn-back { background: #6b7280; color: white; }
         .btn-print { background: var(--navy); color: white; }
         .btn-save { background: #16a34a; color: white; }
-        .btn-nav { background: #1f2937; color: white; padding: 8px 14px; }
+        .btn-nav { background: #1f2937; color: white; padding: 8px 12px; }
 
         .register-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .register-controls select,
         .register-controls input[type="date"] {
-            padding: 8px 12px;
+            padding: 7px 10px;
             border: 1px solid var(--border);
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 13px;
             background: white;
             font-weight: bold;
             font-family: inherit;
         }
         .week-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: var(--navy);
-            padding: 8px 10px;
+            padding: 7px 10px;
             background: #f3f4f6;
             border-radius: 6px;
             white-space: nowrap;
@@ -111,73 +113,235 @@
 
         .register-header {
             text-align: center;
-            padding: 20px;
+            padding: 14px;
             background: linear-gradient(135deg, #f8fafc, #f1f5f9);
             border-bottom: 2px solid var(--gold);
         }
-        .register-header h2 { font-size: 24px; color: var(--navy); margin-bottom: 8px; }
-        .register-header p { font-size: 15px; color: var(--light-text); }
+        .register-header h2 { font-size: 20px; color: var(--navy); margin-bottom: 6px; }
+        .register-header p { font-size: 14px; color: var(--light-text); }
 
-        .table-wrapper { overflow-x: auto; padding: 10px; }
-        table { border-collapse: collapse; width: 100%; font-size: 12px; }
-        th, td { border: 1px solid var(--border); padding: 6px; text-align: center; }
-        thead th {
-            background: var(--navy);
-            color: white;
-            font-weight: bold;
-        }
+        .table-wrapper { overflow-x: auto; padding: 6px; }
+        table { border-collapse: collapse; width: 100%; min-width: 100%; }
+        th, td { border: 1px solid var(--border); padding: 4px 3px; text-align: center; font-size: 12px; overflow: hidden; }
+        thead th { background: var(--navy); color: white; font-weight: bold; }
+        thead th.day-header { background: var(--navy-light); }
+        thead th.session-header { background: #2f5588; font-size: 11px; }
         tbody tr:nth-child(even) { background: #f9fafb; }
         tbody tr:hover { background: #eff6ff; }
 
-        .day-col { width: 40px; cursor: pointer; font-weight: bold; transition: all 0.2s; border-radius: 4px; }
+        th.col-no   { width: 3%; white-space: nowrap; }
+        th.col-sex  { width: 3%; white-space: nowrap; }
+        th.col-ta   { width: 4%; white-space: nowrap; }
+        th.col-name { width: 18%; text-align: left; }
+
+        td.col-name {
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 8px;
+            padding-right: 6px;
+            font-size: 12px;
+        }
+        td.col-sex { font-weight: bold; }
+        td.col-ta  { font-weight: bold; color: var(--navy); background: #eef2ff; }
+
+        .day-col {
+            min-width: 22px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 4px 2px;
+        }
         .day-col.present { background-color: var(--present-bg); color: var(--present-text); }
-        .day-col.absent { background-color: var(--absent-bg); color: var(--absent-text); }
-        .day-col:hover { transform: scale(1.05); }
+        .day-col.absent  { background-color: var(--absent-bg);  color: var(--absent-text); }
+        .day-col:hover { background-color: #dbeafe; }
 
-        .summary-row td { background: #f1f5f9; font-weight: 700; color: var(--navy); }
-        .summary-row td.label { text-align: right; }
+        .week-boundary { border-right: 3px solid var(--navy) !important; }
 
-        .day-summary-cell {
-            font-size: 9px;
-            line-height: 1.25;
-            padding: 3px 1px;
+        .summary-row td { background: #f1f5f9; font-weight: 700; color: var(--navy); font-size: 11px; }
+        .summary-row td.label { text-align: right; padding-right: 6px; }
+        .summary-row.present-row td { background: #eef2ff; }
+        .summary-row.absent-row  td { background: #fdf2f8; }
+        .summary-row.week-summary td {
+            background: #e0f2fe;
+            font-weight: bold;
+            color: var(--navy);
+            font-size: 12px;
+            padding: 6px;
+            text-align: center;
             white-space: nowrap;
         }
-        .day-summary-cell .line1 { font-weight: bold; }
-        .day-summary-cell .line2 { font-weight: bold; color: #0f2a4a; }
 
-        .summary-block { margin: 25px 10px; }
-        .summary-block h3 {
-            font-size: 16px;
+        .term-summary-block { margin: 22px 6px; }
+        .term-summary-block h3 {
+            font-size: 18px;
             color: var(--navy);
             margin-bottom: 10px;
             padding-bottom: 6px;
-            border-bottom: 2px solid var(--gold);
+            border-bottom: 3px solid var(--gold);
         }
-        .summary-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .summary-table th {
-            background: var(--navy);
-            color: white;
-            padding: 8px;
+        .term-summary-block .term-summary-line {
+            background: #e0f2fe;
+            border: 2px solid var(--navy);
+            border-radius: 6px;
+            padding: 14px 18px;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--navy);
             text-align: center;
-            font-size: 12px;
         }
-        .summary-table td {
-            padding: 7px 8px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-        .summary-table td.label-col { text-align: left; font-weight: bold; background: #f9fafb; }
-        .summary-table tr:hover td { background: #f3f4f6; }
-        .summary-table .male-col { background: #eef2ff; }
-        .summary-table .female-col { background: #fdf2f8; }
-        .summary-table .total-col { background: #f0fdf4; font-weight: bold; }
-        .summary-table .absent-col { background: #fef2f2; font-weight: bold; }
+
         .empty { text-align: center; padding: 20px; color: #6b7280; }
 
         @media (max-width: 900px) {
             .action-bar { flex-direction: column; align-items: flex-start; }
             .action-left, .action-right { width: 100%; justify-content: space-between; }
+        }
+
+        #print-container { display: none; }
+
+        @media print {
+            body { background: white; }
+            .header, .container, .logout-bottom { display: none !important; }
+
+            #print-container { display: block !important; }
+
+            .print-page {
+                page-break-after: always;
+                padding: 10mm;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .print-page:last-child { page-break-after: auto; }
+
+            .print-cover-page {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                text-align: center;
+            }
+            .cover-content { width: 100%; }
+            .cover-school {
+                font-size: 44px;
+                color: #1a3c6e;
+                margin-bottom: 20px;
+                letter-spacing: 4px;
+                font-weight: 800;
+            }
+            .cover-subtitle {
+                font-size: 28px;
+                color: #1a3c6e;
+                margin-bottom: 80px;
+                letter-spacing: 3px;
+                font-weight: 700;
+            }
+            .cover-class {
+                font-size: 36px;
+                color: #000;
+                margin-bottom: 40px;
+                font-weight: 700;
+            }
+            .cover-info {
+                font-size: 20px;
+                color: #000;
+                margin-bottom: 12px;
+                font-weight: 600;
+            }
+
+            .print-reg-header {
+                text-align: center;
+                padding-bottom: 8px;
+                border-bottom: 2px solid #000;
+                margin-bottom: 6px;
+            }
+            .print-reg-header h1 {
+                font-size: 16px;
+                color: #000;
+                margin-bottom: 4px;
+                letter-spacing: 1px;
+            }
+            .print-reg-header p {
+                font-size: 11px;
+                color: #000;
+                margin: 0;
+            }
+
+            .print-reg-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 9px;
+                table-layout: auto;
+            }
+            .print-reg-table th,
+            .print-reg-table td {
+                border: 1px solid #000;
+                padding: 2px 1px;
+                text-align: center;
+                overflow: hidden;
+            }
+            .print-reg-table thead th {
+                background: #fff !important;
+                color: #000 !important;
+                font-weight: bold;
+            }
+            .print-reg-table thead th.day-header { background: #f0f0f0 !important; }
+            .print-reg-table thead th.session-header { background: #f8f8f8 !important; }
+            .print-reg-table td.col-name {
+                text-align: left;
+                padding-left: 4px;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+            .print-reg-table td.col-ta {
+                background: #f0f0f0 !important;
+                color: #000 !important;
+                font-weight: bold;
+            }
+            .print-reg-table .day-col {
+                min-width: 12px;
+                font-size: 10px;
+                padding: 1px 0;
+            }
+            .print-reg-table .day-col.present,
+            .print-reg-table .day-col.absent {
+                background: #fff !important;
+                color: #000 !important;
+            }
+            .print-reg-table .week-boundary {
+                border-right: 3px solid #000 !important;
+            }
+            .print-reg-table .summary-row td {
+                background: #f8f8f8 !important;
+                color: #000 !important;
+            }
+            .print-reg-table .summary-row.week-summary td {
+                background: #f0f0f0 !important;
+            }
+
+            .print-term-summary {
+                margin-top: 15px;
+                page-break-inside: avoid;
+            }
+            .print-term-summary h3 {
+                font-size: 13px;
+                color: #000;
+                border-bottom: 3px solid #000;
+                padding-bottom: 4px;
+                margin-bottom: 6px;
+            }
+            .print-term-summary .term-summary-line {
+                border: 2px solid #000;
+                border-radius: 6px;
+                padding: 10px;
+                font-size: 12px;
+                font-weight: bold;
+                text-align: center;
+            }
+
+            @page { size: A3 landscape; margin: 6mm; }
         }
     </style>
 </head>
@@ -198,7 +362,7 @@
     </header>
 
     <main class="container">
-        <!-- BOOKSHELF VIEW -->
+
         <div id="bookshelf-view">
             <div class="page-title">
                 <div>
@@ -225,12 +389,10 @@
             </div>
         </div>
 
-        <!-- REGISTER VIEW -->
         <div id="register-view">
             <div class="action-bar">
                 <div class="action-left">
-                    <button class="btn btn-back" onclick="goBackToShelf()">← Back to Bookshelf</button>
-
+                    <button class="btn btn-back" onclick="goBackToShelf()">← Back</button>
                     <div class="register-controls">
                         <select id="termSelect" onchange="onTermChange()"></select>
                         <button class="btn btn-nav" id="prevBtn" onclick="navigateBlock(-1)">◀ 4 Weeks</button>
@@ -240,14 +402,14 @@
                     </div>
                 </div>
                 <div class="action-right">
-                    <button class="btn btn-print" onclick="window.print()">Print Register</button>
+                    <button class="btn btn-print" onclick="printRegister()">Print Register</button>
                     <button class="btn btn-save" onclick="saveAttendance()">Save Attendance</button>
                 </div>
             </div>
 
             <div class="register-header">
                 <h2 id="reg-title">Class Attendance Register</h2>
-                <p id="reg-meta">Sector: -</p>
+                <p id="reg-meta">Sector: - | Term: -</p>
             </div>
 
             <div class="table-wrapper">
@@ -258,24 +420,21 @@
                 </table>
             </div>
 
-            <!-- SUMMARY BLOCKS -->
-            <div class="summary-block" id="term-summary-block">
-                <h3>📆 Term Totals</h3>
-                <div id="term-summary"></div>
-            </div>
-
-            <div class="summary-block" id="yearly-summary-block">
-                <h3>🗓️ Yearly Totals</h3>
-                <div id="yearly-summary"></div>
+            <div class="term-summary-block" id="term-summary-block">
+                <h3>📈 Term Summary</h3>
+                <div class="term-summary-line" id="term-summary-line">—</div>
             </div>
         </div>
+
     </main>
 
     <button class="logout-bottom" onclick="logout()" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">🚪 Logout</button>
 
+    <div id="print-container"></div>
+
 <script>
     // ==========================================
-    // AUTH & SESSION
+    // AUTH
     // ==========================================
     const token = sessionStorage.getItem('authToken');
     const userData = sessionStorage.getItem('user');
@@ -294,24 +453,27 @@
     // CONSTANTS
     // ==========================================
     const WEEKS_PER_BLOCK = 4;
+    const MAX_WEEKS_PER_TERM = 15;
     const DAYS_PER_WEEK = 5;
-    const DAYS_PER_BLOCK = WEEKS_PER_BLOCK * DAYS_PER_WEEK;   // 20
+    const DAYS_PER_BLOCK = WEEKS_PER_BLOCK * DAYS_PER_WEEK;
+    const SESSIONS_PER_DAY = 2;
 
     // ==========================================
-    // GLOBAL STATE
+    // STATE
     // ==========================================
     let terms = [];
     let currentTerm = null;
-    let blockStart = null;              // Monday of the first visible week
-
+    let blockStart = null;
     let currentClassId = null;
     let currentClassInfo = null;
     let currentStudents = [];
     let allStudentsLoaded = [];
     let attendanceRecords = {};
     let savedRecordsRaw = [];
-
+    let termTotals = {};
     let canMark = false;
+    let currentClassMasterName = '';
+    let allClassesCache = [];
 
     const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -324,24 +486,17 @@
         const d = String(date.getDate()).padStart(2, '0');
         return `${y}-${m}-${d}`;
     }
-
-    function parseISODate(str) {
-        return new Date(str + 'T00:00:00');
-    }
-
+    function parseISODate(str) { return new Date(str + 'T00:00:00'); }
     function getTodayStringSL() {
         const dateParts = new Intl.DateTimeFormat('en-CA', {
             timeZone: 'Africa/Freetown',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
+            year: 'numeric', month: '2-digit', day: '2-digit'
         }).formatToParts(new Date());
         const year = dateParts.find(p => p.type === 'year').value;
         const month = dateParts.find(p => p.type === 'month').value;
         const day = dateParts.find(p => p.type === 'day').value;
         return `${year}-${month}-${day}`;
     }
-
     function mondayOf(date) {
         const d = new Date(date);
         d.setHours(0, 0, 0, 0);
@@ -350,26 +505,23 @@
         d.setDate(d.getDate() + diff);
         return d;
     }
-
     function addDays(date, n) {
         const d = new Date(date);
         d.setDate(d.getDate() + n);
         return d;
     }
-
-    function formatLongDate(date) {
-        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    }
-
     function formatShortDate(date) {
-        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
     }
-
+    function dateForIndex(i) {
+        const w = Math.floor(i / DAYS_PER_WEEK);
+        const d = i % DAYS_PER_WEEK;
+        return addDays(blockStart, w * 7 + d);
+    }
     function isMale(student) {
         const g = String(student?.gender || '').toLowerCase();
         return g === 'male' || g === 'boy' || g === 'm';
     }
-
     function isFemale(student) {
         const g = String(student?.gender || '').toLowerCase();
         return g === 'female' || g === 'girl' || g === 'f';
@@ -421,29 +573,17 @@
     }
 
     // ==========================================
-    // BLOCK NAVIGATION (4 weeks = 1 block)
+    // BLOCK NAV
     // ==========================================
-    function termStartMonday() {
-        return mondayOf(parseISODate(currentTerm.start_date));
-    }
-
-    function termEndMonday() {
-        // Last Monday whose week overlaps the term end
-        const end = parseISODate(currentTerm.end_date);
-        return mondayOf(end);
-    }
+    function termStartMonday() { return mondayOf(parseISODate(currentTerm.start_date)); }
+    function termEndMonday()   { return mondayOf(parseISODate(currentTerm.end_date)); }
 
     function clampBlock(date) {
         if (!currentTerm) return date;
         const firstMonday = termStartMonday();
         const lastMonday = termEndMonday();
-
-        // Effective range for the block's first week: [firstMonday, lastMonday - (WEEKS_PER_BLOCK-1)*7]
         const lastValidStart = addDays(lastMonday, -(WEEKS_PER_BLOCK - 1) * 7);
-        if (lastValidStart < firstMonday) {
-            // Term shorter than 4 weeks: always start at firstMonday
-            return firstMonday;
-        }
+        if (lastValidStart < firstMonday) return firstMonday;
         if (date < firstMonday) return firstMonday;
         if (date > lastValidStart) return lastValidStart;
         return date;
@@ -463,8 +603,7 @@
     function onDatePick() {
         const v = document.getElementById('datePicker').value;
         if (!v) return;
-        const monday = mondayOf(parseISODate(v));
-        blockStart = clampBlock(monday);
+        blockStart = clampBlock(mondayOf(parseISODate(v)));
         updateBlockLabel();
         renderRegisterGrid();
         loadSavedAttendance();
@@ -489,55 +628,58 @@
     async function loadBookshelf() {
         try {
             let classes = [];
-
             if (roleId === 4) {
-                const response = await fetch('/api/attendance/my-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-                if (!response.ok) throw new Error('Failed to load your classes');
-                classes = await response.json();
+                const r = await fetch('/api/attendance/my-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                if (!r.ok) throw new Error('Failed to load your classes');
+                classes = await r.json();
+            } else if (roleId === 6) {
+                const r = await fetch('/api/attendance/all-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                if (!r.ok) throw new Error('Failed to load classes');
+                const all = await r.json();
+                classes = all.filter(c => c.school_section.toLowerCase() === userSector);
+            } else {
+                const r = await fetch('/api/attendance/all-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                if (!r.ok) throw new Error('Failed to load classes');
+                classes = await r.json();
             }
-            else if (roleId === 6) {
-                const response = await fetch('/api/attendance/all-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-                if (!response.ok) throw new Error('Failed to load classes');
-                const allClasses = await response.json();
-                classes = allClasses.filter(c => c.school_section.toLowerCase() === userSector);
-            }
-            else {
-                const response = await fetch('/api/attendance/all-classes', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-                if (!response.ok) throw new Error('Failed to load classes');
-                classes = await response.json();
-            }
+
+            allClassesCache = classes;
 
             canMark = (roleId === 4) && Array.isArray(classes) && classes.length > 0;
-
             const saveBtn = document.querySelector('.btn-save');
             if (saveBtn) saveBtn.style.display = canMark ? '' : 'none';
 
-            const primaryClasses = (classes || []).filter(c => ['Nursery', 'Primary'].includes(c.school_section));
-            const secondaryClasses = (classes || []).filter(c => ['JSS', 'SSS', 'Secondary'].includes(c.school_section));
+            const primary = (classes || []).filter(c => ['Nursery', 'Primary'].includes(c.school_section));
+            const secondary = (classes || []).filter(c => ['JSS', 'SSS', 'Secondary'].includes(c.school_section));
 
-            document.getElementById('primary-section').style.display = primaryClasses.length ? 'block' : 'none';
-            document.getElementById('secondary-section').style.display = secondaryClasses.length ? 'block' : 'none';
+            document.getElementById('primary-section').style.display = primary.length ? 'block' : 'none';
+            document.getElementById('secondary-section').style.display = secondary.length ? 'block' : 'none';
 
-            if (primaryClasses.length) {
-                document.getElementById('primaryCount').textContent = `${primaryClasses.length} Classes`;
-                renderBooks('primaryClasses', primaryClasses);
+            if (primary.length) {
+                document.getElementById('primaryCount').textContent = `${primary.length} Classes`;
+                renderBooks('primaryClasses', primary);
             }
-            if (secondaryClasses.length) {
-                document.getElementById('secondaryCount').textContent = `${secondaryClasses.length} Classes`;
-                renderBooks('secondaryClasses', secondaryClasses);
+            if (secondary.length) {
+                document.getElementById('secondaryCount').textContent = `${secondary.length} Classes`;
+                renderBooks('secondaryClasses', secondary);
             }
-        } catch (error) { console.error('Error:', error); }
+        } catch (e) { console.error('Error:', e); }
     }
 
     function renderBooks(containerId, classes) {
         const container = document.getElementById(containerId);
-        if (!classes || classes.length === 0) { container.innerHTML = '<div class="empty">No classes available.</div>'; return; }
+        if (!classes || !classes.length) { container.innerHTML = '<div class="empty">No classes available.</div>'; return; }
         container.innerHTML = classes.map(cls => {
+            const academicYear = cls.academic_year || '2026/2027';
+            const master = cls.class_master_name || '—';
+
             return `
                 <div class="book" onclick="openBook(${cls.class_id}, '${escapeHtml(cls.class_name || '')}${cls.arm ? ' ' + escapeHtml(cls.arm) : ''}', '${escapeHtml(cls.school_section)}')">
                     <div class="book-school">GLOBAL EDUCATION ACADEMY</div>
+                    <div class="book-subtitle">CLASS ATTENDANCE REGISTER</div>
                     <div class="book-class">${escapeHtml(cls.class_name || 'Unnamed Class')} ${cls.arm ? escapeHtml(cls.arm) : ''}</div>
-                    <div class="book-year">Academic Year: ${escapeHtml(cls.academic_year || '2026/2027')}</div>
+                    <div class="book-year">Academic Year: ${escapeHtml(academicYear)}</div>
+                    <div class="book-master">Class Master: ${escapeHtml(master)}</div>
                 </div>
             `;
         }).join('');
@@ -549,12 +691,10 @@
     async function openBook(classId, className, sector) {
         currentClassId = classId;
         currentClassInfo = { className, sector };
-
         document.getElementById('bookshelf-view').style.display = 'none';
         document.getElementById('register-view').style.display = 'block';
-
         document.getElementById('reg-title').innerText = className + " - Attendance Register";
-        document.getElementById('reg-meta').innerText = `Sector: ${sector}`;
+        document.getElementById('reg-meta').innerText = `Sector: ${sector} | Term: ${currentTerm?.term_name || '—'}`;
 
         const today = getTodayStringSL();
         let anchor;
@@ -568,36 +708,43 @@
         blockStart = clampBlock(mondayOf(anchor));
         updateBlockLabel();
 
+        const cached = (allClassesCache || []).find(c => Number(c.class_id) === Number(classId));
+        currentClassMasterName = cached?.class_master_name || '';
+
         try {
+            if (!currentClassMasterName) {
+                await fetchClassMasterName(classId);
+            }
+
             allStudentsLoaded = await fetchAllStudents();
             currentStudents = allStudentsLoaded.filter(s => Number(s.class_id) === Number(classId));
             renderRegisterGrid();
             await loadSavedAttendance();
-        } catch (error) {
-            console.error('Error fetching students:', error);
-        }
+        } catch (e) { console.error('Error fetching students:', e); }
     }
 
     // ==========================================
-    // RENDER REGISTER GRID (4 WEEKS)
+    // RENDER GRID
     // ==========================================
     function renderRegisterGrid() {
         const thead = document.getElementById('table-head');
         const tbody = document.getElementById('table-body');
         const tfoot = document.getElementById('table-foot');
 
-        // Build the 20 day-dates
         const dayDates = [];
-        for (let i = 0; i < DAYS_PER_BLOCK; i++) dayDates.push(addDays(blockStart, i));
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                dayDates.push(addDays(blockStart, w * 7 + d));
+            }
+        }
 
-        // ---- Header row 1: week header spanning 5 columns each ----
-        let headerRow1 = `<tr>
-            <th rowspan="2" style="width: 30px;">No.</th>
-            <th rowspan="2" style="text-align: left; white-space: nowrap;">NAME</th>
-            <th rowspan="2" style="width: 45px;">Prsnt</th>
-            <th rowspan="2" style="width: 45px;">Absnt</th>`;
+        const termStartMon = currentTerm ? mondayOf(parseISODate(currentTerm.start_date)) : null;
 
-         const termStartMon = currentTerm ? mondayOf(parseISODate(currentTerm.start_date)) : null;
+        let row1 = `<tr>
+            <th rowspan="3" class="col-no">No.</th>
+            <th rowspan="3" class="col-name" style="text-align:left;">NAME</th>
+            <th rowspan="3" class="col-sex">SEX</th>
+            <th rowspan="3" class="col-ta">TA</th>`;
 
         for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
             const weekMon = addDays(blockStart, w * 7);
@@ -608,77 +755,126 @@
                 const diffDays = Math.round((weekMon - termStartMon) / (1000 * 60 * 60 * 24));
                 weekNumber = Math.floor(diffDays / 7) + 1;
             }
+            const wkLabel = (weekNumber && weekNumber >= 1) ? `Week ${weekNumber}` : `Week ${w + 1}`;
 
-            const weekLabel = weekNumber && weekNumber >= 1
-                ? `Week ${weekNumber}`
-                : `Week ${w + 1}`;
-
-            headerRow1 += `<th colspan="5" style="background:#1a3c6e;">
-                <div style="font-size: 12px;">${weekLabel}</div>
+            const boundaryClass = (w < WEEKS_PER_BLOCK - 1) ? ' week-boundary' : '';
+            row1 += `<th colspan="10" class="day-header${boundaryClass}">
+                <div style="font-size: 11px;">${wkLabel}</div>
                 <div style="font-size: 9px; color: #a0c4ff;">${formatShortDate(weekMon)} – ${formatShortDate(weekFri)}</div>
             </th>`;
         }
-        headerRow1 += `</tr>`;
+        row1 += `</tr>`;
 
-        // ---- Header row 2: day labels ----
-        let headerRow2 = `<tr>`;
+        let row2 = `<tr>`;
         for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
             for (let d = 0; d < DAYS_PER_WEEK; d++) {
                 const idx = w * DAYS_PER_WEEK + d;
                 const date = dayDates[idx];
-                headerRow2 += `<th style="width: 40px;">
-                    <div style="font-size: 11px;">${DAY_LABELS[d]}</div>
-                    <div style="font-size: 9px; color: #a0c4ff;">${date.getDate()}/${date.getMonth() + 1}</div>
+                const boundaryClass = (d === DAYS_PER_WEEK - 1 && w < WEEKS_PER_BLOCK - 1) ? ' week-boundary' : '';
+                row2 += `<th colspan="2" class="day-header${boundaryClass}">
+                    <div style="font-size: 10px;">${DAY_LABELS[d]}</div>
+                    <div style="font-size: 8px;">${formatShortDate(date)}</div>
                 </th>`;
             }
         }
-        headerRow2 += `</tr>`;
+        row2 += `</tr>`;
 
-        thead.innerHTML = headerRow1 + headerRow2;
+        let row3 = `<tr>`;
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < WEEKS_PER_BLOCK - 1);
+                row3 += `<th class="session-header">M</th>`;
+                row3 += `<th class="session-header${isLastDay ? ' week-boundary' : ''}">A</th>`;
+            }
+        }
+        row3 += `</tr>`;
 
-        // ---- Student rows ----
+        thead.innerHTML = row1 + row2 + row3;
+
         tbody.innerHTML = '';
         currentStudents.forEach((student, index) => {
-            let row = `<tr>
-                <td>${index + 1}</td>
-                <td style="text-align: left; white-space: nowrap; padding-right: 20px;">${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</td>
-                <td class="ind-pres">-</td>
-                <td class="ind-abs">-</td>`;
+            const sex = isMale(student) ? 'M' : (isFemale(student) ? 'F' : '—');
+            const ta = termTotals[student.student_id] || 0;
 
-            for (let i = 0; i < DAYS_PER_BLOCK; i++) {
-                row += canMark
-                    ? `<td class="day-col" onclick="toggleAttendance(this)"></td>`
-                    : `<td class="day-col" style="cursor: default;"></td>`;
+            let row = `<tr data-student-id="${student.student_id}">
+                <td>${index + 1}</td>
+                <td class="col-name" title="${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}">${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</td>
+                <td class="col-sex">${sex}</td>
+                <td class="col-ta ta-cell">${ta}</td>`;
+
+            for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+                for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                    const i = w * DAYS_PER_WEEK + d;
+                    const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < WEEKS_PER_BLOCK - 1);
+                    if (canMark) {
+                        row += `<td class="day-col" data-date-index="${i}" data-session="morning" onclick="toggleSession(this)"></td>`;
+                        row += `<td class="day-col${isLastDay ? ' week-boundary' : ''}" data-date-index="${i}" data-session="afternoon" onclick="toggleSession(this)"></td>`;
+                    } else {
+                        row += `<td class="day-col" data-date-index="${i}" data-session="morning" style="cursor: default;"></td>`;
+                        row += `<td class="day-col${isLastDay ? ' week-boundary' : ''}" data-date-index="${i}" data-session="afternoon" style="cursor: default;"></td>`;
+                    }
+                }
             }
             row += `</tr>`;
             tbody.innerHTML += row;
         });
 
-        // ---- tfoot: one dense summary cell per day ----
-        let tfootHtml = `<tr class="summary-row">
-            <td colspan="4" class="label" style="text-align:right;">Daily Summary</td>`;
+        let tfootRows = '';
 
-        for (let i = 0; i < DAYS_PER_BLOCK; i++) {
-            tfootHtml += `<td class="day-summary-cell">
-                <div class="line1"><span class="ds-mp">M:0/0</span> <span class="ds-fp">F:0/0</span></div>
-                <div class="line2">T:0/0</div>
-            </td>`;
+        let rowPresent = `<tr class="summary-row present-row"><td colspan="4" class="label">PRESENT M/A</td>`;
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const i = w * DAYS_PER_WEEK + d;
+                const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < WEEKS_PER_BLOCK - 1);
+                rowPresent += `<td class="ds-mp-${i}">0</td><td class="ds-ap-${i}${isLastDay ? ' week-boundary' : ''}">0</td>`;
+            }
         }
-        tfootHtml += `</tr>`;
-        tfoot.innerHTML = tfootHtml;
+        rowPresent += `</tr>`;
+
+        let rowAbsent = `<tr class="summary-row absent-row"><td colspan="4" class="label">ABSENT M/A</td>`;
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const i = w * DAYS_PER_WEEK + d;
+                const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < WEEKS_PER_BLOCK - 1);
+                rowAbsent += `<td class="ds-ma-${i}">0</td><td class="ds-aa-${i}${isLastDay ? ' week-boundary' : ''}">0</td>`;
+            }
+        }
+        rowAbsent += `</tr>`;
+
+        let rowWeekA = `<tr class="summary-row week-summary"><td colspan="4" class="label">WEEK TOTALS</td>`;
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            const boundaryClass = (w < WEEKS_PER_BLOCK - 1) ? ' week-boundary' : '';
+            rowWeekA += `<td colspan="10" class="week-cell wk-tpta-w${w}${boundaryClass}">—</td>`;
+        }
+        rowWeekA += `</tr>`;
+
+        let rowWeekB = `<tr class="summary-row week-summary"><td colspan="4" class="label">WEEK PERCENTAGES</td>`;
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            const boundaryClass = (w < WEEKS_PER_BLOCK - 1) ? ' week-boundary' : '';
+            rowWeekB += `<td colspan="10" class="week-cell wk-pct-w${w}${boundaryClass}">—</td>`;
+        }
+        rowWeekB += `</tr>`;
+
+        let rowWeekC = `<tr class="summary-row week-summary"><td colspan="4" class="label">NO. ON ROLL</td>`;
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            const boundaryClass = (w < WEEKS_PER_BLOCK - 1) ? ' week-boundary' : '';
+            rowWeekC += `<td colspan="10" class="week-cell wk-roll-w${w}${boundaryClass}">—</td>`;
+        }
+        rowWeekC += `</tr>`;
+
+        tfoot.innerHTML = rowPresent + rowAbsent + rowWeekA + rowWeekB + rowWeekC;
     }
 
     // ==========================================
-    // TOGGLE
+    // TOGGLE SESSION
     // ==========================================
-    function toggleAttendance(cell) {
+    function toggleSession(cell) {
         if (!canMark) return;
 
-        const tableColumnIndex = Array.from(cell.parentNode.children).indexOf(cell);
-        const colIndex = tableColumnIndex - 4;   // first 4 columns: No, Name, Prsnt, Absnt
-        if (colIndex < 0 || colIndex >= DAYS_PER_BLOCK) return;
+        const dateIndex = Number(cell.dataset.dateIndex);
+        const session = cell.dataset.session;
 
-        const actualDate = addDays(blockStart, colIndex);
+        const actualDate = dateForIndex(dateIndex);
         const dateStr = toISODate(actualDate);
         const todayStr = getTodayStringSL();
 
@@ -687,16 +883,19 @@
             return;
         }
 
-        if (cell.classList.contains('present')) {
+        const isMorning = session === 'morning';
+        const presentSymbol = isMorning ? '\\' : '/';
+
+        if (!cell.classList.contains('present') && !cell.classList.contains('absent')) {
+            cell.classList.add('present');
+            cell.innerText = presentSymbol;
+        } else if (cell.classList.contains('present')) {
             cell.classList.remove('present');
             cell.classList.add('absent');
-            cell.innerText = 'X';
-        } else if (cell.classList.contains('absent')) {
+            cell.innerText = 'O';
+        } else {
             cell.classList.remove('absent');
             cell.innerText = '';
-        } else {
-            cell.classList.add('present');
-            cell.innerText = '✓';
         }
 
         updateTotals();
@@ -708,51 +907,164 @@
     function updateTotals() {
         const rows = document.querySelectorAll('#table-body tr');
 
-        // Per-row present/absent
-        rows.forEach(row => {
-            const cells = row.querySelectorAll('.day-col');
-            let indPresent = 0, indAbsent = 0;
-            cells.forEach(cell => {
-                if (cell.classList.contains('present')) indPresent++;
-                else if (cell.classList.contains('absent')) indAbsent++;
-            });
-            row.querySelector('.ind-pres').innerText = indPresent;
-            row.querySelector('.ind-abs').innerText = indAbsent;
-        });
+        const mp = Array(DAYS_PER_BLOCK).fill(0);
+        const ma = Array(DAYS_PER_BLOCK).fill(0);
+        const ap = Array(DAYS_PER_BLOCK).fill(0);
+        const aa = Array(DAYS_PER_BLOCK).fill(0);
 
-        // Per-day totals across all 20 columns
-        const dayTotals = [];
-        for (let i = 0; i < DAYS_PER_BLOCK; i++) {
-            dayTotals.push({ malePresent: 0, maleAbsent: 0, femalePresent: 0, femaleAbsent: 0, totalPresent: 0, totalAbsent: 0 });
+        const weekData = [];
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            weekData.push({
+                mp: 0, ma: 0, ap: 0, aa: 0,
+                malePresent: 0,
+                femalePresent: 0
+            });
         }
 
         rows.forEach((row, rowIndex) => {
-            const cells = row.querySelectorAll('.day-col');
             const student = currentStudents[rowIndex] || {};
             const male = isMale(student);
 
-            cells.forEach((cell, colIndex) => {
-                if (colIndex < 0 || colIndex >= DAYS_PER_BLOCK) return;
+            const cells = row.querySelectorAll('.day-col');
+            cells.forEach(cell => {
+                const dateIndex = Number(cell.dataset.dateIndex);
+                const session = cell.dataset.session;
+                const w = Math.floor(dateIndex / DAYS_PER_WEEK);
+
                 if (cell.classList.contains('present')) {
-                    dayTotals[colIndex].totalPresent++;
-                    if (male) dayTotals[colIndex].malePresent++; else dayTotals[colIndex].femalePresent++;
+                    if (session === 'morning') { mp[dateIndex]++; weekData[w].mp++; }
+                    else { ap[dateIndex]++; weekData[w].ap++; }
+
+                    if (male) weekData[w].malePresent++;
+                    else weekData[w].femalePresent++;
                 } else if (cell.classList.contains('absent')) {
-                    dayTotals[colIndex].totalAbsent++;
-                    if (male) dayTotals[colIndex].maleAbsent++; else dayTotals[colIndex].femaleAbsent++;
+                    if (session === 'morning') { ma[dateIndex]++; weekData[w].ma++; }
+                    else { aa[dateIndex]++; weekData[w].aa++; }
                 }
             });
         });
 
-        const summaryCells = document.querySelectorAll('#table-foot .day-summary-cell');
-        summaryCells.forEach((td, i) => {
-            const t = dayTotals[i];
-            if (!t) return;
-            td.querySelector('.ds-mp').textContent = `M:${t.malePresent}/${t.maleAbsent}`;
-            td.querySelector('.ds-fp').textContent = `F:${t.femalePresent}/${t.femaleAbsent}`;
-            td.querySelector('.line2').textContent = `T:${t.totalPresent}/${t.totalAbsent}`;
+        for (let i = 0; i < DAYS_PER_BLOCK; i++) {
+            const mpCell = document.querySelector(`.ds-mp-${i}`);
+            const apCell = document.querySelector(`.ds-ap-${i}`);
+            const maCell = document.querySelector(`.ds-ma-${i}`);
+            const aaCell = document.querySelector(`.ds-aa-${i}`);
+            if (mpCell) mpCell.textContent = mp[i];
+            if (apCell) apCell.textContent = ap[i];
+            if (maCell) maCell.textContent = ma[i];
+            if (aaCell) aaCell.textContent = aa[i];
+        }
+
+        const enrolled = currentStudents.length;
+        const males = currentStudents.filter(isMale).length;
+        const females = currentStudents.filter(isFemale).length;
+
+        const termStartMon = currentTerm ? mondayOf(parseISODate(currentTerm.start_date)) : null;
+
+        for (let w = 0; w < WEEKS_PER_BLOCK; w++) {
+            const weekMon = addDays(blockStart, w * 7);
+
+            let weekNumber = null;
+            if (termStartMon) {
+                const diffDays = Math.round((weekMon - termStartMon) / (1000 * 60 * 60 * 24));
+                weekNumber = Math.floor(diffDays / 7) + 1;
+            }
+            const wk = (weekNumber && weekNumber >= 1) ? weekNumber : (w + 1);
+
+            const d = weekData[w];
+            const possibleMarks = enrolled * DAYS_PER_WEEK * SESSIONS_PER_DAY;
+            const combinedPct = possibleMarks
+                ? Math.round(((d.mp + d.ap) / possibleMarks) * 100)
+                : 0;
+
+            const malePossible = males * DAYS_PER_WEEK * SESSIONS_PER_DAY;
+            const femalePossible = females * DAYS_PER_WEEK * SESSIONS_PER_DAY;
+
+            const malePct = malePossible
+                ? Math.round((d.malePresent / malePossible) * 100)
+                : 0;
+            const femalePct = femalePossible
+                ? Math.round((d.femalePresent / femalePossible) * 100)
+                : 0;
+
+            const cellA = document.querySelector(`.wk-tpta-w${w}`);
+            if (cellA) cellA.textContent = `Present M:${d.mp} A:${d.ap} | Absent M:${d.ma} A:${d.aa}`;
+
+            const cellB = document.querySelector(`.wk-pct-w${w}`);
+            if (cellB) cellB.textContent = `Total: ${combinedPct}% | Boys: ${malePct}% | Girls: ${femalePct}%`;
+
+            const cellC = document.querySelector(`.wk-roll-w${w}`);
+            if (cellC) cellC.textContent = `Boys: ${males} | Girls: ${females}`;
+        }
+
+        updateTermSummary();
+        recomputeTA();
+    }
+
+    // ==========================================
+    // TERM SUMMARY
+    // ==========================================
+    function updateTermSummary() {
+        const enrolled = currentStudents.length;
+        const males = currentStudents.filter(isMale).length;
+        const females = currentStudents.filter(isFemale).length;
+
+        let mpTotal = 0, maTotal = 0, apTotal = 0, aaTotal = 0;
+        let malePresent = 0, femalePresent = 0;
+        const distinctDates = new Set();
+
+        savedRecordsRaw.forEach(rec => {
+            if (!currentTerm) return;
+            if (rec.attendance_date < currentTerm.start_date) return;
+            if (rec.attendance_date > currentTerm.end_date) return;
+
+            distinctDates.add(rec.attendance_date);
+
+            const session = rec.session || 'morning';
+            const student = currentStudents.find(
+                s => Number(s.student_id) === Number(rec.student_id)
+            );
+            const male = isMale(student);
+
+            if (rec.status === 'Present') {
+                if (session === 'morning') mpTotal++; else apTotal++;
+                if (male) malePresent++; else femalePresent++;
+            } else if (rec.status === 'Absent') {
+                if (session === 'morning') maTotal++; else aaTotal++;
+            }
         });
 
-        recomputeSummaryBlocks();
+        const marked = mpTotal + apTotal + maTotal + aaTotal;
+        const combinedPct = marked
+            ? Math.round(((mpTotal + apTotal) / marked) * 100)
+            : 0;
+
+        const malePct = marked && (malePresent + femalePresent)
+            ? Math.round((malePresent / (malePresent + femalePresent)) * 100)
+            : 0;
+        const femalePct = marked && (malePresent + femalePresent)
+            ? Math.round((femalePresent / (malePresent + femalePresent)) * 100)
+            : 0;
+
+        const totalAttendance = mpTotal + apTotal;
+        const timesOpened = distinctDates.size;
+
+        document.getElementById('term-summary-line').textContent =
+           `Total Attendance: ${totalAttendance} | M:${mpTotal} A:${apTotal} | Average Attendance: ${combinedPct}% | Boys%: ${malePct}% | Girls%: ${femalePct}% | Times School Opened: ${timesOpened}`;
+    }
+
+    // ==========================================
+    // TA
+    // ==========================================
+    function recomputeTA() {
+        const rows = document.querySelectorAll('#table-body tr');
+        rows.forEach((row, rowIndex) => {
+            const studentId = currentStudents[rowIndex]?.student_id;
+            if (!studentId) return;
+            const ta = termTotals[studentId] || 0;
+            const cell = row.querySelector('.ta-cell');
+            if (cell) cell.textContent = ta;
+        });
     }
 
     // ==========================================
@@ -767,9 +1079,24 @@
             savedRecordsRaw = Array.isArray(savedData) ? savedData : [];
 
             attendanceRecords = {};
+            termTotals = {};
+
             savedRecordsRaw.forEach(rec => {
-                if (!attendanceRecords[rec.attendance_date]) attendanceRecords[rec.attendance_date] = {};
-                attendanceRecords[rec.attendance_date][rec.student_id] = rec.status;
+                if (!attendanceRecords[rec.attendance_date]) {
+                    attendanceRecords[rec.attendance_date] = {};
+                }
+                const session = rec.session || 'morning';
+                if (!attendanceRecords[rec.attendance_date][rec.student_id]) {
+                    attendanceRecords[rec.attendance_date][rec.student_id] = {};
+                }
+                attendanceRecords[rec.attendance_date][rec.student_id][session] = rec.status;
+
+                if (currentTerm &&
+                    rec.attendance_date >= currentTerm.start_date &&
+                    rec.attendance_date <= currentTerm.end_date &&
+                    rec.status === 'Present') {
+                    termTotals[rec.student_id] = (termTotals[rec.student_id] || 0) + 1;
+                }
             });
 
             const rows = document.querySelectorAll('#table-body tr');
@@ -777,13 +1104,16 @@
                 const cells = row.querySelectorAll('.day-col');
                 const studentId = currentStudents[rowIndex]?.student_id;
 
-                cells.forEach((cell, colIndex) => {
+                cells.forEach(cell => {
                     cell.classList.remove('present', 'absent');
                     cell.innerText = '';
                     cell.style.pointerEvents = '';
                     cell.style.opacity = '';
 
-                    const dayDate = addDays(blockStart, colIndex);
+                    const dateIndex = Number(cell.dataset.dateIndex);
+                    const session = cell.dataset.session;
+
+                    const dayDate = dateForIndex(dateIndex);
                     const dateStr = toISODate(dayDate);
                     const todayStr = getTodayStringSL();
 
@@ -792,32 +1122,42 @@
                         cell.style.opacity = '0.5';
                     }
 
-                    if (attendanceRecords[dateStr]?.[studentId]) {
-                        const status = attendanceRecords[dateStr][studentId];
-                        if (status === 'Present') { cell.classList.add('present'); cell.innerText = '✓'; }
-                        else if (status === 'Absent') { cell.classList.add('absent'); cell.innerText = 'X'; }
+                    const rec = attendanceRecords[dateStr]?.[studentId];
+                    if (rec && rec[session]) {
+                        if (rec[session] === 'Present') {
+                            cell.classList.add('present');
+                            cell.innerText = session === 'morning' ? '\\' : '/';
+                        } else if (rec[session] === 'Absent') {
+                            cell.classList.add('absent');
+                            cell.innerText = 'O';
+                        }
                     }
                 });
             });
+
             updateTotals();
         } catch (error) { console.error('Error loading saved attendance:', error); }
     }
 
     // ==========================================
-    // SAVE ATTENDANCE
+    // SAVE
     // ==========================================
     async function saveAttendance() {
         if (!canMark) { alert('Only the class master can save attendance.'); return; }
 
-        const byDate = {};
+        const byDateSession = {};
         const rows = document.querySelectorAll('#table-body tr');
+
         rows.forEach((row, rowIndex) => {
             const cells = row.querySelectorAll('.day-col');
             const studentId = currentStudents[rowIndex]?.student_id;
             if (!studentId) return;
 
-            cells.forEach((cell, colIndex) => {
-                const dayDate = addDays(blockStart, colIndex);
+            cells.forEach(cell => {
+                const dateIndex = Number(cell.dataset.dateIndex);
+                const session = cell.dataset.session;
+
+                const dayDate = dateForIndex(dateIndex);
                 const dateStr = toISODate(dayDate);
                 const todayStr = getTodayStringSL();
                 if (dateStr > todayStr) return;
@@ -827,27 +1167,32 @@
                 if (cell.classList.contains('absent')) status = 'Absent';
                 if (!status) return;
 
-                if (!byDate[dateStr]) byDate[dateStr] = [];
-                byDate[dateStr].push({ student_id: studentId, status });
+                const key = `${dateStr}|${session}`;
+                if (!byDateSession[key]) {
+                    byDateSession[key] = { date: dateStr, session, records: [] };
+                }
+                byDateSession[key].records.push({ student_id: studentId, status });
             });
         });
 
-        const dates = Object.keys(byDate);
-        if (!dates.length) { alert('No attendance marks to save.'); return; }
+        const keys = Object.keys(byDateSession);
+        if (!keys.length) { alert('No attendance marks to save.'); return; }
 
         try {
-            for (const dateStr of dates) {
-                const response = await fetch('/api/attendance/bulk', {
+            for (const key of keys) {
+                const entry = byDateSession[key];
+                const res = await fetch('/api/attendance/bulk', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         class_id: currentClassId,
-                        attendance_date: dateStr,
-                        records: byDate[dateStr]
+                        attendance_date: entry.date,
+                        session: entry.session,
+                        records: entry.records
                     })
                 });
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Failed to save');
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.message || 'Failed to save');
             }
             alert('Attendance saved successfully.');
             await loadSavedAttendance();
@@ -858,101 +1203,11 @@
     // FETCH STUDENTS
     // ==========================================
     async function fetchAllStudents() {
-        const response = await fetch('/api/students', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-        if (!response.ok) throw new Error('Failed to load students');
-        return await response.json();
+        const r = await fetch('/api/students', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+        if (!r.ok) throw new Error('Failed to load students');
+        return await r.json();
     }
 
-    // ==========================================
-    // TERM & YEARLY SUMMARY
-    // ==========================================
-    function aggregateRange(startDate, endDate) {
-        const totals = { malePresent: 0, maleAbsent: 0, femalePresent: 0, femaleAbsent: 0, totalPresent: 0, totalAbsent: 0 };
-        const studentById = new Map();
-        currentStudents.forEach(s => studentById.set(Number(s.student_id), s));
-
-        savedRecordsRaw.forEach(rec => {
-            if (!rec.attendance_date) return;
-            if (startDate && rec.attendance_date < startDate) return;
-            if (endDate && rec.attendance_date > endDate) return;
-
-            const student = studentById.get(Number(rec.student_id));
-            if (!student) return;
-
-            const male = isMale(student);
-
-            if (rec.status === 'Present') {
-                totals.totalPresent++;
-                if (male) totals.malePresent++; else totals.femalePresent++;
-            } else if (rec.status === 'Absent') {
-                totals.totalAbsent++;
-                if (male) totals.maleAbsent++; else totals.femaleAbsent++;
-            }
-        });
-
-        return totals;
-    }
-
-    function renderSummaryTable(rows) {
-        if (!rows.length) return '<div class="empty">No records.</div>';
-        let html = `<table class="summary-table">
-            <thead>
-                <tr>
-                    <th style="text-align:left;">Period</th>
-                    <th>Male Present</th>
-                    <th>Male Absent</th>
-                    <th>Female Present</th>
-                    <th>Female Absent</th>
-                    <th>Total Present</th>
-                    <th>Total Absent</th>
-                </tr>
-            </thead>
-            <tbody>`;
-        rows.forEach(r => {
-            html += `<tr>
-                <td class="label-col">${escapeHtml(r.label)}</td>
-                <td class="male-col">${r.malePresent}</td>
-                <td class="male-col">${r.maleAbsent}</td>
-                <td class="female-col">${r.femalePresent}</td>
-                <td class="female-col">${r.femaleAbsent}</td>
-                <td class="total-col">${r.totalPresent}</td>
-                <td class="absent-col">${r.totalAbsent}</td>
-            </tr>`;
-        });
-        html += `</tbody></table>`;
-        return html;
-    }
-
-    function recomputeSummaryBlocks() {
-        const termRows = terms.map(t => {
-            const totals = aggregateRange(t.start_date, t.end_date);
-            return { label: `${t.term_name} (${t.start_date} – ${t.end_date})`, ...totals };
-        });
-
-        document.getElementById('term-summary').innerHTML = renderSummaryTable(termRows);
-
-        const yearly = { malePresent: 0, maleAbsent: 0, femalePresent: 0, femaleAbsent: 0, totalPresent: 0, totalAbsent: 0 };
-        savedRecordsRaw.forEach(rec => {
-            const student = currentStudents.find(s => Number(s.student_id) === Number(rec.student_id));
-            if (!student) return;
-            const male = isMale(student);
-            if (rec.status === 'Present') {
-                yearly.totalPresent++;
-                if (male) yearly.malePresent++; else yearly.femalePresent++;
-            } else if (rec.status === 'Absent') {
-                yearly.totalAbsent++;
-                if (male) yearly.maleAbsent++; else yearly.femaleAbsent++;
-            }
-        });
-
-        document.getElementById('yearly-summary').innerHTML = renderSummaryTable([
-            { label: 'All Terms', ...yearly }
-        ]);
-    }
-
-    // ==========================================
-    // BACK
-    // ==========================================
     function goBackToShelf() {
         document.getElementById('register-view').style.display = 'none';
         document.getElementById('bookshelf-view').style.display = 'block';
@@ -960,14 +1215,320 @@
     }
 
     // ==========================================
+    // FETCH CLASS MASTER NAME (fallback)
+    // ==========================================
+    async function fetchClassMasterName(classId) {
+        currentClassMasterName = '';
+        try {
+            const r = await fetch(`/api/attendance/class-master/${classId}`, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!r.ok) return;
+            const data = await r.json();
+            if (data && data.class_master_name) {
+                currentClassMasterName = data.class_master_name;
+            }
+        } catch (e) {
+            console.error('Error fetching class master:', e);
+        }
+    }
+
+    // ==========================================
+    // PRINT
+    // ==========================================
+    function printRegister() {
+        const container = document.getElementById('print-container');
+        container.innerHTML = '';
+
+        const currentClass = (allClassesCache || []).find(
+            c => Number(c.class_id) === Number(currentClassId)
+        );
+        const academicYear = currentClass?.academic_year || '2026/2027';
+
+        const cover = document.createElement('div');
+        cover.className = 'print-page print-cover-page';
+        cover.innerHTML = `
+            <div class="cover-content">
+                <h1 class="cover-school">GLOBAL EDUCATION ACADEMY</h1>
+                <h2 class="cover-subtitle">CLASS ATTENDANCE REGISTER</h2>
+                <div class="cover-class">${escapeHtml(currentClassInfo?.className || '')}</div>
+                <div class="cover-info">Academic Year: ${escapeHtml(String(academicYear))}</div>
+                <div class="cover-info">Class Master: ${escapeHtml(currentClassMasterName || '—')}</div>
+            </div>
+        `;
+        container.appendChild(cover);
+
+        const termStartMon = currentTerm ? mondayOf(parseISODate(currentTerm.start_date)) : null;
+        const totalWeeks = MAX_WEEKS_PER_TERM;
+        const blocksCount = Math.ceil(totalWeeks / WEEKS_PER_BLOCK);
+
+        for (let b = 0; b < blocksCount; b++) {
+            const weeksInThisBlock = Math.min(
+                WEEKS_PER_BLOCK,
+                totalWeeks - b * WEEKS_PER_BLOCK
+            );
+            const pageBlockStart = addDays(termStartMon, b * WEEKS_PER_BLOCK * 7);
+
+            const page = document.createElement('div');
+            page.className = 'print-page';
+            page.innerHTML = buildPrintRegisterPage(
+                pageBlockStart,
+                weeksInThisBlock,
+                b === blocksCount - 1
+            );
+            container.appendChild(page);
+        }
+
+        window.print();
+
+        setTimeout(() => { container.innerHTML = ''; }, 500);
+    }
+
+    // ==========================================
+    // BUILD ONE PRINT REGISTER PAGE
+    // ==========================================
+    function buildPrintRegisterPage(pageBlockStart, weeksInBlock, isLastPage) {
+        const termStartMon = currentTerm ? mondayOf(parseISODate(currentTerm.start_date)) : null;
+
+        const dayDates = [];
+        for (let w = 0; w < weeksInBlock; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                dayDates.push(addDays(pageBlockStart, w * 7 + d));
+            }
+        }
+
+        let html = `
+            <div class="print-reg-header">
+                <h1>GLOBAL EDUCATION ACADEMY</h1>
+                <p>
+                    Class: ${escapeHtml(currentClassInfo?.className || '—')} |
+                    Sector: ${escapeHtml(currentClassInfo?.sector || '—')} |
+                    Term: ${escapeHtml(currentTerm?.term_name || '—')}
+                </p>
+            </div>
+        `;
+
+        html += `<table class="print-reg-table"><thead>`;
+
+        html += `<tr>
+            <th rowspan="3" style="width:3%;">No.</th>
+            <th rowspan="3" style="width:18%;text-align:left;">NAME</th>
+            <th rowspan="3" style="width:3%;">SEX</th>
+            <th rowspan="3" style="width:4%;">TA</th>`;
+
+        for (let w = 0; w < weeksInBlock; w++) {
+            const weekMon = addDays(pageBlockStart, w * 7);
+            const weekFri = addDays(weekMon, 4);
+
+            let weekNumber = null;
+            if (termStartMon) {
+                const diffDays = Math.round((weekMon - termStartMon) / (1000 * 60 * 60 * 24));
+                weekNumber = Math.floor(diffDays / 7) + 1;
+            }
+            const wkLabel = weekNumber ? `Week ${weekNumber}` : `Week ${w + 1}`;
+            const boundaryClass = (w < weeksInBlock - 1) ? ' week-boundary' : '';
+
+            html += `<th colspan="10" class="day-header${boundaryClass}">
+                <div style="font-size: 10px;">${wkLabel}</div>
+                <div style="font-size: 8px;">${formatShortDate(weekMon)} – ${formatShortDate(weekFri)}</div>
+            </th>`;
+        }
+        html += `</tr>`;
+
+        html += `<tr>`;
+        for (let w = 0; w < weeksInBlock; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const idx = w * DAYS_PER_WEEK + d;
+                const date = dayDates[idx];
+                const boundaryClass = (d === DAYS_PER_WEEK - 1 && w < weeksInBlock - 1) ? ' week-boundary' : '';
+                html += `<th colspan="2" class="day-header${boundaryClass}">
+                    <div style="font-size: 9px;">${DAY_LABELS[d]}</div>
+                    <div style="font-size: 8px;">${formatShortDate(date)}</div>
+                </th>`;
+            }
+        }
+        html += `</tr>`;
+
+        html += `<tr>`;
+        for (let w = 0; w < weeksInBlock; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < weeksInBlock - 1);
+                html += `<th class="session-header">M</th>`;
+                html += `<th class="session-header${isLastDay ? ' week-boundary' : ''}">A</th>`;
+            }
+        }
+        html += `</tr></thead>`;
+
+        html += `<tbody>`;
+        currentStudents.forEach((student, index) => {
+            const sex = isMale(student) ? 'M' : (isFemale(student) ? 'F' : '—');
+            const ta = termTotals[student.student_id] || 0;
+
+            html += `<tr>
+                <td>${index + 1}</td>
+                <td class="col-name">${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</td>
+                <td>${sex}</td>
+                <td class="col-ta">${ta}</td>`;
+
+            for (let w = 0; w < weeksInBlock; w++) {
+                for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                    const date = addDays(pageBlockStart, w * 7 + d);
+                    const dateStr = toISODate(date);
+                    const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < weeksInBlock - 1);
+
+                    const rec = attendanceRecords[dateStr]?.[student.student_id] || {};
+
+                    let morningMark = '';
+                    let afternoonMark = '';
+                    if (rec.morning === 'Present') morningMark = '\\';
+                    else if (rec.morning === 'Absent') morningMark = 'O';
+                    if (rec.afternoon === 'Present') afternoonMark = '/';
+                    else if (rec.afternoon === 'Absent') afternoonMark = 'O';
+
+                    html += `<td class="day-col">${morningMark}</td>`;
+                    html += `<td class="day-col${isLastDay ? ' week-boundary' : ''}">${afternoonMark}</td>`;
+                }
+            }
+            html += `</tr>`;
+        });
+        html += `</tbody>`;
+
+        html += `<tfoot>`;
+
+        html += `<tr class="summary-row present-row"><td colspan="4" class="label">PRESENT M/A</td>`;
+        for (let w = 0; w < weeksInBlock; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const date = addDays(pageBlockStart, w * 7 + d);
+                const dateStr = toISODate(date);
+                const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < weeksInBlock - 1);
+
+                let mpCount = 0, apCount = 0;
+                currentStudents.forEach(s => {
+                    const rec = attendanceRecords[dateStr]?.[s.student_id];
+                    if (rec?.morning === 'Present') mpCount++;
+                    if (rec?.afternoon === 'Present') apCount++;
+                });
+
+                html += `<td>${mpCount}</td><td class="${isLastDay ? 'week-boundary' : ''}">${apCount}</td>`;
+            }
+        }
+        html += `</tr>`;
+
+        html += `<tr class="summary-row absent-row"><td colspan="4" class="label">ABSENT M/A</td>`;
+        for (let w = 0; w < weeksInBlock; w++) {
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const date = addDays(pageBlockStart, w * 7 + d);
+                const dateStr = toISODate(date);
+                const isLastDay = (d === DAYS_PER_WEEK - 1) && (w < weeksInBlock - 1);
+
+                let maCount = 0, aaCount = 0;
+                currentStudents.forEach(s => {
+                    const rec = attendanceRecords[dateStr]?.[s.student_id];
+                    if (rec?.morning === 'Absent') maCount++;
+                    if (rec?.afternoon === 'Absent') aaCount++;
+                });
+
+                html += `<td>${maCount}</td><td class="${isLastDay ? 'week-boundary' : ''}">${aaCount}</td>`;
+            }
+        }
+        html += `</tr>`;
+
+        html += `<tr class="summary-row week-summary"><td colspan="4" class="label">WEEK TOTALS</td>`;
+        for (let w = 0; w < weeksInBlock; w++) {
+            const weekMon = addDays(pageBlockStart, w * 7);
+
+            let weekNumber = null;
+            if (termStartMon) {
+                const diffDays = Math.round((weekMon - termStartMon) / (1000 * 60 * 60 * 24));
+                weekNumber = Math.floor(diffDays / 7) + 1;
+            }
+            const wk = weekNumber || (w + 1);
+
+            let tpM = 0, tpA = 0, taM = 0, taA = 0;
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const date = addDays(weekMon, d);
+                const dateStr = toISODate(date);
+                currentStudents.forEach(s => {
+                    const rec = attendanceRecords[dateStr]?.[s.student_id];
+                    if (rec?.morning === 'Present') tpM++;
+                    if (rec?.afternoon === 'Present') tpA++;
+                    if (rec?.morning === 'Absent') taM++;
+                    if (rec?.afternoon === 'Absent') taA++;
+                });
+            }
+
+            const boundaryClass = (w < weeksInBlock - 1) ? ' week-boundary' : '';
+            html += `<td colspan="10" class="${boundaryClass}">Wk ${wk} | Present M:${tpM} A:${tpA} | Absent M:${taM} A:${taA}</td>`;
+        }
+        html += `</tr>`;
+
+        html += `<tr class="summary-row week-summary"><td colspan="4" class="label">WEEK PERCENTAGES</td>`;
+        for (let w = 0; w < weeksInBlock; w++) {
+            const weekMon = addDays(pageBlockStart, w * 7);
+            const enrolled = currentStudents.length;
+            const males = currentStudents.filter(isMale).length;
+            const females = currentStudents.filter(isFemale).length;
+
+            const possible = enrolled * DAYS_PER_WEEK * SESSIONS_PER_DAY;
+            const malePossible = males * DAYS_PER_WEEK * SESSIONS_PER_DAY;
+            const femalePossible = females * DAYS_PER_WEEK * SESSIONS_PER_DAY;
+
+            let tp = 0, malePresent = 0, femalePresent = 0;
+            for (let d = 0; d < DAYS_PER_WEEK; d++) {
+                const date = addDays(weekMon, d);
+                const dateStr = toISODate(date);
+                currentStudents.forEach(s => {
+                    const rec = attendanceRecords[dateStr]?.[s.student_id];
+                    if (rec?.morning === 'Present') tp++;
+                    if (rec?.afternoon === 'Present') tp++;
+
+                    const presentCount =
+                        (rec?.morning === 'Present' ? 1 : 0) +
+                        (rec?.afternoon === 'Present' ? 1 : 0);
+                    if (presentCount > 0) {
+                        if (isMale(s)) malePresent += presentCount;
+                        else femalePresent += presentCount;
+                    }
+                });
+            }
+
+            const combPct = possible ? Math.round((tp / possible) * 100) : 0;
+            const malePct = malePossible ? Math.round((malePresent / malePossible) * 100) : 0;
+            const femalePct = femalePossible ? Math.round((femalePresent / femalePossible) * 100) : 0;
+
+            const boundaryClass = (w < weeksInBlock - 1) ? ' week-boundary' : '';
+            html += `<td colspan="10" class="${boundaryClass}">Total: ${combPct}% | Boys: ${malePct}% | Girls: ${femalePct}%</td>`;
+        }
+        html += `</tr>`;
+
+        html += `<tr class="summary-row week-summary"><td colspan="4" class="label">ON ROLL</td>`;
+        const malesCount = currentStudents.filter(isMale).length;
+        const femalesCount = currentStudents.filter(isFemale).length;
+        for (let w = 0; w < weeksInBlock; w++) {
+            const boundaryClass = (w < weeksInBlock - 1) ? ' week-boundary' : '';
+            html += `<td colspan="10" class="${boundaryClass}">Boys: ${malesCount} | Girls: ${femalesCount}</td>`;
+        }
+        html += `</tr>`;
+
+        html += `</tfoot></table>`;
+
+        if (isLastPage) {
+            html += `
+                <div class="print-term-summary">
+                    <h3>Term Summary</h3>
+                    <div class="term-summary-line">${escapeHtml(document.getElementById('term-summary-line').textContent)}</div>
+                </div>
+            `;
+        }
+
+        return html;
+    }
+
+    // ==========================================
     // INIT
     // ==========================================
     window.onload = async function() {
-        try {
-            await loadTerms();
-        } catch (error) {
-            console.error('Failed to load terms:', error);
-        }
+        try { await loadTerms(); } catch (e) { console.error('Failed to load terms:', e); }
         loadBookshelf();
     };
 </script>
