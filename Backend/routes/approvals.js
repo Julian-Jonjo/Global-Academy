@@ -14,6 +14,25 @@ const APPROVAL_ROLES = ['Administrator', 'Proprietor'];
 const MANAGEMENT_ROLES = ['Administrator', 'Proprietor', 'Manager-Primary', 'Manager-Secondary'];
 
 // ============================================================
+// HELPER: Case-insensitive record_type check
+// ============================================================
+function isStudentType(recordType) {
+    return String(recordType || '').trim().toLowerCase() === 'student';
+}
+
+function isFeeType(recordType) {
+    return String(recordType || '').trim().toLowerCase() === 'fee';
+}
+
+function isPaymentType(recordType) {
+    return String(recordType || '').trim().toLowerCase() === 'payment';
+}
+
+function isExpenditureType(recordType) {
+    return String(recordType || '').trim().toLowerCase() === 'expenditure';
+}
+
+// ============================================================
 // GET ALL APPROVALS (Role-filtered with student data)
 // ============================================================
 router.get('/', authenticateToken, async (req, res) => {
@@ -66,9 +85,9 @@ router.get('/', authenticateToken, async (req, res) => {
                 }
 
                 if (
-                    approval.record_type === 'Student' ||
-                    approval.record_type === 'Fee' ||
-                    approval.record_type === 'Payment'
+                    isStudentType(approval.record_type) ||
+                    isFeeType(approval.record_type) ||
+                    isPaymentType(approval.record_type)
                 ) {
                     const { data: studentData } = await supabase
                         .from('students')
@@ -285,7 +304,7 @@ function flattenApproval(approval) {
         description: approval.description || null
     };
 
-    if (approval.record_type === 'Student' || approval.record_type === 'Fee' || approval.record_type === 'Payment') {
+    if (isStudentType(approval.record_type) || isFeeType(approval.record_type) || isPaymentType(approval.record_type)) {
         result.admission_number = approval.students?.admission_number || null;
         result.first_name = approval.students?.first_name || null;
         result.middle_name = approval.students?.middle_name || null;
@@ -383,12 +402,32 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
         // =========================================================
         // STEP 1: If it's a Student approval, update status and assign fees
         // =========================================================
-        if (approval.record_type === 'Student') {
+        if (isStudentType(approval.record_type)) {
             // Update student status to Active
             await supabase
                 .from('students')
                 .update({ student_status: 'Active' })
                 .eq('student_id', approval.record_id);
+
+            // =====================================================
+            // ACTIVATE STUDENT USER ACCOUNT
+            // =====================================================
+            // Flip users.is_active = true for the user row that
+            // is linked to this student and has role_id = 5 (Student).
+            const { error: activateUserError } = await supabase
+                .from('users')
+                .update({ is_active: true })
+                .eq('student_id', approval.record_id)
+                .eq('role_id', 5);
+
+            if (activateUserError) {
+                console.error(
+                    'STUDENT USER ACTIVATION ERROR:',
+                    activateUserError
+                );
+                // Do not abort the approval — the student status has
+                // already been updated. Just log the failure.
+            }
 
             // =====================================================
             // AUTO-ASSIGN FEES TO THE APPROVED STUDENT
@@ -459,7 +498,12 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                         amount,
                         sector
                     `)
-                    .eq('sector', student.school_section || 'primary')
+                                        .eq(
+                        'sector',
+                        ['Nursery', 'Primary'].includes(student.school_section)
+                            ? 'primary'
+                            : 'secondary'
+                    )
                     .eq('class_level', classLevel)
                     .eq('is_active', true)
                     .eq('academic_year', '2026/2027');
@@ -520,12 +564,12 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
         if (approveError) throw approveError;
 
         // Handle other record types
-        if (approval.record_type === 'Payment') {
+        if (isPaymentType(approval.record_type)) {
             await supabase
                 .from('payments')
                 .update({ approval_status: 'approved' })
                 .eq('payment_id', approval.record_id);
-        } else if (approval.record_type === 'Expenditure') {
+        } else if (isExpenditureType(approval.record_type)) {
             await supabase
                 .from('expenditure')
                 .update({ 
@@ -580,17 +624,17 @@ router.put('/:approvalId/reject', authenticateToken, requireRoles(...APPROVAL_RO
 
         if (rejectError) throw rejectError;
 
-        if (approval.record_type === 'Student') {
+        if (isStudentType(approval.record_type)) {
             await supabase
                 .from('students')
                 .update({ student_status: 'Rejected' })
                 .eq('student_id', approval.record_id);
-        } else if (approval.record_type === 'Payment') {
+        } else if (isPaymentType(approval.record_type)) {
             await supabase
                 .from('payments')
                 .update({ approval_status: 'rejected' })
                 .eq('payment_id', approval.record_id);
-        } else if (approval.record_type === 'Expenditure') {
+        } else if (isExpenditureType(approval.record_type)) {
             await supabase
                 .from('expenditure')
                 .update({ 
@@ -674,7 +718,7 @@ router.put('/:approvalId/approve-payment', authenticateToken, async (req, res) =
             return res.status(404).json({ message: 'Approval not found' });
         }
 
-        if (approval.record_type !== 'Payment') {
+        if (!isPaymentType(approval.record_type)) {
             return res.status(400).json({ message: 'This endpoint only handles payment approvals' });
         }
 
@@ -741,7 +785,7 @@ router.put('/:approvalId/reject-payment', authenticateToken, async (req, res) =>
             return res.status(404).json({ message: 'Approval not found' });
         }
 
-        if (approval.record_type !== 'Payment') {
+        if (!isPaymentType(approval.record_type)) {
             return res.status(400).json({ message: 'This endpoint only handles payment approvals' });
         }
 

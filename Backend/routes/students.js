@@ -11,6 +11,7 @@ const {
 } = require('../middleware/authMiddleware');
 
 const router = express.Router();
+const bcrypt = require('bcrypt');
 
 /* =========================================================
    ROLE CONSTANTS
@@ -36,6 +37,26 @@ const FINANCE_ACCESS_ROLES = [
     MANAGER
 ];
 
+/* =========================================================
+   STUDENT CREDENTIAL HELPERS
+   ========================================================= */
+
+function slugPart(value) {
+    return String(value || '')
+        .toLowerCase()
+        .replace(/[\s'\-]/g, '');
+}
+
+function generateUsername(firstName, lastName) {
+    const base =
+        `${slugPart(firstName)}.${slugPart(lastName)}` || 'student';
+    return base;
+}
+
+function generatePassword(admissionNumber) {
+    const digits = String(Math.floor(1000 + Math.random() * 9000));
+    return `${admissionNumber}-${digits}`;
+}
 
 /* =========================================================
    MULTER
@@ -64,25 +85,43 @@ const upload = multer({
     }
 });
 
-
 /* =========================================================
    STORAGE UPLOAD HELPER
+
+   Uploads to Supabase Storage and returns the public URL.
+
+   Filename pattern:
+       student_<id>_<fieldName>_<timestamp>.<ext>
+
+   Photos go to bucket `student_photos` (folder `student-photos`).
+   All other documents go to bucket `student_files`
+   (folder is supplied by the caller).
    ========================================================= */
 
 async function uploadToStorage(
     bucket,
     file,
-    folder = ''
+    folder = '',
+    studentId = 'new',
+    fieldName = 'file'
 ) {
     if (!file) {
         return null;
     }
 
-    const safeName = String(file.originalname || 'file')
-        .replace(/[^a-zA-Z0-9._-]/g, '_');
+    /*
+       Preserve the original extension (lowercased).
+    */
+    const original = String(file.originalname || '');
+    const dotIndex = original.lastIndexOf('.');
+    const ext = dotIndex >= 0
+        ? original.slice(dotIndex).toLowerCase()
+        : '';
+
+    const timestamp = Date.now();
 
     const uniqueName =
-        `${Date.now()}-${Math.random().toString(36).substring(2, 10)}-${safeName}`;
+        `student_${studentId}_${fieldName}_${timestamp}${ext}`;
 
     const filePath = folder
         ? `${folder}/${uniqueName}`
@@ -105,7 +144,6 @@ async function uploadToStorage(
 
     return data?.publicUrl || null;
 }
-
 
 /* =========================================================
    SECTOR / SCHOOL SECTION HELPERS
@@ -1030,6 +1068,130 @@ router.get(
     }
 );
 
+/* =========================================================
+   GET STUDENT CREDENTIALS
+   ========================================================= */
+
+router.get(
+    '/:studentId/credentials',
+    authenticateToken,
+    requireRoles(
+        PROPRIETOR,
+        ADMINISTRATOR,
+        MANAGER
+    ),
+    async (req, res) => {
+
+        try {
+
+            const studentId =
+                req.params.studentId;
+
+            const roleId =
+                getRoleId(req.user);
+
+
+            /*
+               Manager can only read credentials of
+               students in their own sector.
+            */
+
+            if (roleId === MANAGER) {
+
+                const allowed =
+                    await verifyStudentSector(
+                        req.user,
+                        studentId
+                    );
+
+                if (!allowed) {
+
+                    return res.status(403).json({
+                        message:
+                            'Access denied. Student belongs to another sector.'
+                    });
+                }
+            }
+
+
+            const {
+                data: userRow,
+                error: userError
+            } = await supabase
+                .from('users')
+                .select(`
+                    user_id,
+                    username,
+                    portal_password_plain,
+                    is_active,
+                    role_id,
+                    student_id
+                `)
+                .eq(
+                    'student_id',
+                    studentId
+                )
+                .eq(
+                    'role_id',
+                    STUDENT
+                )
+                .maybeSingle();
+
+
+            if (userError) {
+
+                console.error(
+                    'GET STUDENT CREDENTIALS ERROR:',
+                    userError
+                );
+
+                return res.status(500).json({
+                    message:
+                        'Failed to load credentials.',
+                    error:
+                        userError.message
+                });
+            }
+
+
+            if (!userRow) {
+
+                return res.status(404).json({
+                    message:
+                        'No user account is linked to this student.'
+                });
+            }
+
+
+            return res.json({
+
+                username:
+                    userRow.username,
+
+                password:
+                    userRow.portal_password_plain ||
+                    null,
+
+                is_active:
+                    userRow.is_active === true
+            });
+
+        } catch (error) {
+
+            console.error(
+                'GET STUDENT CREDENTIALS ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+                message:
+                    'Failed to load credentials.',
+                error:
+                    error.message
+            });
+        }
+    }
+);
 
 /* =========================================================
    REGISTER STUDENT
@@ -1044,18 +1206,11 @@ router.post(
         MANAGER
     ),
     upload.fields([
-        {
-            name: 'photo',
-            maxCount: 1
-        },
-        {
-            name: 'acceptance_letter',
-            maxCount: 1
-        },
-        {
-            name: 'birth_certificate',
-            maxCount: 1
-        }
+        { name: 'student_photo',          maxCount: 1 },
+        { name: 'result_file',            maxCount: 1 },
+        { name: 'birth_certificate_file', maxCount: 1 },
+        { name: 'testimonial_file',       maxCount: 1 },
+        { name: 'transfer_file',          maxCount: 1 }
     ]),
     async (req, res) => {
 
@@ -1160,16 +1315,9 @@ router.post(
 
                 const guardianPayload = {
 
-                    first_name:
+                    full_name:
                         body.guardian_first_name ||
-                        null,
-
-                    middle_name:
-                        body.guardian_middle_name ||
-                        null,
-
-                    last_name:
-                        body.guardian_last_name ||
+                        body.guardian_name ||
                         null,
 
                     relationship:
@@ -1188,9 +1336,6 @@ router.post(
                         body.guardian_address ||
                         null,
 
-                    occupation:
-                        body.guardian_occupation ||
-                        null
                 };
 
 
@@ -1223,43 +1368,73 @@ router.post(
                 req.files || {};
 
             let photoUrl = null;
-            let acceptanceLetterUrl = null;
+            let resultFileUrl = null;
             let birthCertificateUrl = null;
+            let testimonialUrl = null;
+            let transferFormUrl = null;
 
 
-            if (files.photo?.[0]) {
+            if (files.student_photo?.[0]) {
 
                 photoUrl =
                     await uploadToStorage(
+                        'student_photos',
+                        files.student_photo[0],
                         'student-photos',
-                        files.photo[0],
-                        'students'
+                        body.admission_number || 'new',
+                        'photo'
                     );
             }
 
 
-            if (
-                files.acceptance_letter?.[0]
-            ) {
+            if (files.result_file?.[0]) {
 
-                acceptanceLetterUrl =
+                resultFileUrl =
                     await uploadToStorage(
-                        'student-documents',
-                        files.acceptance_letter[0],
-                        'acceptance-letters'
+                        'student_files',
+                        files.result_file[0],
+                        'results',
+                        body.admission_number || 'new',
+                        'result_file'
                     );
             }
 
 
-            if (
-                files.birth_certificate?.[0]
-            ) {
+            if (files.birth_certificate_file?.[0]) {
 
                 birthCertificateUrl =
                     await uploadToStorage(
-                        'student-documents',
-                        files.birth_certificate[0],
-                        'birth-certificates'
+                        'student_files',
+                        files.birth_certificate_file[0],
+                        'birth-certificates',
+                        body.admission_number || 'new',
+                        'birth_certificate_file'
+                    );
+            }
+
+
+            if (files.testimonial_file?.[0]) {
+
+                testimonialUrl =
+                    await uploadToStorage(
+                        'student_files',
+                        files.testimonial_file[0],
+                        'testimonials',
+                        body.admission_number || 'new',
+                        'testimonial_file'
+                    );
+            }
+
+
+            if (files.transfer_file?.[0]) {
+
+                transferFormUrl =
+                    await uploadToStorage(
+                        'student_files',
+                        files.transfer_file[0],
+                        'transfer-forms',
+                        body.admission_number || 'new',
+                        'transfer_file'
                     );
             }
 
@@ -1319,6 +1494,18 @@ router.post(
                 photo_url:
                     photoUrl,
 
+                result_file_url:
+                    resultFileUrl,
+
+                birth_certificate_url:
+                    birthCertificateUrl,
+
+                testimonial_url:
+                    testimonialUrl,
+
+                transfer_form_url:
+                    transferFormUrl,
+
                 academic_year_id:
                     body.academic_year_id ||
                     classData.academic_year_id ||
@@ -1341,6 +1528,158 @@ router.post(
 
             if (studentError) {
                 throw studentError;
+            }
+
+
+            /* =========================================================
+               CREATE STUDENT USER ACCOUNT
+               =========================================================
+
+               Rules:
+                 - username = first.last, with suffix 2, 3, ... on collision
+                 - password = admission_number + "-" + 4 random digits
+                 - role_id  = 5 (Student)
+                 - sector   = student's class school_section
+                 - is_active = false (activated on approval)
+            */
+
+            let generatedUsername = null;
+            let generatedPassword = null;
+
+            try {
+
+                const baseUsername =
+                    generateUsername(
+                        student.first_name,
+                        student.last_name
+                    );
+
+                let candidate =
+                    baseUsername;
+
+                let suffix =
+                    2;
+
+                let usernameFound =
+                    false;
+
+                /*
+                   Probe up to 50 candidates.
+                   This is intentionally a simple DB loop;
+                   we will revisit if collision counts grow.
+                */
+
+                for (
+                    let attempt = 0;
+                    attempt < 50;
+                    attempt++
+                ) {
+
+                    const {
+                        data: existingUser,
+                        error: lookupError
+                    } = await supabase
+                        .from('users')
+                        .select('user_id')
+                        .eq('username', candidate)
+                        .maybeSingle();
+
+                    if (lookupError) {
+                        throw lookupError;
+                    }
+
+                    if (!existingUser) {
+                        usernameFound = true;
+                        break;
+                    }
+
+                    candidate =
+                        `${baseUsername}${suffix}`;
+
+                    suffix +=
+                        1;
+                }
+
+                if (!usernameFound) {
+                    throw new Error(
+                        'Could not generate a unique username after 50 attempts.'
+                    );
+                }
+
+                generatedUsername =
+                    candidate;
+
+                generatedPassword =
+                    generatePassword(
+                        student.admission_number
+                    );
+
+                const passwordHash =
+                    await bcrypt.hash(
+                        generatedPassword,
+                        10
+                    );
+
+                const fullName =
+                    [
+                        student.first_name,
+                        student.middle_name,
+                        student.last_name
+                    ]
+                        .filter(Boolean)
+                        .join(' ');
+
+                const {
+                    error: userInsertError
+                } = await supabase
+                    .from('users')
+                    .insert({
+
+                        username:
+                            generatedUsername,
+
+                        password_hash:
+                            passwordHash,
+
+                        portal_password_plain:
+                            generatedPassword,
+
+                        full_name:
+                            fullName || null,
+
+                        role_id:
+                            STUDENT,
+
+                        sector:
+                            classData.school_section,
+
+                        student_id:
+                            student.student_id,
+
+                        is_active:
+                            false
+                    });
+
+                if (userInsertError) {
+
+                    console.error(
+                        'STUDENT USER INSERT ERROR:',
+                        userInsertError
+                    );
+
+                    generatedUsername = null;
+                    generatedPassword = null;
+                }
+
+            } catch (userError) {
+
+                console.error(
+                    'STUDENT USER CREATION ERROR:',
+                    userError
+                );
+
+                generatedUsername = null;
+                generatedPassword = null;
             }
 
 
@@ -1386,71 +1725,28 @@ router.post(
             }
 
 
-            /*
-               Save uploaded documents
-            */
-
-            const documents = [];
-
-            if (acceptanceLetterUrl) {
-
-                documents.push({
-
-                    student_id:
-                        student.student_id,
-
-                    document_type:
-                        'Acceptance Letter',
-
-                    document_url:
-                        acceptanceLetterUrl
-                });
-            }
-
-
-            if (birthCertificateUrl) {
-
-                documents.push({
-
-                    student_id:
-                        student.student_id,
-
-                    document_type:
-                        'Birth Certificate',
-
-                    document_url:
-                        birthCertificateUrl
-                });
-            }
-
-
-            if (documents.length) {
-
-                const {
-                    error: documentError
-                } = await supabase
-                    .from('student_documents')
-                    .insert(
-                        documents
-                    );
-
-                if (documentError) {
-
-                    console.error(
-                        'DOCUMENT INSERT ERROR:',
-                        documentError
-                    );
-                }
-            }
-
-
             return res.status(201).json({
 
                 message:
                     'Student registered successfully.',
 
-                student
+                student,
 
+                credentials:
+                    generatedUsername
+                        ? {
+                            username:
+                                generatedUsername,
+
+                            password:
+                                generatedPassword
+                        }
+                        : null,
+
+                credentials_warning:
+                    generatedUsername
+                        ? null
+                        : 'Student record was created, but the user account could not be created. Please create it manually.'
             });
 
         } catch (error) {
@@ -1701,9 +1997,11 @@ router.put(
 
                 const photoUrl =
                     await uploadToStorage(
-                        'student-photos',
+                        'student_photos',
                         req.file,
-                        'students'
+                        'student-photos',
+                        studentId,
+                        'photo'
                     );
 
                 studentUpdate.photo_url =

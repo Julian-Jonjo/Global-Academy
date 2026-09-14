@@ -142,6 +142,34 @@
         .search-results .result-item .result-detail { font-size: 12px; color: #6b7280; }
         .logout-bottom { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); display: flex; align-items: center; gap: 8px; }
         .logout-bottom:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5); }
+
+        /* Credentials box (View modal) */
+        .credentials-box { grid-column: 1 / -1; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 15px; margin-top: 5px; }
+        .credentials-box h4 { margin: 0 0 10px 0; color: #1a3c6e; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .credentials-row { display: flex; gap: 30px; flex-wrap: wrap; align-items: center; }
+        .credential-item { display: flex; flex-direction: column; gap: 3px; }
+        .credential-item .label { font-size: 11px; color: #6b7280; font-weight: bold; text-transform: uppercase; }
+        .credential-item .value { font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; color: #111827; background: white; padding: 6px 12px; border-radius: 4px; border: 1px solid #c7d2fe; }
+        .credentials-actions { grid-column: 1 / -1; display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+        .print-slip-btn { background: #1a3c6e; color: white; }
+        .print-slip-btn:hover { background: #0f2a4a; }
+        .credentials-note { grid-column: 1 / -1; font-size: 12px; color: #6b7280; margin-top: 4px; }
+
+                @media print {
+            body > *:not(#credentialSlip) { display: none !important; }
+            #credentialSlip {
+                display: block !important;
+                position: static;
+                width: 100%;
+                padding: 30px;
+                font-family: Arial, sans-serif;
+                background: white;
+                color: black;
+            }
+            body::before { display: none !important; }
+        }
+        #credentialSlip { display: none; }
+
         @media (max-width: 900px) { .filters { grid-template-columns: 1fr 1fr; } .discipline-summary { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 700px) { .header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 20px; } .user-info { text-align: left; width: 100%; } .tabs { flex-direction: column; } .tab-button { width: 100%; text-align: left; } .profile-grid, .edit-form { grid-template-columns: 1fr; } .page-title { flex-direction: column; align-items: flex-start; gap: 10px; } .student-profile-header { flex-direction: column; text-align: center; } .discipline-summary { grid-template-columns: 1fr; } .discipline-student-item { flex-direction: column; gap: 8px; text-align: center; } .logout-bottom { bottom: 10px; left: 10px; padding: 8px 16px; font-size: 12px; } }
         @media (max-width: 600px) { .filters { grid-template-columns: 1fr; } .modal-content { margin: 20px; padding: 20px; } .overview-grid { grid-template-columns: 1fr 1fr; } }
@@ -473,6 +501,9 @@
             <div id="viewDisciplineContent"></div>
         </div>
     </div>
+
+    <!-- HIDDEN CREDENTIAL SLIP (for printing) -->
+    <div id="credentialSlip"></div>
 
     <button class="logout-bottom" onclick="logout()">🚪 Logout</button>
 
@@ -1267,8 +1298,9 @@ async function openRegistrationTab(button) {
     // ============================================================
     // STUDENT PROFILE VIEW
     // ============================================================
-    function viewStudent(studentId) {
-        const student = students.find(item => Number(item.student_id) === Number(studentId));
+        function viewStudent(studentId) {
+        window.__currentStudentForSlip = students.find(item => Number(item.student_id) === Number(studentId));
+        const student = window.__currentStudentForSlip;
         if (!student) { alert('Student record not found.'); return; }
         
         const photoHtml = student.photo_url 
@@ -1315,8 +1347,116 @@ async function openRegistrationTab(button) {
             ${field('Name', student.emergency_contact_name)}
             ${field('Phone', student.emergency_contact_phone)}
             ${field('Relationship', student.emergency_contact_relationship)}
+
+            <div class="section-title">Portal Credentials</div>
+            <div id="credentialsSection" class="credentials-box">
+                <h4>🔐 Student Login Credentials</h4>
+                <div id="credentialsContent" class="credentials-row">
+                    <em style="color:#6b7280;">Loading credentials...</em>
+                </div>
+                <div id="credentialsNote" class="credentials-note"></div>
+            </div>
+            <div class="credentials-actions">
+                <button class="btn print-slip-btn" onclick="printCredentialSlip()">🖨️ Print Slip</button>
+            </div>
         `;
         document.getElementById('studentModal').style.display = 'block';
+
+        loadCredentials(student.student_id);
+    }
+
+    // ============================================================
+    // LOAD STUDENT CREDENTIALS
+    // ============================================================
+    async function loadCredentials(studentId) {
+        const content = document.getElementById('credentialsContent');
+        const note = document.getElementById('credentialsNote');
+
+        if (!content) return;
+
+        try {
+            const response = await fetch(`/api/students/${studentId}/credentials`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (!data || !data.username) {
+                content.innerHTML = '<em style="color:#6b7280;">No user account is linked to this student.</em>';
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="credential-item">
+                    <span class="label">Username</span>
+                    <span class="value">${escapeHtml(data.username)}</span>
+                </div>
+                <div class="credential-item">
+                    <span class="label">Password</span>
+                    <span class="value">${data.password ? escapeHtml(data.password) : '•••••••• (not stored in plain text)'}</span>
+                </div>
+            `;
+
+            if (data.is_active === false) {
+                if (note) note.textContent = 'Account is inactive until the student is approved.';
+            } else if (note) {
+                note.textContent = '';
+            }
+        } catch (error) {
+            console.error('LOAD CREDENTIALS ERROR:', error);
+            content.innerHTML = '<em style="color:#991b1b;">Credentials could not be loaded.</em>';
+        }
+    }
+
+    // ============================================================
+    // PRINT CREDENTIAL SLIP
+    // ============================================================
+    function printCredentialSlip() {
+        const studentId = document.getElementById('editStudentId')?.value;
+        // The modal doesn't carry a stable student id, so look it up from the
+        // last-opened profile via a module-scoped variable.
+        const student = window.__currentStudentForSlip;
+        if (!student) {
+            alert('No student is currently open.');
+            return;
+        }
+
+        const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ');
+
+        const credUsername = document.querySelector('#credentialsContent .credential-item:nth-child(1) .value')?.textContent || '—';
+        const credPassword = document.querySelector('#credentialsContent .credential-item:nth-child(2) .value')?.textContent || '—';
+
+        const slip = document.getElementById('credentialSlip');
+        slip.innerHTML = `
+            <div style="text-align:center;margin-bottom:20px;">
+                <h1 style="margin:0;font-size:22px;color:#1a3c6e;">GLOBAL EDUCATION ACADEMY</h1>
+                <p style="margin:4px 0 0 0;color:#555;">Student Portal Credentials</p>
+                <hr style="margin:15px 0;border:none;border-top:2px solid #1a3c6e;">
+            </div>
+            <table style="width:100%;font-size:15px;border-collapse:collapse;">
+                <tr><td style="padding:8px 0;width:40%;font-weight:bold;">Student Name:</td><td>${escapeHtml(fullName)}</td></tr>
+                <tr><td style="padding:8px 0;font-weight:bold;">Admission Number:</td><td>${escapeHtml(student.admission_number || '—')}</td></tr>
+                <tr><td style="padding:8px 0;font-weight:bold;">Class:</td><td>${escapeHtml(student.class_name || '—')}${student.arm ? ' — ' + escapeHtml(student.arm) : ''}</td></tr>
+                <tr><td style="padding:8px 0;font-weight:bold;">Username:</td><td style="font-family:monospace;font-size:16px;">${escapeHtml(credUsername)}</td></tr>
+                <tr><td style="padding:8px 0;font-weight:bold;">Password:</td><td style="font-family:monospace;font-size:16px;">${escapeHtml(credPassword)}</td></tr>
+            </table>
+            <div style="margin-top:30px;padding:15px;background:#f3f4f6;border-radius:8px;font-size:13px;color:#374151;">
+                <strong>Important:</strong> Please keep these credentials safe. Use the username and password to log into your portal.
+            </div>
+            <p style="margin-top:40px;font-size:12px;color:#6b7280;text-align:center;">
+                Printed on ${new Date().toLocaleString()}
+            </p>
+        `;
+        slip.style.display = 'block';
+        window.print();
+        slip.style.display = 'none';
     }
 
     async function reviewStudent(studentId) {
@@ -1669,26 +1809,11 @@ async function openRegistrationTab(button) {
         }
     }
 
-    // ============================================================
-    // DISCIPLINE MODULE
-    // ============================================================
-    
-    let disSearchTimeout = null;
+        let disSearchTimeout = null;
 
-    function updateDisciplineSummary() {
-        const total = disciplineRecordsList.length;
-        const pending = disciplineRecordsList.filter(r => r.status === 'Pending').length;
-        
-        const studentIds = new Set();
-        disciplineRecordsList.forEach(r => studentIds.add(r.studentId));
-        const uniqueStudents = studentIds.size;
-        
-        document.getElementById('disTotal').textContent = total;
-        document.getElementById('disPending').textContent = pending;
-        document.getElementById('disStudents').textContent = uniqueStudents;
-        document.getElementById('disciplineCount').textContent = total;
-        document.getElementById('studentsWithRecords').textContent = uniqueStudents;
-    }
+    // ============================================================
+    // DISCIPLINE — DB-BACKED
+    // ============================================================
 
     async function loadDisciplineRecords() {
         const container = document.getElementById('disciplineStudentsList');
@@ -1696,21 +1821,48 @@ async function openRegistrationTab(button) {
         document.getElementById('disciplineMessage').innerHTML = '';
 
         try {
-            const stored = localStorage.getItem('discipline_records');
-            if (stored) {
-                disciplineRecordsList = JSON.parse(stored);
-            } else {
-                disciplineRecordsList = [];
+            const response = await fetch('/api/discipline', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
             }
+
+            const records = await response.json();
+
+            disciplineRecordsList = Array.isArray(records) ? records : [];
 
             renderDisciplineStudentList();
             updateDisciplineSummary();
 
         } catch (error) {
             console.error('DISCIPLINE ERROR:', error);
-            document.getElementById('disciplineMessage').innerHTML = `<div class="error-message">${display(error.message)}</div>`;
-            container.innerHTML = `<div class="empty">Error loading discipline records.</div>`;
+            document.getElementById('disciplineMessage').innerHTML =
+                `<div class="error-message">${display(error.message)}</div>`;
+            container.innerHTML =
+                `<div class="empty">Error loading discipline records.</div>`;
         }
+    }
+
+    function updateDisciplineSummary() {
+        const total = disciplineRecordsList.length;
+        const pending = disciplineRecordsList.filter(
+            r => String(r.status || '').toLowerCase() === 'pending'
+        ).length;
+
+        const studentIds = new Set();
+        disciplineRecordsList.forEach(r => studentIds.add(r.student_id));
+        const uniqueStudents = studentIds.size;
+
+        document.getElementById('disTotal').textContent = total;
+        document.getElementById('disPending').textContent = pending;
+        document.getElementById('disStudents').textContent = uniqueStudents;
+        document.getElementById('disciplineCount').textContent = total;
+        document.getElementById('studentsWithRecords').textContent = uniqueStudents;
     }
 
     function renderDisciplineStudentList() {
@@ -1718,10 +1870,10 @@ async function openRegistrationTab(button) {
 
         const studentRecords = {};
         disciplineRecordsList.forEach(record => {
-            if (!studentRecords[record.studentId]) {
-                studentRecords[record.studentId] = [];
+            if (!studentRecords[record.student_id]) {
+                studentRecords[record.student_id] = [];
             }
-            studentRecords[record.studentId].push(record);
+            studentRecords[record.student_id].push(record);
         });
 
         const studentIds = Object.keys(studentRecords);
@@ -1743,9 +1895,15 @@ async function openRegistrationTab(button) {
                 ${studentsWithRecords.map(student => {
                     const records = studentRecords[student.student_id] || [];
                     const totalRecords = records.length;
-                    const pendingRecords = records.filter(r => r.status === 'Pending').length;
-                    const latestRecord = records.sort((a, b) => new Date(b.incidentDate) - new Date(a.incidentDate))[0];
-                    
+                    const pendingRecords = records.filter(
+                        r => String(r.status || '').toLowerCase() === 'pending'
+                    ).length;
+
+                    const sorted = [...records].sort((a, b) =>
+                        new Date(b.incident_date) - new Date(a.incident_date)
+                    );
+                    const latestRecord = sorted[0];
+
                     return `
                         <div class="discipline-student-item">
                             <div class="student-info">
@@ -1754,7 +1912,7 @@ async function openRegistrationTab(button) {
                                     ${display(student.admission_number)} • ${display(student.class_name)}
                                     <span class="record-count">${totalRecords} record${totalRecords > 1 ? 's' : ''}</span>
                                     ${pendingRecords > 0 ? `• <span style="color:#92400e;">${pendingRecords} pending</span>` : ''}
-                                    ${latestRecord ? `• Latest: ${escapeHtml(latestRecord.crime)} (${formatDateOnly(latestRecord.incidentDate)})` : ''}
+                                    ${latestRecord ? `• Latest: ${escapeHtml(latestRecord.crime)} (${formatDateOnly(latestRecord.incident_date)})` : ''}
                                 </span>
                             </div>
                             <div class="actions">
@@ -1764,6 +1922,168 @@ async function openRegistrationTab(button) {
                         </div>
                     `;
                 }).join('')}
+            </div>
+        `;
+    }
+
+    async function submitDiscipline(event) {
+        event.preventDefault();
+
+        const studentId = document.getElementById('disSelectedStudentId').value;
+
+        if (!studentId) {
+            alert('Please search and select a student.');
+            return;
+        }
+
+        const payload = {
+            student_id: parseInt(studentId),
+            incident_date: document.getElementById('disIncidentDate').value,
+            crime: document.getElementById('disCrime').value,
+            description: document.getElementById('disDescription').value,
+            punishment: document.getElementById('disPunishment').value,
+            duration: document.getElementById('disDuration').value || null,
+            hearing_officer: document.getElementById('disHearingOfficer').value,
+            notes: document.getElementById('disNotes').value || null,
+            status: document.getElementById('disStatus').value || 'Active'
+        };
+
+        if (!payload.crime || !payload.description || !payload.punishment || !payload.hearing_officer) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/discipline', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || `HTTP ${response.status}`);
+            }
+
+            alert('✅ Discipline record saved successfully!');
+            closeDisciplineModal();
+            loadDisciplineRecords();
+            updateOverview();
+
+        } catch (error) {
+            console.error('SUBMIT DISCIPLINE ERROR:', error);
+            alert(error.message || 'Failed to save discipline record.');
+        }
+    }
+
+    async function viewStudentDisciplineRecords(studentId) {
+        const student = students.find(s => Number(s.student_id) === Number(studentId));
+        if (!student) {
+            alert('Student not found.');
+            return;
+        }
+
+        const content = document.getElementById('viewDisciplineContent');
+        content.innerHTML = '<div class="module-placeholder"><h3>Loading...</h3><p>Please wait.</p></div>';
+        document.getElementById('viewDisciplineModal').style.display = 'block';
+
+        let records = [];
+
+        try {
+            const response = await fetch(`/api/discipline/student/${studentId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            records = await response.json();
+            if (!Array.isArray(records)) records = [];
+
+        } catch (error) {
+            console.error('VIEW DISCIPLINE ERROR:', error);
+            content.innerHTML = `<div class="error-message">Error loading discipline records: ${display(error.message)}</div>`;
+            return;
+        }
+
+        if (records.length === 0) {
+            content.innerHTML = `
+                <div class="student-profile-header">
+                    <div class="avatar">
+                        ${student.photo_url ?
+                            `<img src="${student.photo_url}" alt="${student.first_name}">` :
+                            `<div class="no-photo">👤</div>`}
+                    </div>
+                    <div class="info">
+                        <h3>${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</h3>
+                        <p><strong>Admission:</strong> ${display(student.admission_number)}</p>
+                        <p><strong>Class:</strong> ${display(student.class_name)}</p>
+                    </div>
+                </div>
+                <div class="empty">No discipline records found for this student.</div>
+            `;
+            return;
+        }
+
+        records.sort((a, b) => new Date(b.incident_date) - new Date(a.incident_date));
+
+        const recordsHtml = records.map(record => {
+            const statusValue = record.status || 'Active';
+            const statusClass =
+                statusValue === 'Resolved' ? 'clean' :
+                statusValue === 'Pending' ? 'pending' : 'active';
+
+            return `
+                <div class="discipline-record-card" style="margin-bottom:10px;">
+                    <div class="header">
+                        <div>
+                            <span class="crime">${escapeHtml(record.crime)}</span>
+                            <span class="status-badge status ${statusClass}">${escapeHtml(statusValue)}</span>
+                        </div>
+                        <div class="date">${formatDateOnly(record.incident_date)}</div>
+                    </div>
+                    <div class="punishment">
+                        <strong>Punishment:</strong> ${escapeHtml(record.punishment)}
+                        ${record.duration ? `- ${escapeHtml(record.duration)}` : ''}
+                    </div>
+                    <div style="margin:4px 0;">
+                        <strong>Description:</strong> ${escapeHtml(record.description)}
+                    </div>
+                    <div class="hearing-officer">
+                        <strong>Hearing Officer:</strong> ${escapeHtml(record.hearing_officer)}
+                    </div>
+                    ${record.notes ? `<div style="font-size:13px;color:#6b7280;margin-top:4px;"><strong>Notes:</strong> ${escapeHtml(record.notes)}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+
+        const photoHtml = student.photo_url
+            ? `<img src="${student.photo_url}" alt="${student.first_name}" style="width:100%;height:100%;object-fit:cover;">`
+            : `<div class="no-photo">👤</div>`;
+
+        content.innerHTML = `
+            <div class="student-profile-header">
+                <div class="avatar">
+                    ${photoHtml}
+                </div>
+                <div class="info">
+                    <h3>${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</h3>
+                    <p><strong>Admission:</strong> ${display(student.admission_number)}</p>
+                    <p><strong>Class:</strong> ${display(student.class_name)}${student.arm ? ` — ${display(student.arm)}` : ''}</p>
+                    <p><strong>Total Records:</strong> ${records.length}</p>
+                </div>
+            </div>
+            <h4 style="margin:15px 0 10px 0;">📋 Discipline Records</h4>
+            <div style="max-height:400px;overflow-y:auto;">
+                ${recordsHtml}
             </div>
         `;
     }
@@ -1880,141 +2200,7 @@ async function openRegistrationTab(button) {
         document.getElementById('disStudentSearch').value = studentName;
         document.getElementById('disStudentResults').style.display = 'none';
     }
-
-    // ============================================================
-    // SUBMIT DISCIPLINE RECORD
-    // ============================================================
-
-    async function submitDiscipline(event) {
-        event.preventDefault();
-
-        const studentId = document.getElementById('disSelectedStudentId').value;
-        
-        if (!studentId) {
-            alert('Please search and select a student.');
-            return;
-        }
-
-        const data = {
-            studentId: parseInt(studentId),
-            incidentDate: document.getElementById('disIncidentDate').value,
-            crime: document.getElementById('disCrime').value,
-            description: document.getElementById('disDescription').value,
-            punishment: document.getElementById('disPunishment').value,
-            duration: document.getElementById('disDuration').value || '',
-            hearingOfficer: document.getElementById('disHearingOfficer').value,
-            notes: document.getElementById('disNotes').value || '',
-            status: document.getElementById('disStatus').value || 'Active',
-            createdAt: new Date().toISOString()
-        };
-
-        if (!data.crime || !data.description || !data.punishment || !data.hearingOfficer) {
-            alert('Please fill in all required fields.');
-            return;
-        }
-
-        const stored = localStorage.getItem('discipline_records');
-        const records = stored ? JSON.parse(stored) : [];
-        records.push(data);
-        localStorage.setItem('discipline_records', JSON.stringify(records));
-
-        alert('✅ Discipline record saved successfully!');
-
-        closeDisciplineModal();
-        loadDisciplineRecords();
-        updateOverview();
-    }
-
-    // ============================================================
-    // VIEW STUDENT'S DISCIPLINE RECORDS
-    // ============================================================
-
-    function viewStudentDisciplineRecords(studentId) {
-        const student = students.find(s => s.student_id == studentId);
-        if (!student) {
-            alert('Student not found.');
-            return;
-        }
-        
-        const studentRecords = disciplineRecordsList.filter(r => r.studentId == studentId);
-        
-        const content = document.getElementById('viewDisciplineContent');
-        
-        if (studentRecords.length === 0) {
-            content.innerHTML = `
-                <div class="student-profile-header">
-                    <div class="avatar">
-                        ${student.photo_url ? 
-                            `<img src="${student.photo_url}" alt="${student.first_name}">` : 
-                            `<div class="no-photo">👤</div>`}
-                    </div>
-                    <div class="info">
-                        <h3>${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</h3>
-                        <p><strong>Admission:</strong> ${display(student.admission_number)}</p>
-                        <p><strong>Class:</strong> ${display(student.class_name)}</p>
-                    </div>
-                </div>
-                <div class="empty">No discipline records found for this student.</div>
-            `;
-            document.getElementById('viewDisciplineModal').style.display = 'block';
-            return;
-        }
-
-        studentRecords.sort((a, b) => new Date(b.incidentDate) - new Date(a.incidentDate));
-
-        let recordsHtml = studentRecords.map((record, index) => {
-            const statusClass = record.status === 'Resolved' ? 'clean' : 
-                              record.status === 'Pending' ? 'pending' : 'active';
-            
-            return `
-                <div class="discipline-record-card" style="margin-bottom:10px;">
-                    <div class="header">
-                        <div>
-                            <span class="crime">${escapeHtml(record.crime)}</span>
-                            <span class="status-badge status ${statusClass}">${record.status || 'Active'}</span>
-                        </div>
-                        <div class="date">${formatDateOnly(record.incidentDate)}</div>
-                    </div>
-                    <div class="punishment">
-                        <strong>Punishment:</strong> ${escapeHtml(record.punishment)} 
-                        ${record.duration ? `- ${escapeHtml(record.duration)}` : ''}
-                    </div>
-                    <div style="margin:4px 0;">
-                        <strong>Description:</strong> ${escapeHtml(record.description)}
-                    </div>
-                    <div class="hearing-officer">
-                        <strong>Hearing Officer:</strong> ${escapeHtml(record.hearingOfficer)}
-                    </div>
-                    ${record.notes ? `<div style="font-size:13px;color:#6b7280;margin-top:4px;"><strong>Notes:</strong> ${escapeHtml(record.notes)}</div>` : ''}
-                </div>
-            `;
-        }).join('');
-
-        const photoHtml = student.photo_url 
-            ? `<img src="${student.photo_url}" alt="${student.first_name}" style="width:100%;height:100%;object-fit:cover;">`
-            : `<div class="no-photo">👤</div>`;
-
-        content.innerHTML = `
-            <div class="student-profile-header">
-                <div class="avatar">
-                    ${photoHtml}
-                </div>
-                <div class="info">
-                    <h3>${escapeHtml(student.first_name)} ${escapeHtml(student.last_name)}</h3>
-                    <p><strong>Admission:</strong> ${display(student.admission_number)}</p>
-                    <p><strong>Class:</strong> ${display(student.class_name)}${student.arm ? ` — ${display(student.arm)}` : ''}</p>
-                    <p><strong>Total Records:</strong> ${studentRecords.length}</p>
-                </div>
-            </div>
-            <h4 style="margin:15px 0 10px 0;">📋 Discipline Records</h4>
-            <div style="max-height:400px;overflow-y:auto;">
-                ${recordsHtml}
-            </div>
-        `;
-
-        document.getElementById('viewDisciplineModal').style.display = 'block';
-    }
-
+    
     // ============================================================
     // INITIALIZE DISCIPLINE STUDENT SEARCH
     // ============================================================

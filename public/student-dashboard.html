@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Student Portal</title>
+
+    <style>
+        /* ============================================================
+           RESET
+           ============================================================ */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy: #1a3c6e;
+            --navy-dark: #153158;
+            --navy-light: #2a5290;
+            --accent: #0d9488;
+            --accent-dark: #0f766e;
+            --accent-soft: #ccfbf1;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --danger: #dc2626;
+            --success: #166534;
+            --warning: #92400e;
+            --sheet-max: 850px;
+        }
+
+        html { -webkit-text-size-adjust: 100%; }
+
+        /* ============================================================
+           PAGE BACKGROUND
+           ============================================================ */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--gray-900);
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            background: #dfe3e8;
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            padding: 24px 12px 60px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(220, 228, 238, 0.72);
+            z-index: 0;
+        }
+
+        /* ============================================================
+           THE A4 SHEET
+           ============================================================ */
+        .sheet {
+            position: relative;
+            z-index: 1;
+            max-width: var(--sheet-max);
+            margin: 0 auto;
+            background: white;
+            border-radius: 2px;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.06),
+                0 12px 40px rgba(0, 0, 0, 0.14);
+            padding: 10px;
+        }
+
+        .sheet-inner {
+            border: 1px solid #c9d1dc;
+            padding: 4px;
+        }
+
+        .sheet-body {
+            border: 1px solid #e2e8f0;
+            padding: 28px 34px 34px 34px;
+            background: white;
+        }
+
+        /* ============================================================
+           LETTERHEAD
+           ============================================================ */
+        .letterhead {
+            display: grid;
+            grid-template-columns: 70px 1fr 220px;
+            gap: 20px;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .letterhead-logo {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .letterhead-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .letterhead-logo .fallback { font-size: 40px; }
+
+        .letterhead-center { text-align: center; }
+        .letterhead-center h1 {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: var(--navy);
+            margin-bottom: 3px;
+        }
+        .letterhead-center .sub {
+            font-size: 11px;
+            color: var(--gray-500);
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .letterhead-center .motto {
+            font-size: 10.5px;
+            color: #9ca3af;
+            font-style: italic;
+            margin-top: 3px;
+        }
+
+        /* Right side of letterhead — avatar + identity */
+        .letterhead-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .letterhead-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--navy);
+            flex-shrink: 0;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .letterhead-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .letterhead-avatar .no-photo {
+            font-size: 24px;
+            color: #9ca3af;
+        }
+
+        .letterhead-identity {
+            text-align: right;
+            font-size: 11px;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+        .letterhead-identity .student-name {
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--navy);
+            margin-bottom: 2px;
+        }
+        .letterhead-identity .row { margin: 0; }
+        .letterhead-identity .row strong { color: var(--gray-900); }
+
+        /* ============================================================
+           TABS
+           ============================================================ */
+        .sheet-tabs {
+            display: flex;
+            gap: 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            border-bottom: 1px solid var(--gray-200);
+            margin-top: 18px;
+            margin-bottom: 22px;
+        }
+        .sheet-tabs::-webkit-scrollbar { display: none; }
+
+        .tab-button {
+            border: none;
+            background: transparent;
+            padding: 10px 14px 12px 14px;
+            cursor: pointer;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            white-space: nowrap;
+            flex-shrink: 0;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+            font-family: inherit;
+            min-height: 44px;
+        }
+        .tab-button:hover { color: var(--navy); background: var(--gray-50); }
+        .tab-button.active {
+            color: var(--navy);
+            border-bottom-color: var(--accent);
+        }
+
+        /* ============================================================
+           TAB CONTENT
+           ============================================================ */
+        .tab-content { display: none; animation: fadeIn 0.22s ease; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(3px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================================
+           SECTION TITLES
+           ============================================================ */
+        .section-title {
+            margin: 0 0 14px 0;
+            color: var(--navy);
+            font-size: 12.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 8px;
+            position: relative;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: -1px;
+            width: 48px; height: 3px;
+            background: var(--accent);
+        }
+
+        /* ============================================================
+           GENERIC
+           ============================================================ */
+        .empty {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--gray-500);
+            font-size: 13.5px;
+            font-style: italic;
+        }
+        .error-message {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13.5px;
+        }
+
+        /* ============================================================
+           PROFILE GRID
+           ============================================================ */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            margin-bottom: 24px;
+            border-top: 1px solid var(--gray-200);
+        }
+        .field {
+            display: grid;
+            grid-template-columns: 170px 1fr;
+            gap: 12px;
+            padding: 9px 4px;
+            border-bottom: 1px solid var(--gray-100);
+            align-items: baseline;
+        }
+        .field-label {
+            font-size: 11px;
+            color: var(--gray-500);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .field-value {
+            font-size: 14px;
+            color: var(--gray-900);
+            word-break: break-word;
+        }
+
+        /* ============================================================
+           TABLES
+           ============================================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            background: var(--gray-100);
+            text-align: left;
+            padding: 9px 10px;
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-500);
+            border-bottom: 1.5px solid var(--gray-300);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--gray-50); }
+
+        /* Fee receipt uses bordered tables — slightly different padding */
+        .fee-receipt table th {
+            background: #eef2f7;
+        }
+
+        /* ============================================================
+           SUMMARY CARDS
+           ============================================================ */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .summary-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            padding: 14px 12px;
+            text-align: center;
+            position: relative;
+        }
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--navy));
+            border-radius: 6px 6px 0 0;
+        }
+        .summary-card .num {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+            word-break: break-word;
+        }
+        .summary-card .lbl {
+            font-size: 10px;
+            color: var(--gray-500);
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        /* ============================================================
+           STATUS PILLS
+           ============================================================ */
+        .status-pill {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+        .status-present { background: #dcfce7; color: #166534; }
+        .status-absent  { background: #fee2e2; color: #991b1b; }
+        .status-late    { background: #fef3c7; color: #92400e; }
+        .status-active  { background: #dcfce7; color: #166534; }
+        .status-resolved{ background: #dbeafe; color: #1e40af; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+
+        /* ============================================================
+           RESULTS — TERM BLOCKS
+           ============================================================ */
+        .term-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .term-header {
+            background: var(--navy);
+            color: white;
+            padding: 11px 16px;
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+        }
+        .term-header .pos {
+            font-size: 10.5px;
+            font-weight: 700;
+            background: rgba(13,148,136,0.35);
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+        .term-body { padding: 14px; }
+
+        .term-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            font-size: 12px;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: var(--gray-50);
+            border-radius: 6px;
+        }
+        .term-meta .item { display: flex; flex-direction: column; gap: 2px; }
+        .term-meta .item strong {
+            color: var(--gray-500);
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .term-comment {
+            background: var(--accent-soft);
+            border-left: 3px solid var(--accent);
+            padding: 10px 14px;
+            font-style: italic;
+            color: #134e4a;
+            font-size: 12.5px;
+            margin-top: 12px;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.55;
+        }
+
+        /* ============================================================
+           NOTICES
+           ============================================================ */
+        .notice-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--accent);
+            background: var(--gray-50);
+        }
+        .notice-card h4 {
+            margin: 0 0 5px 0;
+            color: var(--navy);
+            font-size: 14px;
+            line-height: 1.35;
+        }
+        .notice-card .meta {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-bottom: 8px;
+            padding-bottom: 7px;
+            border-bottom: 1px dashed var(--gray-200);
+        }
+        .notice-card .body {
+            font-size: 13px;
+            color: var(--gray-700);
+            white-space: pre-wrap;
+            line-height: 1.55;
+        }
+
+        /* ============================================================
+           DISCIPLINE
+           ============================================================ */
+        .discipline-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            border-left: 3px solid #d97706;
+            background: var(--gray-50);
+        }
+        .discipline-card .head {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .discipline-card .crime {
+            font-weight: 700;
+            color: var(--gray-900);
+            font-size: 13.5px;
+        }
+        .discipline-card .date {
+            font-size: 11px;
+            color: var(--gray-500);
+            background: var(--gray-100);
+            padding: 3px 9px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        .discipline-card .row {
+            font-size: 12.5px;
+            color: var(--gray-700);
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+        .discipline-card .row strong { color: var(--gray-900); font-weight: 700; }
+
+        /* ============================================================
+           FEE RECEIPT
+           ============================================================ */
+        .fee-receipt {
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            overflow: hidden;
+            background: white;
+        }
+        .fee-receipt-head {
+            padding: 16px 20px 14px 20px;
+            border-bottom: 1px dashed var(--gray-300);
+            text-align: center;
+            background: var(--gray-50);
+        }
+        .fee-receipt-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+        .fee-receipt-sub {
+            font-size: 11.5px;
+            color: var(--gray-500);
+            margin-top: 3px;
+            font-weight: 700;
+        }
+        .fee-receipt-status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .fee-receipt-status.status-present { background: #dcfce7; color: #166534; }
+        .fee-receipt-status.status-late    { background: #fef3c7; color: #92400e; }
+        .fee-receipt-status.status-absent  { background: #fee2e2; color: #991b1b; }
+
+        .fee-receipt-body { padding: 18px 20px 22px 20px; }
+
+        .fee-receipt-section-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-500);
+            font-weight: 800;
+            padding-bottom: 7px;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 12px;
+            margin-top: 22px;
+        }
+        .fee-receipt-section-label.first {
+            margin-top: 0;
+        }
+
+        /* Summary rows (Total Due / Paid / Balance) */
+        .fee-receipt-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .fee-receipt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+        .fee-receipt-row strong {
+            font-weight: 700;
+            color: var(--gray-900);
+            font-size: 13px;
+        }
+        .fee-receipt-row-balance {
+            padding-top: 10px;
+            border-top: 1px dashed var(--gray-300);
+            font-weight: 800;
+        }
+        .fee-receipt-row-balance span { font-weight: 800; color: var(--gray-900); }
+        .fee-receipt-row-balance strong { font-size: 15px; }
+
+        .fee-receipt-foot {
+            padding: 10px 20px;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+            font-size: 10.5px;
+            color: #9ca3af;
+            font-style: italic;
+            letter-spacing: 0.4px;
+        }
+
+        /* ============================================================
+           FEES FILTER
+           ============================================================ */
+        .fees-filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .fees-filter-bar .label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .fees-filter-bar select {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--navy);
+            background: white;
+            font-family: inherit;
+            min-height: 40px;
+            cursor: pointer;
+        }
+
+        /* ============================================================
+           SHEET FOOTER
+           ============================================================ */
+        .sheet-footer {
+            margin-top: 30px;
+            padding-top: 14px;
+            border-top: 2px solid var(--navy);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 10.5px;
+            color: var(--gray-500);
+        }
+        .sheet-footer .left {
+            letter-spacing: 0.4px;
+            line-height: 1.5;
+        }
+        .sheet-footer .left strong {
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .logout-btn-sheet {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 7px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.15s;
+            font-family: inherit;
+            min-height: 36px;
+        }
+        .logout-btn-sheet:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 700px) {
+            body { padding: 12px 8px 40px; }
+            .sheet { padding: 6px; }
+            .sheet-body { padding: 20px 16px 24px 16px; }
+
+            .letterhead {
+                grid-template-columns: 52px 1fr;
+                gap: 14px;
+                row-gap: 10px;
+            }
+            .letterhead-logo { width: 52px; height: 52px; }
+            .letterhead-center h1 { font-size: 14px; letter-spacing: 1px; }
+            .letterhead-center .sub { font-size: 9.5px; }
+            .letterhead-center .motto { font-size: 9.5px; }
+
+            .letterhead-right {
+                grid-column: 1 / -1;
+                justify-content: center;
+                padding-top: 10px;
+                border-top: 1px dashed var(--gray-200);
+                margin-top: 4px;
+            }
+            .letterhead-avatar { width: 44px; height: 44px; }
+            .letterhead-identity { text-align: left; font-size: 10.5px; }
+            .letterhead-identity .student-name { font-size: 12.5px; }
+
+            .tab-button { padding: 9px 11px 11px 11px; font-size: 11px; }
+
+            .field {
+                grid-template-columns: 1fr;
+                gap: 3px;
+                padding: 8px 2px;
+            }
+
+            .term-meta { grid-template-columns: 1fr 1fr; }
+            .summary-grid { grid-template-columns: 1fr 1fr; }
+
+            th, td { padding: 7px 8px; font-size: 12px; }
+            th { font-size: 9.5px; }
+        }
+
+        @media (max-width: 400px) {
+            .letterhead-center h1 { font-size: 12.5px; }
+            .tab-button { font-size: 10.5px; padding: 8px 9px 10px 9px; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .term-meta { grid-template-columns: 1fr; }
+            .sheet-footer { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sheet">
+        <div class="sheet-inner">
+            <div class="sheet-body">
+
+                <!-- LETTERHEAD -->
+                <header class="letterhead">
+                    <div class="letterhead-logo">
+                        <img
+                            src="/images/logo.png"
+                            alt="GEA"
+                            onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'fallback\'>🏫</span>';"
+                        >
+                    </div>
+
+                    <div class="letterhead-center">
+                        <h1>GLOBAL EDUCATION ACADEMY</h1>
+                        <div class="sub" id="letterheadSection">Student Portal</div>
+                        <div class="motto">"Excellence in Education"</div>
+                    </div>
+
+                    <div class="letterhead-right">
+                        <div class="letterhead-avatar" id="letterheadAvatar">
+                            <div class="no-photo">👤</div>
+                        </div>
+                        <div class="letterhead-identity">
+                            <div class="student-name" id="studentName">Loading…</div>
+                            <div class="row"><strong>Adm:</strong> <span id="studentAdmission">—</span></div>
+                            <div class="row"><strong>Class:</strong> <span id="studentClass">—</span></div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- TABS -->
+                <nav class="sheet-tabs">
+                    <button class="tab-button active" onclick="openTab('profile', this)">👤 Profile</button>
+                    <button class="tab-button" onclick="openTab('classmates', this)">👥 Classmates</button>
+                    <button class="tab-button" onclick="openTab('attendance', this)">📋 Attendance</button>
+                    <button class="tab-button" onclick="openTab('results', this)">📊 Results</button>
+                    <button class="tab-button" onclick="openTab('fees', this)">💰 Fees</button>
+                    <button class="tab-button" onclick="openTab('discipline', this)">⚖️ Discipline</button>
+                    <button class="tab-button" onclick="openTab('notices', this)">📢 Notices</button>
+                </nav>
+
+                <!-- TAB CONTENT -->
+                <section id="profile" class="tab-content active">
+                    <div id="profileContent"><div class="empty">Loading…</div></div>
+                </section>
+
+                <section id="classmates" class="tab-content">
+                    <div id="classmatesContent"><div class="empty">Loading…</div></div>
+                </section>
+
+                <section id="attendance" class="tab-content">
+                    <div id="attendanceContent"><div class="empty">Loading…</div></div>
+                </section>
+
+                <section id="results" class="tab-content">
+                    <div id="resultsContent"><div class="empty">Loading…</div></div>
+                </section>
+
+                <section id="fees" class="tab-content">
+                    <div class="fees-filter-bar">
+                        <div class="section-title" style="margin:0;border:none;padding:0;">💰 Fee Statement</div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <label for="feesYearFilter" class="label">Academic Year</label>
+                            <select id="feesYearFilter" onchange="renderFees()"></select>
+                        </div>
+                    </div>
+                    <div id="feesContent"><div class="empty">Loading…</div></div>
+                </section>
+
+                <section id="discipline" class="tab-content">
+                    <div id="disciplineContent"><div class="empty">Loading…</div></div>
+                </section>
+
+                <section id="notices" class="tab-content">
+                    <div id="noticesContent"><div class="empty">Loading…</div></div>
+                </section>
+
+                <!-- FOOTER -->
+                <footer class="sheet-footer">
+                    <div class="left">
+                        <strong>Global Education Academy</strong><br>
+                        Student Portal · Issued <span id="footerIssued">—</span>
+                    </div>
+                    <button class="logout-btn-sheet" onclick="logout()">🚪 Logout</button>
+                </footer>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ============================================================
+    // AUTH
+    // ============================================================
+
+    const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user') || localStorage.getItem('user');
+
+    if (!token || !userData) {
+        window.location.href = '/login.html';
+    }
+
+    let user;
+    try {
+        user = JSON.parse(userData);
+    } catch (e) {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    if (Number(user.role_id) !== 5) {
+        alert('Access denied.');
+        window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('footerIssued').textContent =
+        new Date().toLocaleDateString(undefined, {
+            year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+    function logout() {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+
+    function escapeHtml(v) {
+        if (v === null || v === undefined) return '';
+        return String(v)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function display(v) {
+        if (v === null || v === undefined || v === '') return '—';
+        return escapeHtml(String(v));
+    }
+
+    function fmtDate(v) {
+        if (!v) return '—';
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleDateString();
+    }
+
+    function fmtDateTime(v) {
+        if (!v) return '—';
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleString();
+    }
+
+    function fmtMoney(v) {
+        if (v === null || v === undefined || v === '') return '0.00';
+        return Number(v).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    async function api(path) {
+        const res = await fetch('/api/student-portal' + path, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!res.ok) {
+            let msg = `HTTP ${res.status}`;
+            try {
+                const j = await res.json();
+                if (j && j.message) msg = j.message;
+            } catch (e) {}
+            throw new Error(msg);
+        }
+
+        return res.json();
+    }
+
+    // ============================================================
+    // TABS
+    // ============================================================
+
+    let profileLoaded = false;
+    let classmatesLoaded = false;
+    let attendanceLoaded = false;
+    let resultsLoaded = false;
+    let feesLoaded = false;
+    let disciplineLoaded = false;
+    let noticesLoaded = false;
+
+    function openTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        if (btn) btn.classList.add('active');
+
+        if (tabId === 'profile' && !profileLoaded) loadProfile();
+        if (tabId === 'classmates' && !classmatesLoaded) loadClassmates();
+        if (tabId === 'attendance' && !attendanceLoaded) loadAttendance();
+        if (tabId === 'results' && !resultsLoaded) loadResults();
+        if (tabId === 'fees' && !feesLoaded) loadFees();
+        if (tabId === 'discipline' && !disciplineLoaded) loadDiscipline();
+        if (tabId === 'notices' && !noticesLoaded) loadNotices();
+    }
+
+    // ============================================================
+    // PROFILE
+    // ============================================================
+
+    async function loadProfile() {
+        const box = document.getElementById('profileContent');
+        box.innerHTML = '<div class="empty">Loading…</div>';
+
+        try {
+            const me = await api('/me');
+
+            const fullName = [me.first_name, me.middle_name, me.last_name]
+                .filter(Boolean).join(' ');
+
+            /* Letterhead */
+            document.getElementById('studentName').textContent = fullName;
+            document.getElementById('studentAdmission').textContent = me.admission_number || '—';
+            document.getElementById('studentClass').textContent =
+                (me.class_name || '—') + (me.arm ? ' — ' + me.arm : '');
+            document.getElementById('letterheadSection').textContent =
+                (me.school_section || '') + ' Section · Student Portal';
+
+            /* Letterhead avatar */
+            const avatarBox = document.getElementById('letterheadAvatar');
+            if (me.photo_url) {
+                avatarBox.innerHTML = `<img src="${escapeHtml(me.photo_url)}" alt="Photo">`;
+            } else {
+                avatarBox.innerHTML = `<div class="no-photo">👤</div>`;
+            }
+
+            const g = me.guardian || {};
+
+            box.innerHTML = `
+                <h3 class="section-title">Personal Information</h3>
+                <div class="profile-grid">
+                    <div class="field"><span class="field-label">Admission Number</span><span class="field-value">${display(me.admission_number)}</span></div>
+                    <div class="field"><span class="field-label">Full Name</span><span class="field-value">${display(fullName)}</span></div>
+                    <div class="field"><span class="field-label">Gender</span><span class="field-value">${display(me.gender)}</span></div>
+                    <div class="field"><span class="field-label">Date of Birth</span><span class="field-value">${fmtDate(me.date_of_birth)}</span></div>
+                    <div class="field"><span class="field-label">Nationality</span><span class="field-value">${display(me.nationality)}</span></div>
+                    <div class="field"><span class="field-label">Phone</span><span class="field-value">${display(me.phone)}</span></div>
+                    <div class="field"><span class="field-label">Address</span><span class="field-value">${display(me.address)}</span></div>
+                </div>
+
+                <h3 class="section-title">School Information</h3>
+                <div class="profile-grid">
+                    <div class="field"><span class="field-label">Class</span><span class="field-value">${display(me.class_name)}${me.arm ? ' — ' + escapeHtml(me.arm) : ''}</span></div>
+                    <div class="field"><span class="field-label">Section</span><span class="field-value">${display(me.school_section)}</span></div>
+                    <div class="field"><span class="field-label">Admission Date</span><span class="field-value">${fmtDate(me.admission_date)}</span></div>
+                    <div class="field"><span class="field-label">Registration Date</span><span class="field-value">${fmtDate(me.registration_date)}</span></div>
+                    <div class="field"><span class="field-label">Status</span><span class="field-value">${display(me.student_status)}</span></div>
+                </div>
+
+                <h3 class="section-title">Guardian Information</h3>
+                <div class="profile-grid">
+                    <div class="field"><span class="field-label">Guardian Name</span><span class="field-value">${display(g.full_name)}</span></div>
+                    <div class="field"><span class="field-label">Relationship</span><span class="field-value">${display(g.relationship)}</span></div>
+                    <div class="field"><span class="field-label">Phone</span><span class="field-value">${display(g.phone)}</span></div>
+                    <div class="field"><span class="field-label">Email</span><span class="field-value">${display(g.email)}</span></div>
+                    <div class="field"><span class="field-label">Address</span><span class="field-value">${display(g.address)}</span></div>
+                </div>
+            `;
+
+            profileLoaded = true;
+
+        } catch (error) {
+            box.innerHTML = `<div class="error-message">Failed to load profile: ${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    // ============================================================
+    // CLASSMATES
+    // ============================================================
+
+    async function loadClassmates() {
+        const box = document.getElementById('classmatesContent');
+        box.innerHTML = '<div class="empty">Loading…</div>';
+
+        try {
+            const list = await api('/classmates');
+
+            if (!list.length) {
+                box.innerHTML = '<div class="empty">No classmates found.</div>';
+                classmatesLoaded = true;
+                return;
+            }
+
+            let html = `
+                <h3 class="section-title">My Classmates (${list.length})</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:50px;">#</th>
+                            <th>Name</th>
+                            <th style="width:90px;">Gender</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            list.forEach((s, i) => {
+                const name = [s.first_name, s.middle_name, s.last_name]
+                    .filter(Boolean).map(escapeHtml).join(' ');
+                html += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${name}</td>
+                        <td>${display(s.gender)}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            box.innerHTML = html;
+            classmatesLoaded = true;
+
+        } catch (error) {
+            box.innerHTML = `<div class="error-message">Failed to load classmates: ${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    // ============================================================
+    // ATTENDANCE
+    // ============================================================
+
+    async function loadAttendance() {
+        const box = document.getElementById('attendanceContent');
+        box.innerHTML = '<div class="empty">Loading…</div>';
+
+        try {
+            const data = await api('/attendance');
+            const s = data.summary || {};
+            const rows = data.records || [];
+
+            let html = `
+                <h3 class="section-title">Attendance Summary</h3>
+                <div class="summary-grid">
+                    <div class="summary-card"><div class="num">${s.total || 0}</div><div class="lbl">Total Sessions</div></div>
+                    <div class="summary-card"><div class="num">${s.present || 0}</div><div class="lbl">Present</div></div>
+                    <div class="summary-card"><div class="num">${s.absent || 0}</div><div class="lbl">Absent</div></div>
+                    <div class="summary-card"><div class="num">${s.late || 0}</div><div class="lbl">Late</div></div>
+                    <div class="summary-card"><div class="num">${s.percentage || 0}%</div><div class="lbl">Attendance %</div></div>
+                </div>
+            `;
+
+            /* Group by date, tracking morning/afternoon */
+            const byDate = {};
+
+            rows.forEach(r => {
+                const d = r.attendance_date;
+                if (!byDate[d]) {
+                    byDate[d] = { date: d, morning: null, afternoon: null, remarks: [] };
+                }
+
+                const session = String(r.session || '').toLowerCase();
+
+                if (session.includes('afternoon') || session === 'a') {
+                    byDate[d].afternoon = r.status;
+                } else {
+                    byDate[d].morning = r.status;
+                }
+
+                if (r.remarks) byDate[d].remarks.push(r.remarks);
+            });
+
+            /* Absent days */
+            const absentDays = [];
+
+            Object.values(byDate).forEach(day => {
+                const mAbsent = day.morning === 'Absent';
+                const aAbsent = day.afternoon === 'Absent';
+
+                if (!mAbsent && !aAbsent) return;
+
+                let note = '';
+                if (mAbsent && aAbsent) note = 'Both sessions';
+                else if (mAbsent) note = 'Morning';
+                else note = 'Afternoon';
+
+                absentDays.push({
+                    date: day.date,
+                    sessionNote: note,
+                    remarks: day.remarks.join(' · ')
+                });
+            });
+
+            absentDays.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            /* Present day count */
+            const presentDayCount = Object.values(byDate).filter(
+                day => day.morning === 'Present' || day.afternoon === 'Present'
+            ).length;
+
+            if (absentDays.length === 0) {
+                html += `
+                    <h3 class="section-title">Absent Days</h3>
+                    <div class="empty">No absences recorded. 🎉</div>
+                `;
+            } else {
+                html += `
+                    <h3 class="section-title">Absent Days (${absentDays.length})</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:56px;">#</th>
+                                <th>Date</th>
+                                <th style="width:130px;">Sessions</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                absentDays.forEach((day, i) => {
+                    html += `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${fmtDate(day.date)}</td>
+                            <td><span class="status-pill status-absent">${escapeHtml(day.sessionNote)}</span></td>
+                            <td>${display(day.remarks)}</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+            }
+
+            html += `
+                <h3 class="section-title" style="margin-top:26px;">Present Days</h3>
+                <div style="padding:14px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;font-size:13.5px;color:#166534;">
+                    <strong>${presentDayCount}</strong> day${presentDayCount === 1 ? '' : 's'} attended.
+                </div>
+            `;
+
+            box.innerHTML = html;
+            attendanceLoaded = true;
+
+        } catch (error) {
+            box.innerHTML = `<div class="error-message">Failed to load attendance: ${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    // ============================================================
+    // RESULTS
+    // ============================================================
+
+    async function loadResults() {
+        const box = document.getElementById('resultsContent');
+        box.innerHTML = '<div class="empty">Loading…</div>';
+
+        try {
+            const data = await api('/results');
+            const terms = data.terms || [];
+
+            let html = '';
+
+            if (data.academic_year) {
+                html += `<h3 class="section-title">Academic Year ${escapeHtml(data.academic_year)}</h3>`;
+            }
+
+            const hasAnyResults = terms.some(t => (t.subjects || []).length > 0);
+
+            if (!hasAnyResults) {
+                html += '<div class="empty">No results published yet.</div>';
+                box.innerHTML = html;
+                resultsLoaded = true;
+                return;
+            }
+
+            terms.forEach(t => {
+                const subjects = t.subjects || [];
+                if (!subjects.length) return;
+
+                html += `
+                    <div class="term-card">
+                        <div class="term-header">
+                            <span>${escapeHtml(t.term_name)}</span>
+                            <span class="pos">
+                                Position ${t.class_position || '—'}${t.class_size ? ' of ' + t.class_size : ''}
+                            </span>
+                        </div>
+                        <div class="term-body">
+                            <div class="term-meta">
+                                <div class="item"><strong>Total</strong><span>${t.student_total || 0}</span></div>
+                                <div class="item"><strong>Average</strong><span>${t.student_average || 0}</span></div>
+                                <div class="item"><strong>Attendance</strong><span>${t.attendance?.present || 0}/${(t.attendance?.present || 0) + (t.attendance?.absent || 0)} (${t.attendance?.percentage || 0}%)</span></div>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th style="width:60px;">Test</th>
+                                        <th style="width:60px;">Exam</th>
+                                        <th style="width:70px;">Total</th>
+                                        <th style="width:90px;">Position</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                subjects.forEach(sub => {
+                    const pos = sub.position
+                        ? `${sub.position}/${sub.class_size || '—'}`
+                        : '—';
+
+                    html += `
+                        <tr>
+                            <td>${escapeHtml(sub.subject_name)}</td>
+                            <td>${display(sub.test_score)}</td>
+                            <td>${display(sub.exam_score)}</td>
+                            <td><strong>${display(sub.total_score)}</strong></td>
+                            <td>${pos}</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+
+                if (t.term_comment) {
+                    html += `<div class="term-comment">${escapeHtml(t.term_comment)}</div>`;
+                }
+
+                html += '</div></div>';
+            });
+
+            if (data.year_comment) {
+                html += `
+                    <div class="term-card">
+                        <div class="term-header">
+                            <span>End of Year — Verdict</span>
+                        </div>
+                        <div class="term-body">
+                            <div class="term-comment">${escapeHtml(data.year_comment)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            box.innerHTML = html;
+            resultsLoaded = true;
+
+        } catch (error) {
+            box.innerHTML = `<div class="error-message">Failed to load results: ${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    // ============================================================
+    // FEES
+    // ============================================================
+
+    let feesRawData = null;
+
+    async function loadFees() {
+        const box = document.getElementById('feesContent');
+        const filter = document.getElementById('feesYearFilter');
+
+        if (!feesRawData) {
+            box.innerHTML = '<div class="empty">Loading…</div>';
+
+            try {
+                feesRawData = await api('/fees');
+            } catch (error) {
+                box.innerHTML = `<div class="error-message">Failed to load fees: ${escapeHtml(error.message)}</div>`;
+                return;
+            }
+
+            const years = feesRawData.all_academic_years || [];
+            const currentId = Number(feesRawData.current_academic_year_id) || null;
+
+            filter.innerHTML = '';
+
+            if (!years.length) {
+                const o = document.createElement('option');
+                o.value = '';
+                o.textContent = 'No academic years';
+                filter.appendChild(o);
+            } else {
+                years.forEach(y => {
+                    const o = document.createElement('option');
+                    o.value = String(y.academic_year_id);
+                    o.textContent = y.year_name + (y.is_current ? ' (Current)' : '');
+                    filter.appendChild(o);
+                });
+
+                if (currentId) {
+                    filter.value = String(currentId);
+                } else {
+                    filter.value = String(years[0].academic_year_id);
+                }
+            }
+
+            feesLoaded = true;
+        }
+
+        renderFees();
+    }
+
+    function renderFees() {
+        const box = document.getElementById('feesContent');
+        const filter = document.getElementById('feesYearFilter');
+
+        const selectedYearId = filter.value ? Number(filter.value) : null;
+        const selectedYearName =
+            filter.options[filter.selectedIndex]?.textContent.replace(' (Current)', '') || '—';
+
+        const allBalances = feesRawData.balances || [];
+        const allPayments = feesRawData.payments || [];
+
+        const balances = allBalances.filter(b =>
+            !selectedYearId || !b.academic_year || b.academic_year === selectedYearName
+        );
+
+        const payments = allPayments.filter(p =>
+            !selectedYearId || !p.academic_year_id || Number(p.academic_year_id) === selectedYearId
+        );
+
+        const totalDue     = balances.reduce((s, b) => s + Number(b.amount_due || 0), 0);
+        const totalPaid    = balances.reduce((s, b) => s + Number(b.total_paid || 0), 0);
+        const totalBalance = balances.reduce((s, b) => s + Number(b.balance || 0), 0);
+
+        if (!balances.length && !payments.length) {
+            box.innerHTML = `
+                <div class="empty">
+                    No fee records for <strong>${escapeHtml(selectedYearName)}</strong>.
+                </div>
+            `;
+            return;
+        }
+
+        let overallStatus = 'Unpaid';
+        if (totalDue > 0 && totalBalance <= 0) overallStatus = 'Paid';
+        else if (totalPaid > 0) overallStatus = 'Partially Paid';
+
+        const statusPillClass =
+            overallStatus === 'Paid' ? 'status-present' :
+            overallStatus === 'Partially Paid' ? 'status-late' :
+            'status-absent';
+
+        let html = `
+            <div class="fee-receipt">
+                <div class="fee-receipt-head">
+                    <div class="fee-receipt-title">Student Fee Statement</div>
+                    <div class="fee-receipt-sub">Academic Year ${escapeHtml(selectedYearName)}</div>
+                    <div class="fee-receipt-status ${statusPillClass}">
+                        ${escapeHtml(overallStatus)}
+                    </div>
+                </div>
+
+                <div class="fee-receipt-body">
+
+                    <div class="fee-receipt-section-label first">Summary</div>
+
+                    <div class="fee-receipt-rows">
+                        <div class="fee-receipt-row">
+                            <span>Total Due</span>
+                            <strong>${fmtMoney(totalDue)}</strong>
+                        </div>
+                        <div class="fee-receipt-row">
+                            <span>Total Paid</span>
+                            <strong>${fmtMoney(totalPaid)}</strong>
+                        </div>
+                        <div class="fee-receipt-row fee-receipt-row-balance">
+                            <span>Balance</span>
+                            <strong style="color:${totalBalance > 0 ? '#dc2626' : '#166534'};">
+                                ${fmtMoney(totalBalance)}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="fee-receipt-section-label">Fee Breakdown</div>
+        `;
+
+        if (balances.length) {
+            html += `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fee Type</th>
+                                <th style="width:110px;text-align:right;">Amount Due</th>
+                                <th style="width:110px;text-align:right;">Amount Paid</th>
+                                <th style="width:110px;text-align:right;">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            balances.forEach(b => {
+                const bal = Number(b.balance || 0);
+                html += `
+                        <tr>
+                            <td>${display(b.fee_name)}</td>
+                            <td style="text-align:right;">${fmtMoney(b.amount_due)}</td>
+                            <td style="text-align:right;">${fmtMoney(b.total_paid)}</td>
+                            <td style="text-align:right;font-weight:700;color:${bal > 0 ? '#dc2626' : '#166534'};">${fmtMoney(bal)}</td>
+                        </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+        } else {
+            html += `<div class="empty" style="padding:20px;">No fee categories recorded for this year.</div>`;
+        }
+
+        /* Payment History — heading always present */
+        html += `<div class="fee-receipt-section-label">Payment History</div>`;
+
+        if (payments.length) {
+            html += `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th style="width:100px;text-align:right;">Amount</th>
+                            <th>Method</th>
+                            <th>Slip No.</th>
+                            <th>Purpose</th>
+                            <th style="width:90px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            payments.forEach(p => {
+                const st = String(p.approval_status || '').toLowerCase();
+                const stClass =
+                    st === 'approved' ? 'status-present' :
+                    st === 'rejected' ? 'status-absent' :
+                    'status-late';
+
+                html += `
+                    <tr>
+                        <td>${fmtDate(p.payment_date)}</td>
+                        <td style="text-align:right;font-weight:700;">${fmtMoney(p.amount_paid)}</td>
+                        <td>${display(p.payment_method)}</td>
+                        <td>${display(p.payment_slip_number)}</td>
+                        <td>${display(p.purpose)}</td>
+                        <td><span class="status-pill ${stClass}">${escapeHtml(p.approval_status || 'Pending')}</span></td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+        } else {
+            html += `
+                <div class="empty" style="padding:20px;font-size:13px;">
+                    No payment history for this academic year.
+                </div>
+            `;
+        }
+
+        html += `
+                </div>
+
+                <div class="fee-receipt-foot">
+                    Global Education Academy · Student Fee Statement
+                </div>
+            </div>
+        `;
+
+        box.innerHTML = html;
+    }
+
+    // ============================================================
+    // DISCIPLINE
+    // ============================================================
+
+    async function loadDiscipline() {
+        const box = document.getElementById('disciplineContent');
+        box.innerHTML = '<div class="empty">Loading…</div>';
+
+        try {
+            const records = await api('/discipline');
+
+            if (!records.length) {
+                box.innerHTML = '<div class="empty">No discipline records. Keep it up! 🎉</div>';
+                disciplineLoaded = true;
+                return;
+            }
+
+            let html = `<h3 class="section-title">My Discipline Records</h3>`;
+
+            records.forEach(r => {
+                const st = String(r.status || '').toLowerCase();
+                const stClass =
+                    st === 'resolved' ? 'status-resolved' :
+                    st === 'pending' ? 'status-pending' :
+                    'status-active';
+
+                html += `
+                    <div class="discipline-card">
+                        <div class="head">
+                            <span class="crime">${escapeHtml(r.crime || '—')}</span>
+                            <span class="date">${fmtDate(r.incident_date)}</span>
+                        </div>
+                        <div class="row"><strong>Punishment:</strong> ${escapeHtml(r.punishment || '—')}${r.duration ? ' — ' + escapeHtml(r.duration) : ''}</div>
+                        <div class="row"><strong>Description:</strong> ${escapeHtml(r.description || '—')}</div>
+                        <div class="row"><strong>Hearing Officer:</strong> ${escapeHtml(r.hearing_officer || '—')}</div>
+                        ${r.notes ? `<div class="row"><strong>Notes:</strong> ${escapeHtml(r.notes)}</div>` : ''}
+                        <div class="row"><span class="status-pill ${stClass}">${escapeHtml(r.status || 'Active')}</span></div>
+                    </div>
+                `;
+            });
+
+            box.innerHTML = html;
+            disciplineLoaded = true;
+
+        } catch (error) {
+            box.innerHTML = `<div class="error-message">Failed to load discipline records: ${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    // ============================================================
+    // NOTICES
+    // ============================================================
+
+    async function loadNotices() {
+        const box = document.getElementById('noticesContent');
+        box.innerHTML = '<div class="empty">Loading…</div>';
+
+        try {
+            const notices = await api('/notices');
+
+            if (!notices.length) {
+                box.innerHTML = '<div class="empty">No notices at the moment.</div>';
+                noticesLoaded = true;
+                return;
+            }
+
+            let html = `<h3 class="section-title">Notices (${notices.length})</h3>`;
+
+            notices.forEach(n => {
+                html += `
+                    <div class="notice-card">
+                        <h4>${escapeHtml(n.title || 'Notice')}</h4>
+                        <div class="meta">
+                            Posted: ${fmtDateTime(n.posted_at)} · Audience: ${display(n.audience)}
+                        </div>
+                        <div class="body">${escapeHtml(n.body || '')}</div>
+                    </div>
+                `;
+            });
+
+            box.innerHTML = html;
+            noticesLoaded = true;
+
+        } catch (error) {
+            box.innerHTML = `<div class="error-message">Failed to load notices: ${escapeHtml(error.message)}</div>`;
+        }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+
+    loadProfile();
+    </script>
+
+</body>
+</html>

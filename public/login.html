@@ -294,7 +294,26 @@
         </div>
 
     </div>
-
+     
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log(
+                        'Service Worker registered:',
+                        registration.scope
+                    );
+                })
+                .catch(error => {
+                    console.error(
+                        'Service Worker registration failed:',
+                        error
+                    );
+                });
+        });
+    }
+   </script>
 
     <script>
 
@@ -305,7 +324,118 @@
         const loginForm = document.getElementById('loginForm');
         const message = document.getElementById('message');
 
+         // ============================================================
+// CHECK OFFLINE SESSION
+// ============================================================
 
+function checkOfflineSession() {
+
+    if (navigator.onLine) {
+        return;
+    }
+
+    const offlineToken =
+        localStorage.getItem('authToken');
+
+    const offlineUser =
+        localStorage.getItem('user');
+
+    if (!offlineToken || !offlineUser) {
+        return;
+    }
+
+    try {
+
+        const user =
+            JSON.parse(offlineUser);
+
+        const roleId =
+            Number(user?.role_id);
+
+        const sector =
+            String(
+                user?.sector || ''
+            ).trim().toLowerCase();
+
+
+        // --------------------------------------------
+        // PROPRIETOR / ADMINISTRATOR / MANAGER
+        // --------------------------------------------
+
+        if (
+            roleId === 1 ||
+            roleId === 2 ||
+            roleId === 6
+        ) {
+            window.location.href =
+                '/dashboard.html';
+
+            return;
+        }
+
+
+        // --------------------------------------------
+        // FINANCE
+        // --------------------------------------------
+
+        if (roleId === 3) {
+
+            if (sector === 'primary') {
+
+                window.location.href =
+                    '/primary-finance.html';
+
+                return;
+            }
+
+            if (sector === 'secondary') {
+
+                window.location.href =
+                    '/secondary-finance.html';
+
+                return;
+            }
+        }
+
+
+        // --------------------------------------------
+        // TEACHER
+        // --------------------------------------------
+
+        if (roleId === 4) {
+
+            window.location.href =
+                '/teachers-dashboard.html';
+
+            return;
+        }
+
+
+        // --------------------------------------------
+        // STUDENT
+        // --------------------------------------------
+
+        if (roleId === 5) {
+
+            window.location.href =
+                '/student-dashboard.html';
+
+            return;
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Invalid offline session:',
+            error
+        );
+
+    }
+}
+
+
+// Check immediately when login page opens.
+checkOfflineSession();
         // ============================================================
         // LOGIN
         // ============================================================
@@ -394,20 +524,31 @@
                 }
 
 
-                // ----------------------------------------------------
-                // SAVE AUTHENTICATION DATA
-                // ----------------------------------------------------
+                // --------------------------------------------------------
+// SAVE AUTHENTICATION DATA
+// --------------------------------------------------------
 
-                sessionStorage.setItem(
-                    'authToken',
-                    data.token
-                );
+sessionStorage.setItem(
+    'authToken',
+    data.token
+);
 
-                sessionStorage.setItem(
-                    'user',
-                    JSON.stringify(data.user)
-                );
+sessionStorage.setItem(
+    'user',
+    JSON.stringify(data.user)
+);
 
+// Keep authentication available after the browser is closed.
+// This allows the device to reopen the application offline.
+localStorage.setItem(
+    'authToken',
+    data.token
+);
+
+localStorage.setItem(
+    'user',
+    JSON.stringify(data.user)
+);
 
                 // ----------------------------------------------------
                 // SUCCESS MESSAGE
@@ -619,11 +760,11 @@
                     if (roleId === 5) {
 
                         console.log(
-                            'Redirecting Student to students-dashboard'
+                            'Redirecting Student to student-dashboard'
                         );
 
                         window.location.href =
-                            '/students-dashboard.html';
+                            '/student-dashboard.html';
 
                         return;
                     }

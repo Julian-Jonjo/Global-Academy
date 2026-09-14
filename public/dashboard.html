@@ -460,7 +460,16 @@
         if (initialUser) {
             updateHeader(initialUser);
         }
-
+        
+        // If the device is offline, use the stored user immediately.
+if (!navigator.onLine) {
+    if (initialUser) {
+        handleDashboard(initialUser);
+    } else {
+        window.location.href = '/login.html';
+    }
+    return;
+}
 
         // -----------------------------------------------------
         // Verify with backend

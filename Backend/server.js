@@ -34,18 +34,15 @@ const attendanceRoutes = require('./routes/attendance');
 // const teacherPortalRoutes = require('./routes/teacherPortal');
 
 const academicYearRoutes = require('./routes/academic-years');
-
 const userRoutes = require('./routes/users');
-
 const roleRoutes = require('./routes/roles');
-
 const permissionRoutes = require('./routes/permissions');
-
 const resultRoutes = require('./routes/results');
-
 const termRoutes = require('./routes/terms');
-
 const holidayRoutes = require('./routes/holidays');
+const announcementRoutes = require('./routes/announcements');
+const disciplineRoutes = require('./routes/discipline');
+const studentPortalRoutes = require('./routes/student-portal');
 
 // ============================================================
 // AUTH MIDDLEWARE
@@ -135,16 +132,16 @@ app.use(
 // Teacher Portal temporarily disabled
 // app.use('/api/teacher', teacherPortalRoutes);
 
-app.use(
-    '/api/academic-years',
-    academicYearRoutes
-);
+app.use('/api/academic-years',academicYearRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/results', resultRoutes);
 app.use('/api/terms', termRoutes);
 app.use('/api/holidays', holidayRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/discipline', disciplineRoutes);
+app.use('/api/student-portal', studentPortalRoutes);
 
 // ============================================================
 // ROOT API
