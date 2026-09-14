@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Education Academy | Manage Announcements</title>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #222;
+            min-height: 100vh;
+            background-image: url('/images/school-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.85);
+            z-index: 0;
+        }
+
+        .header {
+            background: #1a3c6e;
+            color: white;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-logo {
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .header-title h1 { margin: 0; font-size: 18px; font-weight: 700; color: white; }
+        .header-title p { margin: 0; font-size: 11px; color: #a0c4ff; }
+
+        .user-info { text-align: right; font-size: 13px; color: white; display: flex; align-items: center; gap: 15px; }
+        .user-info .role { display: block; font-weight: 600; font-size: 14px; }
+        .user-info .role-label { font-size: 11px; color: #a0c4ff; }
+        .logout-btn-header {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .logout-btn-header:hover { background: rgba(255,255,255,0.25); }
+
+        .container {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 20px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-header h2 { margin: 0 0 6px 0; color: #1f2937; font-size: 22px; }
+        .page-header p { margin: 0; color: #6b7280; font-size: 13.5px; }
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background: #1a3c6e; color: white; }
+        .btn-primary:hover { background: #153158; }
+        .btn-secondary { background: #6b7280; color: white; }
+        .btn-secondary:hover { background: #4b5563; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-warning { background: #d97706; color: white; }
+        .btn-warning:hover { background: #b45309; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-success:hover { background: #15803d; }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .filters select, .filters input {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .notice-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .notice-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 16px 18px;
+            background: #f9fafb;
+            border-left: 4px solid #1a3c6e;
+            transition: all 0.2s;
+        }
+        .notice-card.inactive {
+            opacity: 0.6;
+            border-left-color: #9ca3af;
+        }
+        .notice-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .notice-card-head h3 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 16px;
+            line-height: 1.35;
+        }
+        .notice-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .badge-student { background: #dbeafe; color: #1e40af; }
+        .badge-staff { background: #fef3c7; color: #92400e; }
+        .badge-both { background: #e0e7ff; color: #3730a3; }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-inactive { background: #f3f4f6; color: #6b7280; }
+
+        .notice-meta {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .notice-meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+        .notice-body-preview {
+            font-size: 13.5px;
+            color: #374151;
+            line-height: 1.55;
+            white-space: pre-wrap;
+            margin-bottom: 12px;
+            max-height: 80px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .notice-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .error-message {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13.5px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .modal.open { display: block; }
+        .modal-content {
+            background: white;
+            max-width: 640px;
+            margin: 40px auto;
+            padding: 26px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 { margin: 0; color: #1f2937; font-size: 18px; }
+        .close {
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+        .close:hover { color: #111; }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .form-field label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+        }
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #1a3c6e;
+            box-shadow: 0 0 0 3px rgba(26,60,110,0.1);
+        }
+        .form-field textarea { min-height: 120px; resize: vertical; }
+
+        .radio-row {
+            display: flex;
+            gap: 16px;
+            padding: 10px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+        }
+        .radio-row label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        .radio-row input[type="radio"] {
+            width: auto;
+            padding: 0;
+            accent-color: #1a3c6e;
+            cursor: pointer;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-row input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+            accent-color: #1a3c6e;
+            cursor: pointer;
+        }
+        .checkbox-row label {
+            font-size: 13.5px;
+            color: #374151;
+            cursor: pointer;
+            margin: 0;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 500;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 14px;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+        .role-badge.proprietor { background: #1a3c6e; color: white; }
+        .role-badge.admin { background: #7c3aed; color: white; }
+        .role-badge.manager { background: #d97706; color: white; }
+
+        @media (max-width: 700px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 20px; }
+            .user-info { text-align: left; width: 100%; justify-content: space-between; }
+            .filters { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .modal-content { padding: 20px; margin: 20px auto; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="GEA" onerror="this.style.display='none'; this.parentElement.textContent='🏫';">
+            </div>
+            <div class="header-title">
+                <h1>Global Education Academy</h1>
+                <p>Manage Announcements</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <div>
+                <span class="role" id="userRole">Loading…</span>
+                <span class="role-label" id="userRoleLabel"></span>
+            </div>
+            <button class="logout-btn-header" onclick="logout()">🚪 Logout</button>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="page-header">
+            <div>
+                <h2>📢 Manage Announcements</h2>
+                <p>Post, edit, and manage notices for students and staff.</p>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+                <button class="btn btn-primary" id="newBtn" onclick="openNewForm()">+ New Notice</button>
+            </div>
+        </div>
+
+        <div id="roleBadgeWrap"></div>
+
+        <div class="card">
+            <div class="filters">
+                <select id="filterStatus" onchange="renderList()">
+                    <option value="">All Statuses</option>
+                    <option value="active">Active Only</option>
+                    <option value="inactive">Inactive Only</option>
+                </select>
+                <select id="filterRecipient" onchange="renderList()">
+                    <option value="">All Recipients</option>
+                    <option value="student">Students</option>
+                    <option value="staff">Staff</option>
+                    <option value="both">Both</option>
+                </select>
+                <select id="filterAudience" onchange="renderList()">
+                    <option value="">All Audiences</option>
+                    <option value="all">All</option>
+                    <option value="primary">Primary</option>
+                    <option value="secondary">Secondary</option>
+                    <option value="class">Specific Class</option>
+                    <option value="staff_all">All Staff</option>
+                </select>
+                <button class="btn btn-secondary" onclick="loadNotices()">🔄 Refresh</button>
+            </div>
+
+            <div id="listMessage"></div>
+            <div id="noticeList" class="notice-list">
+                <div class="empty">Loading…</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL -->
+    <div id="noticeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">New Notice</h2>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form id="noticeForm" onsubmit="submitNotice(event)">
+                <input type="hidden" id="editingId" value="">
+
+                <div class="form-field">
+                    <label for="noticeTitle">Title *</label>
+                    <input type="text" id="noticeTitle" required maxlength="200">
+                </div>
+
+                <div class="form-field">
+                    <label for="noticeBody">Body *</label>
+                    <textarea id="noticeBody" required></textarea>
+                </div>
+
+                <div class="form-field">
+                    <label>Recipients *</label>
+                    <div class="radio-row">
+                        <label><input type="radio" name="recipientType" value="student" checked onchange="onRecipientChange()"> Students</label>
+                        <label><input type="radio" name="recipientType" value="staff" onchange="onRecipientChange()" id="radioStaff"> Staff</label>
+                        <label><input type="radio" name="recipientType" value="both" onchange="onRecipientChange()" id="radioBoth"> Both</label>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="noticeAudience">Audience *</label>
+                    <select id="noticeAudience" required onchange="onAudienceChange()"></select>
+                </div>
+
+                <div class="form-field" id="classField" style="display:none;">
+                    <label for="noticeClass">Class *</label>
+                    <select id="noticeClass"><option value="">Select class</option></select>
+                </div>
+
+                <div class="form-field">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="noticeActive" checked>
+                        <label for="noticeActive">Active</label>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="noticeExpires">Expires At (optional)</label>
+                    <input type="datetime-local" id="noticeExpires">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="saveBtn">Save Notice</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // ============================================================
+    // AUTH
+    // ============================================================
+
+    const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+    const userData = sessionStorage.getItem('user') || localStorage.getItem('user');
+
+    if (!token || !userData) {
+        window.location.href = '/login.html';
+    }
+
+    let user;
+    try {
+        user = JSON.parse(userData);
+    } catch (e) {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    const roleId = Number(user.role_id);
+    const sector = String(user.sector || '').trim().toLowerCase();
+
+    const ROLE_PROPRIETOR = 1;
+    const ROLE_ADMINISTRATOR = 2;
+    const ROLE_MANAGER = 6;
+
+    const isProprietor = roleId === ROLE_PROPRIETOR;
+    const isAdmin = roleId === ROLE_ADMINISTRATOR;
+    const isManager = roleId === ROLE_MANAGER;
+
+    const allowed = isProprietor || isAdmin || isManager;
+
+    if (!allowed) {
+        alert('Access denied.');
+        window.location.href = 'dashboard.html';
+    }
+
+    // Display
+    document.getElementById('userRole').textContent = user.full_name || 'User';
+    document.getElementById('userRoleLabel').textContent = user.role_name || '';
+
+    // Role badge
+    let badgeClass = 'admin';
+    let badgeText = '⚙️ Administrator';
+
+    if (isProprietor) { badgeClass = 'proprietor'; badgeText = '👑 Proprietor'; }
+    else if (isManager) { badgeClass = 'manager'; badgeText = `📋 Manager — ${sector === 'primary' ? 'Primary' : 'Secondary'}`; }
+
+    document.getElementById('roleBadgeWrap').innerHTML =
+        `<span class="role-badge ${badgeClass}">${badgeText}</span>`;
+
+    // Managers cannot post staff notices
+    if (isManager) {
+        document.getElementById('radioStaff').disabled = true;
+        document.getElementById('radioBoth').disabled = true;
+    }
+
+    function logout() {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+
+    function escapeHtml(v) {
+        if (v === null || v === undefined) return '';
+        return String(v)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function fmtDateTime(v) {
+        if (!v) return '—';
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleString();
+    }
+
+    async function api(path, options = {}) {
+        const res = await fetch('/api/announcements' + path, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options.headers || {}),
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        let data = null;
+        try { data = await res.json(); } catch (e) {}
+
+        if (!res.ok) {
+            throw new Error(data?.message || `HTTP ${res.status}`);
+        }
+        return data;
+    }
+
+    // ============================================================
+    // STATE
+    // ============================================================
+
+    let notices = [];
+    let classes = [];
+
+    // ============================================================
+    // LOAD
+    // ============================================================
+
+    async function loadNotices() {
+        document.getElementById('listMessage').innerHTML = '';
+        document.getElementById('noticeList').innerHTML = '<div class="empty">Loading…</div>';
+
+        try {
+            const data = await api('');
+            notices = Array.isArray(data) ? data : [];
+            renderList();
+        } catch (error) {
+            document.getElementById('listMessage').innerHTML =
+                `<div class="error-message">Failed to load: ${escapeHtml(error.message)}</div>`;
+            document.getElementById('noticeList').innerHTML = '';
+        }
+    }
+
+    async function loadClasses() {
+        try {
+            const res = await fetch('/api/classes', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            classes = Array.isArray(data) ? data : [];
+
+            // Managers only see their sector's classes
+            if (isManager) {
+                classes = classes.filter(c => {
+                    const sec = String(c.school_section || '').toLowerCase();
+                    if (sector === 'primary') return sec === 'primary' || sec === 'nursery';
+                    if (sector === 'secondary') return sec === 'jss' || sec === 'sss' || sec === 'secondary';
+                    return false;
+                });
+            }
+        } catch (e) { console.error('LOAD CLASSES ERROR:', e); }
+    }
+
+    // ============================================================
+    // RENDER LIST
+    // ============================================================
+
+    function renderList() {
+        const statusFilter = document.getElementById('filterStatus').value;
+        const recipientFilter = document.getElementById('filterRecipient').value;
+        const audienceFilter = document.getElementById('filterAudience').value;
+
+        let filtered = notices.slice();
+
+        if (statusFilter === 'active')   filtered = filtered.filter(n => n.is_active);
+        if (statusFilter === 'inactive') filtered = filtered.filter(n => !n.is_active);
+        if (recipientFilter)             filtered = filtered.filter(n => (n.recipient_type || 'student') === recipientFilter);
+        if (audienceFilter)              filtered = filtered.filter(n => String(n.audience || '').toLowerCase() === audienceFilter);
+
+        // Sort newest first
+        filtered.sort((a, b) => new Date(b.posted_at) - new Date(a.posted_at));
+
+        const container = document.getElementById('noticeList');
+
+        if (!filtered.length) {
+            container.innerHTML = '<div class="empty">No notices match the current filters.</div>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(n => {
+            const recipientType = String(n.recipient_type || 'student').toLowerCase();
+            const recipientBadgeClass =
+                recipientType === 'student' ? 'badge-student' :
+                recipientType === 'staff' ? 'badge-staff' :
+                'badge-both';
+            const recipientLabel =
+                recipientType === 'student' ? 'Students' :
+                recipientType === 'staff' ? 'Staff' :
+                'Students + Staff';
+
+            const activeBadge = n.is_active
+                ? '<span class="badge badge-active">Active</span>'
+                : '<span class="badge badge-inactive">Inactive</span>';
+
+            const audienceLabel = (n.audience || '—').toString().toUpperCase().replace('_', ' ');
+            const classLabel = n.class_id
+                ? (classes.find(c => Number(c.class_id) === Number(n.class_id))?.class_name || `Class #${n.class_id}`)
+                : null;
+
+            const bodyPreview = (n.body || '').slice(0, 300);
+
+            return `
+                <div class="notice-card ${n.is_active ? '' : 'inactive'}">
+                    <div class="notice-card-head">
+                        <h3>${escapeHtml(n.title || 'Untitled')}</h3>
+                        <div class="notice-badges">
+                            <span class="badge ${recipientBadgeClass}">${recipientLabel}</span>
+                            <span class="badge badge-${(n.audience || '').toLowerCase()}">${escapeHtml(audienceLabel)}</span>
+                            ${activeBadge}
+                        </div>
+                    </div>
+
+                    <div class="notice-meta">
+                        <span>📅 Posted ${fmtDateTime(n.posted_at)}</span>
+                        ${classLabel ? `<span>🏫 ${escapeHtml(classLabel)}</span>` : ''}
+                        ${n.expires_at ? `<span>⏳ Expires ${fmtDateTime(n.expires_at)}</span>` : ''}
+                    </div>
+
+                    <div class="notice-body-preview">${escapeHtml(bodyPreview)}${(n.body || '').length > 300 ? '…' : ''}</div>
+
+                    <div class="notice-actions">
+                        <button class="btn btn-primary" onclick="openEditForm(${Number(n.announcement_id)})">✏️ Edit</button>
+                        <button class="btn ${n.is_active ? 'btn-warning' : 'btn-success'}"
+                                onclick="toggleActive(${Number(n.announcement_id)}, ${!n.is_active})">
+                            ${n.is_active ? '⏸️ Deactivate' : '▶️ Activate'}
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteNotice(${Number(n.announcement_id)})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ============================================================
+    // MODAL
+    // ============================================================
+
+    function openModal() {
+        document.getElementById('noticeModal').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('noticeModal').classList.remove('open');
+    }
+
+    // Close on backdrop click
+    document.getElementById('noticeModal').addEventListener('click', function (e) {
+        if (e.target === this) closeModal();
+    });
+
+    // ============================================================
+    // CREATE / EDIT
+    // ============================================================
+
+    function openNewForm() {
+        document.getElementById('modalTitle').textContent = 'New Notice';
+        document.getElementById('editingId').value = '';
+        document.getElementById('noticeTitle').value = '';
+        document.getElementById('noticeBody').value = '';
+        document.getElementById('noticeActive').checked = true;
+        document.getElementById('noticeExpires').value = '';
+        document.querySelector('input[name="recipientType"][value="student"]').checked = true;
+        onRecipientChange();
+        openModal();
+    }
+
+    function openEditForm(announcementId) {
+        const n = notices.find(x => Number(x.announcement_id) === Number(announcementId));
+        if (!n) return;
+
+        document.getElementById('modalTitle').textContent = 'Edit Notice';
+        document.getElementById('editingId').value = n.announcement_id;
+        document.getElementById('noticeTitle').value = n.title || '';
+        document.getElementById('noticeBody').value = n.body || '';
+        document.getElementById('noticeActive').checked = !!n.is_active;
+
+        if (n.expires_at) {
+            const dt = new Date(n.expires_at);
+            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
+                .toISOString().slice(0, 16);
+            document.getElementById('noticeExpires').value = local;
+        } else {
+            document.getElementById('noticeExpires').value = '';
+        }
+
+        const rt = String(n.recipient_type || 'student').toLowerCase();
+        const radio = document.querySelector(`input[name="recipientType"][value="${rt}"]`);
+        if (radio) radio.checked = true;
+
+        onRecipientChange();
+
+        if (n.audience === 'class' && n.class_id) {
+            document.getElementById('noticeAudience').value = 'class';
+            onAudienceChange();
+            document.getElementById('noticeClass').value = String(n.class_id);
+        } else {
+            document.getElementById('noticeAudience').value = n.audience || 'all';
+            onAudienceChange();
+        }
+
+        openModal();
+    }
+
+    function onRecipientChange() {
+        const rt = document.querySelector('input[name="recipientType"]:checked').value;
+        const aud = document.getElementById('noticeAudience');
+        const clsField = document.getElementById('classField');
+
+        clsField.style.display = 'none';
+
+        if (rt === 'student') {
+            if (isManager) {
+                if (sector === 'primary') {
+                    aud.innerHTML = `
+                        <option value="primary">Primary</option>
+                        <option value="class">Specific Class</option>
+                    `;
+                } else {
+                    aud.innerHTML = `
+                        <option value="secondary">Secondary</option>
+                        <option value="class">Specific Class</option>
+                    `;
+                }
+            } else {
+                aud.innerHTML = `
+                    <option value="all">All</option>
+                    <option value="primary">Primary</option>
+                    <option value="secondary">Secondary</option>
+                    <option value="class">Specific Class</option>
+                `;
+            }
+        } else if (rt === 'staff') {
+            aud.innerHTML = `<option value="staff_all">All Staff</option>`;
+        } else {
+            // both
+            aud.innerHTML = `<option value="all">All</option>`;
+        }
+
+        onAudienceChange();
+    }
+
+    function onAudienceChange() {
+        const aud = document.getElementById('noticeAudience').value;
+        const clsField = document.getElementById('classField');
+        const clsSel = document.getElementById('noticeClass');
+
+        if (aud === 'class') {
+            clsField.style.display = 'flex';
+            clsSel.innerHTML = '<option value="">Select class</option>';
+            classes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.class_id;
+                opt.textContent = `${c.class_name}${c.arm ? ' — ' + c.arm : ''}`;
+                clsSel.appendChild(opt);
+            });
+        } else {
+            clsField.style.display = 'none';
+        }
+    }
+
+    // ============================================================
+    // SUBMIT
+    // ============================================================
+
+    async function submitNotice(e) {
+        e.preventDefault();
+
+        const editingId = document.getElementById('editingId').value;
+        const title = document.getElementById('noticeTitle').value.trim();
+        const body = document.getElementById('noticeBody').value.trim();
+        const recipientType = document.querySelector('input[name="recipientType"]:checked').value;
+        const audience = document.getElementById('noticeAudience').value;
+        const classId = audience === 'class' ? Number(document.getElementById('noticeClass').value) : null;
+        const isActive = document.getElementById('noticeActive').checked;
+        const expiresRaw = document.getElementById('noticeExpires').value;
+
+        if (!title || !body) {
+            alert('Title and body are required.');
+            return;
+        }
+
+        if (audience === 'class' && !classId) {
+            alert('Please select a class.');
+            return;
+        }
+
+        const payload = {
+            title,
+            body,
+            recipient_type: recipientType,
+            audience,
+            class_id: classId,
+            is_active: isActive,
+            expires_at: expiresRaw ? new Date(expiresRaw).toISOString() : null
+        };
+
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving…';
+
+        try {
+            if (editingId) {
+                await api('/' + editingId, {
+                    method: 'PUT',
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                await api('', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            closeModal();
+            await loadNotices();
+
+        } catch (error) {
+            alert('Save failed: ' + error.message);
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Notice';
+        }
+    }
+
+    // ============================================================
+    // TOGGLE ACTIVE
+    // ============================================================
+
+    async function toggleActive(announcementId, newState) {
+        try {
+            await api('/' + announcementId, {
+                method: 'PUT',
+                body: JSON.stringify({ is_active: newState })
+            });
+            await loadNotices();
+        } catch (error) {
+            alert('Update failed: ' + error.message);
+        }
+    }
+
+    // ============================================================
+    // DELETE
+    // ============================================================
+
+    async function deleteNotice(announcementId) {
+        if (!confirm('Delete this notice permanently?')) return;
+
+        try {
+            await api('/' + announcementId, { method: 'DELETE' });
+            await loadNotices();
+        } catch (error) {
+            alert('Delete failed: ' + error.message);
+        }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+
+    (async function init() {
+        await loadClasses();
+        await loadNotices();
+    })();
+    </script>
+
+</body>
+</html>

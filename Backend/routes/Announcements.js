@@ -259,10 +259,30 @@ router.post(
                 }
             }
 
+                        /* recipient_type: 'student' | 'staff' | 'both' */
+            const allowedRecipients = ['student', 'staff', 'both'];
+            const recipientType = String(body.recipient_type || 'student')
+                .trim()
+                .toLowerCase();
+
+            if (!allowedRecipients.includes(recipientType)) {
+                return res.status(400).json({
+                    message: 'recipient_type must be one of: student, staff, both.'
+                });
+            }
+
+            /* Managers can only post to students, and only their sector. */
+            if (roleId === MANAGER && recipientType !== 'student') {
+                return res.status(403).json({
+                    message: 'Managers can only post student notices.'
+                });
+            }
+
             const payload = {
                 title,
                 body: messageBody,
                 audience,
+                recipient_type: recipientType,
                 school_section: schoolSection,
                 class_id: classId,
                 posted_by: req.user.user_id || null,
@@ -339,7 +359,7 @@ router.put(
                 }
             }
 
-            const body = req.body || {};
+                        const body = req.body || {};
 
             const update = {};
 
@@ -356,10 +376,26 @@ router.put(
                 update.expires_at = body.expires_at || null;
             }
 
-            if (!Object.keys(update).length) {
-                return res.status(400).json({
-                    message: 'Nothing to update.'
-                });
+            /* recipient_type is editable, with the same rules as create */
+            if (body.recipient_type !== undefined) {
+                const allowedRecipients = ['student', 'staff', 'both'];
+                const recipientType = String(body.recipient_type || '')
+                    .trim()
+                    .toLowerCase();
+
+                if (!allowedRecipients.includes(recipientType)) {
+                    return res.status(400).json({
+                        message: 'recipient_type must be one of: student, staff, both.'
+                    });
+                }
+
+                if (roleId === MANAGER && recipientType !== 'student') {
+                    return res.status(403).json({
+                        message: 'Managers can only post student notices.'
+                    });
+                }
+
+                update.recipient_type = recipientType;
             }
 
             const { data, error } = await supabase

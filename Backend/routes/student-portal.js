@@ -487,10 +487,11 @@ router.get(
 
             const nowIso = new Date().toISOString();
 
-            const { data, error } = await supabase
+                        const { data, error } = await supabase
                 .from('announcements')
-                .select('announcement_id, title, body, audience, school_section, class_id, posted_at, expires_at')
+                .select('announcement_id, title, body, audience, recipient_type, school_section, class_id, posted_at, expires_at')
                 .eq('is_active', true)
+                .in('recipient_type', ['student', 'both'])
                 .order('posted_at', { ascending: false });
 
             if (error) throw error;
