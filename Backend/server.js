@@ -150,17 +150,9 @@ app.use('/api/student-portal', studentPortalRoutes);
 app.get(
     '/',
     (req, res) => {
-
-        res.json({
-
-            message:
-                'Global Education Academy, Kono API is running'
-
-        });
-
+        res.redirect('/login.html');
     }
 );
-
 
 // ============================================================
 // DATABASE TEST

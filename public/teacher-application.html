@@ -65,8 +65,8 @@
                         <input type="text" id="last_name" required>
                     </div>
                     <div class="form-group">
-                        <label>Gender</label>
-                        <select id="gender">
+                        <label>Gender *</label>
+                        <select id="gender" required>
                             <option value="">Select gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -141,6 +141,12 @@
         const message = document.getElementById('message');
         const submitBtn = this.querySelector('.submit-btn');
         
+        const genderValue = document.getElementById('gender').value.trim();
+
+        if (!genderValue) {
+            alert('Please select a gender.');
+            return;
+        }
         const formData = new FormData();
         formData.append('first_name', document.getElementById('first_name').value.trim());
         formData.append('middle_name', document.getElementById('middle_name').value.trim());

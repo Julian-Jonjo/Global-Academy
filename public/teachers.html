@@ -1163,11 +1163,11 @@
                 const employmentType = String(teacher.employment_type || '').trim().toLowerCase();
                 const gender = String(teacher.gender || '').trim().toLowerCase();
 
-                const isPrimary = schoolSection === 'primary' || schoolSection === 'primary school';
-                const isSecondary = schoolSection === 'secondary' || schoolSection === 'secondary school';
+                const PRIMARY_SECTIONS   = ['nursery', 'primary', 'primary school'];
+                const SECONDARY_SECTIONS = ['jss', 'sss', 'secondary', 'secondary school'];
 
-                if (isPrimary) teacherSummary.primary++;
-                if (isSecondary) teacherSummary.secondary++;
+                const isPrimary   = PRIMARY_SECTIONS.includes(schoolSection);
+                const isSecondary = SECONDARY_SECTIONS.includes(schoolSection);
 
                 const isPermanent = employmentType === 'permanent';
                 const isPartTime = employmentType === 'part time' || employmentType === 'part-time' || employmentType ===
@@ -1178,6 +1178,9 @@
 
                 if (gender === 'male') teacherSummary.male++;
                 if (gender === 'female') teacherSummary.female++;
+
+                if (isPrimary) teacherSummary.primary++;
+                if (isSecondary) teacherSummary.secondary++;
 
                 if (isPrimary) {
                     if (isPermanent) teacherSummary.primaryPermanent++;
