@@ -83,11 +83,18 @@
 
     async function loadClasses() {
         try {
-            const classesResponse = await fetch('/api/classes', {
+                        const classesResponse = await fetch('/api/classes', {
                 headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
             });
             if (!classesResponse.ok) throw new Error('Failed to load classes');
-            const classes = await classesResponse.json();
+            const allClasses = await classesResponse.json();
+
+            const SECONDARY_SECTIONS = ['jss', 'sss', 'secondary'];
+            const classes = (allClasses || []).filter(cls =>
+                SECONDARY_SECTIONS.includes(
+                    String(cls.school_section || '').trim().toLowerCase()
+                )
+            );
 
             const studentsResponse = await fetch('/api/students', {
                 headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }

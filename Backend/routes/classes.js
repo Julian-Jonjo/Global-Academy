@@ -90,6 +90,55 @@ router.get('/:classId', authenticateToken, async (req, res) => {
 });
 
 // ============================================================
+// GET CLASS MASTERS
+// ============================================================
+
+router.get('/with-masters', authenticateToken, async (req, res) => {
+    try {
+        const { data: classes, error: clsErr } = await supabase
+            .from('classes')
+            .select('class_id, class_name, arm, school_section, academic_year_id, is_active')
+            .order('class_name');
+
+        if (clsErr) throw clsErr;
+
+        const { data: primaryMasters } = await supabase
+            .from('primary_class_teachers')
+            .select(`
+                class_id,
+                teachers!teacher_id ( first_name, middle_name, last_name )
+            `);
+
+        const { data: secondaryMasters } = await supabase
+            .from('secondary_class_masters')
+            .select(`
+                class_id,
+                teachers!teacher_id ( first_name, middle_name, last_name )
+            `);
+
+        const masterMap = {};
+        [...(primaryMasters || []), ...(secondaryMasters || [])].forEach(row => {
+            const t = row.teachers;
+            if (!t) return;
+            const name = [t.first_name, t.middle_name, t.last_name]
+                .filter(Boolean).join(' ');
+            if (!masterMap[row.class_id]) masterMap[row.class_id] = [];
+            masterMap[row.class_id].push(name);
+        });
+
+        const result = (classes || []).map(c => ({
+            ...c,
+            class_masters: masterMap[c.class_id] || []
+        }));
+
+        return res.json(result);
+    } catch (error) {
+        console.error('CLASSES WITH MASTERS ERROR:', error);
+        return res.status(500).json({ message: 'Failed to load classes.' });
+    }
+});
+
+// ============================================================
 // CREATE CLASS (Admin only or Manager for their section)
 // ============================================================
 

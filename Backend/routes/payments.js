@@ -104,6 +104,34 @@ function getSectionsForSector(sector) {
     return [];
 }
 
+// ────────────────────────────────────────────────────────────
+// PostgREST truncates long IN() lists and caps rows per response.
+// These two helpers fix both limits.
+// ────────────────────────────────────────────────────────────
+
+function chunkArray(arr, size) {
+    const out = [];
+    for (let i = 0; i < arr.length; i += size) {
+        out.push(arr.slice(i, i + size));
+    }
+    return out;
+}
+
+async function fetchAllRows(buildQuery, pageSize = 1000) {
+    const all = [];
+    let from = 0;
+    while (true) {
+        const { data, error } = await buildQuery()
+            .range(from, from + pageSize - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        all.push(...data);
+        if (data.length < pageSize) break;
+        from += pageSize;
+    }
+    return all;
+}
+
 async function resolveAcademicYearId(academicYear) {
 
     if (academicYear) {
@@ -148,13 +176,6 @@ async function resolveAcademicYearId(academicYear) {
 
 // ============================================================
 // DETERMINE EFFECTIVE SECTOR
-//
-// Proprietor / Administrator:
-//     Can request primary or secondary.
-//
-// Finance / Manager:
-//     MUST use their authenticated sector.
-//
 // ============================================================
 
 function determineEffectiveSector(req, requestedSector) {
@@ -163,7 +184,6 @@ function determineEffectiveSector(req, requestedSector) {
     const authenticatedSector =
         normalizeSector(getSector(req.user));
 
-    // Finance and Managers are restricted to their own sector.
     if (
         roleId === FINANCE ||
         roleId === MANAGER
@@ -180,7 +200,6 @@ function determineEffectiveSector(req, requestedSector) {
         };
     }
 
-    // Proprietor / Administrator may choose sector.
     if (
         roleId === PROPRIETOR ||
         roleId === ADMINISTRATOR
@@ -213,18 +232,6 @@ function determineEffectiveSector(req, requestedSector) {
 
 // ============================================================
 // GET /api/payments
-//
-// PAYMENT HISTORY
-//
-// Supports:
-//
-// /api/payments
-// /api/payments?sector=primary
-// /api/payments?sector=secondary
-// /api/payments?student_id=12
-// /api/payments?sector=secondary&student_id=12
-// /api/payments?academic_year=2026/2027
-//
 // ============================================================
 
 router.get(
@@ -258,10 +265,6 @@ router.get(
                 academic_year
             } = req.query;
 
-            // ----------------------------------------------------
-            // EFFECTIVE SECTOR
-            // ----------------------------------------------------
-
             const sectorResult =
                 determineEffectiveSector(
                     req,
@@ -277,18 +280,10 @@ router.get(
             const effectiveSector =
                 sectorResult.sector;
 
-            // ----------------------------------------------------
-            // ACADEMIC YEAR
-            // ----------------------------------------------------
-
             const academicYearId =
                 await resolveAcademicYearId(
                     academic_year
                 );
-
-            // ----------------------------------------------------
-            // GET STUDENT IDs FOR SECTOR
-            // ----------------------------------------------------
 
             let studentIds = null;
 
@@ -331,7 +326,6 @@ router.get(
                             student.student_id
                     );
 
-                // No students in sector.
                 if (studentIds.length === 0) {
 
                     return res.json({
@@ -339,10 +333,6 @@ router.get(
                     });
                 }
             }
-
-            // ----------------------------------------------------
-            // PAYMENT QUERY
-            // ----------------------------------------------------
 
             let query =
                 supabase
@@ -370,7 +360,6 @@ router.get(
                         }
                     );
 
-            // Student
             if (student_id) {
 
                 const parsedStudentId =
@@ -397,7 +386,6 @@ router.get(
                     );
             }
 
-            // Sector
             if (studentIds !== null) {
 
                 query =
@@ -407,7 +395,6 @@ router.get(
                     );
             }
 
-            // Academic year
             if (academicYearId) {
 
                 query =
@@ -448,10 +435,6 @@ router.get(
                     payments: []
                 });
             }
-
-            // ----------------------------------------------------
-            // STUDENT DETAILS
-            // ----------------------------------------------------
 
             const paymentStudentIds = [
                 ...new Set(
@@ -514,10 +497,6 @@ router.get(
                 }
             }
 
-            // ----------------------------------------------------
-            // FEE DETAILS
-            // ----------------------------------------------------
-
             const feeIds = [
                 ...new Set(
                     paymentRecords
@@ -573,10 +552,6 @@ router.get(
                     ] = fee;
                 }
             }
-
-            // ----------------------------------------------------
-            // BUILD RESPONSE
-            // ----------------------------------------------------
 
             const result =
                 paymentRecords.map(
@@ -819,15 +794,6 @@ router.get(
 
 // ============================================================
 // GET /api/payments/summary
-//
-// FINANCIAL SUMMARY
-//
-// Returns:
-// total_expected
-// total_collected
-// total_outstanding
-// total_students
-//
 // ============================================================
 
 router.get(
@@ -877,18 +843,10 @@ router.get(
             const effectiveSector =
                 sectorResult.sector;
 
-            // ----------------------------------------------------
-            // ACADEMIC YEAR
-            // ----------------------------------------------------
-
             const academicYearId =
                 await resolveAcademicYearId(
                     academic_year
                 );
-
-            // ----------------------------------------------------
-            // STUDENT IDS FOR SECTOR
-            // ----------------------------------------------------
 
             let studentIds = null;
 
@@ -921,142 +879,90 @@ router.get(
                     );
             }
 
-            // ----------------------------------------------------
-            // FEES / EXPECTED
-            // ----------------------------------------------------
+            // ── FEES (chunked + paginated) ──
+            let totalExpected = 0;
 
-            let feeQuery =
-                supabase
-                    .from('student_fees')
-                    .select(`
-                        student_fee_id,
-                        student_id,
-                        amount_due,
-                        academic_year_id
-                    `);
+            if (studentIds === null) {
 
-            if (academicYearId) {
+                // No sector filter — read all fee rows.
+                const rows = await fetchAllRows(() => {
+                    let q = supabase
+                        .from('student_fees')
+                        .select('student_fee_id, amount_due');
+                    if (academicYearId) {
+                        q = q.eq('academic_year_id', academicYearId);
+                    }
+                    return q;
+                });
+                totalExpected = rows.reduce(
+                    (sum, r) => sum + Number(r.amount_due || 0),
+                    0
+                );
 
-                feeQuery =
-                    feeQuery.eq(
-                        'academic_year_id',
-                        academicYearId
-                    );
-            }
+            } else if (studentIds.length > 0) {
 
-            if (studentIds !== null) {
+                const chunks = chunkArray(studentIds, 100);
 
-                if (
-                    studentIds.length === 0
-                ) {
-
-                    return res.json({
-                        summary: {
-                            total_expected: 0,
-                            total_collected: 0,
-                            total_outstanding: 0,
-                            total_students: 0
+                for (const idChunk of chunks) {
+                    const rows = await fetchAllRows(() => {
+                        let q = supabase
+                            .from('student_fees')
+                            .select('student_fee_id, amount_due')
+                            .in('student_id', idChunk);
+                        if (academicYearId) {
+                            q = q.eq('academic_year_id', academicYearId);
                         }
+                        return q;
                     });
+                    totalExpected += rows.reduce(
+                        (sum, r) => sum + Number(r.amount_due || 0),
+                        0
+                    );
                 }
-
-                feeQuery =
-                    feeQuery.in(
-                        'student_id',
-                        studentIds
-                    );
             }
 
-            const {
-                data: feeRecords,
-                error: feeError
-            } = await feeQuery;
+            // ── PAYMENTS (chunked + paginated) ──
+            let totalCollected = 0;
 
-            if (feeError) {
+            if (studentIds === null) {
 
-                console.error(
-                    'FEE SUMMARY ERROR:',
-                    feeError
-                );
-
-                throw feeError;
-            }
-
-            const totalExpected =
-                (feeRecords || []).reduce(
-                    (sum, fee) =>
-                        sum +
-                        Number(
-                            fee.amount_due || 0
-                        ),
+                const rows = await fetchAllRows(() => {
+                    let q = supabase
+                        .from('payments')
+                        .select('payment_id, amount_paid')
+                        .eq('approval_status', 'approved');
+                    if (academicYearId) {
+                        q = q.eq('academic_year_id', academicYearId);
+                    }
+                    return q;
+                });
+                totalCollected = rows.reduce(
+                    (sum, r) => sum + Number(r.amount_paid || 0),
                     0
                 );
 
-            // ----------------------------------------------------
-            // PAYMENTS / COLLECTED
-            // ----------------------------------------------------
+            } else if (studentIds.length > 0) {
 
-            let paymentQuery =
-                supabase
-                    .from('payments')
-                    .select(`
-                        payment_id,
-                        student_id,
-                        amount_paid,
-                        approval_status,
-                        academic_year_id
-                    `)
-                    .eq(
-                        'approval_status',
-                        'approved'
+                const chunks = chunkArray(studentIds, 100);
+
+                for (const idChunk of chunks) {
+                    const rows = await fetchAllRows(() => {
+                        let q = supabase
+                            .from('payments')
+                            .select('payment_id, amount_paid')
+                            .in('student_id', idChunk)
+                            .eq('approval_status', 'approved');
+                        if (academicYearId) {
+                            q = q.eq('academic_year_id', academicYearId);
+                        }
+                        return q;
+                    });
+                    totalCollected += rows.reduce(
+                        (sum, r) => sum + Number(r.amount_paid || 0),
+                        0
                     );
-
-            if (academicYearId) {
-
-                paymentQuery =
-                    paymentQuery.eq(
-                        'academic_year_id',
-                        academicYearId
-                    );
+                }
             }
-
-            if (studentIds !== null) {
-
-                paymentQuery =
-                    paymentQuery.in(
-                        'student_id',
-                        studentIds
-                    );
-            }
-
-            const {
-                data: paymentRecords,
-                error: paymentError
-            } = await paymentQuery;
-
-            if (paymentError) {
-
-                console.error(
-                    'PAYMENT SUMMARY ERROR:',
-                    paymentError
-                );
-
-                throw paymentError;
-            }
-
-            const totalCollected =
-                (paymentRecords || []).reduce(
-                    (sum, payment) =>
-                        sum +
-                        Number(
-                            payment.amount_paid || 0
-                        ),
-                    0
-                );
-
-            // ----------------------------------------------------
-            // OUTSTANDING
-            // ----------------------------------------------------
 
             const totalOutstanding =
                 Math.max(
@@ -1064,10 +970,6 @@ router.get(
                     totalExpected -
                     totalCollected
                 );
-
-            // ----------------------------------------------------
-            // STUDENT COUNT
-            // ----------------------------------------------------
 
             let studentCountQuery =
                 supabase
@@ -1152,8 +1054,6 @@ router.get(
 
 // ============================================================
 // GET /api/payments/students
-//
-// FINANCE STUDENT LIST
 // ============================================================
 
 router.get(
@@ -1201,10 +1101,6 @@ router.get(
                 await resolveAcademicYearId(
                     academic_year
                 );
-
-            // ----------------------------------------------------
-            // STUDENTS
-            // ----------------------------------------------------
 
             let studentQuery =
                 supabase
@@ -1273,103 +1169,60 @@ router.get(
                         student.student_id
                 );
 
-            // ----------------------------------------------------
-            // FEES
-            // ----------------------------------------------------
+            // Chunk the IN() list and paginate each chunk.
+            const studentIdChunks =
+                chunkArray(studentIds, 100);
 
-            let feeQuery =
-                supabase
-                    .from('student_fees')
-                    .select(`
-                        student_fee_id,
-                        student_id,
-                        fee_type_id,
-                        amount_due,
-                        academic_year_id,
-                        fee_types (
-                            fee_name
-                        )
-                    `)
-                    .in(
-                        'student_id',
-                        studentIds
-                    );
+            // ── FEES ──
+            let feeRecords = [];
+            for (const idChunk of studentIdChunks) {
+                const chunkRows = await fetchAllRows(() => {
+                    let q = supabase
+                        .from('student_fees')
+                        .select(`
+                            student_fee_id,
+                            student_id,
+                            fee_type_id,
+                            amount_due,
+                            academic_year_id,
+                            fee_types (
+                                fee_name
+                            )
+                        `)
+                        .in('student_id', idChunk);
 
-            if (academicYearId) {
-
-                feeQuery =
-                    feeQuery.eq(
-                        'academic_year_id',
-                        academicYearId
-                    );
+                    if (academicYearId) {
+                        q = q.eq('academic_year_id', academicYearId);
+                    }
+                    return q;
+                });
+                feeRecords = feeRecords.concat(chunkRows);
             }
 
-            const {
-                data: feeRecords,
-                error: feeError
-            } = await feeQuery;
+            // ── PAYMENTS ──
+            let paymentRecords = [];
+            for (const idChunk of studentIdChunks) {
+                const chunkRows = await fetchAllRows(() => {
+                    let q = supabase
+                        .from('payments')
+                        .select(`
+                            payment_id,
+                            student_id,
+                            student_fee_id,
+                            amount_paid,
+                            approval_status,
+                            academic_year_id
+                        `)
+                        .in('student_id', idChunk)
+                        .eq('approval_status', 'approved');
 
-            if (feeError) {
-
-                console.error(
-                    'STUDENT FEE QUERY ERROR:',
-                    feeError
-                );
-
-                throw feeError;
+                    if (academicYearId) {
+                        q = q.eq('academic_year_id', academicYearId);
+                    }
+                    return q;
+                });
+                paymentRecords = paymentRecords.concat(chunkRows);
             }
-
-            // ----------------------------------------------------
-            // PAYMENTS - Get ALL approved payments with fee_id
-            // ----------------------------------------------------
-
-            let paymentQuery =
-                supabase
-                    .from('payments')
-                    .select(`
-                        payment_id,
-                        student_id,
-                        student_fee_id,
-                        amount_paid,
-                        approval_status,
-                        academic_year_id
-                    `)
-                    .in(
-                        'student_id',
-                        studentIds
-                    )
-                    .eq(
-                        'approval_status',
-                        'approved'
-                    );
-
-            if (academicYearId) {
-
-                paymentQuery =
-                    paymentQuery.eq(
-                        'academic_year_id',
-                        academicYearId
-                    );
-            }
-
-            const {
-                data: paymentRecords,
-                error: paymentError
-            } = await paymentQuery;
-
-            if (paymentError) {
-
-                console.error(
-                    'STUDENT PAYMENT QUERY ERROR:',
-                    paymentError
-                );
-
-                throw paymentError;
-            }
-
-            // ----------------------------------------------------
-            // BUILD PAYMENT MAP BY FEE (student_id + student_fee_id)
-            // ----------------------------------------------------
 
             const paymentMapByFee = {};
 
@@ -1379,7 +1232,7 @@ router.get(
             ) {
 
                 const key = `${payment.student_id}_${payment.student_fee_id}`;
-                
+
                 if (
                     !paymentMapByFee[key]
                 ) {
@@ -1391,7 +1244,6 @@ router.get(
                 );
             }
 
-            // Also keep total by student for summary
             const paymentMapByStudent = {};
 
             for (
@@ -1416,10 +1268,6 @@ router.get(
                 );
             }
 
-            // ----------------------------------------------------
-            // BUILD FEE MAP
-            // ----------------------------------------------------
-
             const feeMap = {};
 
             for (
@@ -1436,10 +1284,6 @@ router.get(
                 );
             }
 
-            // ----------------------------------------------------
-            // RESULT
-            // ----------------------------------------------------
-
             const result =
                 studentRecords.map(
                     student => {
@@ -1449,11 +1293,10 @@ router.get(
                                 student.student_id
                             ] || [];
 
-                        // Build fees with payment amounts
                         const feesWithPayments = fees.map(fee => {
                             const key = `${student.student_id}_${fee.student_fee_id}`;
                             const feePaid = Number(paymentMapByFee[key] || 0);
-                            
+
                             return {
                                 ...fee,
                                 amount_paid: feePaid,
@@ -1603,11 +1446,6 @@ router.get(
             const effectiveSector =
                 sectorResult.sector;
 
-            // ----------------------------------------------------
-            // IMPORTANT:
-            // Existing application uses fee_categories here.
-            // ----------------------------------------------------
-
             let query =
                 supabase
                     .from('fee_categories')
@@ -1669,9 +1507,8 @@ router.get(
 
 // ============================================================
 // POST /api/payments
-//
-// RECORD PAYMENT
 // ============================================================
+
 router.post(
     '/',
     authenticateToken,
@@ -1704,10 +1541,6 @@ router.post(
                 notes,
                 academic_year
             } = req.body;
-
-            // ----------------------------------------------------
-            // VALIDATION
-            // ----------------------------------------------------
 
             const parsedStudentId =
                 parseInt(
@@ -1760,10 +1593,6 @@ router.post(
                 });
             }
 
-            // ----------------------------------------------------
-            // GET STUDENT
-            // ----------------------------------------------------
-
             const {
                 data: student,
                 error: studentError
@@ -1812,7 +1641,6 @@ router.post(
                 });
             }
 
-            // Finance officers can only record for own sector.
             if (
                 roleId === FINANCE &&
                 normalizeSector(
@@ -1824,10 +1652,6 @@ router.post(
                         'Access denied. You cannot record a payment for another school sector.'
                 });
             }
-
-            // ----------------------------------------------------
-            // GET STUDENT FEE
-            // ----------------------------------------------------
 
             const {
                 data: studentFee,
@@ -1862,10 +1686,6 @@ router.post(
                 });
             }
 
-            // ----------------------------------------------------
-            // ACADEMIC YEAR
-            // ----------------------------------------------------
-
             let academicYearId =
                 studentFee.academic_year_id ||
                 await resolveAcademicYearId(
@@ -1880,15 +1700,7 @@ router.post(
                 });
             }
 
-            // ----------------------------------------------------
-            // NEW PAYMENTS ARE ALWAYS APPROVED
-            // ----------------------------------------------------
-
             const approvalStatus = 'approved';
-
-            // ----------------------------------------------------
-            // INSERT PAYMENT
-            // ----------------------------------------------------
 
             const {
                 data: payment,
@@ -1939,9 +1751,6 @@ router.post(
                 throw paymentError;
             }
 
-            // NEW PAYMENTS ARE IMMEDIATELY APPROVED
-            // NO APPROVAL RECORD IS CREATED
-
             return res.status(201).json({
                 message:
                     'Payment recorded successfully.',
@@ -1971,13 +1780,6 @@ router.post(
 
 // ============================================================
 // PUT /api/payments/:paymentId
-//
-// UPDATE PAYMENT
-//
-// Finance: Pending approval (requires review)
-// Proprietor / Administrator: Approved immediately
-// Manager: Cannot edit
-//
 // ============================================================
 
 router.put(
@@ -2017,10 +1819,6 @@ router.put(
                         'Invalid payment ID.'
                 });
             }
-
-            // ----------------------------------------------------
-            // EXISTING PAYMENT
-            // ----------------------------------------------------
 
             const {
                 data: existingPayment,
@@ -2069,7 +1867,6 @@ router.put(
                             : null
                 );
 
-            // Finance officer sector restriction.
             if (
                 roleId === FINANCE
             ) {
@@ -2089,10 +1886,6 @@ router.put(
                     });
                 }
             }
-
-            // ----------------------------------------------------
-            // UPDATE FIELDS
-            // ----------------------------------------------------
 
             const {
                 amount_paid,
@@ -2165,7 +1958,6 @@ router.put(
                     notes;
             }
 
-            // Finance changes require approval.
             if (
                 roleId === FINANCE
             ) {
@@ -2175,10 +1967,6 @@ router.put(
                 updateData.approval_status =
                     'approved';
             }
-
-            // ----------------------------------------------------
-            // UPDATE
-            // ----------------------------------------------------
 
             const {
                 data: updatedPayment,
@@ -2196,10 +1984,6 @@ router.put(
             if (updateError) {
                 throw updateError;
             }
-
-            // ----------------------------------------------------
-            // APPROVAL RECORD FOR EDITS
-            // ----------------------------------------------------
 
             if (
                 roleId === FINANCE
@@ -2272,11 +2056,6 @@ router.put(
 
 // ============================================================
 // DELETE /api/payments/:paymentId
-//
-// Finance: Creates pending approval (does NOT delete immediately)
-// Proprietor / Administrator: Deletes immediately
-// Manager: Cannot delete
-//
 // ============================================================
 
 router.delete(
@@ -2316,10 +2095,6 @@ router.delete(
                         'Invalid payment ID.'
                 });
             }
-
-            // ----------------------------------------------------
-            // EXISTING PAYMENT
-            // ----------------------------------------------------
 
             const {
                 data: existingPayment,
@@ -2368,10 +2143,6 @@ router.delete(
                             : null
                 );
 
-            // ----------------------------------------------------
-            // FINANCE SECTOR CHECK
-            // ----------------------------------------------------
-
             if (
                 roleId === FINANCE
             ) {
@@ -2390,10 +2161,6 @@ router.delete(
                             'Access denied. You cannot delete a payment outside your school sector.'
                     });
                 }
-
-                // ------------------------------------------------
-                // FINANCE DELETE REQUIRES APPROVAL
-                // ------------------------------------------------
 
                 const {
                     error: approvalError
@@ -2433,10 +2200,6 @@ router.delete(
                         true
                 });
             }
-
-            // ----------------------------------------------------
-            // ADMIN / PROPRIETOR DELETE
-            // ----------------------------------------------------
 
             const {
                 error: deleteError

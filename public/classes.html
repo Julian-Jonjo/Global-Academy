@@ -138,11 +138,18 @@
             await loadTeachers();
 
             // Fetch classes
-            const classesResponse = await fetch('/api/classes', {
+                        const classesResponse = await fetch('/api/classes/with-masters', {
                 headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
             });
             if (!classesResponse.ok) throw new Error('Failed to load classes');
-            const classes = await classesResponse.json();
+            const allClasses = await classesResponse.json();
+
+            const PRIMARY_SECTIONS = ['nursery', 'primary'];
+            const classes = (allClasses || []).filter(cls =>
+                PRIMARY_SECTIONS.includes(
+                    String(cls.school_section || '').trim().toLowerCase()
+                )
+            );
 
             // Fetch students for counts
             const studentsResponse = await fetch('/api/students', {

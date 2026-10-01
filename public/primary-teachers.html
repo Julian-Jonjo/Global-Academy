@@ -206,17 +206,36 @@
     let user;
     try { user = JSON.parse(userData); } catch (error) { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
 
-    const role = user?.role_name || '';
-    const userRoleForAccess = (user?.role_name || user?.role || '').toLowerCase();
+        const role = user?.role_name || '';
 
-    if (userRoleForAccess.includes('manager-secondary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
-    if (userRoleForAccess.includes('finance officer (secondary)')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
-    if (userRoleForAccess.includes('teacher - secondary')) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+    const roleId = Number(user?.role_id);
+    const sector = String(user?.sector || '').trim().toLowerCase();
 
-    const allowedRoles = ['manager-primary', 'admin', 'proprietor'];
-    const hasAccess = allowedRoles.some(r => userRoleForAccess.includes(r));
-    if (!hasAccess) { alert('Access denied.'); window.location.href = 'dashboard.html'; }
+    const ROLE_PROPRIETOR     = 1;
+    const ROLE_ADMINISTRATOR  = 2;
+    const ROLE_FINANCE        = 3;
+    const ROLE_TEACHER        = 4;
+    const ROLE_STUDENT        = 5;
+    const ROLE_MANAGER        = 6;
 
+    const isProprietor       = roleId === ROLE_PROPRIETOR;
+    const isAdmin            = roleId === ROLE_ADMINISTRATOR;
+    const isPrimaryManager   = roleId === ROLE_MANAGER && sector === 'primary';
+    const isSecondaryManager = roleId === ROLE_MANAGER && sector === 'secondary';
+    const isPrimaryFinance   = roleId === ROLE_FINANCE && sector === 'primary';
+    const isSecondaryFinance = roleId === ROLE_FINANCE && sector === 'secondary';
+    const isPrimaryTeacher   = roleId === ROLE_TEACHER && sector === 'primary';
+    const isSecondaryTeacher = roleId === ROLE_TEACHER && sector === 'secondary';
+
+    const hasAccess =
+        isProprietor ||
+        isAdmin ||
+        isPrimaryManager;
+
+    if (!hasAccess) {
+        alert('Access denied.');
+        window.location.href = 'dashboard.html';
+    }
     document.getElementById('userInfo').textContent = `${user?.full_name || 'User'} (${role})`;
 
     function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
