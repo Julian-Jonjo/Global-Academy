@@ -18,7 +18,8 @@ const ATTENDANCE_VIEW_ROLES = [
     ROLE_IDS.ADMINISTRATOR,   // 2
     ROLE_IDS.FINANCE,         // 3
     ROLE_IDS.TEACHER,         // 4
-    ROLE_IDS.MANAGER          // 6
+    ROLE_IDS.MANAGER,         // 6
+    ROLE_IDS.ADMIN_OFFICER    // 7
 ];
 
 const ATTENDANCE_WRITE_ROLES = [

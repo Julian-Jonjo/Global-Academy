@@ -26,11 +26,13 @@ const FINANCE = ROLE_IDS.FINANCE;
 const TEACHER = ROLE_IDS.TEACHER;
 const STUDENT = ROLE_IDS.STUDENT;
 const MANAGER = ROLE_IDS.MANAGER;
+const ADMIN_OFFICER = ROLE_IDS.ADMIN_OFFICER
 
 const MANAGEMENT_ROLES = [
     PROPRIETOR,
     ADMINISTRATOR,
-    MANAGER
+    MANAGER,
+    ADMIN_OFFICER
 ];
 
 const TEACHER_VIEW_ROLES = [
@@ -38,7 +40,8 @@ const TEACHER_VIEW_ROLES = [
     ADMINISTRATOR,
     FINANCE,
     TEACHER,
-    MANAGER
+    MANAGER,
+    ADMIN_OFFICER
 ];
 
 
@@ -71,7 +74,7 @@ function managerCanAccessSector(user, sector) {
     const roleId = getRoleId(user);
     const userSector = getSector(user);
 
-    if (roleId === PROPRIETOR || roleId === ADMINISTRATOR) {
+    if (roleId === PROPRIETOR || roleId === ADMINISTRATOR || roleId === ADMIN_OFFICER) {
         return true;
     }
 
@@ -87,7 +90,7 @@ function managerCanAccessSection(user, schoolSection) {
     const roleId = getRoleId(user);
     const sector = getSector(user);
 
-    if (roleId === PROPRIETOR || roleId === ADMINISTRATOR) {
+    if (roleId === PROPRIETOR || roleId === ADMINISTRATOR || roleId === ADMIN_OFFICER) {
         return true;
     }
 
@@ -926,7 +929,8 @@ router.put(
     authenticateToken,
     requireRoles(
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -1046,7 +1050,8 @@ router.delete(
     authenticateToken,
     requireRoles(
         PROPRIETOR,
-        ADMINISTRATOR
+        ADMINISTRATOR,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -1136,7 +1141,8 @@ router.post(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -1410,7 +1416,8 @@ router.post(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
         try {
@@ -1488,7 +1495,8 @@ router.post(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
         try {
@@ -1564,7 +1572,8 @@ router.post(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
         try {
@@ -1629,7 +1638,8 @@ router.get(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -1741,7 +1751,8 @@ router.get(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -1844,7 +1855,8 @@ router.get(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -1946,7 +1958,8 @@ router.get(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMINISTRATOR
     ),
     async (req, res) => {
 
@@ -2189,7 +2202,8 @@ router.post(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -2267,7 +2281,8 @@ router.put(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -2399,7 +2414,8 @@ router.delete(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -2500,7 +2516,7 @@ router.delete(
 router.get(
     '/secondary-teachers-data',
     authenticateToken,
-    requireRoles(PROPRIETOR, ADMINISTRATOR, MANAGER),
+    requireRoles(PROPRIETOR, ADMINISTRATOR, MANAGER, ADMIN_OFFICER),
     async (req, res) => {
         try {
             const { data: subjectAssignments, error: subError } = await supabase
@@ -2553,7 +2569,7 @@ router.get(
 router.get(
     '/:teacherId/all-assignments',
     authenticateToken,
-    requireRoles(PROPRIETOR, ADMINISTRATOR, MANAGER, TEACHER, FINANCE),
+    requireRoles(PROPRIETOR, ADMINISTRATOR, MANAGER, ADMIN_OFFICER, TEACHER, FINANCE),
     async (req, res) => {
         try {
             const teacherId = req.params.teacherId;
@@ -2613,7 +2629,7 @@ router.get(
 router.get(
     '/:teacherId/students',
     authenticateToken,
-    requireRoles(PROPRIETOR, ADMINISTRATOR, MANAGER, TEACHER, FINANCE),
+    requireRoles(PROPRIETOR, ADMINISTRATOR, MANAGER, ADMIN_OFFICER, TEACHER, FINANCE),
     async (req, res) => {
         try {
             const teacherId = req.params.teacherId;
