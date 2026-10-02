@@ -151,6 +151,7 @@
             <a href="#myStudents">My Students</a>
             <a href="results.html">Results</a>
             <a href="#teacherDirectory">School Teachers</a>
+            <a id="libraryNavLink" href="#">📚 Library</a>
         </nav>
 
         <section class="summary">
@@ -280,6 +281,14 @@
             sessionStorage.removeItem('authToken');
             sessionStorage.removeItem('user');
             window.location.href = '/login.html';
+        }
+
+        const LIBRARY_URL = 'https://ndiloma-technologies.onrender.com/library.html';
+
+        function libraryLink() {
+            const t = sessionStorage.getItem('authToken') || localStorage.getItem('authToken') || '';
+            const u = sessionStorage.getItem('user') || localStorage.getItem('user') || '';
+            return `${LIBRARY_URL}?school=gea&token=${encodeURIComponent(t)}&user=${encodeURIComponent(u)}`;
         }
 
         async function apiRequest(url, options = {}) {
@@ -476,6 +485,8 @@
             }
             renderDirectory(filtered);
         }
+
+        document.getElementById('libraryNavLink').href = libraryLink();
 
         loadPage();
     </script>

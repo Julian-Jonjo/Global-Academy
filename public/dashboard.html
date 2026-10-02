@@ -391,6 +391,28 @@
     const ROLE_AAO = 8;
     const ROLE_EO = 9;
 
+    const LIBRARY_URL = 'https://ndiloma-technologies.onrender.com/library.html';
+
+
+    // =========================================================
+    // LIBRARY LINK BUILDER
+    // =========================================================
+
+    function libraryLink() {
+
+        const t =
+            sessionStorage.getItem('authToken') ||
+            localStorage.getItem('authToken') ||
+            '';
+
+        const u =
+            sessionStorage.getItem('user') ||
+            localStorage.getItem('user') ||
+            '';
+
+        return `${LIBRARY_URL}?school=gea&token=${encodeURIComponent(t)}&user=${encodeURIComponent(u)}`;
+    }
+
 
     // =========================================================
     // SECTOR NORMALIZATION
@@ -859,7 +881,7 @@
                     icon: '📚',
                     title: 'Library',
                     desc: 'Browse books, syllabuses, and take quizzes.',
-                    link: '/library.html?school=gea'
+                    link: libraryLink()
                  }
 
             ]
@@ -966,7 +988,7 @@
                     icon: '📚',
                     title: 'Library',
                     desc: 'Browse books, syllabuses, and take quizzes.',
-                    link: '/library.html?school=gea'
+                    link: libraryLink()
                  }
 
             ]
@@ -1076,7 +1098,7 @@
                     icon: '📚',
                     title: 'Library',
                     desc: 'Browse books, syllabuses, and take quizzes.',
-                    link: '/library.html?school=gea'
+                    link: libraryLink()
                  }
 
             ]
@@ -1139,7 +1161,7 @@
                     icon: '📚',
                     title: 'Library',
                     desc: 'Browse books, syllabuses, and take quizzes.',
-                    link: '/library.html?school=gea'
+                    link: libraryLink()
                  }
 
             ]
@@ -1187,7 +1209,7 @@
                     icon: '📚',
                     title: 'Library',
                     desc: 'Browse books, syllabuses, and take quizzes.',
-                    link: '/library.html?school=gea'
+                    link: libraryLink()
                  }
 
             ]
@@ -1228,7 +1250,7 @@
                     icon: '📚',
                     title: 'Library',
                     desc: 'Browse books, syllabuses, and take quizzes.',
-                    link: '/library.html?school=gea'
+                    link: libraryLink()
                  }
 
         ];
