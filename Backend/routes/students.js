@@ -23,18 +23,21 @@ const FINANCE = ROLE_IDS.FINANCE;             // 3
 const TEACHER = ROLE_IDS.TEACHER;             // 4
 const STUDENT = ROLE_IDS.STUDENT;             // 5
 const MANAGER = ROLE_IDS.MANAGER;             // 6
+const ADMIN_OFFICER = ROLE_IDS.ADMIN_OFFICER; // 7
 
 const MANAGEMENT_ROLES = [
     PROPRIETOR,
     ADMINISTRATOR,
-    MANAGER
+    MANAGER,
+    ADMIN_OFFICER
 ];
 
 const FINANCE_ACCESS_ROLES = [
     PROPRIETOR,
     ADMINISTRATOR,
     FINANCE,
-    MANAGER
+    MANAGER,
+    ADMIN_OFFICER
 ];
 
 /* =========================================================
@@ -87,15 +90,6 @@ const upload = multer({
 
 /* =========================================================
    STORAGE UPLOAD HELPER
-
-   Uploads to Supabase Storage and returns the public URL.
-
-   Filename pattern:
-       student_<id>_<fieldName>_<timestamp>.<ext>
-
-   Photos go to bucket `student_photos` (folder `student-photos`).
-   All other documents go to bucket `student_files`
-   (folder is supplied by the caller).
    ========================================================= */
 
 async function uploadToStorage(
@@ -109,9 +103,6 @@ async function uploadToStorage(
         return null;
     }
 
-    /*
-       Preserve the original extension (lowercased).
-    */
     const original = String(file.originalname || '');
     const dotIndex = original.lastIndexOf('.');
     const ext = dotIndex >= 0
@@ -216,23 +207,6 @@ function sectionBelongsToSector(
    MANAGER ACCESS
    ========================================================= */
 
-/*
-   IMPORTANT:
-
-   Manager access is controlled ONLY by:
-
-       role_id = 6
-       sector = primary / secondary
-
-   We do NOT trust ?sector= from the browser.
-
-   Primary Manager:
-       Nursery + Primary
-
-   Secondary Manager:
-       JSS + SSS + Secondary
-*/
-
 function managerCanAccessSection(
     user,
     schoolSection
@@ -259,20 +233,14 @@ async function verifyStudentSector(
 
     const roleId = getRoleId(user);
 
-    /*
-       Proprietor and Administrator can access
-       students in every sector.
-    */
     if (
         roleId === PROPRIETOR ||
-        roleId === ADMINISTRATOR
+        roleId === ADMINISTRATOR ||
+        roleId === ADMIN_OFFICER
     ) {
         return true;
     }
 
-    /*
-       Only Managers use sector-based access here.
-    */
     if (roleId !== MANAGER) {
         return false;
     }
@@ -329,12 +297,6 @@ router.get(
             const userSector =
                 normalizeSector(getSector(req.user));
 
-            /*
-               -------------------------------------------------
-               MANAGER VALIDATION
-               -------------------------------------------------
-            */
-
             if (roleId === MANAGER) {
 
                 if (
@@ -348,17 +310,6 @@ router.get(
                 }
             }
 
-
-            /*
-               -------------------------------------------------
-               STUDENT QUERY
-               -------------------------------------------------
-
-               We deliberately do NOT use the browser's
-               ?sector= value to determine Manager access.
-
-               The authenticated Manager's sector is authoritative.
-            */
 
             let query = supabase
                 .from('students')
@@ -378,12 +329,6 @@ router.get(
                 });
 
 
-            /*
-               -------------------------------------------------
-               MANAGER SECTOR FILTER
-               -------------------------------------------------
-            */
-
             if (roleId === MANAGER) {
 
                 const allowedSections =
@@ -396,14 +341,6 @@ router.get(
                     });
                 }
 
-                /*
-                   IMPORTANT:
-
-                   Manager's own sector determines the query.
-
-                   We do not compare against req.query.sector.
-                */
-
                 query = query.in(
                     'classes.school_section',
                     allowedSections
@@ -411,15 +348,10 @@ router.get(
             }
 
 
-            /*
-               -------------------------------------------------
-               ADMIN / PROPRIETOR OPTIONAL FILTER
-               -------------------------------------------------
-            */
-
             if (
                 roleId === PROPRIETOR ||
-                roleId === ADMINISTRATOR
+                roleId === ADMINISTRATOR ||
+                roleId === ADMIN_OFFICER
             ) {
 
                 const requestedSector =
@@ -464,12 +396,6 @@ router.get(
                 });
             }
 
-
-            /*
-               -------------------------------------------------
-               LOAD GUARDIANS
-               -------------------------------------------------
-            */
 
             const guardianIds =
                 [
@@ -517,12 +443,6 @@ router.get(
             }
 
 
-            /*
-               -------------------------------------------------
-               CREATE GUARDIAN LOOKUP
-               -------------------------------------------------
-            */
-
             const guardianMap =
                 new Map(
                     guardians.map(guardian => [
@@ -531,12 +451,6 @@ router.get(
                     ])
                 );
 
-
-            /*
-               -------------------------------------------------
-               FLATTEN RESPONSE
-               -------------------------------------------------
-            */
 
             const result =
                 (students || []).map(student => {
@@ -576,11 +490,10 @@ router.get(
                             guardian,
 
                         guardian_name:
-                guardian?.full_name || null,
+                            guardian?.full_name || null,
 
-                 guardian_relationship:
-                guardian?.relationship || null,
-
+                        guardian_relationship:
+                            guardian?.relationship || null,
 
                         guardian_phone:
                             guardian?.phone || null,
@@ -588,8 +501,8 @@ router.get(
                         guardian_email:
                             guardian?.email || null,
 
-                             guardian_address:
-                guardian?.address || null,
+                        guardian_address:
+                            guardian?.address || null,
                     };
                 });
 
@@ -625,7 +538,8 @@ router.get(
         PROPRIETOR,
         ADMINISTRATOR,
         FINANCE,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -645,15 +559,7 @@ router.get(
                 );
 
 
-            /*
-               Managers and Finance Officers are restricted
-               to their own sector.
-            */
-
-            if (
-                roleId === MANAGER ||
-                roleId === FINANCE
-            ) {
+            if (roleId === MANAGER) {
 
                 if (
                     userSector !== 'primary' &&
@@ -661,14 +567,9 @@ router.get(
                 ) {
                     return res.status(403).json({
                         message:
-                            'User sector is not configured correctly.'
+                            'Manager sector is not configured correctly.'
                     });
                 }
-
-                /*
-                   Ignore browser sector when it conflicts.
-                   The authenticated user's sector is authoritative.
-                */
 
                 if (
                     requestedSector &&
@@ -686,10 +587,7 @@ router.get(
                 requestedSector;
 
 
-            if (
-                roleId === MANAGER ||
-                roleId === FINANCE
-            ) {
+            if (roleId === MANAGER) {
                 sectorToUse =
                     userSector;
             }
@@ -760,13 +658,6 @@ router.get(
                 });
             }
 
-
-            /*
-               Load fee balances and payments.
-
-               These are loaded separately so this route does
-               not depend on any teachers backend.
-            */
 
             const studentIds =
                 (students || []).map(
@@ -948,11 +839,6 @@ router.get(
                 getRoleId(req.user);
 
 
-            /*
-               Manager can only open students
-               belonging to their own sector.
-            */
-
             if (roleId === MANAGER) {
 
                 const allowed =
@@ -1019,10 +905,6 @@ router.get(
             }
 
 
-            /*
-               Load guardian
-            */
-
             let guardian = null;
 
             if (student.guardian_id) {
@@ -1078,7 +960,8 @@ router.get(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -1090,11 +973,6 @@ router.get(
             const roleId =
                 getRoleId(req.user);
 
-
-            /*
-               Manager can only read credentials of
-               students in their own sector.
-            */
 
             if (roleId === MANAGER) {
 
@@ -1203,7 +1081,8 @@ router.post(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     upload.fields([
         { name: 'student_photo',          maxCount: 1 },
@@ -1225,10 +1104,6 @@ router.post(
             const classId =
                 body.class_id;
 
-
-            /*
-               Load class first.
-            */
 
             const {
                 data: classData,
@@ -1264,11 +1139,6 @@ router.post(
             }
 
 
-            /*
-               Manager may only register students
-               in their own sector.
-            */
-
             if (roleId === MANAGER) {
 
                 if (
@@ -1286,10 +1156,6 @@ router.post(
             }
 
 
-            /*
-               Academic year
-            */
-
             const {
                 data: academicYear
             } = await supabase
@@ -1301,10 +1167,6 @@ router.post(
                 )
                 .maybeSingle();
 
-
-            /*
-               Guardian
-            */
 
             let guardianId =
                 body.guardian_id ||
@@ -1359,10 +1221,6 @@ router.post(
                     guardian.guardian_id;
             }
 
-
-            /*
-               Upload files
-            */
 
             const files =
                 req.files || {};
@@ -1438,10 +1296,6 @@ router.post(
                     );
             }
 
-
-            /*
-               Create student
-            */
 
             const studentPayload = {
 
@@ -1531,18 +1385,6 @@ router.post(
             }
 
 
-            /* =========================================================
-               CREATE STUDENT USER ACCOUNT
-               =========================================================
-
-               Rules:
-                 - username = first.last, with suffix 2, 3, ... on collision
-                 - password = admission_number + "-" + 4 random digits
-                 - role_id  = 5 (Student)
-                 - sector   = student's class school_section
-                 - is_active = false (activated on approval)
-            */
-
             let generatedUsername = null;
             let generatedPassword = null;
 
@@ -1562,12 +1404,6 @@ router.post(
 
                 let usernameFound =
                     false;
-
-                /*
-                   Probe up to 50 candidates.
-                   This is intentionally a simple DB loop;
-                   we will revisit if collision counts grow.
-                */
 
                 for (
                     let attempt = 0;
@@ -1683,10 +1519,6 @@ router.post(
             }
 
 
-            /*
-               Record approval
-            */
-
             const {
                 error: approvalError
             } = await supabase
@@ -1717,11 +1549,6 @@ router.post(
                     'APPROVAL CREATION ERROR:',
                     approvalError
                 );
-
-                /*
-                   Do not undo successful student creation
-                   merely because approval logging failed.
-                */
             }
 
 
@@ -1780,7 +1607,8 @@ router.put(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     upload.single('photo'),
     async (req, res) => {
@@ -1793,10 +1621,6 @@ router.put(
             const roleId =
                 getRoleId(req.user);
 
-
-            /*
-               Get existing student
-            */
 
             const {
                 data: existingStudent,
@@ -1832,10 +1656,6 @@ router.put(
             }
 
 
-            /*
-               Manager must own existing student sector.
-            */
-
             if (roleId === MANAGER) {
 
                 const existingSection =
@@ -1858,10 +1678,6 @@ router.put(
                 }
             }
 
-
-            /*
-               Determine class.
-            */
 
             let classId =
                 req.body.class_id ||
@@ -1934,10 +1750,6 @@ router.put(
             }
 
 
-            /*
-               Build safe update object.
-            */
-
             const allowedFields = [
 
                 'first_name',
@@ -1977,21 +1789,12 @@ router.put(
             }
 
 
-            /*
-               Always synchronize school_section
-               with the student's class.
-            */
-
             if (newClass) {
 
                 studentUpdate.school_section =
                     newClass.school_section;
             }
 
-
-            /*
-               Upload replacement photo.
-            */
 
             if (req.file) {
 
@@ -2071,7 +1874,8 @@ router.put(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -2083,10 +1887,6 @@ router.put(
             const roleId =
                 getRoleId(req.user);
 
-
-            /*
-               Get existing student
-            */
 
             const {
                 data: existingStudent,
@@ -2122,10 +1922,6 @@ router.put(
             }
 
 
-            /*
-               Existing sector check
-            */
-
             if (roleId === MANAGER) {
 
                 const existingSection =
@@ -2148,10 +1944,6 @@ router.put(
                 }
             }
 
-
-            /*
-               Determine target class.
-            */
 
             const targetClassId =
                 req.body.class_id ||
@@ -2192,11 +1984,6 @@ router.put(
             }
 
 
-            /*
-               Manager cannot move student outside
-               own sector.
-            */
-
             if (roleId === MANAGER) {
 
                 if (
@@ -2213,10 +2000,6 @@ router.put(
                 }
             }
 
-
-            /*
-               Safe update fields.
-            */
 
             const allowedFields = [
 
@@ -2257,11 +2040,6 @@ router.put(
                 }
             }
 
-
-            /*
-               Keep school_section synchronized
-               with the class.
-            */
 
             studentUpdate.class_id =
                 targetClass.class_id;
@@ -2332,7 +2110,8 @@ router.put(
     requireRoles(
         PROPRIETOR,
         ADMINISTRATOR,
-        MANAGER
+        MANAGER,
+        ADMIN_OFFICER
     ),
     async (req, res) => {
 
@@ -2344,10 +2123,6 @@ router.put(
             const roleId =
                 getRoleId(req.user);
 
-
-            /*
-               Get student and class
-            */
 
             const {
                 data: student,
@@ -2383,10 +2158,6 @@ router.put(
             }
 
 
-            /*
-               Manager sector restriction
-            */
-
             if (roleId === MANAGER) {
 
                 const section =
@@ -2410,10 +2181,6 @@ router.put(
             }
 
 
-            /*
-               Set student back to Pending.
-            */
-
             const {
                 data: updatedStudent,
                 error: updateError
@@ -2435,10 +2202,6 @@ router.put(
                 throw updateError;
             }
 
-
-            /*
-               Check for existing approval.
-            */
 
             const {
                 data: existingApproval,

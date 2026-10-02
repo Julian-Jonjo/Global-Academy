@@ -757,7 +757,7 @@
 
             <button
                 class="back-btn"
-                onclick="window.location.href='dashboard.html'"
+                onclick="window.location.href='finance.html'"
             >
                 ← Back to Dashboard
             </button>
@@ -1735,9 +1735,12 @@ const sector = String(user?.sector || '')
     .toLowerCase();
 
 
-const isPrimaryFinanceOfficer =
-    roleId === 3 &&
-    sector === 'primary';
+/*
+ * Finance is sectorless: any role_id === 3 user can access
+ * both the Primary and Secondary finance pages.
+ */
+const isFinanceOfficer =
+    roleId === 3;
 
 
 const isPrimaryManager =
@@ -1756,8 +1759,8 @@ const isAdmin =
 /*
  * Access to this page.
  *
- * Primary Finance Officer:
- *      Can record payments.
+ * Finance Officer:
+ *      Can record payments for either sector.
  *
  * Primary Manager:
  *      View only.
@@ -1769,7 +1772,7 @@ const isAdmin =
  *      View + approve.
  */
 const isAllowed =
-    isPrimaryFinanceOfficer ||
+    isFinanceOfficer ||
     isPrimaryManager ||
     isAdmin ||
     isProprietor;
@@ -1782,15 +1785,15 @@ const isViewOnly =
 
 
 const canRecordPayment =
-    isPrimaryFinanceOfficer;
+    isFinanceOfficer;
 
 
 const canEditPayment =
-    isPrimaryFinanceOfficer;
+    isFinanceOfficer;
 
 
 const canDeletePayment =
-    isPrimaryFinanceOfficer;
+    isFinanceOfficer;
 
 
 const canApprove =
@@ -1814,7 +1817,7 @@ if (!isAllowed) {
 
 let displayRole = user?.role_name || 'User';
 
-if (isPrimaryFinanceOfficer) {
+if (isFinanceOfficer) {
     displayRole = 'Finance Officer';
 } else if (isPrimaryManager) {
     displayRole = 'Manager';
@@ -1860,10 +1863,10 @@ if (isProprietor) {
     badgeClass = 'manager';
     badgeText = '📋 Primary Manager';
 
-} else if (isPrimaryFinanceOfficer) {
+} else if (isFinanceOfficer) {
 
     badgeClass = 'finance';
-    badgeText = '💰 Primary Finance Officer';
+    badgeText = '💰 Finance Officer';
 }
 
 
@@ -2166,7 +2169,7 @@ async function openRecordPayment() {
     if (!canRecordPayment) {
 
         alert(
-            'Only the Primary Finance Officer can record payments.'
+            'Only the Finance Officer can record payments.'
         );
 
         return;
@@ -3390,7 +3393,7 @@ async function submitPayment(event) {
     if (!canRecordPayment) {
 
         alert(
-            'Only the Primary Finance Officer can record payments.'
+            'Only the Finance Officer can record payments.'
         );
 
         return;
@@ -3823,11 +3826,6 @@ async function submitPayment(event) {
         ).value = '';
 
 
-        /*
-         * Refresh everything.
-         * Since new payments are automatically approved,
-         * the totals should update immediately.
-         */
         await loadAllData();
 
     } catch (error) {
@@ -4226,7 +4224,7 @@ function editPayment(paymentId) {
     if (!canEditPayment) {
 
         alert(
-            'Only the Primary Finance Officer can edit payments.'
+            'Only the Finance Officer can edit payments.'
         );
 
         return;

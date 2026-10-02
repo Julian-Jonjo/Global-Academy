@@ -8,8 +8,6 @@ const router = express.Router();
 
 /**
  * Safely extract role_name from Supabase nested relation.
- * Depending on the relationship configuration, Supabase may
- * return user_roles as an object or an array.
  */
 function getRoleName(user) {
     if (!user?.user_roles) {
@@ -49,7 +47,10 @@ router.post('/login', async (req, res) => {
                 sector,
                 teacher_id,
                 student_id,
-                user_roles!inner (
+                secondary_role_id,
+                aao_sector,
+                is_exam_officer,
+                user_roles!users_role_id_fkey!inner (
                     role_id,
                     role_name
                 )
@@ -96,18 +97,12 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        /**
-         * Validate that role_id exists.
-         */
         if (!user.role_id) {
             return res.status(500).json({
                 message: 'User has no role assigned'
             });
         }
 
-        /**
-         * Update last login.
-         */
         const { error: loginUpdateError } = await supabase
             .from('users')
             .update({
@@ -122,13 +117,6 @@ router.post('/login', async (req, res) => {
             );
         }
 
-        /**
-         * Create JWT.
-         *
-         * IMPORTANT:
-         * role_id = authoritative role
-         * sector  = authoritative sector scope
-         */
         const token = jwt.sign(
             {
                 user_id: user.user_id,
@@ -140,7 +128,11 @@ router.post('/login', async (req, res) => {
                 sector: user.sector || null,
 
                 teacher_id: user.teacher_id || null,
-                student_id: user.student_id || null
+                student_id: user.student_id || null,
+
+                secondary_role_id: user.secondary_role_id || null,
+                aao_sector: user.aao_sector || null,
+                is_exam_officer: user.is_exam_officer === true
             },
             process.env.JWT_SECRET,
             {
@@ -148,9 +140,6 @@ router.post('/login', async (req, res) => {
             }
         );
 
-        /**
-         * Return user information to frontend.
-         */
         return res.json({
             message: 'Login successful',
 
@@ -167,7 +156,11 @@ router.post('/login', async (req, res) => {
                 sector: user.sector || null,
 
                 teacher_id: user.teacher_id || null,
-                student_id: user.student_id || null
+                student_id: user.student_id || null,
+
+                secondary_role_id: user.secondary_role_id || null,
+                aao_sector: user.aao_sector || null,
+                is_exam_officer: user.is_exam_officer === true
             }
         });
 
@@ -183,9 +176,6 @@ router.post('/login', async (req, res) => {
 
 /**
  * GET /api/auth/me
- *
- * Returns the currently authenticated user's
- * current database information.
  */
 router.get('/me', authenticateToken, async (req, res) => {
     try {
@@ -200,7 +190,10 @@ router.get('/me', authenticateToken, async (req, res) => {
                 sector,
                 teacher_id,
                 student_id,
-                user_roles!inner (
+                secondary_role_id,
+                aao_sector,
+                is_exam_officer,
+                user_roles!users_role_id_fkey!inner (
                     role_id,
                     role_name
                 )
@@ -242,7 +235,11 @@ router.get('/me', authenticateToken, async (req, res) => {
                 sector: user.sector || null,
 
                 teacher_id: user.teacher_id || null,
-                student_id: user.student_id || null
+                student_id: user.student_id || null,
+
+                secondary_role_id: user.secondary_role_id || null,
+                aao_sector: user.aao_sector || null,
+                is_exam_officer: user.is_exam_officer === true
             }
         });
 
@@ -258,8 +255,6 @@ router.get('/me', authenticateToken, async (req, res) => {
 
 /**
  * POST /api/auth/logout
- *
- * JWT logout is handled client-side by removing the token.
  */
 router.post('/logout', authenticateToken, (req, res) => {
     return res.json({

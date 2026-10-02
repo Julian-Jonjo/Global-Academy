@@ -12,6 +12,9 @@ const jwt = require('jsonwebtoken');
 | 4 = Teacher
 | 5 = Student
 | 6 = Manager
+| 7 = Admin Officer
+| 8 = Academic Affairs Officer
+| 9 = Examination Officer
 |--------------------------------------------------------------------------
 */
 
@@ -21,7 +24,10 @@ const ROLE_IDS = {
     FINANCE: 3,
     TEACHER: 4,
     STUDENT: 5,
-    MANAGER: 6
+    MANAGER: 6,
+    ADMIN_OFFICER: 7,
+    ACADEMIC_AFFAIRS_OFFICER: 8,
+    EXAMINATION_OFFICER: 9
 };
 
 
@@ -104,25 +110,6 @@ function getSector(user) {
 |--------------------------------------------------------------------------
 | REQUIRE ROLES
 |--------------------------------------------------------------------------
-|
-| Preferred usage:
-|
-|     requireRoles(1, 2)
-|
-|     requireRoles(6)
-|
-|     requireRoles(3, 6)
-|
-| Numeric role IDs are authoritative.
-|
-| For backward compatibility, this also temporarily accepts
-| role names such as:
-|
-|     requireRoles('Administrator', 'Proprietor')
-|
-| This allows existing routes to continue working while we
-| convert them to role IDs.
-|--------------------------------------------------------------------------
 */
 
 const requireRoles = (...allowedRoles) => {
@@ -139,16 +126,10 @@ const requireRoles = (...allowedRoles) => {
 
         const hasAccess = allowedRoles.some(allowedRole => {
 
-            /*
-             * Numeric role ID
-             */
             if (typeof allowedRole === 'number') {
                 return userRoleId === allowedRole;
             }
 
-            /*
-             * Numeric string
-             */
             if (
                 typeof allowedRole === 'string' &&
                 !isNaN(Number(allowedRole))
@@ -156,10 +137,6 @@ const requireRoles = (...allowedRoles) => {
                 return userRoleId === Number(allowedRole);
             }
 
-            /*
-             * Temporary backwards compatibility
-             * for existing routes using role names.
-             */
             return (
                 userRoleName ===
                 String(allowedRole).trim().toLowerCase()
@@ -250,7 +227,19 @@ function isSecondaryManager(user) {
 
 /*
 |--------------------------------------------------------------------------
-| PRIMARY FINANCE OFFICER
+| FINANCE OFFICER (SECTORLESS)
+|--------------------------------------------------------------------------
+*/
+
+function isFinanceOfficer(user) {
+
+    return getRoleId(user) === ROLE_IDS.FINANCE;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| PRIMARY FINANCE OFFICER (legacy)
 |--------------------------------------------------------------------------
 */
 
@@ -265,7 +254,7 @@ function isPrimaryFinanceOfficer(user) {
 
 /*
 |--------------------------------------------------------------------------
-| SECONDARY FINANCE OFFICER
+| SECONDARY FINANCE OFFICER (legacy)
 |--------------------------------------------------------------------------
 */
 
@@ -274,6 +263,115 @@ function isSecondaryFinanceOfficer(user) {
     return (
         getRoleId(user) === ROLE_IDS.FINANCE &&
         getSector(user) === 'secondary'
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN OFFICER (sectorless)
+|
+| Sees everything like the Proprietor, can register and edit students.
+| Cannot approve anything.
+|--------------------------------------------------------------------------
+*/
+
+function isAdminOfficer(user) {
+
+    return getRoleId(user) === ROLE_IDS.ADMIN_OFFICER;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ACADEMIC AFFAIRS OFFICER (secondary role on a Teacher)
+|
+| Stored on `users` as:
+|     secondary_role_id = 8
+|     aao_sector         = 'primary' | 'secondary'
+|
+| The user's primary role is Teacher (4). The JWT carries
+| these extra fields.
+|--------------------------------------------------------------------------
+*/
+
+function isAcademicAffairsOfficer(user) {
+
+    return Number(user?.secondary_role_id) ===
+           ROLE_IDS.ACADEMIC_AFFAIRS_OFFICER;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| EXAMINATION OFFICER (secondary role on a Teacher)
+|
+| Stored on `users` as:
+|     is_exam_officer = true
+|--------------------------------------------------------------------------
+*/
+
+function isExaminationOfficer(user) {
+
+    return user?.is_exam_officer === true;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CAN REGISTER STUDENTS
+|
+| Who may register / edit students:
+|     Proprietor
+|     Administrator
+|     Manager
+|     Admin Officer
+|--------------------------------------------------------------------------
+*/
+
+function canRegisterStudents(user) {
+
+    const roleId = getRoleId(user);
+
+    return (
+        roleId === ROLE_IDS.PROPRIETOR ||
+        roleId === ROLE_IDS.ADMINISTRATOR ||
+        roleId === ROLE_IDS.MANAGER ||
+        roleId === ROLE_IDS.ADMIN_OFFICER
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CAN APPROVE GRADES
+|
+| Only the Examination Officer.
+|--------------------------------------------------------------------------
+*/
+
+function canApproveGrades(user) {
+
+    return isExaminationOfficer(user);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CAN APPROVE ANYTHING (approval endpoints)
+|
+| Proprietor and Administrator keep their existing approval powers.
+| Admin Officer and AAO and EO cannot approve general records.
+|--------------------------------------------------------------------------
+*/
+
+function canApproveRecords(user) {
+
+    const roleId = getRoleId(user);
+
+    return (
+        roleId === ROLE_IDS.PROPRIETOR ||
+        roleId === ROLE_IDS.ADMINISTRATOR
     );
 }
 
@@ -348,17 +446,6 @@ function isSecondaryUser(user) {
 |--------------------------------------------------------------------------
 | REQUIRE SECTOR
 |--------------------------------------------------------------------------
-|
-| Example:
-|
-|     router.get(
-|         '/primary-students',
-|         authenticateToken,
-|         requireSector('primary'),
-|         ...
-|     );
-|
-|--------------------------------------------------------------------------
 */
 
 const requireSector = (...allowedSectors) => {
@@ -393,19 +480,6 @@ const requireSector = (...allowedSectors) => {
 /*
 |--------------------------------------------------------------------------
 | REQUIRE ROLE + SECTOR
-|--------------------------------------------------------------------------
-|
-| This is useful for routes that should only be accessible to
-| a particular role within a particular sector.
-|
-| Example:
-|
-|     requireRoleAndSector(6, 'primary')
-|
-| means:
-|
-|     Manager + Primary
-|
 |--------------------------------------------------------------------------
 */
 
@@ -455,8 +529,17 @@ module.exports = {
     isPrimaryManager,
     isSecondaryManager,
 
+    isFinanceOfficer,
     isPrimaryFinanceOfficer,
     isSecondaryFinanceOfficer,
+
+    isAdminOfficer,
+    isAcademicAffairsOfficer,
+    isExaminationOfficer,
+
+    canRegisterStudents,
+    canApproveGrades,
+    canApproveRecords,
 
     isPrimaryTeacher,
     isSecondaryTeacher,

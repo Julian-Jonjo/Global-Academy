@@ -372,10 +372,6 @@
         localStorage.getItem('user');
 
 
-    // =========================================================
-    // NO TOKEN = LOGIN
-    // =========================================================
-
     if (!token) {
         window.location.href = '/login.html';
     }
@@ -391,6 +387,9 @@
     const ROLE_TEACHER = 4;
     const ROLE_STUDENT = 5;
     const ROLE_MANAGER = 6;
+    const ROLE_ADMIN_OFFICER = 7;
+    const ROLE_AAO = 8;
+    const ROLE_EO = 9;
 
 
     // =========================================================
@@ -424,13 +423,6 @@
     // =========================================================
     // LOAD AUTHENTICATED USER
     // =========================================================
-    //
-    // The stored user is used initially so the dashboard can
-    // start quickly.
-    //
-    // The server is then queried through /api/auth/me so that
-    // stale role/sector information cannot control the dashboard.
-    // =========================================================
 
     async function loadAuthenticatedUser() {
 
@@ -453,27 +445,18 @@
         }
 
 
-        // -----------------------------------------------------
-        // No usable stored user
-        // -----------------------------------------------------
-
         if (initialUser) {
             updateHeader(initialUser);
         }
-        
-        // If the device is offline, use the stored user immediately.
-if (!navigator.onLine) {
-    if (initialUser) {
-        handleDashboard(initialUser);
-    } else {
-        window.location.href = '/login.html';
-    }
-    return;
-}
 
-        // -----------------------------------------------------
-        // Verify with backend
-        // -----------------------------------------------------
+        if (!navigator.onLine) {
+            if (initialUser) {
+                handleDashboard(initialUser);
+            } else {
+                window.location.href = '/login.html';
+            }
+            return;
+        }
 
         try {
 
@@ -510,10 +493,6 @@ if (!navigator.onLine) {
             const result = await response.json();
 
 
-            // -------------------------------------------------
-            // auth/me may return user directly or inside user
-            // -------------------------------------------------
-
             const authenticatedUser =
                 result?.user || result;
 
@@ -524,10 +503,6 @@ if (!navigator.onLine) {
                 );
             }
 
-
-            // -------------------------------------------------
-            // Save fresh authenticated user
-            // -------------------------------------------------
 
             sessionStorage.setItem(
                 'user',
@@ -553,7 +528,6 @@ if (!navigator.onLine) {
             );
 
 
-            // If we have no valid stored user, return to login.
             if (!initialUser) {
 
                 logout();
@@ -561,7 +535,6 @@ if (!navigator.onLine) {
             }
 
 
-            // Otherwise use the stored user as fallback.
             handleDashboard(initialUser);
         }
     }
@@ -605,9 +578,17 @@ if (!navigator.onLine) {
         const roleId =
             Number(user?.role_id);
 
-
         const sector =
             normalizeSector(user?.sector);
+
+        const secondaryRoleId =
+            Number(user?.secondary_role_id || 0);
+
+        const isExamOfficer =
+            user?.is_exam_officer === true;
+
+        const aaoSector =
+            normalizeSector(user?.aao_sector);
 
 
         // -----------------------------------------------------
@@ -625,46 +606,38 @@ if (!navigator.onLine) {
 
 
         // =====================================================
-        // FINANCE OFFICER
+        // FINANCE OFFICER (sectorless)
         // =====================================================
 
         if (roleId === ROLE_FINANCE) {
 
-            if (sector === 'primary') {
-
-                window.location.href =
-                    'primary-finance.html';
-
-                return;
-            }
-
-
-            if (sector === 'secondary') {
-
-                window.location.href =
-                    'secondary-finance.html';
-
-                return;
-            }
-
-
-            showError(
-                'Your Finance Officer account does not have a valid school sector.'
-            );
-
+            window.location.href = 'finance.html';
             return;
         }
 
 
         // =====================================================
         // TEACHER
+        //
+        // If this teacher also holds AAO or EO, show the
+        // combined dashboard instead of the plain teacher one.
         // =====================================================
 
         if (roleId === ROLE_TEACHER) {
 
-            window.location.href =
-                'teachers-dashboard.html';
+            if (secondaryRoleId === ROLE_AAO || isExamOfficer) {
 
+                renderDashboard(
+                    getCombinedTeacherRoleDashboard(
+                        secondaryRoleId === ROLE_AAO,
+                        isExamOfficer,
+                        aaoSector
+                    )
+                );
+                return;
+            }
+
+            window.location.href = 'teachers-dashboard.html';
             return;
         }
 
@@ -675,9 +648,7 @@ if (!navigator.onLine) {
 
         if (roleId === ROLE_STUDENT) {
 
-            window.location.href =
-                'students-dashboard.html';
-
+            window.location.href = 'students-dashboard.html';
             return;
         }
 
@@ -703,6 +674,48 @@ if (!navigator.onLine) {
 
             renderDashboard(
                 getManagerDashboard(sector)
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // ADMIN OFFICER
+        // =====================================================
+
+        if (roleId === ROLE_ADMIN_OFFICER) {
+
+            renderDashboard(
+                getAdminOfficerDashboard()
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // ACADEMIC AFFAIRS OFFICER (as primary role)
+        // =====================================================
+
+        if (roleId === ROLE_AAO) {
+
+            renderDashboard(
+                getAcademicAffairsDashboard(aaoSector)
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // EXAMINATION OFFICER (as primary role)
+        // =====================================================
+
+        if (roleId === ROLE_EO) {
+
+            renderDashboard(
+                getExaminationDashboard()
             );
 
             return;
@@ -952,31 +965,282 @@ if (!navigator.onLine) {
     // =========================================================
     // ADMINISTRATOR-ONLY DASHBOARD
     // =========================================================
-    //
-    // Same cards as the administration dashboard, plus the
-    // Term Settings card which only the Administrator may see.
-    // =========================================================
 
     function getAdministratorDashboard() {
 
         const config = getAdministrationDashboard();
 
-        config.cards.push({
-            icon: '📅',
-            title: 'Term Settings',
-            desc: 'Set start and end dates for each term.',
-            link: 'terms-settings.html'
-        },
-        {
-                    icon: '📅',
-                    title: 'Holidays',
-                    desc: 'Add days when the school is closed.',
-                    link: 'holidays.html'
-                }
-    
-    );
+        config.cards.push(
+            {
+                icon: '📅',
+                title: 'Term Settings',
+                desc: 'Set start and end dates for each term.',
+                link: 'terms-settings.html'
+            },
+            {
+                icon: '📅',
+                title: 'Holidays',
+                desc: 'Add days when the school is closed.',
+                link: 'holidays.html'
+            }
+        );
 
         return config;
+    }
+
+
+    // =========================================================
+    // ADMIN OFFICER DASHBOARD
+    // =========================================================
+
+    function getAdminOfficerDashboard() {
+
+        return {
+
+            title:
+                'Admin Officer Dashboard',
+
+            subtitle:
+                'Manage students, classes, teachers and general records.',
+
+            cards: [
+
+                {
+                    icon: '👨‍🎓',
+                    title: 'Students',
+                    desc: 'Register and edit student records.',
+                    link: 'students.html'
+                },
+
+                {
+                    icon: '👨‍🏫',
+                    title: 'Teachers',
+                    desc: 'Manage teachers and assignments.',
+                    link: 'teachers.html'
+                },
+
+                {
+                    icon: '💰',
+                    title: 'Finance',
+                    desc: 'View fees and payments (read-only).',
+                    link: 'finance.html'
+                },
+
+                {
+                    icon: '📚',
+                    title: 'Classes',
+                    desc: 'Manage classes and sections.',
+                    link: 'classes.html'
+                },
+
+                {
+                    icon: '📋',
+                    title: 'Attendance',
+                    desc: 'Manage student attendance.',
+                    link: 'attendance.html'
+                },
+
+                {
+                    icon: '📊',
+                    title: 'Academic Records',
+                    desc: 'View all academic results (View Only).',
+                    link: 'results.html'
+                },
+
+                {
+                    icon: '📋',
+                    title: 'Teacher Applications',
+                    desc: 'Review teacher applications.',
+                    link: 'teacher-applications.html'
+                },
+
+                {
+                    icon: '📢',
+                    title: 'Announcements',
+                    desc: 'Post and manage notices for your school.',
+                    link: 'manage-notices.html'
+                }
+
+            ]
+        };
+    }
+
+
+    // =========================================================
+    // ACADEMIC AFFAIRS OFFICER DASHBOARD
+    // =========================================================
+
+    function getAcademicAffairsDashboard(aaoSector) {
+
+        const sectorLabel =
+            aaoSector === 'primary' ? 'Primary' :
+            aaoSector === 'secondary' ? 'Secondary' :
+            'School';
+
+        const sectorQuery =
+            aaoSector ? `?sector=${encodeURIComponent(aaoSector)}` : '';
+
+        return {
+
+            title:
+                `Academic Affairs — ${sectorLabel}`,
+
+            subtitle:
+                `Registers, grades and results for the ${sectorLabel} School.`,
+
+            cards: [
+
+                {
+                    icon: '📋',
+                    title: 'Registers',
+                    desc: 'View class registers and student lists.',
+                    link: `students.html${sectorQuery}`
+                },
+
+                {
+                    icon: '📝',
+                    title: 'Grades',
+                    desc: 'View subject grades across your sector.',
+                    link: `results.html${sectorQuery}`
+                },
+
+                {
+                    icon: '📊',
+                    title: 'Reports',
+                    desc: 'View report cards and term summaries.',
+                    link: `results.html${sectorQuery}`
+                },
+
+                {
+                    icon: '📅',
+                    title: 'Attendance',
+                    desc: 'View attendance records for your sector.',
+                    link: `attendance.html${sectorQuery}`
+                }
+
+            ]
+        };
+    }
+
+
+    // =========================================================
+    // EXAMINATION OFFICER DASHBOARD
+    // =========================================================
+
+    function getExaminationDashboard() {
+
+        return {
+
+            title:
+                'Examination Officer Dashboard',
+
+            subtitle:
+                'Review and approve grades submitted by teachers across the whole school.',
+
+            cards: [
+
+                {
+                    icon: '✅',
+                    title: 'Grade Approval',
+                    desc: 'Review submitted grades and approve or reject them.',
+                    link: 'exam-officer.html'
+                },
+
+                {
+                    icon: '📊',
+                    title: 'All Results',
+                    desc: 'View results across Primary and Secondary.',
+                    link: 'results.html'
+                },
+
+                {
+                    icon: '📝',
+                    title: 'Report Cards',
+                    desc: 'View student report cards.',
+                    link: 'results.html'
+                }
+
+            ]
+        };
+    }
+
+
+    // =========================================================
+    // COMBINED TEACHER + (AAO and/or EO) DASHBOARD
+    // =========================================================
+
+    function getCombinedTeacherRoleDashboard(isAAO, isEO, aaoSector) {
+
+        const sectorLabel =
+            aaoSector === 'primary' ? 'Primary' :
+            aaoSector === 'secondary' ? 'Secondary' :
+            'School';
+
+        const sectorQuery =
+            aaoSector ? `?sector=${encodeURIComponent(aaoSector)}` : '';
+
+        const cards = [
+
+            {
+                icon: '📚',
+                title: 'My Classes',
+                desc: 'View your assigned classes and subjects.',
+                link: 'teachers-dashboard.html'
+            },
+
+            {
+                icon: '📝',
+                title: 'Enter Grades',
+                desc: 'Enter or update subject grades.',
+                link: 'teachers-dashboard.html'
+            }
+
+        ];
+
+        if (isAAO) {
+            cards.push(
+                {
+                    icon: '📋',
+                    title: `Registers (${sectorLabel})`,
+                    desc: 'View class registers in your AAO sector.',
+                    link: `students.html${sectorQuery}`
+                },
+                {
+                    icon: '📊',
+                    title: `Reports (${sectorLabel})`,
+                    desc: 'View report cards in your AAO sector.',
+                    link: `results.html${sectorQuery}`
+                }
+            );
+        }
+
+        if (isEO) {
+            cards.push(
+                {
+                    icon: '✅',
+                    title: 'Grade Approval',
+                    desc: 'Review submitted grades and approve or reject them.',
+                    link: 'exam-officer.html'
+                },
+                {
+                    icon: '📊',
+                    title: 'All Results',
+                    desc: 'View results across the whole school.',
+                    link: 'results.html'
+                }
+            );
+        }
+
+        let title = 'Dashboard';
+        if (isAAO && isEO) title = 'Teacher • AAO • Examination Officer';
+        else if (isAAO)      title = 'Teacher • Academic Affairs Officer';
+        else if (isEO)       title = 'Teacher • Examination Officer';
+
+        return {
+            title: title,
+            subtitle: 'Teacher tools and additional role access.',
+            cards: cards
+        };
     }
 
 

@@ -296,10 +296,20 @@
         window.location.href = '/login.html';
     }
 
-    const roleId = Number(user.role_id);
+        const roleId = Number(user.role_id);
     const ROLE_PROPRIETOR = 1, ROLE_ADMINISTRATOR = 2, ROLE_MANAGER = 6, ROLE_TEACHER = 4;
+    const ROLE_ADMIN_OFFICER = 7, ROLE_AAO = 8, ROLE_EO = 9;
 
-    const allowed = [ROLE_PROPRIETOR, ROLE_ADMINISTRATOR, ROLE_MANAGER, ROLE_TEACHER];
+    const allowed = [
+        ROLE_PROPRIETOR,
+        ROLE_ADMINISTRATOR,
+        ROLE_MANAGER,
+        ROLE_TEACHER,
+        ROLE_ADMIN_OFFICER,
+        ROLE_AAO,
+        ROLE_EO
+    ];
+
     if (!allowed.includes(roleId)) {
         alert('Access denied.');
         window.location.href = 'dashboard.html';

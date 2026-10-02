@@ -513,6 +513,7 @@ const isFinance = roleId === 3;
 const isTeacher = roleId === 4;
 const isStudent = roleId === 5;
 const isManager = roleId === 6;
+const isAdminOfficer = roleId === 7;
 
 // ============================================================
 // SECTOR FLAGS
@@ -566,7 +567,8 @@ const isSecondaryTeacher =
 const hasAccess =
     isProprietor ||
     isAdministrator ||
-    isPrimaryManager;
+    isPrimaryManager||
+    isAdminOfficer;;
 
 if (!hasAccess) {
 

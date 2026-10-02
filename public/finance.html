@@ -619,7 +619,6 @@
                 <p>Institutional overview of finances across Primary and Secondary School.</p>
             </div>
             <div class="page-header-right">
-                <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
             </div>
         </div>
 
@@ -847,39 +846,26 @@
     const isStudent = roleId === 5;
     const isManager = roleId === 6;
 
-    const isPrimaryFinance = isFinance && sector === 'primary';
-    const isSecondaryFinance = isFinance && sector === 'secondary';
-
     const isPrimaryManager = isManager && sector === 'primary';
     const isSecondaryManager = isManager && sector === 'secondary';
 
     // =========================================================
-    // FINANCE OFFICERS MUST USE THEIR SECTOR DASHBOARD
-    // Finance officers do NOT use finance.html
-    // =========================================================
-    if (isFinance) {
-        if (isPrimaryFinance) {
-            window.location.href = 'primary-finance.html';
-        } else if (isSecondaryFinance) {
-            window.location.href = 'secondary-finance.html';
-        } else {
-            alert('Your Finance account does not have a valid school sector.');
-            window.location.href = 'dashboard.html';
-        }
-    }
-
-    // =========================================================
-    // ONLY THESE ROLES MAY VIEW FINANCE OVERVIEW
-    // Proprietor
-    // Administrator
-    // Manager
+    // ACCESS
+    //
+    // Finance is sectorless: a single Finance officer oversees
+    // both Primary and Secondary. They land on this Overview page
+    // and use the two "Open Dashboard" cards to enter either sector.
+    //
+    // Proprietor / Administrator / Manager keep their existing
+    // access to this page.
     // =========================================================
     const isAllowed =
         isProprietor ||
         isAdministrator ||
-        isManager;
+        isManager ||
+        isFinance;
 
-    if (!isAllowed && !isFinance) {
+    if (!isAllowed) {
         alert('You do not have permission to access the Finance Overview.');
         window.location.href = 'dashboard.html';
     }
@@ -896,6 +882,9 @@
     } else if (isAdministrator) {
         document.getElementById('userRoleLabel').textContent =
             'Administrator • Finance Overview';
+    } else if (isFinance) {
+        document.getElementById('userRoleLabel').textContent =
+            'Finance Officer • Finance Overview';
     } else if (isPrimaryManager) {
         document.getElementById('userRoleLabel').textContent =
             'Primary Manager • Finance Overview';
@@ -963,9 +952,6 @@
             data = null;
         }
 
-        // =====================================================
-        // SESSION EXPIRED
-        // =====================================================
         if (response.status === 401) {
             [
                 'token',
@@ -981,9 +967,6 @@
             return null;
         }
 
-        // =====================================================
-        // OTHER API ERRORS
-        // =====================================================
         if (!response.ok) {
             throw new Error(
                 data?.message ||
@@ -1006,9 +989,6 @@
             console.log('Sector:', sector);
             console.log('====================================');
 
-            // =================================================
-            // PRIMARY SUMMARY
-            // =================================================
             const primarySummary = await apiRequest(
                 '/payments/summary?sector=primary&academic_year=2026/2027'
             );
@@ -1018,9 +998,6 @@
             const primaryData =
                 primarySummary?.summary || {};
 
-            // =================================================
-            // SECONDARY SUMMARY
-            // =================================================
             const secondarySummary = await apiRequest(
                 '/payments/summary?sector=secondary&academic_year=2026/2027'
             );
@@ -1030,9 +1007,6 @@
             const secondaryData =
                 secondarySummary?.summary || {};
 
-            // =================================================
-            // NUMERIC VALUES
-            // =================================================
             const primaryCollected =
                 Number(primaryData.total_collected || 0);
 
@@ -1053,18 +1027,12 @@
                 primaryOutstanding +
                 secondaryOutstanding;
 
-            // =================================================
-            // MAIN KPI
-            // =================================================
             document.getElementById('totalCollected').textContent =
                 formatCurrency(totalCollected);
 
             document.getElementById('pendingFees').textContent =
                 formatCurrency(totalOutstanding);
 
-            // =================================================
-            // PRIMARY SCHOOL
-            // =================================================
             document.getElementById('primaryCollected').textContent =
                 formatCurrency(primaryCollected);
 
@@ -1080,9 +1048,6 @@
             document.getElementById('primaryStudentCount').textContent =
                 Number(primaryData.total_students || 0).toLocaleString();
 
-            // =================================================
-            // SECONDARY SCHOOL
-            // =================================================
             document.getElementById('secondaryCollected').textContent =
                 formatCurrency(secondaryCollected);
 
@@ -1112,7 +1077,6 @@
                 error
             );
 
-            // Keep the dashboard usable even if one API request fails.
             document.getElementById('totalCollected').textContent =
                 'SLL 0.00';
 

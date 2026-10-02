@@ -751,7 +751,7 @@
 
             <button
                 class="back-btn"
-                onclick="window.location.href='dashboard.html'"
+                onclick="window.location.href='finance.html'"
             >
                 ← Back to Dashboard
             </button>
@@ -1698,7 +1698,7 @@ const sector = String(user?.sector || '')
     .toLowerCase();
 
 
-const isSecondaryFinanceOfficer =
+const isFinanceOfficer =
     roleId === 3 &&
     sector === 'secondary';
 
@@ -1717,7 +1717,7 @@ const isAdmin =
 
 
 const isAllowed =
-    isSecondaryFinanceOfficer ||
+    isFinanceOfficer ||
     isSecondaryManager ||
     isAdmin ||
     isProprietor;
@@ -1730,15 +1730,15 @@ const isViewOnly =
 
 
 const canRecordPayment =
-    isSecondaryFinanceOfficer;
+    isFinanceOfficer;
 
 
 const canEditPayment =
-    isSecondaryFinanceOfficer;
+    isFinanceOfficer;
 
 
 const canDeletePayment =
-    isSecondaryFinanceOfficer;
+    isFinanceOfficer;
 
 
 const canApprove =
@@ -1762,7 +1762,7 @@ if (!isAllowed) {
 
 let displayRole = user?.role_name || 'User';
 
-if (isSecondaryFinanceOfficer) {
+if (isFinanceOfficer) {
     displayRole = 'Finance Officer';
 } else if (isSecondaryManager) {
     displayRole = 'Manager';
@@ -1800,9 +1800,9 @@ if (isProprietor) {
 } else if (isSecondaryManager) {
     badgeClass = 'manager';
     badgeText = '📋 Secondary Manager';
-} else if (isSecondaryFinanceOfficer) {
+} else if (isFinanceOfficer) {
     badgeClass = 'finance';
-    badgeText = '💰 Secondary Finance Officer';
+    badgeText = '💰 Finance Officer';
 }
 
 
@@ -2047,7 +2047,7 @@ async function openRecordPayment() {
 
     if (!canRecordPayment) {
         alert(
-            'Only the Secondary Finance Officer can record payments.'
+            'Only the Finance Officer can record payments.'
         );
         return;
     }

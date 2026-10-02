@@ -16,18 +16,22 @@ console.log('🔍 Loading payments.js...');
 // ROLE CONSTANTS
 // ============================================================
 
-const PROPRIETOR = ROLE_IDS.PROPRIETOR;
-const ADMINISTRATOR = ROLE_IDS.ADMINISTRATOR;
-const FINANCE = ROLE_IDS.FINANCE;
-const TEACHER = ROLE_IDS.TEACHER;
-const STUDENT = ROLE_IDS.STUDENT;
-const MANAGER = ROLE_IDS.MANAGER;
+const PROPRIETOR                 = ROLE_IDS.PROPRIETOR;
+const ADMINISTRATOR              = ROLE_IDS.ADMINISTRATOR;
+const FINANCE                    = ROLE_IDS.FINANCE;
+const TEACHER                    = ROLE_IDS.TEACHER;
+const STUDENT                    = ROLE_IDS.STUDENT;
+const MANAGER                    = ROLE_IDS.MANAGER;
+const ADMIN_OFFICER              = ROLE_IDS.ADMIN_OFFICER;
+const ACADEMIC_AFFAIRS_OFFICER   = ROLE_IDS.ACADEMIC_AFFAIRS_OFFICER;
+const EXAMINATION_OFFICER        = ROLE_IDS.EXAMINATION_OFFICER;
 
 const FINANCE_READ_ROLES = [
     PROPRIETOR,
     ADMINISTRATOR,
     FINANCE,
-    MANAGER
+    MANAGER,
+    ADMIN_OFFICER
 ];
 
 const PAYMENT_WRITE_ROLES = [
@@ -74,6 +78,16 @@ function isSectorUser(user) {
     );
 }
 
+function isAcademicAffairsOfficer(user) {
+    return Number(user?.secondary_role_id) === ACADEMIC_AFFAIRS_OFFICER;
+}
+
+function getAAOSector(user) {
+    return String(user?.aao_sector || '')
+        .trim()
+        .toLowerCase();
+}
+
 function normalizeSector(value) {
     if (!value) return null;
 
@@ -103,11 +117,6 @@ function getSectionsForSector(sector) {
 
     return [];
 }
-
-// ────────────────────────────────────────────────────────────
-// PostgREST truncates long IN() lists and caps rows per response.
-// These two helpers fix both limits.
-// ────────────────────────────────────────────────────────────
 
 function chunkArray(arr, size) {
     const out = [];
@@ -184,10 +193,7 @@ function determineEffectiveSector(req, requestedSector) {
     const authenticatedSector =
         normalizeSector(getSector(req.user));
 
-    if (
-        roleId === FINANCE ||
-        roleId === MANAGER
-    ) {
+    if (roleId === MANAGER) {
 
         if (!authenticatedSector) {
             return {
@@ -200,9 +206,27 @@ function determineEffectiveSector(req, requestedSector) {
         };
     }
 
+    if (isAcademicAffairsOfficer(req.user)) {
+
+        const aaoSector = normalizeSector(getAAOSector(req.user));
+
+        if (!aaoSector) {
+            return {
+                error: 'Your AAO account does not have a valid sector.'
+            };
+        }
+
+        return {
+            sector: aaoSector
+        };
+    }
+
     if (
         roleId === PROPRIETOR ||
-        roleId === ADMINISTRATOR
+        roleId === ADMINISTRATOR ||
+        roleId === FINANCE ||
+        roleId === ADMIN_OFFICER ||
+        req.user?.is_exam_officer === true
     ) {
 
         if (!requestedSector) {
@@ -879,12 +903,10 @@ router.get(
                     );
             }
 
-            // ── FEES (chunked + paginated) ──
             let totalExpected = 0;
 
             if (studentIds === null) {
 
-                // No sector filter — read all fee rows.
                 const rows = await fetchAllRows(() => {
                     let q = supabase
                         .from('student_fees')
@@ -921,7 +943,6 @@ router.get(
                 }
             }
 
-            // ── PAYMENTS (chunked + paginated) ──
             let totalCollected = 0;
 
             if (studentIds === null) {
@@ -1169,11 +1190,9 @@ router.get(
                         student.student_id
                 );
 
-            // Chunk the IN() list and paginate each chunk.
             const studentIdChunks =
                 chunkArray(studentIds, 100);
 
-            // ── FEES ──
             let feeRecords = [];
             for (const idChunk of studentIdChunks) {
                 const chunkRows = await fetchAllRows(() => {
@@ -1199,7 +1218,6 @@ router.get(
                 feeRecords = feeRecords.concat(chunkRows);
             }
 
-            // ── PAYMENTS ──
             let paymentRecords = [];
             for (const idChunk of studentIdChunks) {
                 const chunkRows = await fetchAllRows(() => {
@@ -1641,18 +1659,6 @@ router.post(
                 });
             }
 
-            if (
-                roleId === FINANCE &&
-                normalizeSector(
-                    getSector(req.user)
-                ) !== studentSector
-            ) {
-                return res.status(403).json({
-                    message:
-                        'Access denied. You cannot record a payment for another school sector.'
-                });
-            }
-
             const {
                 data: studentFee,
                 error: studentFeeError
@@ -1853,39 +1859,6 @@ router.put(
             const studentSection =
                 existingPayment.students
                     ?.school_section || null;
-
-            const paymentSector =
-                normalizeSector(
-                    PRIMARY_SECTIONS.includes(
-                        studentSection
-                    )
-                        ? 'primary'
-                        : SECONDARY_SECTIONS.includes(
-                            studentSection
-                        )
-                            ? 'secondary'
-                            : null
-                );
-
-            if (
-                roleId === FINANCE
-            ) {
-
-                const userSector =
-                    normalizeSector(
-                        getSector(req.user)
-                    );
-
-                if (
-                    !userSector ||
-                    userSector !== paymentSector
-                ) {
-                    return res.status(403).json({
-                        message:
-                            'Access denied. You cannot edit a payment outside your school sector.'
-                    });
-                }
-            }
 
             const {
                 amount_paid,
@@ -2130,37 +2103,9 @@ router.delete(
                 existingPayment.students
                     ?.school_section || null;
 
-            const paymentSector =
-                normalizeSector(
-                    PRIMARY_SECTIONS.includes(
-                        studentSection
-                    )
-                        ? 'primary'
-                        : SECONDARY_SECTIONS.includes(
-                            studentSection
-                        )
-                            ? 'secondary'
-                            : null
-                );
-
             if (
                 roleId === FINANCE
             ) {
-
-                const userSector =
-                    normalizeSector(
-                        getSector(req.user)
-                    );
-
-                if (
-                    !userSector ||
-                    userSector !== paymentSector
-                ) {
-                    return res.status(403).json({
-                        message:
-                            'Access denied. You cannot delete a payment outside your school sector.'
-                    });
-                }
 
                 const {
                     error: approvalError

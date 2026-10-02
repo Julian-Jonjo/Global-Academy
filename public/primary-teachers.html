@@ -217,9 +217,11 @@
     const ROLE_TEACHER        = 4;
     const ROLE_STUDENT        = 5;
     const ROLE_MANAGER        = 6;
+    const ROLE_ADMINOFFICER   = 7;
 
     const isProprietor       = roleId === ROLE_PROPRIETOR;
     const isAdmin            = roleId === ROLE_ADMINISTRATOR;
+    const isAdminOfficer     = roleId === ROLE_ADMINOFFICER;
     const isPrimaryManager   = roleId === ROLE_MANAGER && sector === 'primary';
     const isSecondaryManager = roleId === ROLE_MANAGER && sector === 'secondary';
     const isPrimaryFinance   = roleId === ROLE_FINANCE && sector === 'primary';
@@ -230,7 +232,8 @@
     const hasAccess =
         isProprietor ||
         isAdmin ||
-        isPrimaryManager;
+        isPrimaryManager||
+        isAdminOfficer;
 
     if (!hasAccess) {
         alert('Access denied.');

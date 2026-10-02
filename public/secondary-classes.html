@@ -93,7 +93,7 @@
             const classes = (allClasses || []).filter(cls =>
                 SECONDARY_SECTIONS.includes(
                     String(cls.school_section || '').trim().toLowerCase()
-                )
+                ) 
             );
 
             const studentsResponse = await fetch('/api/students', {

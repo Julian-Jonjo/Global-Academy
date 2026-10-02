@@ -1,17 +1,91 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../Config/db');
-const { authenticateToken, requireRoles, ROLE_IDS } = require('../middleware/authMiddleware');
+const {
+    authenticateToken,
+    requireRoles,
+    ROLE_IDS
+} = require('../middleware/authMiddleware');
 
-const VIEW_ROLES = [ROLE_IDS.PROPRIETOR, ROLE_IDS.ADMINISTRATOR, ROLE_IDS.MANAGER, ROLE_IDS.TEACHER];
-const WRITE_ROLES = [ROLE_IDS.PROPRIETOR, ROLE_IDS.ADMINISTRATOR, ROLE_IDS.TEACHER, ROLE_IDS.MANAGER];
+// ============================================================
+// ROLE CONSTANTS
+// ============================================================
+
+const PROPRIETOR                 = ROLE_IDS.PROPRIETOR;
+const ADMINISTRATOR              = ROLE_IDS.ADMINISTRATOR;
+const TEACHER                    = ROLE_IDS.TEACHER;
+const MANAGER                    = ROLE_IDS.MANAGER;
+const ADMIN_OFFICER              = ROLE_IDS.ADMIN_OFFICER;
+const ACADEMIC_AFFAIRS_OFFICER   = ROLE_IDS.ACADEMIC_AFFAIRS_OFFICER;
+const EXAMINATION_OFFICER        = ROLE_IDS.EXAMINATION_OFFICER;
+
+// Read access to results pages
+const VIEW_ROLES = [
+    PROPRIETOR,
+    ADMINISTRATOR,
+    MANAGER,
+    TEACHER,
+    ADMIN_OFFICER
+];
+
+// Write access (save grades)
+const WRITE_ROLES = [
+    PROPRIETOR,
+    ADMINISTRATOR,
+    TEACHER,
+    MANAGER,
+    ADMIN_OFFICER
+];
+
+// ============================================================
+// ROLE HELPERS (from JWT)
+// ============================================================
+
+function isExaminationOfficer(user) {
+    return user?.is_exam_officer === true;
+}
+
+function isAcademicAffairsOfficer(user) {
+    return Number(user?.secondary_role_id) === ACADEMIC_AFFAIRS_OFFICER;
+}
+
+function getAAOSector(user) {
+    return String(user?.aao_sector || '')
+        .trim()
+        .toLowerCase();
+}
+
+// ============================================================
+// SECTOR HELPERS
+// ============================================================
+
+function getPrimarySections() {
+    return ['Nursery', 'Primary'];
+}
+
+function getSecondarySections() {
+    return ['JSS', 'SSS', 'Secondary'];
+}
+
+function getSectionsForSector(sector) {
+    const s = String(sector || '').trim().toLowerCase();
+    if (s === 'primary')   return getPrimarySections();
+    if (s === 'secondary') return getSecondarySections();
+    return [];
+}
+
+function normalizeSection(section) {
+    return String(section || '').trim().toLowerCase();
+}
+
+function sectionBelongsToSector(schoolSection, sector) {
+    const normalized = normalizeSection(schoolSection);
+    const list = getSectionsForSector(sector);
+    return list.some(s => normalizeSection(s) === normalized);
+}
 
 // ============================================================
 // HELPERS — class master lookups
-// ------------------------------------------------------------
-// A teacher may be the class master of MORE THAN ONE class.
-// These helpers return lists, not single rows, so nothing breaks
-// when a teacher has two (or more) classes.
 // ============================================================
 
 async function getClassesForTeacher(teacherId) {
@@ -53,8 +127,34 @@ async function isClassMasterOf(teacherId, classId) {
 }
 
 // ============================================================
+// AAO SECTOR ENFORCEMENT
+// ------------------------------------------------------------
+// If the caller is an Academic Affairs Officer, restrict access
+// to classes in their sector. Returns true if the caller is not
+// an AAO (no restriction).
+// ============================================================
+
+async function aaoCanAccessClass(user, classId) {
+    if (!isAcademicAffairsOfficer(user)) {
+        return true;  // not an AAO, no restriction from this helper
+    }
+
+    const { data: classRow } = await supabase
+        .from('classes')
+        .select('school_section')
+        .eq('class_id', classId)
+        .maybeSingle();
+
+    if (!classRow) return false;
+
+    const aaoSector = getAAOSector(user);
+    return sectionBelongsToSector(classRow.school_section, aaoSector);
+}
+
+// ============================================================
 // 1. GET TEACHER'S ASSIGNED CLASSES & SUBJECTS
 // ============================================================
+
 router.get('/my-assignments', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
         const teacherId = req.user.teacher_id;
@@ -76,6 +176,7 @@ router.get('/my-assignments', authenticateToken, requireRoles(...VIEW_ROLES), as
 // ============================================================
 // 2. GET CLASS MASTER'S CLASSES (may be more than one)
 // ============================================================
+
 router.get('/my-classes', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
         const teacherId = req.user.teacher_id;
@@ -91,8 +192,13 @@ router.get('/my-classes', authenticateToken, requireRoles(...VIEW_ROLES), async 
 // ============================================================
 // 3. GET CLASS STUDENTS
 // ============================================================
+
 router.get('/students/:classId', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
+        if (!(await aaoCanAccessClass(req.user, req.params.classId))) {
+            return res.status(403).json({ message: 'Access denied. Outside your sector.' });
+        }
+
         const { data, error } = await supabase
             .from('students')
             .select('student_id, first_name, last_name, gender, date_of_birth, photo_url')
@@ -110,8 +216,13 @@ router.get('/students/:classId', authenticateToken, requireRoles(...VIEW_ROLES),
 // ============================================================
 // 4. GET ALL SUBJECTS FOR A CLASS
 // ============================================================
+
 router.get('/subjects/:classId', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
+        if (!(await aaoCanAccessClass(req.user, req.params.classId))) {
+            return res.status(403).json({ message: 'Access denied. Outside your sector.' });
+        }
+
         const { data, error } = await supabase
             .from('class_subjects')
             .select('*, subjects!subject_id ( subject_id, subject_name )')
@@ -126,7 +237,12 @@ router.get('/subjects/:classId', authenticateToken, requireRoles(...VIEW_ROLES),
 
 // ============================================================
 // 5. SAVE GRADES
+//
+// Saves grade rows as 'draft'. If a row is already 'approved'
+// or 'submitted', it is not silently overwritten — the teacher
+// must have it rejected first.
 // ============================================================
+
 router.post('/save', authenticateToken, requireRoles(...WRITE_ROLES), async (req, res) => {
     try {
         const { class_id, subject_id, term, records } = req.body;
@@ -138,7 +254,6 @@ router.post('/save', authenticateToken, requireRoles(...WRITE_ROLES), async (req
         const user = req.user;
         const isClassMaster = await isClassMasterOf(user.teacher_id, class_id);
 
-        // Determine the class's school section to decide the save path.
         const { data: classRow } = await supabase
             .from('classes')
             .select('school_section')
@@ -148,20 +263,33 @@ router.post('/save', authenticateToken, requireRoles(...WRITE_ROLES), async (req
         const classSection = String(classRow?.school_section || '').trim().toLowerCase();
         const isPrimaryClass = ['nursery', 'primary'].includes(classSection);
 
-        const insertData = records.map(r => ({
-            student_id: r.student_id,
-            class_id: class_id,
-            subject_id: subject_id,
-            term: term,
-            test_score: r.test_score || 0,
-            exam_score: r.exam_score || 0,
-            total_score: (r.test_score || 0) + (r.exam_score || 0),
-            academic_year_id: 1
-        }));
+        // ---------------------------------------------------------
+        // Existing rows for this student/subject/term — we need to
+        // know their status to decide how to write.
+        // ---------------------------------------------------------
+        const studentIds = records.map(r => r.student_id);
 
+        const { data: existingRows } = await supabase
+            .from('results')
+            .select('student_id, status')
+            .eq('class_id', class_id)
+            .eq('subject_id', subject_id)
+            .eq('term', term)
+            .in('student_id', studentIds);
+
+        const existingStatus = new Map(
+            (existingRows || []).map(r => [Number(r.student_id), r.status])
+        );
+
+        // ---------------------------------------------------------
         // PRIMARY: any teacher assigned to the class saves directly.
-        // SECONDARY: only class masters save directly; other teachers go to
-        //            result_edit_requests for Manager approval.
+        // SECONDARY: only class masters save directly; other teachers
+        //            go to result_edit_requests for Manager approval.
+        //
+        // (unchanged — kept for backward compatibility with the
+        //  existing result_edit_requests workflow)
+        // ---------------------------------------------------------
+
         if (!isPrimaryClass && !isClassMaster && user.role_id === ROLE_IDS.TEACHER) {
             const approvalRequests = records.map(r => ({
                 teacher_id: user.teacher_id,
@@ -181,22 +309,298 @@ router.post('/save', authenticateToken, requireRoles(...WRITE_ROLES), async (req
             return res.json({ message: 'Grade changes sent for Manager approval.' });
         }
 
+        // ---------------------------------------------------------
+        // Direct write. Preserve any 'submitted' or 'approved' row
+        // (teacher must submit-for-rejection to edit those).
+        // Everything else goes in as 'draft'.
+        // ---------------------------------------------------------
+        const insertData = records
+            .filter(r => {
+                const current = existingStatus.get(Number(r.student_id));
+                return current !== 'submitted' && current !== 'approved';
+            })
+            .map(r => ({
+                student_id: r.student_id,
+                class_id: class_id,
+                subject_id: subject_id,
+                term: term,
+                test_score: r.test_score || 0,
+                exam_score: r.exam_score || 0,
+                total_score: (r.test_score || 0) + (r.exam_score || 0),
+                academic_year_id: 1,
+                status: 'draft',
+                rejection_reason: null
+            }));
+
+        if (insertData.length === 0) {
+            return res.json({
+                message: 'All selected rows are submitted or approved and cannot be edited.'
+            });
+        }
+
         const { error } = await supabase
             .from('results')
             .upsert(insertData, { onConflict: 'student_id, subject_id, term' });
 
         if (error) throw error;
-        res.json({ message: 'Grades saved successfully!' });
+        res.json({ message: 'Grades saved as draft.' });
     } catch (error) {
         console.error('SAVE RESULT ERROR:', error);
         res.status(500).json({ message: 'Failed to save grades' });
     }
 });
+
+// ============================================================
+// 5b. SUBMIT GRADES TO EXAMINATION OFFICER
+//
+// Teacher (or class master or higher) submits a whole
+// subject+class+term for EO review. All draft rows for that
+// subject/class/term become 'submitted'.
+// ============================================================
+
+router.post('/submit', authenticateToken, requireRoles(...WRITE_ROLES), async (req, res) => {
+    try {
+        const { class_id, subject_id, term } = req.body;
+
+        if (!class_id || !subject_id || !term) {
+            return res.status(400).json({ message: 'class_id, subject_id, term are required' });
+        }
+
+        if (!(await aaoCanAccessClass(req.user, class_id))) {
+            return res.status(403).json({ message: 'Access denied. Outside your sector.' });
+        }
+
+        const { data: draftRows, error: fetchError } = await supabase
+            .from('results')
+            .select('result_id')
+            .eq('class_id', class_id)
+            .eq('subject_id', subject_id)
+            .eq('term', term)
+            .eq('status', 'draft');
+
+        if (fetchError) throw fetchError;
+
+        if (!draftRows || draftRows.length === 0) {
+            return res.status(400).json({
+                message: 'No draft grades found for this subject and term.'
+            });
+        }
+
+        const { error } = await supabase
+            .from('results')
+            .update({
+                status: 'submitted',
+                submitted_by: req.user.user_id,
+                submitted_at: new Date().toISOString(),
+                rejection_reason: null
+            })
+            .eq('class_id', class_id)
+            .eq('subject_id', subject_id)
+            .eq('term', term)
+            .eq('status', 'draft');
+
+        if (error) throw error;
+
+        res.json({
+            message: `Submitted ${draftRows.length} grade(s) to the Examination Officer.`,
+            count: draftRows.length
+        });
+    } catch (error) {
+        console.error('SUBMIT RESULT ERROR:', error);
+        res.status(500).json({ message: 'Failed to submit grades' });
+    }
+});
+
+// ============================================================
+// 5c. GET THE EXAMINATION OFFICER'S REVIEW QUEUE
+// ============================================================
+
+router.get('/submitted', authenticateToken, async (req, res) => {
+    try {
+        if (!isExaminationOfficer(req.user)) {
+            return res.status(403).json({ message: 'Only the Examination Officer can view the approval queue.' });
+        }
+
+        const { data, error } = await supabase
+            .from('results')
+            .select(`
+                result_id,
+                student_id,
+                class_id,
+                subject_id,
+                term,
+                test_score,
+                exam_score,
+                total_score,
+                submitted_at,
+                classes!class_id ( class_id, class_name, arm, school_section ),
+                subjects!subject_id ( subject_id, subject_name ),
+                students!student_id ( student_id, first_name, middle_name, last_name, admission_number )
+            `)
+            .eq('status', 'submitted')
+            .order('submitted_at', { ascending: true });
+
+        if (error) throw error;
+
+        // Group by (class_id, subject_id, term) so the frontend
+        // shows one row per submission batch.
+        const grouped = new Map();
+
+        (data || []).forEach(row => {
+            const key = `${row.class_id}|${row.subject_id}|${row.term}`;
+            if (!grouped.has(key)) {
+                grouped.set(key, {
+                    class_id: row.class_id,
+                    class_name: row.classes?.class_name || null,
+                    arm: row.classes?.arm || null,
+                    school_section: row.classes?.school_section || null,
+                    subject_id: row.subject_id,
+                    subject_name: row.subjects?.subject_name || null,
+                    term: row.term,
+                    submitted_at: row.submitted_at,
+                    student_count: 0,
+                    students: []
+                });
+            }
+            const group = grouped.get(key);
+            group.student_count += 1;
+            group.students.push({
+                result_id: row.result_id,
+                student_id: row.student_id,
+                admission_number: row.students?.admission_number || null,
+                first_name: row.students?.first_name || null,
+                middle_name: row.students?.middle_name || null,
+                last_name: row.students?.last_name || null,
+                test_score: row.test_score,
+                exam_score: row.exam_score,
+                total_score: row.total_score
+            });
+        });
+
+        res.json(Array.from(grouped.values()));
+    } catch (error) {
+        console.error('SUBMITTED QUEUE ERROR:', error);
+        res.status(500).json({ message: 'Failed to load approval queue' });
+    }
+});
+
+// ============================================================
+// 5d. EXAMINATION OFFICER — APPROVE
+// ============================================================
+
+router.put('/approve/:classId/:subjectId/:term', authenticateToken, async (req, res) => {
+    try {
+        if (!isExaminationOfficer(req.user)) {
+            return res.status(403).json({ message: 'Only the Examination Officer can approve grades.' });
+        }
+
+        const { classId, subjectId, term } = req.params;
+
+        const { data: rows, error: fetchError } = await supabase
+            .from('results')
+            .select('result_id')
+            .eq('class_id', classId)
+            .eq('subject_id', subjectId)
+            .eq('term', term)
+            .eq('status', 'submitted');
+
+        if (fetchError) throw fetchError;
+
+        if (!rows || rows.length === 0) {
+            return res.status(400).json({ message: 'No submitted grades found for this subject and term.' });
+        }
+
+        const { error } = await supabase
+            .from('results')
+            .update({
+                status: 'approved',
+                approved_by: req.user.user_id,
+                approved_at: new Date().toISOString(),
+                rejection_reason: null
+            })
+            .eq('class_id', classId)
+            .eq('subject_id', subjectId)
+            .eq('term', term)
+            .eq('status', 'submitted');
+
+        if (error) throw error;
+
+        res.json({
+            message: `Approved ${rows.length} grade(s).`,
+            count: rows.length
+        });
+    } catch (error) {
+        console.error('APPROVE GRADES ERROR:', error);
+        res.status(500).json({ message: 'Failed to approve grades' });
+    }
+});
+
+// ============================================================
+// 5e. EXAMINATION OFFICER — REJECT
+// ============================================================
+
+router.put('/reject/:classId/:subjectId/:term', authenticateToken, async (req, res) => {
+    try {
+        if (!isExaminationOfficer(req.user)) {
+            return res.status(403).json({ message: 'Only the Examination Officer can reject grades.' });
+        }
+
+        const { classId, subjectId, term } = req.params;
+        const { reason } = req.body;
+
+        if (!reason || !String(reason).trim()) {
+            return res.status(400).json({ message: 'A rejection reason is required.' });
+        }
+
+        const { data: rows, error: fetchError } = await supabase
+            .from('results')
+            .select('result_id')
+            .eq('class_id', classId)
+            .eq('subject_id', subjectId)
+            .eq('term', term)
+            .eq('status', 'submitted');
+
+        if (fetchError) throw fetchError;
+
+        if (!rows || rows.length === 0) {
+            return res.status(400).json({ message: 'No submitted grades found for this subject and term.' });
+        }
+
+        const { error } = await supabase
+            .from('results')
+            .update({
+                status: 'rejected',
+                rejection_reason: String(reason).trim(),
+                approved_by: req.user.user_id,
+                approved_at: new Date().toISOString()
+            })
+            .eq('class_id', classId)
+            .eq('subject_id', subjectId)
+            .eq('term', term)
+            .eq('status', 'submitted');
+
+        if (error) throw error;
+
+        res.json({
+            message: `Rejected ${rows.length} grade(s).`,
+            count: rows.length
+        });
+    } catch (error) {
+        console.error('REJECT GRADES ERROR:', error);
+        res.status(500).json({ message: 'Failed to reject grades' });
+    }
+});
+
 // ============================================================
 // 6. GET RESULTS FOR SUBJECT
 // ============================================================
+
 router.get('/subject/:classId/:subjectId/:term', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
+        if (!(await aaoCanAccessClass(req.user, req.params.classId))) {
+            return res.status(403).json({ message: 'Access denied. Outside your sector.' });
+        }
+
         const { data, error } = await supabase
             .from('results')
             .select('*')
@@ -215,8 +619,13 @@ router.get('/subject/:classId/:subjectId/:term', authenticateToken, requireRoles
 // ============================================================
 // 7. GET FULL CLASS RESULTS
 // ============================================================
+
 router.get('/all/:classId', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
+        if (!(await aaoCanAccessClass(req.user, req.params.classId))) {
+            return res.status(403).json({ message: 'Access denied. Outside your sector.' });
+        }
+
         const { data, error } = await supabase
             .from('results')
             .select('*')
@@ -235,6 +644,7 @@ router.get('/all/:classId', authenticateToken, requireRoles(...VIEW_ROLES), asyn
 // ============================================================
 // 8. GET SINGLE STUDENT DETAILS
 // ============================================================
+
 router.get('/student/:studentId', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -244,6 +654,14 @@ router.get('/student/:studentId', authenticateToken, requireRoles(...VIEW_ROLES)
             .single();
 
         if (error) throw error;
+
+        if (isAcademicAffairsOfficer(req.user)) {
+            const classSection = data?.classes?.school_section || data?.school_section || '';
+            if (!sectionBelongsToSector(classSection, getAAOSector(req.user))) {
+                return res.status(403).json({ message: 'Access denied. Outside your sector.' });
+            }
+        }
+
         res.json(data);
     } catch (error) {
         console.error('STUDENT DETAILS ERROR:', error);
@@ -254,7 +672,8 @@ router.get('/student/:studentId', authenticateToken, requireRoles(...VIEW_ROLES)
 // ============================================================
 // 9. GET PENDING EDIT REQUESTS
 // ============================================================
-router.get('/pending-edits/:sector', authenticateToken, requireRoles(ROLE_IDS.MANAGER, ROLE_IDS.ADMINISTRATOR), async (req, res) => {
+
+router.get('/pending-edits/:sector', authenticateToken, requireRoles(MANAGER, ADMINISTRATOR), async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('result_edit_requests')
@@ -272,7 +691,8 @@ router.get('/pending-edits/:sector', authenticateToken, requireRoles(ROLE_IDS.MA
 // ============================================================
 // 10. APPROVE / REJECT EDIT REQUESTS
 // ============================================================
-router.put('/review-edit/:requestId', authenticateToken, requireRoles(ROLE_IDS.MANAGER, ROLE_IDS.ADMINISTRATOR), async (req, res) => {
+
+router.put('/review-edit/:requestId', authenticateToken, requireRoles(MANAGER, ADMINISTRATOR), async (req, res) => {
     try {
         const { status } = req.body;
         const requestId = req.params.requestId;
@@ -296,7 +716,9 @@ router.put('/review-edit/:requestId', authenticateToken, requireRoles(ROLE_IDS.M
                     test_score: requestData.test_score,
                     exam_score: requestData.exam_score,
                     total_score: requestData.test_score + requestData.exam_score,
-                    academic_year_id: 1
+                    academic_year_id: 1,
+                    status: 'draft',
+                    rejection_reason: null
                 }, { onConflict: 'student_id, subject_id, term' });
         }
 
@@ -317,8 +739,12 @@ router.put('/review-edit/:requestId', authenticateToken, requireRoles(ROLE_IDS.M
 });
 
 // ============================================================
-// 11. GET FULL CLASS RESULTS FOR ONE TERM (with positions)
+// 11. GET FULL CLASS RESULTS FOR ONE TERM
+// ------------------------------------------------------------
+// Used for report-card position calculations. Only 'approved'
+// grades count toward totals and positions.
 // ============================================================
+
 router.get('/class-term/:classId/:term', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
         const classId = Number(req.params.classId);
@@ -328,11 +754,16 @@ router.get('/class-term/:classId/:term', authenticateToken, requireRoles(...VIEW
             return res.status(400).json({ message: 'Invalid class or term' });
         }
 
+        if (!(await aaoCanAccessClass(req.user, classId))) {
+            return res.status(403).json({ message: 'Access denied. Outside your sector.' });
+        }
+
         const { data, error } = await supabase
             .from('results')
             .select('student_id, subject_id, test_score, exam_score, total_score')
             .eq('class_id', classId)
-            .eq('term', term);
+            .eq('term', term)
+            .eq('status', 'approved');
 
         if (error) throw error;
 
@@ -345,7 +776,10 @@ router.get('/class-term/:classId/:term', authenticateToken, requireRoles(...VIEW
 
 // ============================================================
 // 12. GET FULL REPORT FOR A STUDENT
+// ------------------------------------------------------------
+// Only 'approved' grades appear on report cards.
 // ============================================================
+
 router.get('/report/:studentId', authenticateToken, requireRoles(...VIEW_ROLES), async (req, res) => {
     try {
         const studentId = Number(req.params.studentId);
@@ -363,6 +797,13 @@ router.get('/report/:studentId', authenticateToken, requireRoles(...VIEW_ROLES),
             return res.status(404).json({ message: 'Student not found' });
         }
 
+        if (isAcademicAffairsOfficer(req.user)) {
+            const section = student.school_section || '';
+            if (!sectionBelongsToSector(section, getAAOSector(req.user))) {
+                return res.status(403).json({ message: 'Access denied. Outside your sector.' });
+            }
+        }
+
         const classId = student.class_id;
 
         const { data: classData } = await supabase
@@ -375,6 +816,7 @@ router.get('/report/:studentId', authenticateToken, requireRoles(...VIEW_ROLES),
             .from('results')
             .select('subject_id, term, test_score, exam_score, total_score, subjects!subject_id ( subject_id, subject_name )')
             .eq('student_id', studentId)
+            .eq('status', 'approved')
             .order('term');
 
         if (resErr) throw resErr;
@@ -382,7 +824,8 @@ router.get('/report/:studentId', authenticateToken, requireRoles(...VIEW_ROLES),
         const { data: classResults, error: crErr } = await supabase
             .from('results')
             .select('student_id, subject_id, term, total_score')
-            .eq('class_id', classId);
+            .eq('class_id', classId)
+            .eq('status', 'approved');
 
         if (crErr) throw crErr;
 
@@ -527,9 +970,10 @@ router.get('/report/:studentId', authenticateToken, requireRoles(...VIEW_ROLES),
 });
 
 // ============================================================
-// 13. SAVE TERM COMMENT (Class master only)
+// 13. SAVE TERM COMMENT
 // ============================================================
-router.put('/term-comment', authenticateToken, requireRoles(ROLE_IDS.TEACHER, ROLE_IDS.ADMINISTRATOR), async (req, res) => {
+
+router.put('/term-comment', authenticateToken, requireRoles(TEACHER, ADMINISTRATOR, ADMIN_OFFICER), async (req, res) => {
     try {
         const { student_id, term_id, comment } = req.body;
 
@@ -576,9 +1020,10 @@ router.put('/term-comment', authenticateToken, requireRoles(ROLE_IDS.TEACHER, RO
 });
 
 // ============================================================
-// 14. SAVE YEAR COMMENT (Manager only)
+// 14. SAVE YEAR COMMENT
 // ============================================================
-router.put('/year-comment', authenticateToken, requireRoles(ROLE_IDS.MANAGER, ROLE_IDS.ADMINISTRATOR), async (req, res) => {
+
+router.put('/year-comment', authenticateToken, requireRoles(MANAGER, ADMINISTRATOR, ADMIN_OFFICER), async (req, res) => {
     try {
         const { student_id, academic_year_id, comment } = req.body;
 

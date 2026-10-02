@@ -412,8 +412,6 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
             // =====================================================
             // ACTIVATE STUDENT USER ACCOUNT
             // =====================================================
-            // Flip users.is_active = true for the user row that
-            // is linked to this student and has role_id = 5 (Student).
             const { error: activateUserError } = await supabase
                 .from('users')
                 .update({ is_active: true })
@@ -425,14 +423,11 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                     'STUDENT USER ACTIVATION ERROR:',
                     activateUserError
                 );
-                // Do not abort the approval — the student status has
-                // already been updated. Just log the failure.
             }
 
             // =====================================================
             // AUTO-ASSIGN FEES TO THE APPROVED STUDENT
             // =====================================================
-            // Get student's class info
             const { data: student } = await supabase
                 .from('students')
                 .select('student_id, class_id, school_section')
@@ -440,7 +435,6 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                 .single();
 
             if (student) {
-                // Get current academic year
                 const { data: currentYear } = await supabase
                     .from('academic_years')
                     .select('academic_year_id')
@@ -449,7 +443,6 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
 
                 const academicYearId = currentYear?.academic_year_id || 1;
 
-                // Get current term
                 const { data: currentTerm } = await supabase
                     .from('terms')
                     .select('term_id')
@@ -458,14 +451,12 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
 
                 const termId = currentTerm?.term_id || 1;
 
-                // Get the class level from the class
                 const { data: classData } = await supabase
                     .from('classes')
                     .select('class_name')
                     .eq('class_id', student.class_id)
                     .single();
 
-                // Determine class level
                 let classLevel = '';
                 const className = classData?.class_name || '';
                 
@@ -489,7 +480,6 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                     classLevel = 'sss';
                 }
 
-                // Get fee categories for this class level
                 const { data: feeCategories } = await supabase
                     .from('fee_categories')
                     .select(`
@@ -498,7 +488,7 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                         amount,
                         sector
                     `)
-                                        .eq(
+                    .eq(
                         'sector',
                         ['Nursery', 'Primary'].includes(student.school_section)
                             ? 'primary'
@@ -509,7 +499,6 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                     .eq('academic_year', '2026/2027');
 
                 if (feeCategories && feeCategories.length > 0) {
-                    // Get fee_type_id for each fee category
                     for (const feeCat of feeCategories) {
                         const { data: feeType } = await supabase
                             .from('fee_types')
@@ -518,7 +507,6 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                             .single();
 
                         if (feeType) {
-                            // Check if fee already exists for this student
                             const { data: existingFee } = await supabase
                                 .from('student_fees')
                                 .select('student_fee_id')
@@ -529,7 +517,6 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                                 .single();
 
                             if (!existingFee) {
-                                // Insert the fee
                                 await supabase
                                     .from('student_fees')
                                     .insert([{
@@ -563,7 +550,6 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
 
         if (approveError) throw approveError;
 
-        // Handle other record types
         if (isPaymentType(approval.record_type)) {
             await supabase
                 .from('payments')
@@ -686,7 +672,11 @@ router.get('/:approvalId', authenticateToken, async (req, res) => {
 });
 
 // ============================================================
-// APPROVE PAYMENT (Manager/Proprietor/Admin only)
+// APPROVE PAYMENT (Proprietor only)
+//
+// A single sectorless Finance officer records and edits payments
+// for both sectors. Payment edits and deletes submitted by Finance
+// are approved or rejected ONLY by the Proprietor.
 // ============================================================
 router.put('/:approvalId/approve-payment', authenticateToken, async (req, res) => {
     try {
@@ -697,15 +687,10 @@ router.put('/:approvalId/approve-payment', authenticateToken, async (req, res) =
         const userId = req.user.user_id;
         const userRole = req.user.role_name || '';
 
-        const canApprove = userRole === 'Manager-Primary' || 
-                          userRole === 'Manager-Secondary' || 
-                          userRole === 'Manager' ||
-                          userRole === 'Proprietor' || 
-                          userRole === 'Administrator' ||
-                          userRole === 'Admin';
+        const canApprove = userRole === 'Proprietor';
 
         if (!canApprove) {
-            return res.status(403).json({ message: 'Insufficient permissions to approve payment' });
+            return res.status(403).json({ message: 'Only the Proprietor can approve payment changes.' });
         }
 
         const { data: approval, error: getError } = await supabase
@@ -749,7 +734,7 @@ router.put('/:approvalId/approve-payment', authenticateToken, async (req, res) =
 });
 
 // ============================================================
-// REJECT PAYMENT (Manager/Proprietor/Admin only)
+// REJECT PAYMENT (Proprietor only)
 // ============================================================
 router.put('/:approvalId/reject-payment', authenticateToken, async (req, res) => {
     try {
@@ -764,15 +749,10 @@ router.put('/:approvalId/reject-payment', authenticateToken, async (req, res) =>
             return res.status(400).json({ message: 'Rejection reason is required' });
         }
 
-        const canReject = userRole === 'Manager-Primary' || 
-                         userRole === 'Manager-Secondary' || 
-                         userRole === 'Manager' ||
-                         userRole === 'Proprietor' || 
-                         userRole === 'Administrator' ||
-                         userRole === 'Admin';
+        const canReject = userRole === 'Proprietor';
 
         if (!canReject) {
-            return res.status(403).json({ message: 'Insufficient permissions to reject payment' });
+            return res.status(403).json({ message: 'Only the Proprietor can reject payment changes.' });
         }
 
         const { data: approval, error: getError } = await supabase
