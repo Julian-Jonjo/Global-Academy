@@ -1690,6 +1690,7 @@ try {
    4 = Teacher
    5 = Student
    6 = Manager
+   7 = Admin Officer
 ========================================================= */
 
 const roleId = Number(user?.role_id);
@@ -1697,64 +1698,44 @@ const sector = String(user?.sector || '')
     .trim()
     .toLowerCase();
 
-
-const isFinanceOfficer =
-    roleId === 3 &&
-    sector === 'secondary';
-
-
-const isSecondaryManager =
-    roleId === 6 &&
-    sector === 'secondary';
-
-
-const isProprietor =
-    roleId === 1;
-
-
-const isAdmin =
-    roleId === 2;
-
+const isFinanceOfficer = roleId === 3 && sector === 'secondary';
+const isSecondaryManager = roleId === 6 && sector === 'secondary';
+const isProprietor = roleId === 1;
+const isAdmin = roleId === 2;
+const isAdminOfficer = roleId === 7;
 
 const isAllowed =
     isFinanceOfficer ||
     isSecondaryManager ||
     isAdmin ||
-    isProprietor;
-
+    isProprietor ||
+    isAdminOfficer;
 
 const isViewOnly =
     isSecondaryManager ||
     isAdmin ||
-    isProprietor;
-
+    isProprietor ||
+    isAdminOfficer;
 
 const canRecordPayment =
     isFinanceOfficer;
 
-
 const canEditPayment =
     isFinanceOfficer;
 
-
 const canDeletePayment =
     isFinanceOfficer;
-
 
 const canApprove =
     isAdmin ||
     isProprietor;
 
-
 if (!isAllowed) {
-
     alert(
         'You do not have permission to access Secondary School Finance.'
     );
-
     window.location.href = 'dashboard.html';
 }
-
 
 /* =========================================================
    DISPLAY ROLE
@@ -1794,6 +1775,9 @@ let badgeText = '👁️ View-Only Access';
 if (isProprietor) {
     badgeClass = 'proprietor';
     badgeText = '👑 Proprietor';
+} else if (isAdminOfficer) {
+    badgeClass = 'admin_officer';
+    badgeText = '👑 Admin Officer';
 } else if (isAdmin) {
     badgeClass = 'admin';
     badgeText = '⚙️ Administrator';

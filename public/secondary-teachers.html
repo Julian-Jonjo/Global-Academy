@@ -248,7 +248,7 @@
     const isAdministrator = roleId === 2;
     const isManager = roleId === 6;
     const isAdminOfficer = roleId === 7;
-    const hasGlobalAccess = isProprietor || isAdministrator;
+    const hasGlobalAccess = isProprietor || isAdministrator || isAdminOfficer;
     const hasSecondaryManagerAccess = isManager && sector === 'secondary';
     const hasAccess = hasGlobalAccess || hasSecondaryManagerAccess;
 

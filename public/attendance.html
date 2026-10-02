@@ -427,7 +427,7 @@
                     <h2>Attendance Registers</h2>
                     <p>Select a class register to take attendance.</p>
                 </div>
-                <button class="back-btn" onclick="window.location.href='teachers-dashboard.html'">← Back to Dashboard</button>
+                <button class="back-btn" onclick="goBackToMyDashboard()">← Back to Dashboard</button>
             </div>
 
             <div class="sector-section" id="primary-section" style="display: none;">
@@ -503,7 +503,46 @@
     const userSector = String(user.sector || '').toLowerCase();
 
     document.getElementById('userInfo').textContent = `${user.full_name || 'User'} (${user.role_name})`;
+    
+    function goBackToMyDashboard() {
 
+    const roleId = Number(user?.role_id || 0);
+    const secondaryRoleId = Number(user?.secondary_role_id || 0);
+    const isExamOfficer = user?.is_exam_officer === true;
+
+    if (roleId === 1 || roleId === 2 || roleId === 7) {
+        window.location.href = 'dashboard.html';
+        return;
+    }
+
+    if (roleId === 3) {
+        window.location.href = 'finance.html';
+        return;
+    }
+
+    if (roleId === 4) {
+        // A teacher who also holds AAO / EO lands on dashboard.html
+        if (secondaryRoleId === 8 || isExamOfficer) {
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        window.location.href = 'teachers-dashboard.html';
+        return;
+    }
+
+    if (roleId === 5) {
+        window.location.href = 'student-dashboard.html';
+        return;
+    }
+
+    if (roleId === 6) {
+        window.location.href = 'dashboard.html';
+        return;
+    }
+
+    // Unknown role — safest fallback
+    window.location.href = 'dashboard.html';
+}
     function logout() { sessionStorage.removeItem('authToken'); sessionStorage.removeItem('user'); window.location.href = '/login.html'; }
     function escapeHtml(value) { if (value === null || value === undefined) return ''; return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 

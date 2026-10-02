@@ -845,6 +845,7 @@
     const isTeacher = roleId === 4;
     const isStudent = roleId === 5;
     const isManager = roleId === 6;
+    const isAdminOfficer = roleId === 7;
 
     const isPrimaryManager = isManager && sector === 'primary';
     const isSecondaryManager = isManager && sector === 'secondary';
@@ -863,7 +864,8 @@
         isProprietor ||
         isAdministrator ||
         isManager ||
-        isFinance;
+        isFinance ||
+        isAdminOfficer;
 
     if (!isAllowed) {
         alert('You do not have permission to access the Finance Overview.');
@@ -891,6 +893,9 @@
     } else if (isSecondaryManager) {
         document.getElementById('userRoleLabel').textContent =
             'Secondary Manager • Finance Overview';
+    } else if (isAdminOfficer) {
+        document.getElementById('userRoleLabel').textContent = 
+            'Admin Officer • Finance Overview';
     } else {
         document.getElementById('userRoleLabel').textContent =
             'Finance Overview';

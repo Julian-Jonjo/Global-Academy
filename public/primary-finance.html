@@ -1727,6 +1727,7 @@ try {
    4 = Teacher
    5 = Student
    6 = Manager
+   7 = Admin_Officer
 ========================================================= */
 
 const roleId = Number(user?.role_id);
@@ -1739,21 +1740,15 @@ const sector = String(user?.sector || '')
  * Finance is sectorless: any role_id === 3 user can access
  * both the Primary and Secondary finance pages.
  */
-const isFinanceOfficer =
-    roleId === 3;
+const isFinanceOfficer = roleId === 3;
 
+const isPrimaryManager = roleId === 6 && sector === 'primary';
 
-const isPrimaryManager =
-    roleId === 6 &&
-    sector === 'primary';
+const isProprietor = roleId === 1;
 
+const isAdmin = roleId === 2;
 
-const isProprietor =
-    roleId === 1;
-
-
-const isAdmin =
-    roleId === 2;
+const isAdminOfficer = roleId === 7;
 
 
 /*
@@ -1775,13 +1770,15 @@ const isAllowed =
     isFinanceOfficer ||
     isPrimaryManager ||
     isAdmin ||
-    isProprietor;
+    isProprietor ||
+    isAdminOfficer;
 
 
 const isViewOnly =
     isPrimaryManager ||
     isAdmin ||
-    isProprietor;
+    isProprietor ||
+    isAdminOfficer;
 
 
 const canRecordPayment =
@@ -1852,6 +1849,11 @@ if (isProprietor) {
 
     badgeClass = 'proprietor';
     badgeText = '👑 Proprietor';
+
+} else if (isAdminOfficer) {
+
+    badgeClass = 'admin_officer';
+    badgeText = '👑 Admin Officer';
 
 } else if (isAdmin) {
 
