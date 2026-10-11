@@ -201,7 +201,7 @@
                 <h2>Student Management</h2>
                 <p>Manage student records, academic information, attendance, documents, and discipline.</p>
             </div>
-            <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+            <button class="back-btn" onclick="window.location.href='students.html'">← Back to Dashboard</button>
         </div>
 
         <div class="tabs">
@@ -209,7 +209,6 @@
             <button class="tab-button" onclick="openTab('students', this)">👨‍🎓 Student List</button>
             <button id="registerTab" class="tab-button" onclick="openRegistrationTab(this)">📝 Register Student</button>
             <button class="tab-button" onclick="openTab('academic', this)">📚 Academic</button>
-            <button class="tab-button" onclick="openTab('attendance', this)">📋 Attendance</button>
             <button class="tab-button" onclick="openTab('documents', this)">📄 Documents</button>
             <button class="tab-button" onclick="openTab('discipline', this)">⚖️ Discipline</button>
             <button class="tab-button" onclick="openTab('transfer', this)">🔄 Transfer</button>
@@ -1007,7 +1006,8 @@ async function openRegistrationTab(button) {
 
     const canRegister =
         isSecondaryManager ||
-        isAdministrator;
+        isAdministrator ||
+        isAdminOfficer;
 
     if (!canRegister) {
 
@@ -1313,7 +1313,7 @@ async function openRegistrationTab(button) {
             <div style="display:flex;justify-content:space-between;align-items:flex-start;grid-column:1/-1;margin-bottom:5px;">
                 ${photoHtml}
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    ${(role === 'Administrator' || role === 'Manager-Secondary') ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
+                    ${(role === 'Administrator' || role === 'Admin Officer' || role === 'Manager-Secondary') ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
                     <button class="btn doc-btn" onclick="viewDocuments(${Number(student.student_id)})">📂 Documents</button>
                     <button class="btn discipline-btn" onclick="viewStudentDisciplineRecords(${Number(student.student_id)})">⚖️ Discipline</button>
                 </div>
@@ -1462,7 +1462,7 @@ async function openRegistrationTab(button) {
     }
 
     async function reviewStudent(studentId) {
-        if (role !== 'Administrator' && role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+        if (role !== 'Administrator' || role !== 'Admin-Officer' || role !== 'Manager-Secondary') { alert('Access denied.'); return; }
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
         await loadEditClasses();
@@ -1523,7 +1523,7 @@ async function openRegistrationTab(button) {
     }
 
     async function editStudent(studentId) {
-        if (role !== 'Administrator' && role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+        if (role !== 'Administrator' || role !== 'Admin Officer' ||  role !== 'Manager-Secondary') { alert('Access denied.'); return; }
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
         await loadEditClasses();
@@ -1587,7 +1587,7 @@ async function openRegistrationTab(button) {
 
     document.getElementById('editStudentForm').addEventListener('submit', async function(event) {
         event.preventDefault();
-        if (role !== 'Administrator' && role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+        if (role !== 'Administrator' || role !== 'Admin Officer' || role !== 'Manager-Secondary') { alert('Access denied.'); return; }
         const studentId = document.getElementById('editStudentId').value;
         const formData = new FormData();
         formData.append('admission_number', document.getElementById('editAdmissionNumber').value.trim());
