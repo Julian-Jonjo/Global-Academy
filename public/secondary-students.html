@@ -1313,7 +1313,7 @@ async function openRegistrationTab(button) {
             <div style="display:flex;justify-content:space-between;align-items:flex-start;grid-column:1/-1;margin-bottom:5px;">
                 ${photoHtml}
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    ${(role === 'Administrator' || role === 'Admin Officer' || role === 'Manager-Secondary') ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
+                    ${(isAdministrator || isAdminOfficer || isSecondaryManager) ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
                     <button class="btn doc-btn" onclick="viewDocuments(${Number(student.student_id)})">📂 Documents</button>
                     <button class="btn discipline-btn" onclick="viewStudentDisciplineRecords(${Number(student.student_id)})">⚖️ Discipline</button>
                 </div>
@@ -1462,7 +1462,8 @@ async function openRegistrationTab(button) {
     }
 
     async function reviewStudent(studentId) {
-        if (role !== 'Administrator' || role !== 'Admin-Officer' || role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+    const canReview = isAdministrator || isAdminOfficer || isSecondaryManager;
+    if (!canReview) { alert('Access denied.'); return; }
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
         await loadEditClasses();
@@ -1523,7 +1524,8 @@ async function openRegistrationTab(button) {
     }
 
     async function editStudent(studentId) {
-        if (role !== 'Administrator' || role !== 'Admin Officer' ||  role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+    const canEdit = isAdministrator || isAdminOfficer || isSecondaryManager;
+    if (!canEdit) { alert('Access denied.'); return; }
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
         await loadEditClasses();
@@ -1586,8 +1588,9 @@ async function openRegistrationTab(button) {
     }
 
     document.getElementById('editStudentForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        if (role !== 'Administrator' || role !== 'Admin Officer' || role !== 'Manager-Secondary') { alert('Access denied.'); return; }
+    event.preventDefault();
+    const canEdit = isAdministrator || isAdminOfficer || isSecondaryManager;
+    if (!canEdit) { alert('Access denied.'); return; }
         const studentId = document.getElementById('editStudentId').value;
         const formData = new FormData();
         formData.append('admission_number', document.getElementById('editAdmissionNumber').value.trim());

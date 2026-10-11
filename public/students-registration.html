@@ -497,6 +497,7 @@
         const isSecondaryFinance = userRole.includes('finance officer (secondary)') || role === 'Finance Officer (Secondary)';
         const isAdmin = userRole.includes('admin') || userRole.includes('administrator') || role === 'Administrator' || role === 'Admin';
         const isProprietor = userRole.includes('proprietor') || role === 'Proprietor';
+        const isAdminOfficer = userRole.includes('admin officer') || role === 'Admin Officer';
 
         // Check where the user came from using referrer
         const referrer = document.referrer || '';

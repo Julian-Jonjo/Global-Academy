@@ -190,7 +190,8 @@ function isAdminOrProprietor(user) {
 
     return (
         roleId === ROLE_IDS.PROPRIETOR ||
-        roleId === ROLE_IDS.ADMINISTRATOR
+        roleId === ROLE_IDS.ADMINISTRATOR ||
+        roleId == ROLE_IDS.ADMIN_OFFICER
     );
 }
 
@@ -525,6 +526,8 @@ module.exports = {
     requireRoleAndSector,
 
     isAdminOrProprietor,
+
+    isAdminOfficer,
 
     isPrimaryManager,
     isSecondaryManager,
