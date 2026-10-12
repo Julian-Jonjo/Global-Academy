@@ -1007,6 +1007,7 @@ async function openRegistrationTab(button) {
     const canRegister =
         isSecondaryManager ||
         isAdministrator ||
+        isProprietor ||
         isAdminOfficer;
 
     if (!canRegister) {
@@ -1313,7 +1314,7 @@ async function openRegistrationTab(button) {
             <div style="display:flex;justify-content:space-between;align-items:flex-start;grid-column:1/-1;margin-bottom:5px;">
                 ${photoHtml}
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    ${(isAdministrator || isAdminOfficer || isSecondaryManager) ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
+                    ${(isAdministrator || isAdminOfficer || isProprietor || isSecondaryManager) ? `<button class="btn edit-btn" onclick="editStudent(${Number(student.student_id)})">✏️ Edit</button>` : ''}
                     <button class="btn doc-btn" onclick="viewDocuments(${Number(student.student_id)})">📂 Documents</button>
                     <button class="btn discipline-btn" onclick="viewStudentDisciplineRecords(${Number(student.student_id)})">⚖️ Discipline</button>
                 </div>
@@ -1462,7 +1463,7 @@ async function openRegistrationTab(button) {
     }
 
     async function reviewStudent(studentId) {
-    const canReview = isAdministrator || isAdminOfficer || isSecondaryManager;
+    const canReview = isAdministrator || isAdminOfficer || isProprietor || isSecondaryManager;
     if (!canReview) { alert('Access denied.'); return; }
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
@@ -1524,7 +1525,7 @@ async function openRegistrationTab(button) {
     }
 
     async function editStudent(studentId) {
-    const canEdit = isAdministrator || isAdminOfficer || isSecondaryManager;
+    const canEdit = isAdministrator || isAdminOfficer || isProprietor || isSecondaryManager;
     if (!canEdit) { alert('Access denied.'); return; }
         const student = students.find(item => Number(item.student_id) === Number(studentId));
         if (!student) { alert('Student record not found.'); return; }
@@ -1589,7 +1590,7 @@ async function openRegistrationTab(button) {
 
     document.getElementById('editStudentForm').addEventListener('submit', async function(event) {
     event.preventDefault();
-    const canEdit = isAdministrator || isAdminOfficer || isSecondaryManager;
+    const canEdit = isAdministrator || isAdminOfficer || isProprietor || isSecondaryManager;
     if (!canEdit) { alert('Access denied.'); return; }
         const studentId = document.getElementById('editStudentId').value;
         const formData = new FormData();
