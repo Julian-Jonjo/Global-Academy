@@ -556,9 +556,9 @@ router.get(
 const studentIds = (students || []).map(s => s.student_id);
 let emergencies = [];
 
-if (studentIds.length) {
+if (studentIds.length) { 
     const { data: emergencyData } = await supabase
-        .from('uia_emergency_contacts')
+        .from('emergency_contacts')
         .select('*')
         .in('student_id', studentIds)
         .eq('is_primary', true);
