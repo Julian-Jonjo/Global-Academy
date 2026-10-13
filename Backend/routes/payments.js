@@ -255,6 +255,91 @@ function determineEffectiveSector(req, requestedSector) {
 }
 
 // ============================================================
+// WAIVER HELPERS
+// ============================================================
+
+/* Given a set of studentIds and an academicYearId, fetch approved
+   waivers for those students and return two maps:
+     feeWaived      → { student_fee_id: total waived on that fee }
+     studentWaived  → { student_id:     total waived across all fees }
+   Works in pages of 100 student IDs to avoid URL length limits. */
+async function buildWaivedMaps(studentIds, academicYearId) {
+
+    const feeWaived = {};
+    const studentWaived = {};
+
+    if (!studentIds || !studentIds.length) {
+        return { feeWaived, studentWaived };
+    }
+
+    const chunks = chunkArray(studentIds, 100);
+    const allWaivers = [];
+
+    for (const idChunk of chunks) {
+        const rows = await fetchAllRows(() => {
+            let q = supabase
+                .from('student_fee_waivers')
+                .select('waiver_id, student_id, student_fee_id, waive_type, waive_amount')
+                .in('student_id', idChunk)
+                .eq('status', 'approved');
+
+            if (academicYearId) {
+                q = q.eq('academic_year_id', academicYearId);
+            }
+            return q;
+        });
+
+        allWaivers.push(...rows);
+    }
+
+    /* We need the amount_due for full waivers to know what was waived */
+    const fullWaiverFeeIds = allWaivers
+        .filter(w => w.waive_type === 'full' && w.student_fee_id)
+        .map(w => w.student_fee_id);
+
+    const feeAmountById = {};
+
+    if (fullWaiverFeeIds.length) {
+        const uniqueFeeIds = [...new Set(fullWaiverFeeIds)];
+        const feeChunks = chunkArray(uniqueFeeIds, 100);
+
+        for (const idChunk of feeChunks) {
+            const rows = await fetchAllRows(() =>
+                supabase
+                    .from('student_fees')
+                    .select('student_fee_id, amount_due')
+                    .in('student_fee_id', idChunk)
+            );
+
+            rows.forEach(f => {
+                feeAmountById[f.student_fee_id] = Number(f.amount_due || 0);
+            });
+        }
+    }
+
+    for (const w of allWaivers) {
+
+        let amountWaived = 0;
+
+        if (w.waive_type === 'full') {
+            amountWaived = feeAmountById[w.student_fee_id] || 0;
+        } else {
+            amountWaived = Number(w.waive_amount || 0);
+        }
+
+        if (w.student_fee_id) {
+            feeWaived[w.student_fee_id] =
+                (feeWaived[w.student_fee_id] || 0) + amountWaived;
+        }
+
+        studentWaived[w.student_id] =
+            (studentWaived[w.student_id] || 0) + amountWaived;
+    }
+
+    return { feeWaived, studentWaived };
+}
+
+// ============================================================
 // GET /api/payments
 // ============================================================
 
@@ -264,12 +349,6 @@ router.get(
     async (req, res) => {
 
         try {
-
-            console.log('====================================');
-            console.log('GET /api/payments');
-            console.log('Query:', req.query);
-            console.log('User:', req.user);
-            console.log('====================================');
 
             if (
                 !isAllowedRole(
@@ -827,12 +906,6 @@ router.get(
 
         try {
 
-            console.log('====================================');
-            console.log('PAYMENT SUMMARY');
-            console.log('Query:', req.query);
-            console.log('User:', req.user);
-            console.log('====================================');
-
             if (
                 !isAllowedRole(
                     req.user,
@@ -985,10 +1058,106 @@ router.get(
                 }
             }
 
+            /* ---- total waived ---- */
+            let totalWaived = 0;
+
+            if (studentIds === null) {
+
+                const waiverRows = await fetchAllRows(() => {
+                    let q = supabase
+                        .from('student_fee_waivers')
+                        .select('waiver_id, waive_type, waive_amount, student_fee_id')
+                        .eq('status', 'approved');
+                    if (academicYearId) {
+                        q = q.eq('academic_year_id', academicYearId);
+                    }
+                    return q;
+                });
+
+                const fullFeeIds = waiverRows
+                    .filter(w => w.waive_type === 'full' && w.student_fee_id)
+                    .map(w => w.student_fee_id);
+
+                let feeAmt = {};
+                if (fullFeeIds.length) {
+                    const uniqueIds = [...new Set(fullFeeIds)];
+                    const feeChunks = chunkArray(uniqueIds, 100);
+                    for (const idChunk of feeChunks) {
+                        const rows = await fetchAllRows(() =>
+                            supabase
+                                .from('student_fees')
+                                .select('student_fee_id, amount_due')
+                                .in('student_fee_id', idChunk)
+                        );
+                        rows.forEach(f => {
+                            feeAmt[f.student_fee_id] = Number(f.amount_due || 0);
+                        });
+                    }
+                }
+
+                waiverRows.forEach(w => {
+                    if (w.waive_type === 'full') {
+                        totalWaived += feeAmt[w.student_fee_id] || 0;
+                    } else {
+                        totalWaived += Number(w.waive_amount || 0);
+                    }
+                });
+
+            } else if (studentIds.length > 0) {
+
+                const chunks = chunkArray(studentIds, 100);
+
+                for (const idChunk of chunks) {
+                    const waiverRows = await fetchAllRows(() => {
+                        let q = supabase
+                            .from('student_fee_waivers')
+                            .select('waiver_id, waive_type, waive_amount, student_fee_id')
+                            .in('student_id', idChunk)
+                            .eq('status', 'approved');
+                        if (academicYearId) {
+                            q = q.eq('academic_year_id', academicYearId);
+                        }
+                        return q;
+                    });
+
+                    const fullFeeIds = waiverRows
+                        .filter(w => w.waive_type === 'full' && w.student_fee_id)
+                        .map(w => w.student_fee_id);
+
+                    let feeAmt = {};
+                    if (fullFeeIds.length) {
+                        const uniqueIds = [...new Set(fullFeeIds)];
+                        const feeChunks = chunkArray(uniqueIds, 100);
+                        for (const idFeeChunk of feeChunks) {
+                            const rows = await fetchAllRows(() =>
+                                supabase
+                                    .from('student_fees')
+                                    .select('student_fee_id, amount_due')
+                                    .in('student_fee_id', idFeeChunk)
+                            );
+                            rows.forEach(f => {
+                                feeAmt[f.student_fee_id] = Number(f.amount_due || 0);
+                            });
+                        }
+                    }
+
+                    waiverRows.forEach(w => {
+                        if (w.waive_type === 'full') {
+                            totalWaived += feeAmt[w.student_fee_id] || 0;
+                        } else {
+                            totalWaived += Number(w.waive_amount || 0);
+                        }
+                    });
+                }
+            }
+
+            const effectiveExpected =
+                Math.max(0, totalExpected - totalWaived);
+
             const totalOutstanding =
                 Math.max(
                     0,
-                    totalExpected -
+                    effectiveExpected -
                     totalCollected
                 );
 
@@ -1034,23 +1203,13 @@ router.get(
             }
 
             const summary = {
-                total_expected:
-                    totalExpected,
-
-                total_collected:
-                    totalCollected,
-
-                total_outstanding:
-                    totalOutstanding,
-
-                total_students:
-                    totalStudents || 0
+                total_expected: totalExpected,
+                total_waived: totalWaived,
+                effective_expected: effectiveExpected,
+                total_collected: totalCollected,
+                total_outstanding: totalOutstanding,
+                total_students: totalStudents || 0
             };
-
-            console.log(
-                'PAYMENT SUMMARY RESULT:',
-                summary
-            );
 
             return res.json({
                 summary
@@ -1193,6 +1352,7 @@ router.get(
             const studentIdChunks =
                 chunkArray(studentIds, 100);
 
+            /* ---- student_fees ---- */
             let feeRecords = [];
             for (const idChunk of studentIdChunks) {
                 const chunkRows = await fetchAllRows(() => {
@@ -1218,6 +1378,7 @@ router.get(
                 feeRecords = feeRecords.concat(chunkRows);
             }
 
+            /* ---- payments (approved) ---- */
             let paymentRecords = [];
             for (const idChunk of studentIdChunks) {
                 const chunkRows = await fetchAllRows(() => {
@@ -1242,6 +1403,11 @@ router.get(
                 paymentRecords = paymentRecords.concat(chunkRows);
             }
 
+            /* ---- approved waivers ---- */
+            const { feeWaived, studentWaived } =
+                await buildWaivedMaps(studentIds, academicYearId);
+
+            /* ---- payment maps ---- */
             const paymentMapByFee = {};
 
             for (
@@ -1314,11 +1480,18 @@ router.get(
                         const feesWithPayments = fees.map(fee => {
                             const key = `${student.student_id}_${fee.student_fee_id}`;
                             const feePaid = Number(paymentMapByFee[key] || 0);
+                            const waived = Number(feeWaived[fee.student_fee_id] || 0);
+                            const dueAfterWaiver = Math.max(
+                                0,
+                                Number(fee.amount_due || 0) - waived
+                            );
 
                             return {
                                 ...fee,
                                 amount_paid: feePaid,
-                                balance: Math.max(0, Number(fee.amount_due || 0) - feePaid)
+                                waived_amount: waived,
+                                effective_due: dueAfterWaiver,
+                                balance: Math.max(0, dueAfterWaiver - feePaid)
                             };
                         });
 
@@ -1343,10 +1516,16 @@ router.get(
                                 ] || 0
                             );
 
+                        const totalWaived =
+                            Number(studentWaived[student.student_id] || 0);
+
+                        const effectiveDue =
+                            Math.max(0, totalDue - totalWaived);
+
                         const outstanding =
                             Math.max(
                                 0,
-                                totalDue -
+                                effectiveDue -
                                 totalPaid
                             );
 
@@ -1390,6 +1569,12 @@ router.get(
 
                             total_due:
                                 totalDue,
+
+                            total_waived:
+                                totalWaived,
+
+                            effective_due:
+                                effectiveDue,
 
                             total_paid:
                                 totalPaid,
@@ -1466,7 +1651,7 @@ router.get(
 
             let query =
                 supabase
-                    .from('fee_categories')
+                    .from('fee_catalog')
                     .select('*')
                     .eq(
                         'is_active',
@@ -1689,6 +1874,46 @@ router.post(
                 return res.status(404).json({
                     message:
                         'Student fee record not found.'
+                });
+            }
+
+            /* ---- Check for approved waivers on this fee ---- */
+            const { data: approvedWaivers } = await supabase
+                .from('student_fee_waivers')
+                .select('waive_type, waive_amount')
+                .eq('student_id', parsedStudentId)
+                .eq('student_fee_id', parsedFeeId)
+                .eq('status', 'approved');
+
+            let waivedAmount = 0;
+            for (const w of approvedWaivers || []) {
+                if (w.waive_type === 'full') {
+                    waivedAmount += Number(studentFee.amount_due || 0);
+                } else {
+                    waivedAmount += Number(w.waive_amount || 0);
+                }
+            }
+
+            const { data: existingPayments } = await supabase
+                .from('payments')
+                .select('amount_paid')
+                .eq('student_id', parsedStudentId)
+                .eq('student_fee_id', parsedFeeId)
+                .eq('approval_status', 'approved');
+
+            const alreadyPaid = (existingPayments || []).reduce(
+                (sum, p) => sum + Number(p.amount_paid || 0),
+                0
+            );
+
+            const effectiveBalance = Math.max(
+                0,
+                Number(studentFee.amount_due || 0) - waivedAmount - alreadyPaid
+            );
+
+            if (parsedAmount > effectiveBalance) {
+                return res.status(400).json({
+                    message: `Amount exceeds the outstanding balance. Effective balance after waiver and prior payments: ${effectiveBalance.toFixed(2)}.`
                 });
             }
 

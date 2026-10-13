@@ -30,6 +30,7 @@ const teacherRoutes = require('./routes/teachers');
 
 const attendanceRoutes = require('./routes/attendance');
 
+
 // Teacher Portal temporarily disabled until its export is corrected
 // const teacherPortalRoutes = require('./routes/teacherPortal');
 
@@ -43,6 +44,7 @@ const holidayRoutes = require('./routes/holidays');
 const announcementRoutes = require('./routes/announcements');
 const disciplineRoutes = require('./routes/discipline');
 const studentPortalRoutes = require('./routes/student-portal');
+const feeRoutes = require('./routes/fees');
 
 // ============================================================
 // AUTH MIDDLEWARE
@@ -142,6 +144,7 @@ app.use('/api/holidays', holidayRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/discipline', disciplineRoutes);
 app.use('/api/student-portal', studentPortalRoutes);
+app.use('/api/fees', feeRoutes);
 
 // ============================================================
 // ROOT API

@@ -481,7 +481,7 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
                 }
 
                 const { data: feeCategories } = await supabase
-                    .from('fee_categories')
+                    .from('fee_catalog')
                     .select(`
                         id,
                         name,

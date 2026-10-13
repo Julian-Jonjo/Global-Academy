@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Catalog | Global Education Academy</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+        .header {
+            background: #173b6d;
+            color: white;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .header h1 { margin: 0; font-size: 16px; }
+        .header .sub { font-size: 11px; color: #a7c1e8; }
+        .header .user { font-size: 13px; font-weight: 600; }
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .toolbar-left, .toolbar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 9px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background: #16a34a; color: white; }
+        .btn-secondary { background: #6b7280; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-edit { background: #d97706; color: white; }
+        .btn-cancel { background: #e5e7eb; color: #1f2937; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 18px;
+        }
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+            padding: 18px;
+        }
+
+        .panel h2 {
+            margin: 0 0 12px;
+            font-size: 15px;
+            color: #173b6d;
+            border-bottom: 2px solid #173b6d;
+            padding-bottom: 6px;
+        }
+
+        .class-list { list-style: none; margin: 0; padding: 0; }
+        .class-group {
+            margin-bottom: 12px;
+        }
+        .class-group-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 6px;
+        }
+        .class-item {
+            padding: 9px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #1f2937;
+            transition: 0.15s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .class-item:hover { background: #f3f4f6; }
+        .class-item.active { background: #173b6d; color: white; font-weight: 700; }
+        .class-item .count {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            background: #e5e7eb;
+            color: #374151;
+            font-weight: 700;
+        }
+        .class-item.active .count { background: #0ea5e9; color: white; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 4px;
+        }
+        th {
+            background: #f1f5f9;
+            text-align: left;
+            padding: 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #475569;
+            font-weight: 700;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+        tr:hover td { background: #f9fafb; }
+
+        .amount {
+            font-weight: 700;
+            color: #173b6d;
+            text-align: right;
+        }
+
+        .fee-name { font-weight: 600; }
+        .fee-desc { font-size: 11px; color: #6b7280; margin-top: 2px; }
+
+        .action-buttons { display: flex; gap: 6px; }
+        .action-buttons .btn {
+            padding: 5px 10px;
+            font-size: 11px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; align-items: flex-start; justify-content: center; padding-top: 60px; }
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px;
+        }
+        .modal-content h3 {
+            margin: 0 0 18px;
+            color: #173b6d;
+        }
+        .field {
+            margin-bottom: 14px;
+        }
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        .field input, .field select, .field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: none;
+            border-color: #173b6d;
+            box-shadow: 0 0 0 3px rgba(23,59,109,0.1);
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 18px;
+        }
+        .msg {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 14px;
+            font-size: 13px;
+        }
+        .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .msg-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+
+        .loading {
+            text-align: center;
+            padding: 24px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div>
+        <h1>GLOBAL EDUCATION ACADEMY — FEE CATALOG</h1>
+        <div class="sub">Manage fees per class</div>
+    </div>
+    <div class="user" id="userLabel">—</div>
+</header>
+
+<div class="container">
+
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <button class="btn btn-secondary" onclick="window.location.href='finance.html'">← Back</button>
+            <button class="btn btn-secondary" onclick="openFeeTypesModal()">📋 Fee Types</button>
+            <button class="btn btn-secondary" onclick="loadAll()">🔄 Refresh</button>
+        </div>
+        <div class="toolbar-right">
+            <span id="modeLabel" style="font-size:12px;color:#6b7280;font-weight:600;"></span>
+        </div>
+    </div>
+
+    <div id="globalMsg"></div>
+
+    <div class="grid">
+
+        <!-- ============================== -->
+        <!-- LEFT: CLASS LIST               -->
+        <!-- ============================== -->
+        <div class="panel">
+            <h2>Classes</h2>
+            <div id="classList" class="class-list">
+                <div class="loading">Loading classes...</div>
+            </div>
+        </div>
+
+        <!-- ============================== -->
+        <!-- RIGHT: CATALOG FOR CLASS       -->
+        <!-- ============================== -->
+        <div class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+                <h2 style="margin:0;border:none;flex:1;" id="catalogTitle">Select a class</h2>
+                <button id="addFeeBtn" class="btn btn-primary" onclick="openAddFeeModal()" style="display:none;">+ Add Fee</button>
+            </div>
+
+            <div id="catalogContent" style="margin-top:14px;">
+                <div class="empty">Pick a class on the left to see its fees.</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     MODAL: Add / Edit Catalog Entry
+     ========================================================= -->
+<!-- =========================================================
+     MODAL: Add / Edit Catalog Entry
+     ========================================================= -->
+<div id="feeModal" class="modal">
+    <div class="modal-content">
+        <h3 id="feeModalTitle">Add Fee</h3>
+        <div id="feeModalMsg"></div>
+
+        <div class="field" id="feeTypeField">
+            <label>Fee Type *</label>
+            <select id="feeTypeSelect" onchange="onFeeTypeChange()">
+                <option value="">— Select Fee Type —</option>
+                <option value="__new__">+ Create new fee type…</option>
+            </select>
+        </div>
+
+        <div class="field" id="newFeeTypeField" style="display:none;">
+            <label>New Fee Name *</label>
+            <input type="text" id="newFeeTypeInput" placeholder="e.g. Exam Fee">
+        </div>
+
+        <div class="field" id="newFeeTypeDescField" style="display:none;">
+            <label>New Fee Description</label>
+            <input type="text" id="newFeeTypeDescInput" placeholder="Optional">
+        </div>
+
+        <div class="field">
+            <label>Amount (Le) *</label>
+            <input type="number" id="feeAmountInput" step="0.01" min="0" placeholder="0.00">
+        </div>
+
+        <div class="field">
+            <label>Description</label>
+            <input type="text" id="feeDescInput" placeholder="Optional">
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-cancel" onclick="closeModal('feeModal')">Cancel</button>
+            <button class="btn btn-primary" id="feeSubmitBtn" onclick="submitFee()">Save</button>
+        </div>
+    </div>
+</div>
+<!-- =========================================================
+     MODAL: Fee Types Management
+     ========================================================= -->
+<div id="feeTypesModal" class="modal">
+    <div class="modal-content" style="max-width:700px;">
+        <h3>Fee Types (Master List)</h3>
+        <div id="feeTypesMsg"></div>
+
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+            <input type="text" id="newFeeTypeName" placeholder="New fee name" style="flex:1;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;">
+            <input type="text" id="newFeeTypeDesc" placeholder="Description (optional)" style="flex:1;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;">
+            <button class="btn btn-primary" onclick="addFeeType()" id="addFeeTypeBtn">+ Add</button>
+        </div>
+
+        <div style="max-height:400px;overflow-y:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="feeTypesBody">
+                    <tr><td colspan="4" class="loading">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-cancel" onclick="closeModal('feeTypesModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* =========================================================
+   AUTH
+========================================================= */
+const token = sessionStorage.getItem('authToken');
+const userData = sessionStorage.getItem('user');
+
+if (!token || !userData) {
+    window.location.href = '/login.html';
+}
+
+let user = null;
+try {
+    user = JSON.parse(userData);
+} catch {
+    sessionStorage.clear();
+    window.location.href = '/login.html';
+}
+
+const roleId = Number(user?.role_id);
+const PROPRIETOR    = 1;
+const ADMINISTRATOR = 2;
+const FINANCE       = 3;
+
+const CAN_WRITE = [PROPRIETOR, ADMINISTRATOR, FINANCE].includes(roleId);
+
+document.getElementById('userLabel').textContent = user?.full_name || user?.username || 'User';
+document.getElementById('modeLabel').textContent = CAN_WRITE ? '✏️ Edit Mode' : '👁️ View Only';
+
+/* =========================================================
+   STATE
+========================================================= */
+let classes = [];
+let feeTypes = [];
+let currentClassId = null;
+let currentCatalog = [];
+let editingCatalogId = null; // null = adding, otherwise editing
+
+/* =========================================================
+   API HELPER
+========================================================= */
+async function api(url, options = {}) {
+    const res = await fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    let data = null;
+    try { data = await res.json(); } catch { data = null; }
+
+    if (res.status === 401) {
+        sessionStorage.clear();
+        window.location.href = '/login.html';
+        return null;
+    }
+    if (!res.ok) {
+        throw new Error(data?.message || `Request failed (${res.status})`);
+    }
+    return data;
+}
+
+/* =========================================================
+   LOAD EVERYTHING
+========================================================= */
+async function loadAll() {
+    await Promise.all([loadClasses(), loadFeeTypes()]);
+    renderClassList();
+
+    if (currentClassId) {
+        await loadCatalog(currentClassId);
+    }
+}
+
+/* =========================================================
+   CLASSES
+========================================================= */
+async function loadClasses() {
+    try {
+        const data = await api('/api/classes');
+        classes = Array.isArray(data) ? data : (data?.classes || []);
+    } catch (e) {
+        classes = [];
+        setGlobalMsg('Failed to load classes: ' + e.message, 'error');
+    }
+}
+
+function renderClassList() {
+    const container = document.getElementById('classList');
+    if (!classes.length) {
+        container.innerHTML = '<div class="empty">No classes found.</div>';
+        return;
+    }
+
+    const groups = {};
+    classes.forEach(c => {
+        const key = c.school_section || 'Other';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(c);
+    });
+
+    let html = '';
+    Object.keys(groups).sort().forEach(section => {
+        html += `<div class="class-group">`;
+        html += `<div class="class-group-title">${escapeHtml(section)}</div>`;
+        groups[section]
+            .sort((a,b) => (a.class_name || '').localeCompare(b.class_name || ''))
+            .forEach(c => {
+                const label = c.class_name + (c.arm ? ' — ' + c.arm : '');
+                html += `
+                    <div class="class-item" data-id="${c.class_id}" onclick="selectClass(${c.class_id})">
+                        <span>${escapeHtml(label)}</span>
+                    </div>
+                `;
+            });
+        html += `</div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+async function selectClass(classId) {
+    currentClassId = classId;
+
+    document.querySelectorAll('.class-item').forEach(el => {
+        el.classList.toggle('active', Number(el.dataset.id) === classId);
+    });
+
+    const cls = classes.find(c => Number(c.class_id) === classId);
+    const label = cls ? (cls.class_name + (cls.arm ? ' — ' + cls.arm : '')) : 'Class ' + classId;
+
+    document.getElementById('catalogTitle').textContent = 'Fees for ' + label;
+    document.getElementById('addFeeBtn').style.display = CAN_WRITE ? '' : 'none';
+
+    await loadCatalog(classId);
+}
+
+/* =========================================================
+   CATALOG
+========================================================= */
+async function loadCatalog(classId) {
+    const container = document.getElementById('catalogContent');
+    container.innerHTML = '<div class="loading">Loading fees...</div>';
+
+    try {
+        const data = await api(`/api/fees/catalog?class_id=${classId}`);
+        currentCatalog = data?.catalog || [];
+        renderCatalog();
+    } catch (e) {
+        container.innerHTML = `<div class="empty">Failed to load: ${escapeHtml(e.message)}</div>`;
+    }
+}
+
+function renderCatalog() {
+    const container = document.getElementById('catalogContent');
+
+    if (!currentCatalog.length) {
+        container.innerHTML = '<div class="empty">No fees defined for this class yet.</div>';
+        return;
+    }
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Fee</th>
+                    <th style="text-align:right;">Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    currentCatalog.forEach(f => {
+        html += `
+            <tr>
+                <td>
+                    <div class="fee-name">${escapeHtml(f.name || f.fee_types?.fee_name || '—')}</div>
+                    ${f.description ? `<div class="fee-desc">${escapeHtml(f.description)}</div>` : ''}
+                </td>
+                <td class="amount">Le${Number(f.amount || 0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                <td>${f.is_active ? '<span style="color:#16a34a;font-weight:700;">Active</span>' : '<span style="color:#dc2626;font-weight:700;">Inactive</span>'}</td>
+                <td>
+                    ${CAN_WRITE ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-edit" onclick="openEditFeeModal('${f.id}')">Edit</button>
+                            ${f.is_active ? `<button class="btn btn-danger" onclick="deactivateFee('${f.id}')">Remove</button>` : ''}
+                        </div>
+                    ` : '—'}
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+/* =========================================================
+   ADD / EDIT FEE
+========================================================= */
+function openAddFeeModal() {
+    if (!CAN_WRITE) return;
+    if (!currentClassId) {
+        alert('Select a class first.');
+        return;
+    }
+
+    editingCatalogId = null;
+    document.getElementById('feeModalTitle').textContent = 'Add Fee';
+    document.getElementById('feeModalMsg').innerHTML = '';
+    document.getElementById('feeTypeField').style.display = '';
+    document.getElementById('newFeeTypeField').style.display = 'none';
+    document.getElementById('newFeeTypeDescField').style.display = 'none';
+    document.getElementById('feeAmountInput').value = '';
+    document.getElementById('feeDescInput').value = '';
+    document.getElementById('newFeeTypeInput').value = '';
+    document.getElementById('newFeeTypeDescInput').value = '';
+
+    populateFeeTypeSelect();
+    document.getElementById('feeModal').classList.add('active');
+}
+
+function openEditFeeModal(catalogId) {
+    if (!CAN_WRITE) return;
+
+    const fee = currentCatalog.find(f => f.id === catalogId);
+    if (!fee) return;
+
+    editingCatalogId = catalogId;
+    document.getElementById('feeModalTitle').textContent = 'Edit Fee';
+    document.getElementById('feeModalMsg').innerHTML = '';
+    document.getElementById('feeTypeField').style.display = 'none';
+    document.getElementById('feeAmountInput').value = fee.amount;
+    document.getElementById('feeDescInput').value = fee.description || '';
+
+    document.getElementById('feeModal').classList.add('active');
+}
+
+function populateFeeTypeSelect() {
+    const select = document.getElementById('feeTypeSelect');
+    const active = feeTypes.filter(t => t.is_active);
+
+    select.innerHTML = '<option value="">— Select Fee Type —</option>' +
+        active.map(t => `<option value="${t.fee_type_id}">${escapeHtml(t.fee_name)}</option>`).join('') +
+        '<option value="__new__">+ Create new fee type…</option>';
+}
+
+function onFeeTypeChange() {
+    const value = document.getElementById('feeTypeSelect').value;
+    const isNew = value === '__new__';
+
+    document.getElementById('newFeeTypeField').style.display = isNew ? '' : 'none';
+    document.getElementById('newFeeTypeDescField').style.display = isNew ? '' : 'none';
+}
+
+async function submitFee() {
+    if (!CAN_WRITE) return;
+
+    const msg = document.getElementById('feeModalMsg');
+    msg.innerHTML = '';
+
+    const amount = parseFloat(document.getElementById('feeAmountInput').value);
+    const description = document.getElementById('feeDescInput').value.trim();
+
+    if (!Number.isFinite(amount) || amount < 0) {
+        msg.innerHTML = '<div class="msg msg-error">Amount must be a number ≥ 0.</div>';
+        return;
+    }
+
+    try {
+        if (editingCatalogId) {
+            /* Edit: only amount and description can change */
+            await api(`/api/fees/catalog/${editingCatalogId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ amount, description: description || null })
+            });
+        } else {
+            const selected = document.getElementById('feeTypeSelect').value;
+            let feeTypeId = null;
+
+            if (selected === '__new__') {
+                const newName = document.getElementById('newFeeTypeInput').value.trim();
+                const newDesc = document.getElementById('newFeeTypeDescInput').value.trim();
+
+                if (!newName) {
+                    msg.innerHTML = '<div class="msg msg-error">New fee name is required.</div>';
+                    return;
+                }
+
+                /* Create the fee type first */
+                const created = await api('/api/fees/types', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        fee_name: newName,
+                        description: newDesc || null
+                    })
+                });
+                feeTypeId = created?.type?.fee_type_id;
+
+                if (!feeTypeId) {
+                    throw new Error('Fee type was created but no ID was returned.');
+                }
+
+                /* Refresh local list so it shows up next time */
+                await loadFeeTypes();
+            } else {
+                feeTypeId = parseInt(selected, 10);
+                if (!feeTypeId) {
+                    msg.innerHTML = '<div class="msg msg-error">Please choose or create a fee type.</div>';
+                    return;
+                }
+            }
+
+            await api('/api/fees/catalog', {
+                method: 'POST',
+                body: JSON.stringify({
+                    class_id: currentClassId,
+                    fee_type_id: feeTypeId,
+                    amount,
+                    description: description || null
+                })
+            });
+        }
+
+        closeModal('feeModal');
+        await loadCatalog(currentClassId);
+        setGlobalMsg('Saved.', 'success');
+    } catch (e) {
+        msg.innerHTML = `<div class="msg msg-error">${escapeHtml(e.message)}</div>`;
+    }
+}
+/* =========================================================
+   FEE TYPES
+========================================================= */
+async function loadFeeTypes() {
+    try {
+        const data = await api('/api/fees/types');
+        feeTypes = data?.types || [];
+    } catch (e) {
+        feeTypes = [];
+    }
+}
+
+function openFeeTypesModal() {
+    document.getElementById('feeTypesMsg').innerHTML = '';
+    document.getElementById('addFeeTypeBtn').style.display = CAN_WRITE ? '' : 'none';
+    renderFeeTypes();
+    document.getElementById('feeTypesModal').classList.add('active');
+}
+
+function renderFeeTypes() {
+    const body = document.getElementById('feeTypesBody');
+
+    if (!feeTypes.length) {
+        body.innerHTML = '<tr><td colspan="4" class="empty">No fee types.</td></tr>';
+        return;
+    }
+
+    body.innerHTML = feeTypes.map(t => `
+        <tr>
+            <td><strong>${escapeHtml(t.fee_name)}</strong></td>
+            <td>${escapeHtml(t.description || '—')}</td>
+            <td>${t.is_active ? '<span style="color:#16a34a;">Active</span>' : '<span style="color:#dc2626;">Inactive</span>'}</td>
+            <td>
+                ${CAN_WRITE && t.is_active ? `<button class="btn btn-danger" style="padding:4px 9px;font-size:11px;" onclick="deactivateFeeType(${t.fee_type_id})">Deactivate</button>` : '—'}
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function addFeeType() {
+    if (!CAN_WRITE) return;
+
+    const msg = document.getElementById('feeTypesMsg');
+    msg.innerHTML = '';
+
+    const fee_name = document.getElementById('newFeeTypeName').value.trim();
+    const description = document.getElementById('newFeeTypeDesc').value.trim();
+
+    if (!fee_name) {
+        msg.innerHTML = '<div class="msg msg-error">Name is required.</div>';
+        return;
+    }
+
+    try {
+        await api('/api/fees/types', {
+            method: 'POST',
+            body: JSON.stringify({ fee_name, description: description || null })
+        });
+        document.getElementById('newFeeTypeName').value = '';
+        document.getElementById('newFeeTypeDesc').value = '';
+        await loadFeeTypes();
+        renderFeeTypes();
+        msg.innerHTML = '<div class="msg msg-success">Fee type added.</div>';
+    } catch (e) {
+        msg.innerHTML = `<div class="msg msg-error">${escapeHtml(e.message)}</div>`;
+    }
+}
+
+async function deactivateFeeType(feeTypeId) {
+    if (!CAN_WRITE) return;
+    if (!confirm('Deactivate this fee type? Existing catalog entries stay.')) return;
+
+    try {
+        await api(`/api/fees/types/${feeTypeId}`, { method: 'DELETE' });
+        await loadFeeTypes();
+        renderFeeTypes();
+    } catch (e) {
+        document.getElementById('feeTypesMsg').innerHTML =
+            `<div class="msg msg-error">${escapeHtml(e.message)}</div>`;
+    }
+}
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+function setGlobalMsg(text, kind) {
+    const el = document.getElementById('globalMsg');
+    el.innerHTML = `<div class="msg msg-${kind}">${escapeHtml(text)}</div>`;
+    setTimeout(() => { el.innerHTML = ''; }, 4000);
+}
+
+function escapeHtml(v) {
+    return String(v ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+window.addEventListener('click', e => {
+    ['feeModal', 'feeTypesModal'].forEach(id => {
+        const m = document.getElementById(id);
+        if (e.target === m) m.classList.remove('active');
+    });
+});
+
+/* =========================================================
+   INIT
+========================================================= */
+loadAll();
+</script>
+
+</body>
+</html>

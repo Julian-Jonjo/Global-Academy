@@ -137,6 +137,107 @@ async function uploadToStorage(
 }
 
 /* =========================================================
+   SYNC GUARDIAN + EMERGENCY CONTACT ON UPDATE
+   ========================================================= */
+async function syncGuardianAndEmergency(studentId, body) {
+    /* ---------- Guardian ---------- */
+    const guardianFields = {
+        full_name:    body.guardian_name,
+        relationship: body.guardian_relationship,
+        phone:        body.guardian_phone,
+        email:        body.guardian_email,
+        address:      body.guardian_address
+    };
+
+    const hasGuardianData = Object.values(guardianFields).some(
+        v => v !== undefined && v !== ''
+    );
+
+    if (hasGuardianData) {
+        const guardianPayload = {};
+        for (const [k, v] of Object.entries(guardianFields)) {
+            if (v !== undefined) guardianPayload[k] = v === '' ? null : v;
+        }
+
+        const { data: currentStudent } = await supabase
+            .from('students')
+            .select('guardian_id')
+            .eq('student_id', studentId)
+            .maybeSingle();
+
+        const guardianId = currentStudent?.guardian_id;
+
+        if (guardianId) {
+            const { error } = await supabase
+                .from('guardians')
+                .update(guardianPayload)
+                .eq('guardian_id', guardianId);
+
+            if (error) console.error('GUARDIAN UPDATE ERROR:', error);
+        } else {
+            const { data: newGuardian, error } = await supabase
+                .from('guardians')
+                .insert(guardianPayload)
+                .select()
+                .single();
+
+            if (!error && newGuardian) {
+                await supabase
+                    .from('students')
+                    .update({ guardian_id: newGuardian.guardian_id })
+                    .eq('student_id', studentId);
+            } else {
+                console.error('GUARDIAN INSERT ERROR:', error);
+            }
+        }
+    }
+
+    /* ---------- Emergency contact ---------- */
+    const emName  = body.emergency_contact_name;
+    const emPhone = body.emergency_contact_phone;
+    const emRel   = body.emergency_contact_relationship;
+
+    const hasEmergency =
+        (emName  !== undefined && emName  !== '') ||
+        (emPhone !== undefined && emPhone !== '') ||
+        (emRel   !== undefined && emRel   !== '');
+
+    if (hasEmergency) {
+        const emergencyPayload = {
+            full_name:    emName  === '' ? null : (emName  || null),
+            phone:        emPhone === '' ? null : (emPhone || null),
+            relationship: emRel   === '' ? null : (emRel   || null)
+        };
+
+        const { data: existingEmergency } = await supabase
+            .from('emergency_contacts')
+            .select('emergency_contact_id')
+            .eq('student_id', studentId)
+            .eq('is_primary', true)
+            .maybeSingle();
+
+        if (existingEmergency) {
+            const { error } = await supabase
+                .from('emergency_contacts')
+                .update(emergencyPayload)
+                .eq('emergency_contact_id', existingEmergency.emergency_contact_id);
+
+            if (error) console.error('EMERGENCY CONTACT UPDATE ERROR:', error);
+        } else {
+            const { error } = await supabase
+                .from('emergency_contacts')
+                .insert({
+                    student_id: studentId,
+                    is_primary: true,
+                    ...emergencyPayload
+                });
+
+            if (error) console.error('EMERGENCY CONTACT INSERT ERROR:', error);
+        }
+    }
+}
+
+/* =========================================================
    SECTOR / SCHOOL SECTION HELPERS
    ========================================================= */
 
@@ -450,7 +551,24 @@ router.get(
                         guardian
                     ])
                 );
+            
+                /* ---------- Fetch emergency contacts in one query ---------- */
+const studentIds = (students || []).map(s => s.student_id);
+let emergencies = [];
 
+if (studentIds.length) {
+    const { data: emergencyData } = await supabase
+        .from('uia_emergency_contacts')
+        .select('*')
+        .in('student_id', studentIds)
+        .eq('is_primary', true);
+
+    emergencies = emergencyData || [];
+}
+
+const emergencyMap = new Map(
+    emergencies.map(e => [e.student_id, e])
+);
 
             const result =
                 (students || []).map(student => {
@@ -482,27 +600,19 @@ router.get(
                             classData?.academic_year_id ||
                             null,
 
-                        class_is_active:
+                class_is_active:
                             classData?.is_active ??
                             null,
-
-                        guardian:
-                            guardian,
-
-                        guardian_name:
-                            guardian?.full_name || null,
-
-                        guardian_relationship:
-                            guardian?.relationship || null,
-
-                        guardian_phone:
-                            guardian?.phone || null,
-
-                        guardian_email:
-                            guardian?.email || null,
-
-                        guardian_address:
-                            guardian?.address || null,
+                guardian: guardian,
+                guardian_name: guardian?.full_name || null,                          
+                guardian_relationship: guardian?.relationship || null,
+                guardian_phone: guardian?.phone || null,
+                guardian_email: guardian?.email || null,
+                guardian_address: guardian?.address || null,
+                emergency_contact: emergencyMap.get(student.student_id) || null,
+                emergency_contact_name:         emergencyMap.get(student.student_id)?.full_name    || null,
+                emergency_contact_phone:        emergencyMap.get(student.student_id)?.phone        || null,
+                emergency_contact_relationship: emergencyMap.get(student.student_id)?.relationship || null,
                     };
                 });
 
@@ -907,47 +1017,53 @@ router.get(
 
             let guardian = null;
 
-            if (student.guardian_id) {
+if (student.guardian_id) {
+    const { data: guardianData } = await supabase
+        .from('guardians')
+        .select('*')
+        .eq('guardian_id', student.guardian_id)
+        .maybeSingle();
 
-                const {
-                    data: guardianData
-                } = await supabase
-                    .from('guardians')
-                    .select('*')
-                    .eq(
-                        'guardian_id',
-                        student.guardian_id
-                    )
-                    .maybeSingle();
+    guardian = guardianData || null;
+}
 
-                guardian =
-                    guardianData || null;
-            }
+/* Emergency contact */
+const { data: emergency } = await supabase
+    .from('emergency_contacts')
+    .select('*')
+    .eq('student_id', studentId)
+    .eq('is_primary', true)
+    .maybeSingle();
 
+return res.json({
+    ...student,
+    guardian,
+    guardian_name:         guardian?.full_name    || null,
+    guardian_relationship: guardian?.relationship || null,
+    guardian_phone:        guardian?.phone        || null,
+    guardian_email:        guardian?.email        || null,
+    guardian_address:      guardian?.address      || null,
+    emergency_contact:     emergency || null,
+    emergency_contact_name:         emergency?.full_name    || null,
+    emergency_contact_phone:        emergency?.phone        || null,
+    emergency_contact_relationship: emergency?.relationship || null,
+        });
 
-            return res.json({
+    } catch (error) {
 
-                ...student,
+        console.error(
+            'GET SINGLE STUDENT ERROR:',
+            error
+        );
 
-                guardian
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                'GET SINGLE STUDENT ERROR:',
-                error
-            );
-
-            return res.status(500).json({
-                message:
-                    'Failed to load student.',
-                error:
-                    error.message
-            });
-        }
+        return res.status(500).json({
+            message:
+                'Failed to load student.',
+            error:
+                error.message
+        });
     }
+}
 );
 
 /* =========================================================
@@ -1621,7 +1737,6 @@ router.put(
             const roleId =
                 getRoleId(req.user);
 
-
             const {
                 data: existingStudent,
                 error: existingError
@@ -1641,20 +1756,16 @@ router.put(
                 )
                 .maybeSingle();
 
-
             if (existingError) {
                 throw existingError;
             }
 
-
             if (!existingStudent) {
-
                 return res.status(404).json({
                     message:
                         'Student not found.'
                 });
             }
-
 
             if (roleId === MANAGER) {
 
@@ -1678,15 +1789,12 @@ router.put(
                 }
             }
 
-
             let classId =
                 req.body.class_id ||
                 existingStudent.class_id;
 
-
             let newClass =
                 existingStudent.classes;
-
 
             if (
                 req.body.class_id &&
@@ -1713,24 +1821,19 @@ router.put(
                     )
                     .maybeSingle();
 
-
                 if (classError) {
                     throw classError;
                 }
 
-
                 if (!classData) {
-
                     return res.status(400).json({
                         message:
                             'Selected class was not found.'
                     });
                 }
 
-
                 newClass =
                     classData;
-
 
                 if (roleId === MANAGER) {
 
@@ -1748,7 +1851,6 @@ router.put(
                     }
                 }
             }
-
 
             const allowedFields = [
 
@@ -1768,9 +1870,7 @@ router.put(
 
             ];
 
-
             const studentUpdate = {};
-
 
             for (
                 const field of allowedFields
@@ -1780,7 +1880,6 @@ router.put(
                     req.body[field] !==
                     undefined
                 ) {
-
                     studentUpdate[field] =
                         req.body[field] === ''
                             ? null
@@ -1788,16 +1887,12 @@ router.put(
                 }
             }
 
-
             if (newClass) {
-
                 studentUpdate.school_section =
                     newClass.school_section;
             }
 
-
             if (req.file) {
-
                 const photoUrl =
                     await uploadToStorage(
                         'student_photos',
@@ -1811,37 +1906,22 @@ router.put(
                     photoUrl;
             }
 
+            const { data: updatedStudent, error: updateError } = await supabase
+    .from('students')
+    .update(studentUpdate)
+    .eq('student_id', studentId)
+    .select()
+    .single();
 
-            const {
-                data: updatedStudent,
-                error: updateError
-            } = await supabase
-                .from('students')
-                .update(
-                    studentUpdate
-                )
-                .eq(
-                    'student_id',
-                    studentId
-                )
-                .select()
-                .single();
+if (updateError) throw updateError;
 
+/* ---------- Sync guardian + emergency contact ---------- */
+await syncGuardianAndEmergency(studentId, req.body || {});
 
-            if (updateError) {
-                throw updateError;
-            }
-
-
-            return res.json({
-
-                message:
-                    'Student updated successfully.',
-
-                student:
-                    updatedStudent
-
-            });
+return res.json({
+    message: 'Student updated successfully.',
+    student: updatedStudent
+});
 
         } catch (error) {
 
@@ -2329,10 +2409,5 @@ router.put(
         }
     }
 );
-
-
-/* =========================================================
-   EXPORT
-   ========================================================= */
 
 module.exports = router;

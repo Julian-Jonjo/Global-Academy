@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waivers | Global Education Academy</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+        .header {
+            background: #173b6d;
+            color: white;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .header h1 { margin: 0; font-size: 16px; }
+        .header .sub { font-size: 11px; color: #a7c1e8; }
+        .header .user { font-size: 13px; font-weight: 600; }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+        .toolbar-left, .toolbar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 9px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background: #16a34a; color: white; }
+        .btn-secondary { background: #6b7280; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-approve { background: #16a34a; color: white; }
+        .btn-reject { background: #dc2626; color: white; }
+        .btn-cancel { background: #e5e7eb; color: #1f2937; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+            padding: 18px;
+        }
+
+        .panel h2 {
+            margin: 0 0 12px;
+            font-size: 15px;
+            color: #173b6d;
+            border-bottom: 2px solid #173b6d;
+            padding-bottom: 6px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-row input, .filter-row select {
+            padding: 9px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #f1f5f9;
+            text-align: left;
+            padding: 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #475569;
+            font-weight: 700;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+            vertical-align: top;
+        }
+        tr:hover td { background: #f9fafb; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-approved { background: #dcfce7; color: #166534; }
+        .badge-rejected { background: #fee2e2; color: #991b1b; }
+        .badge-full { background: #e0e7ff; color: #3730a3; }
+        .badge-amount { background: #fce7f3; color: #9d174d; }
+
+        .student-name { font-weight: 700; }
+        .student-meta { font-size: 11px; color: #6b7280; margin-top: 2px; }
+
+        .amount-cell { text-align: right; font-weight: 700; color: #173b6d; }
+
+        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+        .action-buttons .btn {
+            padding: 5px 10px;
+            font-size: 11px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 24px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .msg {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 14px;
+            font-size: 13px;
+        }
+        .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .msg-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; align-items: flex-start; justify-content: center; padding-top: 60px; }
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            width: 100%;
+            max-width: 520px;
+            margin: 20px;
+        }
+        .modal-content h3 { margin: 0 0 18px; color: #173b6d; }
+
+        .field { margin-bottom: 14px; }
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        .field input, .field select, .field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: none;
+            border-color: #173b6d;
+            box-shadow: 0 0 0 3px rgba(23,59,109,0.1);
+        }
+        .field textarea { min-height: 80px; resize: vertical; }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .student-search-results {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            margin-top: 4px;
+            display: none;
+        }
+        .student-search-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+        }
+        .student-search-item:hover { background: #f3f4f6; }
+        .student-search-item:last-child { border-bottom: none; }
+
+        .fee-picker {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-top: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .fee-picker-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .fee-picker-item:hover { background: #f3f4f6; }
+        .fee-picker-item.selected { background: #e0f2fe; }
+        .fee-picker-item:last-child { border-bottom: none; }
+
+        .note-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #075985;
+            margin-bottom: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div>
+        <h1>GLOBAL EDUCATION ACADEMY — WAIVERS</h1>
+        <div class="sub">Fee waivers: requests and approvals</div>
+    </div>
+    <div class="user" id="userLabel">—</div>
+</header>
+
+<div class="container">
+
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <button class="btn btn-secondary" onclick="window.location.href='finance.html'">← Back</button>
+            <button class="btn btn-secondary" onclick="loadWaivers()">🔄 Refresh</button>
+        </div>
+        <div class="toolbar-right">
+            <button class="btn btn-primary" id="newWaiverBtn" onclick="openNewWaiverModal()">+ New Waiver</button>
+        </div>
+    </div>
+
+    <div id="globalMsg"></div>
+
+    <div class="panel">
+        <h2>Waivers</h2>
+
+        <div class="filter-row">
+            <select id="statusFilter" onchange="renderWaivers()">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+
+            <input type="text" id="searchFilter" placeholder="Search by student name or admission..." oninput="renderWaivers()">
+
+            <span id="countLabel" style="font-size:12px;color:#6b7280;font-weight:600;margin-left:auto;"></span>
+        </div>
+
+        <div id="waiverContent">
+            <div class="loading">Loading waivers...</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- =========================================================
+     MODAL: New Waiver
+     ========================================================= -->
+<div id="waiverModal" class="modal">
+    <div class="modal-content" style="max-width:600px;">
+        <h3>New Waiver Request</h3>
+        <div id="waiverModalMsg"></div>
+
+        <div id="autoApproveNote" class="note-box" style="display:none;">
+            ✔️ As Proprietor or Administrator, this waiver takes effect immediately.
+        </div>
+
+        <div id="pendingNote" class="note-box" style="display:none;">
+            ⏳ As Finance, this waiver will be <strong>pending</strong> until approved by Proprietor or Administrator.
+        </div>
+
+        <!-- Step 1: student search -->
+        <div class="field">
+            <label>Student *</label>
+            <input type="text" id="studentSearchInput" placeholder="Type name or admission number..." autocomplete="off">
+            <div id="studentSearchResults" class="student-search-results"></div>
+            <div id="selectedStudentLabel" style="font-size:13px;color:#166534;font-weight:600;margin-top:6px;"></div>
+            <input type="hidden" id="selectedStudentId" value="">
+        </div>
+
+        <!-- Step 2: fee picker -->
+        <div class="field" id="feePickerField" style="display:none;">
+            <label>Which fee? *</label>
+            <div id="feePickerContent" class="fee-picker"></div>
+        </div>
+
+        <!-- Step 3: waive type -->
+        <div class="field" id="waiveTypeField" style="display:none;">
+            <label>Waive *</label>
+            <select id="waiveTypeSelect" onchange="onWaiveTypeChange()">
+                <option value="">— Select —</option>
+                <option value="full">Entire fee</option>
+                <option value="amount">Specific amount</option>
+            </select>
+        </div>
+
+        <!-- Step 4: amount (only for 'amount' type) -->
+        <div class="field" id="waiveAmountField" style="display:none;">
+            <label>Amount to waive (Le) *</label>
+            <input type="number" id="waiveAmountInput" step="0.01" min="0.01" placeholder="0.00">
+        </div>
+
+        <!-- Step 5: reason -->
+        <div class="field">
+            <label>Reason *</label>
+            <textarea id="waiverReasonInput" placeholder="Why is this waiver being requested?"></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-cancel" onclick="closeModal('waiverModal')">Cancel</button>
+            <button class="btn btn-primary" id="waiverSubmitBtn" onclick="submitWaiver()">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: Reject
+     ========================================================= -->
+<div id="rejectModal" class="modal">
+    <div class="modal-content" style="max-width:480px;">
+        <h3>Reject Waiver</h3>
+        <div id="rejectModalMsg"></div>
+
+        <div class="field">
+            <label>Reason for rejection *</label>
+            <textarea id="rejectReasonInput" placeholder="Explain why this waiver is being rejected..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-cancel" onclick="closeModal('rejectModal')">Cancel</button>
+            <button class="btn btn-danger" onclick="confirmReject()">Reject Waiver</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* =========================================================
+   AUTH
+========================================================= */
+const token = sessionStorage.getItem('authToken');
+const userData = sessionStorage.getItem('user');
+
+if (!token || !userData) window.location.href = '/login.html';
+
+let user = null;
+try { user = JSON.parse(userData); }
+catch { sessionStorage.clear(); window.location.href = '/login.html'; }
+
+const roleId = Number(user?.role_id);
+
+const PROPRIETOR    = 1;
+const ADMINISTRATOR = 2;
+const FINANCE       = 3;
+const MANAGER       = 6;
+const ADMIN_OFFICER = 7;
+
+const CAN_CREATE = [PROPRIETOR, ADMINISTRATOR, FINANCE].includes(roleId);
+const CAN_APPROVE = [PROPRIETOR, ADMINISTRATOR].includes(roleId);
+const AUTO_APPROVE = [PROPRIETOR, ADMINISTRATOR].includes(roleId);
+
+document.getElementById('userLabel').textContent = user?.full_name || user?.username || 'User';
+
+if (!CAN_CREATE) {
+    document.getElementById('newWaiverBtn').style.display = 'none';
+}
+
+/* =========================================================
+   STATE
+========================================================= */
+let waivers = [];
+let allStudents = [];
+let selectedStudentId = null;
+let selectedStudent = null;
+let selectedFeeId = null;
+let rejectionWaiverId = null;
+
+/* =========================================================
+   API HELPER
+========================================================= */
+async function api(url, options = {}) {
+    const res = await fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    let data = null;
+    try { data = await res.json(); } catch { data = null; }
+
+    if (res.status === 401) {
+        sessionStorage.clear();
+        window.location.href = '/login.html';
+        return null;
+    }
+    if (!res.ok) throw new Error(data?.message || `Request failed (${res.status})`);
+    return data;
+}
+
+/* =========================================================
+   LOAD WAIVERS
+========================================================= */
+async function loadWaivers() {
+    const container = document.getElementById('waiverContent');
+    container.innerHTML = '<div class="loading">Loading waivers...</div>';
+
+    try {
+        const data = await api('/api/fees/waivers');
+        waivers = data?.waivers || [];
+        renderWaivers();
+    } catch (e) {
+        container.innerHTML = `<div class="empty">Failed to load: ${escapeHtml(e.message)}</div>`;
+    }
+}
+
+function renderWaivers() {
+    const container = document.getElementById('waiverContent');
+    const status = document.getElementById('statusFilter').value;
+    const search = document.getElementById('searchFilter').value.trim().toLowerCase();
+
+    let filtered = waivers;
+
+    if (status) {
+        filtered = filtered.filter(w => w.status === status);
+    }
+
+    if (search) {
+        filtered = filtered.filter(w => {
+            const s = w.students || {};
+            const name = [s.first_name, s.middle_name, s.last_name].filter(Boolean).join(' ').toLowerCase();
+            const adm = String(s.admission_number || '').toLowerCase();
+            return name.includes(search) || adm.includes(search);
+        });
+    }
+
+    document.getElementById('countLabel').textContent = `${filtered.length} waiver${filtered.length === 1 ? '' : 's'}`;
+
+    if (!filtered.length) {
+        container.innerHTML = '<div class="empty">No waivers match the filter.</div>';
+        return;
+    }
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Fee</th>
+                    <th>Waiver</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Requested</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    filtered.forEach(w => {
+        const s = w.students || {};
+        const name = [s.first_name, s.middle_name, s.last_name].filter(Boolean).join(' ') || 'Unknown';
+        const cls = s.classes || {};
+        const classLabel = cls.class_name ? (cls.class_name + (cls.arm ? ' — ' + cls.arm : '')) : '';
+
+        const feeLabel = w.student_fees?.fee_types?.fee_name || (w.waive_type === 'amount' ? 'Amount waiver' : '—');
+
+        const waiveDisplay = w.waive_type === 'full'
+            ? `<span class="badge badge-full">Full fee</span>`
+            : `<span class="badge badge-amount">Le${Number(w.waive_amount || 0).toLocaleString()}</span>`;
+
+        const statusBadge = `<span class="badge badge-${w.status}">${w.status}</span>`;
+
+        const requestedAt = w.requested_at ? new Date(w.requested_at).toLocaleDateString() : '—';
+
+        let actions = '';
+        if (CAN_APPROVE && w.status === 'pending') {
+            actions = `
+                <div class="action-buttons">
+                    <button class="btn btn-approve" onclick="approveWaiver(${w.waiver_id})">Approve</button>
+                    <button class="btn btn-reject" onclick="openRejectModal(${w.waiver_id})">Reject</button>
+                </div>
+            `;
+        } else {
+            actions = '—';
+        }
+
+        html += `
+            <tr>
+                <td>
+                    <div class="student-name">${escapeHtml(name)}</div>
+                    <div class="student-meta">${escapeHtml(s.admission_number || '—')} · ${escapeHtml(classLabel || '—')}</div>
+                </td>
+                <td>${escapeHtml(feeLabel)}</td>
+                <td>${waiveDisplay}</td>
+                <td>${escapeHtml(w.reason || '—')}</td>
+                <td>${statusBadge}</td>
+                <td>${requestedAt}</td>
+                <td>${actions}</td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+/* =========================================================
+   NEW WAIVER MODAL
+========================================================= */
+async function openNewWaiverModal() {
+    if (!CAN_CREATE) return;
+
+    document.getElementById('waiverModalMsg').innerHTML = '';
+    document.getElementById('studentSearchInput').value = '';
+    document.getElementById('selectedStudentId').value = '';
+    document.getElementById('selectedStudentLabel').textContent = '';
+    document.getElementById('studentSearchResults').style.display = 'none';
+    document.getElementById('feePickerField').style.display = 'none';
+    document.getElementById('waiveTypeField').style.display = 'none';
+    document.getElementById('waiveAmountField').style.display = 'none';
+    document.getElementById('waiveTypeSelect').value = '';
+    document.getElementById('waiveAmountInput').value = '';
+    document.getElementById('waiverReasonInput').value = '';
+
+    selectedStudentId = null;
+    selectedStudent = null;
+    selectedFeeId = null;
+
+    if (AUTO_APPROVE) {
+        document.getElementById('autoApproveNote').style.display = '';
+        document.getElementById('pendingNote').style.display = 'none';
+    } else {
+        document.getElementById('autoApproveNote').style.display = 'none';
+        document.getElementById('pendingNote').style.display = '';
+    }
+
+    document.getElementById('waiverModal').classList.add('active');
+
+    await loadAllStudentsForSearch();
+    setupStudentSearch();
+}
+
+async function loadAllStudentsForSearch() {
+    if (allStudents.length) return;
+
+    try {
+        const data = await api('/api/students');
+        allStudents = Array.isArray(data) ? data : (data?.students || []);
+    } catch (e) {
+        document.getElementById('waiverModalMsg').innerHTML =
+            `<div class="msg msg-error">Failed to load students: ${escapeHtml(e.message)}</div>`;
+    }
+}
+
+function setupStudentSearch() {
+    const input = document.getElementById('studentSearchInput');
+
+    if (input.dataset.ready === 'true') return;
+    input.dataset.ready = 'true';
+
+    input.addEventListener('input', function () {
+        const term = this.value.trim().toLowerCase();
+
+        if (term.length < 2) {
+            document.getElementById('studentSearchResults').style.display = 'none';
+            return;
+        }
+
+        const results = allStudents.filter(s => {
+            const name = [s.first_name, s.middle_name, s.last_name].filter(Boolean).join(' ').toLowerCase();
+            const adm = String(s.admission_number || '').toLowerCase();
+            return name.includes(term) || adm.includes(term);
+        }).slice(0, 20);
+
+        const container = document.getElementById('studentSearchResults');
+
+        if (!results.length) {
+            container.innerHTML = '<div class="student-search-item" style="color:#6b7280;">No matches.</div>';
+            container.style.display = 'block';
+            return;
+        }
+
+        container.innerHTML = results.map(s => {
+            const name = [s.first_name, s.middle_name, s.last_name].filter(Boolean).join(' ');
+            return `<div class="student-search-item" onclick="pickStudent(${s.student_id})">
+                <strong>${escapeHtml(name)}</strong>
+                <div style="font-size:11px;color:#6b7280;">${escapeHtml(s.admission_number || '—')} · ${escapeHtml(s.class_name || '—')}</div>
+            </div>`;
+        }).join('');
+        container.style.display = 'block';
+    });
+}
+
+async function pickStudent(studentId) {
+    selectedStudent = allStudents.find(s => Number(s.student_id) === Number(studentId));
+    if (!selectedStudent) return;
+
+    selectedStudentId = studentId;
+
+    const name = [selectedStudent.first_name, selectedStudent.middle_name, selectedStudent.last_name].filter(Boolean).join(' ');
+
+    document.getElementById('studentSearchInput').value = name;
+    document.getElementById('selectedStudentLabel').textContent =
+        `✅ Selected: ${name} (${selectedStudent.admission_number || '—'})`;
+    document.getElementById('studentSearchResults').style.display = 'none';
+
+    /* Load that student's fees */
+    await loadStudentFeesForPicker(studentId);
+}
+
+async function loadStudentFeesForPicker(studentId) {
+    const container = document.getElementById('feePickerContent');
+    document.getElementById('feePickerField').style.display = '';
+    container.innerHTML = '<div style="padding:12px;color:#6b7280;font-size:13px;">Loading fees...</div>';
+    selectedFeeId = null;
+
+    try {
+        const data = await api(`/api/fees/students/${studentId}`);
+        const fees = (data?.fees || []).filter(f => f.is_active);
+
+        if (!fees.length) {
+            container.innerHTML = '<div style="padding:12px;color:#6b7280;font-size:13px;">No active fees for this student.</div>';
+            return;
+        }
+
+        container.innerHTML = fees.map(f => {
+            const name = f.fee_types?.fee_name || 'Fee';
+            const amount = Number(f.amount_due || 0);
+            return `<div class="fee-picker-item" data-fee-id="${f.student_fee_id}" onclick="pickFee(${f.student_fee_id}, ${amount})">
+                <span>${escapeHtml(name)}</span>
+                <span style="font-weight:700;">Le${amount.toLocaleString()}</span>
+            </div>`;
+        }).join('');
+
+        document.getElementById('waiveTypeField').style.display = '';
+    } catch (e) {
+        container.innerHTML = `<div style="padding:12px;color:#991b1b;font-size:13px;">Failed: ${escapeHtml(e.message)}</div>`;
+    }
+}
+
+function pickFee(feeId, amount) {
+    selectedFeeId = feeId;
+
+    document.querySelectorAll('.fee-picker-item').forEach(el => {
+        el.classList.toggle('selected', Number(el.dataset.feeId) === feeId);
+    });
+}
+
+function onWaiveTypeChange() {
+    const type = document.getElementById('waiveTypeSelect').value;
+    document.getElementById('waiveAmountField').style.display = type === 'amount' ? '' : 'none';
+}
+
+/* =========================================================
+   SUBMIT WAIVER
+========================================================= */
+async function submitWaiver() {
+    const msg = document.getElementById('waiverModalMsg');
+    msg.innerHTML = '';
+
+    if (!selectedStudentId) {
+        msg.innerHTML = '<div class="msg msg-error">Please select a student.</div>';
+        return;
+    }
+    if (!selectedFeeId) {
+        msg.innerHTML = '<div class="msg msg-error">Please pick a fee.</div>';
+        return;
+    }
+
+    const waiveType = document.getElementById('waiveTypeSelect').value;
+    if (!waiveType) {
+        msg.innerHTML = '<div class="msg msg-error">Choose whether to waive the full fee or an amount.</div>';
+        return;
+    }
+
+    let waiveAmount = null;
+    if (waiveType === 'amount') {
+        waiveAmount = parseFloat(document.getElementById('waiveAmountInput').value);
+        if (!Number.isFinite(waiveAmount) || waiveAmount <= 0) {
+            msg.innerHTML = '<div class="msg msg-error">Amount must be greater than 0.</div>';
+            return;
+        }
+    }
+
+    const reason = document.getElementById('waiverReasonInput').value.trim();
+    if (!reason) {
+        msg.innerHTML = '<div class="msg msg-error">Reason is required.</div>';
+        return;
+    }
+
+    try {
+        const result = await api('/api/fees/waivers', {
+            method: 'POST',
+            body: JSON.stringify({
+                student_id: selectedStudentId,
+                student_fee_id: selectedFeeId,
+                waive_type: waiveType,
+                waive_amount: waiveType === 'amount' ? waiveAmount : null,
+                reason
+            })
+        });
+
+        closeModal('waiverModal');
+        setGlobalMsg(result?.message || 'Waiver submitted.', 'success');
+        await loadWaivers();
+    } catch (e) {
+        msg.innerHTML = `<div class="msg msg-error">${escapeHtml(e.message)}</div>`;
+    }
+}
+
+/* =========================================================
+   APPROVE / REJECT
+========================================================= */
+async function approveWaiver(waiverId) {
+    if (!CAN_APPROVE) return;
+    if (!confirm('Approve this waiver?')) return;
+
+    try {
+        await api(`/api/fees/waivers/${waiverId}/approve`, { method: 'PUT' });
+        setGlobalMsg('Waiver approved.', 'success');
+        await loadWaivers();
+    } catch (e) {
+        setGlobalMsg('Failed to approve: ' + e.message, 'error');
+    }
+}
+
+function openRejectModal(waiverId) {
+    rejectionWaiverId = waiverId;
+    document.getElementById('rejectReasonInput').value = '';
+    document.getElementById('rejectModalMsg').innerHTML = '';
+    document.getElementById('rejectModal').classList.add('active');
+}
+
+async function confirmReject() {
+    const reason = document.getElementById('rejectReasonInput').value.trim();
+    if (!reason) {
+        document.getElementById('rejectModalMsg').innerHTML =
+            '<div class="msg msg-error">Reason is required.</div>';
+        return;
+    }
+
+    try {
+        await api(`/api/fees/waivers/${rejectionWaiverId}/reject`, {
+            method: 'PUT',
+            body: JSON.stringify({ rejection_reason: reason })
+        });
+
+        closeModal('rejectModal');
+        setGlobalMsg('Waiver rejected.', 'success');
+        await loadWaivers();
+    } catch (e) {
+        document.getElementById('rejectModalMsg').innerHTML =
+            `<div class="msg msg-error">${escapeHtml(e.message)}</div>`;
+    }
+}
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+function setGlobalMsg(text, kind) {
+    const el = document.getElementById('globalMsg');
+    el.innerHTML = `<div class="msg msg-${kind}">${escapeHtml(text)}</div>`;
+    setTimeout(() => { el.innerHTML = ''; }, 4000);
+}
+
+function escapeHtml(v) {
+    return String(v ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+window.addEventListener('click', e => {
+    ['waiverModal', 'rejectModal'].forEach(id => {
+        const m = document.getElementById(id);
+        if (e.target === m) m.classList.remove('active');
+    });
+});
+
+/* =========================================================
+   INIT
+========================================================= */
+loadWaivers();
+</script>
+
+</body>
+</html>
