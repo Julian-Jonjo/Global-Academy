@@ -336,6 +336,15 @@
         </div>
 
         <!-- Step 2: fee picker -->
+         <div class="field" id="bulkWaiveField" style="display:none;">
+    <button type="button" class="btn btn-danger" onclick="submitBulkWaiver()" style="width:100%;">
+        🚫 Waive ALL Outstanding Fees for This Student
+    </button>
+    <div style="font-size:11px;color:#6b7280;margin-top:6px;text-align:center;">
+        Or select an individual fee below
+    </div>
+</div>
+
         <div class="field" id="feePickerField" style="display:none;">
             <label>Which fee? *</label>
             <div id="feePickerContent" class="fee-picker"></div>
@@ -580,6 +589,7 @@ async function openNewWaiverModal() {
     document.getElementById('waiveTypeSelect').value = '';
     document.getElementById('waiveAmountInput').value = '';
     document.getElementById('waiverReasonInput').value = '';
+    document.getElementById('bulkWaiveField').style.display = 'none';
 
     selectedStudentId = null;
     selectedStudent = null;
@@ -665,6 +675,7 @@ async function pickStudent(studentId) {
 
     /* Load that student's fees */
     await loadStudentFeesForPicker(studentId);
+    document.getElementById('bulkWaiveField').style.display = '';
 }
 
 async function loadStudentFeesForPicker(studentId) {
@@ -762,8 +773,47 @@ async function submitWaiver() {
         closeModal('waiverModal');
         setGlobalMsg(result?.message || 'Waiver submitted.', 'success');
         await loadWaivers();
+       
     } catch (e) {
-        msg.innerHTML = `<div class="msg msg-error">${escapeHtml(e.message)}</div>`;
+        msg.innerHTML = '';
+        alert(e.message || 'Failed to submit waiver.');
+    }
+}
+
+async function submitBulkWaiver() {
+    if (!selectedStudentId) {
+        alert('Select a student first.');
+        return;
+    }
+
+    const reason = prompt(
+        'Reason for waiving ALL outstanding fees for this student:'
+    );
+
+    if (!reason || !reason.trim()) {
+        alert('A reason is required.');
+        return;
+    }
+
+    if (!confirm('Waive ALL outstanding fees for this student? This will create individual waivers per fee.')) {
+        return;
+    }
+
+    try {
+        const result = await api('/api/fees/waivers/bulk', {
+            method: 'POST',
+            body: JSON.stringify({
+                student_id: selectedStudentId,
+                reason: reason.trim()
+            })
+        });
+
+        alert(result.message);
+        closeModal('waiverModal');
+        await loadWaivers();
+
+    } catch (e) {
+        alert(e.message || 'Failed to create bulk waiver.');
     }
 }
 

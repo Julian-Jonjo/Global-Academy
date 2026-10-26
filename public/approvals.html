@@ -26,6 +26,7 @@
         .sector-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
         .sector-card.primary { border-top: 4px solid #166534; }
         .sector-card.secondary { border-top: 4px solid #1a3c6e; }
+        .sector-card.teacher { border-top: 4px solid #991b1b; }
         .sector-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .sector-header h3 { margin: 0; }
         .sector-count { font-size: 28px; font-weight: bold; color: #1a3c6e; }
@@ -118,6 +119,30 @@
                     </table>
                 </div>
             </div>
+
+            <!-- TEACHER SECTOR -->
+<div class="sector-card teacher">
+    <div class="sector-header">
+        <h3>Teacher Deletions</h3>
+        <span class="sector-count" id="teacherCount">0</span>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Teacher ID</th>
+                    <th>Name</th>
+                    <th>Section</th>
+                    <th>Requested By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="teacherTable">
+                <tr><td colspan="5" class="empty">Loading...</td></tr>
+            </tbody>
+            </table>
+          </div>
+          </div>
         </div>
     </main>
 
@@ -161,7 +186,8 @@
             if (!response.ok) throw new Error('Failed to load approvals');
             const data = await response.json();
             allApprovals = Array.isArray(data) ? data : [];
-            renderSectors();
+                    renderSectors();
+        renderTeacherDeletions();
         } catch (error) {
             console.error('Error:', error);
             document.getElementById('primaryTable').innerHTML = '<tr><td colspan="5" class="empty">Error loading approvals</td></tr>';
@@ -170,8 +196,10 @@
     }
 
     function renderSectors() {
-        const primary = allApprovals.filter(a => ['Nursery', 'Primary'].includes(a.school_section));
-        const secondary = allApprovals.filter(a => ['JSS', 'SSS', 'Secondary'].includes(a.school_section));
+        const isTeacherDelete = a => String(a.record_type || '').toLowerCase() === 'teacher_delete';
+
+     const primary = allApprovals.filter(a => !isTeacherDelete(a) && ['Nursery', 'Primary'].includes(a.school_section));
+     const secondary = allApprovals.filter(a => !isTeacherDelete(a) && ['JSS', 'SSS', 'Secondary'].includes(a.school_section));
 
         document.getElementById('primaryCount').textContent = primary.length;
         document.getElementById('secondaryCount').textContent = secondary.length;
@@ -202,6 +230,47 @@
             </tr>`;
         }).join('');
     }
+
+    function renderTeacherDeletions() {
+    const approvals = allApprovals.filter(
+        a => String(a.record_type || '').toLowerCase() === 'teacher_delete'
+    );
+
+    document.getElementById('teacherCount').textContent = approvals.length;
+
+    const table = document.getElementById('teacherTable');
+
+    if (!approvals.length) {
+        table.innerHTML = '<tr><td colspan="5" class="empty">No pending teacher deletions 🎉</td></tr>';
+        return;
+    }
+
+    table.innerHTML = approvals.map(a => {
+        let teacherName = '—';
+
+        if (a.first_name || a.last_name) {
+            teacherName = [a.first_name, a.middle_name, a.last_name].filter(Boolean).join(' ');
+        } else if (a.description) {
+            teacherName =
+                String(a.description)
+                    .replace(/^Delete teacher:\s*/i, '')
+                    .trim() || '—';
+        }
+
+        return `<tr>
+            <td><strong>${escapeHtml(String(a.record_id || '—'))}</strong></td>
+            <td>${escapeHtml(teacherName)}</td>
+            <td>${escapeHtml(a.school_section || '—')}</td>
+            <td>${escapeHtml(a.created_by_name || '—')}</td>
+            <td>
+                <div class="action-group">
+                    <button class="btn btn-approve" onclick="approveRecord(${a.approval_id})">Approve</button>
+                    <button class="btn btn-reject"  onclick="rejectRecord(${a.approval_id})">Reject</button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
 
     async function viewDetails(approvalId) {
         const approval = allApprovals.find(a => a.approval_id === approvalId);

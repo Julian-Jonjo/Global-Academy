@@ -2403,112 +2403,6 @@ router.put(
     }
 );
 
-
-// ============================================================
-// DELETE TEACHER
-// ============================================================
-
-router.delete(
-    '/:teacherId',
-    authenticateToken,
-    requireRoles(
-        PROPRIETOR,
-        ADMINISTRATOR,
-        MANAGER,
-        ADMIN_OFFICER
-    ),
-    async (req, res) => {
-
-        try {
-
-            const teacherId =
-                req.params.teacherId;
-
-
-            const {
-                data: teacher,
-                error: lookupError
-            } = await supabase
-                .from('teachers')
-                .select(`teacher_id, school_section`)
-                .eq('teacher_id', teacherId)
-                .maybeSingle();
-
-
-            if (lookupError) {
-                return res.status(500).json({
-                    message:
-                        'Failed to load teacher',
-                    error:
-                        lookupError.message
-                });
-            }
-
-
-            if (!teacher) {
-                return res.status(404).json({
-                    message:
-                        'Teacher not found.'
-                });
-            }
-
-
-            if (
-                getRoleId(req.user) === MANAGER &&
-                !managerCanAccessSection(
-                    req.user,
-                    teacher.school_section
-                )
-            ) {
-                return res.status(403).json({
-                    message:
-                        'Access denied. Teacher belongs to another school sector.'
-                });
-            }
-
-
-            const {
-                error
-            } = await supabase
-                .from('teachers')
-                .delete()
-                .eq('teacher_id', teacherId);
-
-
-            if (error) {
-                console.error(
-                    'TEACHER DELETE ERROR:',
-                    error
-                );
-
-                return res.status(500).json({
-                    message:
-                        'Failed to delete teacher',
-                    error: error.message
-                });
-            }
-
-
-            res.json({
-                message:
-                    'Teacher deleted successfully.'
-            });
-
-        } catch (error) {
-
-            console.error(
-                'TEACHER DELETE EXCEPTION:',
-                error
-            );
-
-            res.status(500).json({
-                message: 'Server error'
-            });
-        }
-    }
-);
-
-
 // ============================================================
 // GET COMBINED SECONDARY TEACHER DATA
 // ============================================================
@@ -2759,9 +2653,265 @@ router.get(
     }
 );
 
+/* =========================================================
+   DELETE TEACHER (with approval routing)
+   ========================================================= */
 
-// ============================================================
-// EXPORT ROUTER
-// ============================================================
+router.delete(
+    '/:teacherId',
+    authenticateToken,
+    async (req, res) => {
+
+        try {
+
+            const teacherId =
+                parseInt(req.params.teacherId, 10);
+
+            if (Number.isNaN(teacherId)) {
+                return res.status(400).json({
+                    message: 'Invalid teacher ID.'
+                });
+            }
+
+            const roleId = getRoleId(req.user);
+
+            if (
+                roleId !== PROPRIETOR &&
+                roleId !== ADMINISTRATOR &&
+                roleId !== ADMIN_OFFICER
+            ) {
+                return res.status(403).json({
+                    message: 'Access denied. Only Proprietor, Administrator, or Admin Officer can delete teachers.'
+                });
+            }
+
+            const { data: teacher, error: teacherError } =
+                await supabase
+                    .from('teachers')
+                    .select('teacher_id, first_name, last_name, school_section')
+                    .eq('teacher_id', teacherId)
+                    .maybeSingle();
+
+            if (teacherError) throw teacherError;
+
+            if (!teacher) {
+                return res.status(404).json({
+                    message: 'Teacher not found.'
+                });
+            }
+
+            /* Administrator deletes immediately */
+            if (roleId === ADMINISTRATOR) {
+
+                await performTeacherDelete(teacherId);
+
+                return res.json({
+                    message: 'Teacher deleted.',
+                    needs_approval: false
+                });
+            }
+
+            /* Proprietor / Admin Officer: create pending approval */
+            const { error: approvalError } =
+                await supabase
+                    .from('record_approvals')
+                    .insert([{
+                        record_type: 'teacher_delete',
+                        record_id: teacherId,
+                        approval_status: 'Pending',
+                        created_by: req.user.user_id || null,
+                        school_section: teacher.school_section || null,
+                        description:
+                            `Delete teacher: ${teacher.first_name || ''} ${teacher.last_name || ''}`.trim()
+                    }]);
+
+            if (approvalError) throw approvalError;
+
+            return res.json({
+                message: 'Teacher deletion submitted for approval.',
+                needs_approval: true
+            });
+
+        } catch (error) {
+
+            console.error(
+                'DELETE TEACHER ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+                message: 'Failed to delete teacher.',
+                error: error.message
+            });
+        }
+    }
+);
+
+/* Helper — actual deletion, called from here or from approvals.js */
+async function performTeacherDelete(teacherId) {
+
+    await supabase
+        .from('primary_class_teachers')
+        .delete()
+        .eq('teacher_id', teacherId);
+
+    await supabase
+        .from('secondary_class_masters')
+        .delete()
+        .eq('teacher_id', teacherId);
+
+    await supabase
+        .from('class_subjects')
+        .update({ teacher_id: null })
+        .eq('teacher_id', teacherId);
+
+    await supabase
+        .from('teachers')
+        .delete()
+        .eq('teacher_id', teacherId);
+}
+
+/* =========================================================
+   REASSIGN TEACHER
+   ========================================================= */
+
+router.put(
+    '/:teacherId/assignments',
+    authenticateToken,
+    async (req, res) => {
+
+        try {
+
+            const teacherId =
+                parseInt(req.params.teacherId, 10);
+
+            if (Number.isNaN(teacherId)) {
+                return res.status(400).json({
+                    message: 'Invalid teacher ID.'
+                });
+            }
+
+            const roleId = getRoleId(req.user);
+
+            if (
+                roleId !== PROPRIETOR &&
+                roleId !== ADMINISTRATOR &&
+                roleId !== ADMIN_OFFICER
+            ) {
+                return res.status(403).json({
+                    message: 'Access denied.'
+                });
+            }
+
+            const {
+                primary_classes,       // [class_id, class_id, ...]
+                secondary_class_id,    // single class_id or null
+                subject_ids,           // [subject_id, ...] — for the class_subjects rows
+                academic_year_id
+            } = req.body;
+
+            const { data: teacher } =
+                await supabase
+                    .from('teachers')
+                    .select('teacher_id')
+                    .eq('teacher_id', teacherId)
+                    .maybeSingle();
+
+            if (!teacher) {
+                return res.status(404).json({
+                    message: 'Teacher not found.'
+                });
+            }
+
+            /* Primary classes — clear and re-insert */
+            if (Array.isArray(primary_classes)) {
+
+                await supabase
+                    .from('primary_class_teachers')
+                    .delete()
+                    .eq('teacher_id', teacherId);
+
+                if (primary_classes.length && academic_year_id) {
+
+                    const rows = primary_classes.map(classId => ({
+                        class_id: classId,
+                        teacher_id: teacherId,
+                        academic_year_id,
+                        role: 'class_teacher'
+                    }));
+
+                    const { error: primaryError } =
+                        await supabase
+                            .from('primary_class_teachers')
+                            .insert(rows);
+
+                    if (primaryError) throw primaryError;
+                }
+            }
+
+            /* Secondary class master — single class or none */
+            if (secondary_class_id !== undefined) {
+
+                await supabase
+                    .from('secondary_class_masters')
+                    .delete()
+                    .eq('teacher_id', teacherId);
+
+                if (secondary_class_id && academic_year_id) {
+
+                    const { error: secError } =
+                        await supabase
+                            .from('secondary_class_masters')
+                            .insert([{
+                                class_id: secondary_class_id,
+                                teacher_id: teacherId,
+                                academic_year_id
+                            }]);
+
+                    if (secError) throw secError;
+                }
+            }
+
+            /* Subjects — for a given class */
+            if (Array.isArray(subject_ids) && req.body.class_id && academic_year_id) {
+
+                await supabase
+                    .from('class_subjects')
+                    .update({ teacher_id: null })
+                    .eq('teacher_id', teacherId)
+                    .eq('class_id', req.body.class_id);
+
+                if (subject_ids.length) {
+
+                    for (const subjectId of subject_ids) {
+
+                        await supabase
+                            .from('class_subjects')
+                            .update({ teacher_id: teacherId })
+                            .eq('class_id', req.body.class_id)
+                            .eq('subject_id', subjectId)
+                            .eq('academic_year_id', academic_year_id);
+                    }
+                }
+            }
+
+            return res.json({
+                message: 'Assignments updated.'
+            });
+
+        } catch (error) {
+
+            console.error(
+                'REASSIGN TEACHER ERROR:',
+                error
+            );
+
+            return res.status(500).json({
+                message: 'Failed to reassign teacher.',
+                error: error.message
+            });
+        }
+    }
+);
 
 module.exports = router;

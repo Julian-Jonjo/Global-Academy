@@ -32,6 +32,14 @@ function isExpenditureType(recordType) {
     return String(recordType || '').trim().toLowerCase() === 'expenditure';
 }
 
+function isTeacherDeleteType(recordType) {
+    return String(recordType || '').trim().toLowerCase() === 'teacher_delete';
+}
+
+function isStudentDeleteType(recordType) {
+    return String(recordType || '').trim().toLowerCase() === 'student_delete';
+}
+
 // ============================================================
 // GET ALL APPROVALS (Role-filtered with student data)
 // ============================================================
@@ -222,59 +230,85 @@ router.get('/pending', authenticateToken, async (req, res) => {
         if (error) throw error;
 
         const enrichedApprovals = await Promise.all((approvals || []).map(async (approval) => {
-            const studentId = approval.record_id;
-            
-            const { data: student } = await supabase
-                .from('students')
-                .select('student_id, admission_number, first_name, middle_name, last_name, gender, date_of_birth, class_id, previous_school, guardian_id, school_section')
-                .eq('student_id', studentId)
-                .maybeSingle();
 
-            let classData = null;
-            if (student?.class_id) {
-                const { data: cls } = await supabase
-                    .from('classes')
-                    .select('class_id, class_name, arm')
-                    .eq('class_id', student.class_id)
-                    .maybeSingle();
-                classData = cls;
-            }
+    /* Teacher / Student delete types carry their own payload — do not
+       try to look up a student record. */
+    const type = String(approval.record_type || '').trim().toLowerCase();
 
-            let guardianData = null;
-            if (student?.guardian_id) {
-                const { data: guardian } = await supabase
-                    .from('guardians')
-                    .select('guardian_id, full_name, relationship, phone, email, address')
-                    .eq('guardian_id', student.guardian_id)
-                    .maybeSingle();
-                guardianData = guardian;
-            }
+    if (type === 'teacher_delete' || type === 'student_delete') {
+        return {
+            approval_id: approval.approval_id,
+            record_type: approval.record_type,
+            record_id: approval.record_id,
+            approval_status: approval.approval_status,
+            created_by: approval.created_by,
+            created_at: approval.created_at,
+            school_section: approval.school_section || 'Secondary',
+            description: approval.description || null,
+            first_name: null,
+            middle_name: null,
+            last_name: null,
+            admission_number: null,
+            class_name: null,
+            arm: null,
+            guardian_name: null
+        };
+    }
 
-            return {
-                approval_id: approval.approval_id,
-                record_type: approval.record_type,
-                record_id: approval.record_id,
-                approval_status: approval.approval_status,
-                created_by: approval.created_by,
-                created_at: approval.created_at,
-                school_section: approval.school_section || student?.school_section || 'Secondary',
-                admission_number: student?.admission_number || 'N/A',
-                first_name: student?.first_name || 'Unknown',
-                middle_name: student?.middle_name || null,
-                last_name: student?.last_name || 'Student',
-                gender: student?.gender || null,
-                date_of_birth: student?.date_of_birth || null,
-                class_name: classData?.class_name || 'N/A',
-                arm: classData?.arm || null,
-                previous_school: student?.previous_school || null,
-                guardian_name: guardianData?.full_name || 'N/A',
-                guardian_relationship: guardianData?.relationship || null,
-                guardian_phone: guardianData?.phone || null,
-                guardian_email: guardianData?.email || null,
-                guardian_address: guardianData?.address || null
-            };
-        }));
+    /* Existing student enrichment path — unchanged */
+    const studentId = approval.record_id;
 
+    const { data: student } = await supabase
+        .from('students')
+        .select('student_id, admission_number, first_name, middle_name, last_name, gender, date_of_birth, class_id, previous_school, guardian_id, school_section')
+        .eq('student_id', studentId)
+        .maybeSingle();
+
+    let classData = null;
+    if (student?.class_id) {
+        const { data: cls } = await supabase
+            .from('classes')
+            .select('class_id, class_name, arm')
+            .eq('class_id', student.class_id)
+            .maybeSingle();
+        classData = cls;
+    }
+
+    let guardianData = null;
+    if (student?.guardian_id) {
+        const { data: guardian } = await supabase
+            .from('guardians')
+            .select('guardian_id, full_name, relationship, phone, email, address')
+            .eq('guardian_id', student.guardian_id)
+            .maybeSingle();
+        guardianData = guardian;
+    }
+
+    return {
+        approval_id: approval.approval_id,
+        record_type: approval.record_type,
+        record_id: approval.record_id,
+        approval_status: approval.approval_status,
+        created_by: approval.created_by,
+        created_at: approval.created_at,
+        school_section: approval.school_section || student?.school_section || 'Secondary',
+        description: approval.description || null,
+        admission_number: student?.admission_number || 'N/A',
+        first_name: student?.first_name || 'Unknown',
+        middle_name: student?.middle_name || null,
+        last_name: student?.last_name || 'Student',
+        gender: student?.gender || null,
+        date_of_birth: student?.date_of_birth || null,
+        class_name: classData?.class_name || 'N/A',
+        arm: classData?.arm || null,
+        previous_school: student?.previous_school || null,
+        guardian_name: guardianData?.full_name || 'N/A',
+        guardian_relationship: guardianData?.relationship || null,
+        guardian_phone: guardianData?.phone || null,
+        guardian_email: guardianData?.email || null,
+        guardian_address: guardianData?.address || null
+    };
+}));
         res.json(enrichedApprovals);
     } catch (error) {
         console.error('Error loading pending approvals:', error);
@@ -550,7 +584,67 @@ router.put('/:approvalId/approve', authenticateToken, requireRoles(...APPROVAL_R
 
         if (approveError) throw approveError;
 
-        if (isPaymentType(approval.record_type)) {
+        if (isTeacherDeleteType(approval.record_type)) {
+
+    await supabase
+        .from('primary_class_teachers')
+        .delete()
+        .eq('teacher_id', approval.record_id);
+
+    await supabase
+        .from('secondary_class_masters')
+        .delete()
+        .eq('teacher_id', approval.record_id);
+
+    await supabase
+        .from('class_subjects')
+        .update({ teacher_id: null })
+        .eq('teacher_id', approval.record_id);
+
+    await supabase
+        .from('teachers')
+        .delete()
+        .eq('teacher_id', approval.record_id);
+
+} else if (isStudentDeleteType(approval.record_type)) {
+
+    await supabase
+        .from('emergency_contacts')
+        .delete()
+        .eq('student_id', approval.record_id);
+
+    await supabase
+        .from('student_fees')
+        .delete()
+        .eq('student_id', approval.record_id);
+
+    await supabase
+        .from('payments')
+        .delete()
+        .eq('student_id', approval.record_id);
+
+    await supabase
+        .from('attendance')
+        .delete()
+        .eq('student_id', approval.record_id);
+
+    await supabase
+        .from('users')
+        .delete()
+        .eq('student_id', approval.record_id);
+
+    await supabase
+        .from('record_approvals')
+        .delete()
+        .eq('record_type', 'student')
+        .eq('record_id', approval.record_id);
+
+    await supabase
+        .from('students')
+        .delete()
+        .eq('student_id', approval.record_id);
+
+       } else if (isPaymentType(approval.record_type)) {
             await supabase
                 .from('payments')
                 .update({ approval_status: 'approved' })

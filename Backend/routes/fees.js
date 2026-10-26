@@ -702,13 +702,13 @@ router.post(
             if (!yearId) return res.status(400).json({ message: 'Could not determine academic year.' });
 
             /* For 'full', student_fee_id is required */
-            let feeId = null;
+                       let feeId = null;
             let waiveAmt = null;
 
             if (waive_type === 'full') {
                 feeId = parseId(student_fee_id);
                 if (!feeId) {
-                    return res.status(400).json({ message: 'student_fee_id is required for a full waiver.' });
+                    return res.status(400).json({ message: 'student_fee_id required for full waiver.' });
                 }
 
                 const { data: feeRow, error: feeErr } = await supabase
@@ -719,14 +719,33 @@ router.post(
 
                 if (feeErr) throw feeErr;
                 if (!feeRow) return res.status(404).json({ message: 'Fee row not found.' });
-                if (feeRow.student_id !== sid) {
-                    return res.status(400).json({ message: 'Fee row does not belong to this student.' });
-                }
+                if (feeRow.student_id !== sid) return res.status(400).json({ message: 'Fee row does not belong to this student.' });
             } else {
-                /* amount */
                 waiveAmt = Number(waive_amount);
                 if (!Number.isFinite(waiveAmt) || waiveAmt <= 0) {
                     return res.status(400).json({ message: 'waive_amount must be > 0.' });
+                }
+            }
+
+            /* Block waiver if the fee already has approved payments.
+               Refund instead — do not waive paid fees. */
+            if (feeId) {
+                const { data: paidRows } = await supabase
+                    .from('payments')
+                    .select('amount_paid, payment_type')
+                    .eq('student_id', sid)
+                    .eq('student_fee_id', feeId)
+                    .eq('approval_status', 'approved');
+
+                const netPaid = (paidRows || []).reduce(
+                    (sum, p) => sum + (p.payment_type === 'refund' ? -Number(p.amount_paid) : Number(p.amount_paid)),
+                    0
+                );
+
+                if (netPaid > 0) {
+                    return res.status(400).json({
+                        message: `This fee already has Le ${netPaid.toFixed(2)} paid. Waivers cannot be applied to paid fees — use a refund instead.`
+                    });
                 }
             }
 
@@ -866,5 +885,111 @@ router.put(
         }
     }
 );
+
+/* ============================================================
+   BULK WAIVER — waive ALL outstanding fees for one student
+   ============================================================ */
+
+router.post('/waivers/bulk', authenticateToken, async (req, res) => {
+    try {
+        const roleId = getRoleId(req.user);
+        if (!WAIVER_CREATE_ROLES.includes(roleId)) {
+            return res.status(403).json({ message: 'You cannot create waivers.' });
+        }
+
+        const { student_id, reason, academic_year } = req.body || {};
+        const sid = parseId(student_id);
+        if (!sid) return res.status(400).json({ message: 'student_id is required.' });
+
+        if (!reason || !String(reason).trim()) {
+            return res.status(400).json({ message: 'reason is required.' });
+        }
+
+        const yearId = await resolveAcademicYearId(academic_year);
+        if (!yearId) return res.status(400).json({ message: 'Could not determine academic year.' });
+
+        /* All active fees for this student in this year */
+        const { data: fees, error: feesErr } = await supabase
+            .from('student_fees')
+            .select('student_fee_id, amount_due')
+            .eq('student_id', sid)
+            .eq('academic_year_id', yearId);
+
+        if (feesErr) throw feesErr;
+        if (!fees || !fees.length) {
+            return res.status(400).json({ message: 'No fees found for this student.' });
+        }
+
+        /* Exclude fees that already have approved payments */
+        const feeIds = fees.map(f => f.student_fee_id);
+
+        const { data: paidRows } = await supabase
+            .from('payments')
+            .select('student_fee_id')
+            .in('student_fee_id', feeIds)
+            .eq('approval_status', 'approved');
+
+        const paidSet = new Set((paidRows || []).map(p => p.student_fee_id));
+
+        /* Exclude fees that already have a pending or approved waiver */
+        const { data: existingWaivers } = await supabase
+            .from('student_fee_waivers')
+            .select('student_fee_id, status')
+            .in('student_fee_id', feeIds)
+            .in('status', ['pending', 'approved']);
+
+        const waivedSet = new Set((existingWaivers || []).map(w => w.student_fee_id));
+
+        const eligible = fees.filter(
+            f => !paidSet.has(f.student_fee_id) && !waivedSet.has(f.student_fee_id)
+        );
+
+        if (!eligible.length) {
+            return res.status(400).json({
+                message: 'No eligible fees to waive (all are already paid or already waived).'
+            });
+        }
+
+        const autoApprove = WAIVER_AUTO_APPROVE_ROLES.includes(roleId);
+        const now = new Date().toISOString();
+        const uid = userIdOf(req.user);
+
+        const rows = eligible.map(f => ({
+            student_id: sid,
+            student_fee_id: f.student_fee_id,
+            academic_year_id: yearId,
+            waive_type: 'full',
+            waive_amount: null,
+            reason: String(reason).trim(),
+            status: autoApprove ? 'approved' : 'pending',
+            requested_by: uid,
+            requested_at: now,
+            approved_by: autoApprove ? uid : null,
+            approved_at: autoApprove ? now : null
+        }));
+
+        const { data: created, error } = await supabase
+            .from('student_fee_waivers')
+            .insert(rows)
+            .select();
+
+        if (error) throw error;
+
+        res.status(201).json({
+            message: autoApprove
+                ? `Waived ${created.length} fee(s).`
+                : `Submitted ${created.length} fee(s) for approval.`,
+            waivers_created: created.length,
+            skipped_paid: paidSet.size,
+            skipped_waived: waivedSet.size,
+            needs_approval: !autoApprove,
+            data: created
+        });
+
+    } catch (error) {
+        console.error('BULK WAIVER ERROR:', error);
+        res.status(500).json({ message: 'Failed to create bulk waiver.', error: error.message });
+    }
+});
 
 module.exports = router;

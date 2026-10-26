@@ -2410,4 +2410,251 @@ router.put(
     }
 );
 
+/* =========================================================
+   DELETE STUDENT (hard delete, with approval routing)
+   ========================================================= */
+
+router.delete(
+    '/:studentId',
+    authenticateToken,
+    async (req, res) => {
+
+        try {
+
+            const studentId =
+                parseInt(req.params.studentId, 10);
+
+            if (Number.isNaN(studentId)) {
+                return res.status(400).json({
+                    message: 'Invalid student ID.'
+                });
+            }
+
+            const roleId = getRoleId(req.user);
+
+            if (
+                roleId !== PROPRIETOR &&
+                roleId !== ADMINISTRATOR &&
+                roleId !== ADMIN_OFFICER
+            ) {
+                return res.status(403).json({
+                    message: 'Access denied.'
+                });
+            }
+
+            const { data: student, error: studentError } =
+                await supabase
+                    .from('students')
+                    .select('student_id, first_name, last_name, school_section, class_id')
+                    .eq('student_id', studentId)
+                    .maybeSingle();
+
+            if (studentError) throw studentError;
+
+            if (!student) {
+                return res.status(404).json({
+                    message: 'Student not found.'
+                });
+            }
+
+            /* Administrator deletes immediately */
+            if (roleId === ADMINISTRATOR) {
+                await performStudentDelete(studentId);
+                return res.json({
+                    message: 'Student deleted.',
+                    needs_approval: false
+                });
+            }
+
+            /* Proprietor / Admin Officer → pending approval */
+            const { error: approvalError } =
+                await supabase
+                    .from('record_approvals')
+                    .insert([{
+                        record_type: 'student_delete',
+                        record_id: studentId,
+                        approval_status: 'Pending',
+                        created_by: req.user.user_id || null,
+                        school_section: student.school_section || null,
+                        description:
+                            `Delete student: ${student.first_name || ''} ${student.last_name || ''}`.trim()
+                    }]);
+
+            if (approvalError) throw approvalError;
+
+            return res.json({
+                message: 'Student deletion submitted for approval.',
+                needs_approval: true
+            });
+
+        } catch (error) {
+
+            console.error('DELETE STUDENT ERROR:', error);
+
+            return res.status(500).json({
+                message: 'Failed to delete student.',
+                error: error.message
+            });
+        }
+    }
+);
+
+/* Helper — actual hard delete */
+async function performStudentDelete(studentId) {
+
+    await supabase
+        .from('emergency_contacts')
+        .delete()
+        .eq('student_id', studentId);
+
+    await supabase
+        .from('student_fees')
+        .delete()
+        .eq('student_id', studentId);
+
+    await supabase
+        .from('payments')
+        .delete()
+        .eq('student_id', studentId);
+
+    await supabase
+    .from('attendance')
+    .delete()
+    .eq('student_id', studentId);
+
+    await supabase
+        .from('users')
+        .delete()
+        .eq('student_id', studentId);
+
+    await supabase
+        .from('record_approvals')
+        .delete()
+        .eq('record_type', 'student')
+        .eq('record_id', studentId);
+
+    await supabase
+        .from('students')
+        .delete()
+        .eq('student_id', studentId);
+}
+
+/* =========================================================
+   DEACTIVATE STUDENT
+   ========================================================= */
+
+router.put(
+    '/:studentId/deactivate',
+    authenticateToken,
+    async (req, res) => {
+
+        try {
+
+            const studentId =
+                parseInt(req.params.studentId, 10);
+
+            if (Number.isNaN(studentId)) {
+                return res.status(400).json({
+                    message: 'Invalid student ID.'
+                });
+            }
+
+            const roleId = getRoleId(req.user);
+
+            if (
+                roleId !== PROPRIETOR &&
+                roleId !== ADMINISTRATOR &&
+                roleId !== ADMIN_OFFICER
+            ) {
+                return res.status(403).json({
+                    message: 'Access denied.'
+                });
+            }
+
+            const { data, error } =
+                await supabase
+                    .from('students')
+                    .update({ student_status: 'Inactive' })
+                    .eq('student_id', studentId)
+                    .select('student_id, student_status')
+                    .single();
+
+            if (error) throw error;
+
+            return res.json({
+                message: 'Student deactivated.',
+                student: data
+            });
+
+        } catch (error) {
+
+            console.error('DEACTIVATE STUDENT ERROR:', error);
+
+            return res.status(500).json({
+                message: 'Failed to deactivate student.',
+                error: error.message
+            });
+        }
+    }
+);
+
+/* =========================================================
+   REACTIVATE STUDENT
+   ========================================================= */
+
+router.put(
+    '/:studentId/reactivate',
+    authenticateToken,
+    async (req, res) => {
+
+        try {
+
+            const studentId =
+                parseInt(req.params.studentId, 10);
+
+            if (Number.isNaN(studentId)) {
+                return res.status(400).json({
+                    message: 'Invalid student ID.'
+                });
+            }
+
+            const roleId = getRoleId(req.user);
+
+            if (
+                roleId !== PROPRIETOR &&
+                roleId !== ADMINISTRATOR &&
+                roleId !== ADMIN_OFFICER
+            ) {
+                return res.status(403).json({
+                    message: 'Access denied.'
+                });
+            }
+
+            const { data, error } =
+                await supabase
+                    .from('students')
+                    .update({ student_status: 'Active' })
+                    .eq('student_id', studentId)
+                    .select('student_id, student_status')
+                    .single();
+
+            if (error) throw error;
+
+            return res.json({
+                message: 'Student reactivated.',
+                student: data
+            });
+
+        } catch (error) {
+
+            console.error('REACTIVATE STUDENT ERROR:', error);
+
+            return res.status(500).json({
+                message: 'Failed to reactivate student.',
+                error: error.message
+            });
+        }
+    }
+);
+
 module.exports = router;

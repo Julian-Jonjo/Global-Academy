@@ -397,10 +397,11 @@
                 <td><span class="status status-active">${escapeHtml(status)}</span></td>
                 <td>
                     <div class="action-group">
-                        <button class="action-btn view-btn" onclick="viewTeacher(${teacherId})">View</button>
-                        <button class="action-btn edit-btn" onclick="editTeacher(${teacherId})">Edit</button>
-                        <button class="action-btn assign-btn" onclick="window.location.href='secondary-teacher-assignments.html?teacher_id=${teacherId}'">Assign</button>
-                    </div>
+    <button class="action-btn view-btn" onclick="viewTeacher(${teacherId})">View</button>
+    <button class="action-btn edit-btn" onclick="editTeacher(${teacherId})">Edit</button>
+    <button class="action-btn assign-btn" onclick="window.location.href='secondary-teacher-assignments.html?teacher_id=${teacherId}'">Assign</button>
+    ${(isProprietor || isAdministrator || isAdminOfficer) ? `<button class="action-btn" style="background:#fee2e2;color:#991b1b;" onclick="deleteTeacher(${teacherId})">Delete</button>` : ''}
+</div>
                 </td>
             </tr>`;
         }).join('');
@@ -522,6 +523,52 @@
             setTimeout(() => { closeTeacherModal(); loadTeachers(); }, 1000);
         } catch (error) { showMessage('teacherModalMessage', error.message, 'error'); }
     });
+
+    async function deleteTeacher(id) {
+    const teacher = teachers.find(t => String(t.teacher_id || t.id) === String(id));
+    if (!teacher) {
+        alert('Teacher not found.');
+        return;
+    }
+
+    const name = [teacher.first_name, teacher.middle_name, teacher.last_name]
+        .filter(Boolean).join(' ');
+
+    const confirmed = confirm(
+        `Delete teacher "${name}"?\n\n` +
+        `This will remove their class master, subject, and class assignments. ` +
+        `This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(`/api/teachers/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Failed to delete teacher.');
+        }
+
+        if (result.needs_approval) {
+            showMessage('messageContainer', 'Teacher deletion submitted for approval.', 'success');
+        } else {
+            showMessage('messageContainer', 'Teacher deleted successfully.', 'success');
+        }
+
+        setTimeout(() => { loadTeachers(); }, 800);
+
+    } catch (error) {
+        showMessage('messageContainer', error.message, 'error');
+    }
+}
 
     function showMessage(container, message, type) {
         const el = document.getElementById(container);
